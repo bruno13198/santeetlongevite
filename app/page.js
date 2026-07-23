@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
+import Link from 'next/link';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -69,10 +70,12 @@ export default function Home() {
               borderRadius: '8px',
             }}
           >
-            <strong style={{ fontSize: '18px' }}>{aliment.nom}</strong>
-            <span style={{ color: '#888' }}> — {aliment.categorie}</span>
-            <br />
-            <span style={{ color: '#555' }}>{aliment.description}</span>
+            <Link href={`/aliments/${aliment.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <strong style={{ fontSize: '18px' }}>{aliment.nom}</strong>
+              <span style={{ color: '#888' }}> — {aliment.categorie}</span>
+              <br />
+              <span style={{ color: '#555' }}>{aliment.description}</span>
+            </Link>
           </li>
         ))}
       </ul>
