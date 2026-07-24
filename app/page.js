@@ -28,9 +28,20 @@ export default function Home() {
     chargerAliments();
   }, []);
 
-  const alimentsFiltres = aliments.filter((aliment) =>
-    aliment.nom.toLowerCase().includes(recherche.toLowerCase())
-  );
+  function normaliser(texte) {
+    return texte
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, ''); // enlève les accents
+  }
+
+  const rechercheNorm = normaliser(recherche);
+
+  const alimentsFiltres = aliments.filter((aliment) => {
+    if (rechercheNorm === '') return true;
+    const motsDuNom = normaliser(aliment.nom).split(/[^a-z0-9]+/);
+    return motsDuNom.some((mot) => mot.startsWith(rechercheNorm));
+  });
 
   return (
     <main style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '700px', margin: '0 auto' }}>
