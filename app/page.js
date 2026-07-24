@@ -40,6 +40,9 @@ export default function Home() {
   const alimentsFiltres = aliments.filter((aliment) => {
     if (rechercheNorm === '') return true;
     const motsDuNom = normaliser(aliment.nom).split(/[^a-z0-9]+/);
+    if (rechercheNorm.length <= 3) {
+      return motsDuNom.some((mot) => mot === rechercheNorm);
+    }
     return motsDuNom.some((mot) => mot.startsWith(rechercheNorm));
   });
 
