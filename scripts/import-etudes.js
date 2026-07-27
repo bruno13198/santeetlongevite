@@ -20,7 +20,7 @@ const ALIMENTS_PILOTE = [
 const MAX_ETUDES_PAR_ALIMENT = 8;
 
 async function chercherEtudesEuropePMC(terme) {
-  const requete = `(${terme}) AND (nutrition OR health OR disease) AND (SRC:MED)`;
+  const requete = `(${terme}) AND (nutrition OR health OR disease OR human) AND (SRC:MED) NOT (aquaculture OR "animal feed" OR "fish feed" OR veterinary OR canine OR feline OR poultry OR livestock OR "fish farming" OR toxicity)`;
   const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(requete)}&format=json&pageSize=${MAX_ETUDES_PAR_ALIMENT}&resultType=core`;
 
   const res = await fetch(url);
