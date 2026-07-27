@@ -20,7 +20,7 @@ const ALIMENTS_PILOTE = [
 const MAX_ETUDES_PAR_ALIMENT = 8;
 
 async function chercherEtudesEuropePMC(terme) {
-  const requete = `(${terme}) AND (SRC:MED) AND (MESH:"Humans") AND (PUB_TYPE:"Review" OR PUB_TYPE:"Meta-Analysis" OR PUB_TYPE:"Systematic Review" OR PUB_TYPE:"Randomized Controlled Trial" OR PUB_TYPE:"Clinical Trial")`;
+  const requete = `(${terme}) AND (SRC:MED) AND (PUB_TYPE:"review" OR PUB_TYPE:"meta-analysis" OR PUB_TYPE:"systematic review" OR PUB_TYPE:"randomized controlled trial" OR PUB_TYPE:"clinical trial") NOT (MESH:"Animals" NOT MESH:"Humans")`;
   const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(requete)}&format=json&pageSize=${MAX_ETUDES_PAR_ALIMENT}&resultType=core`;
 
   const res = await fetch(url);
