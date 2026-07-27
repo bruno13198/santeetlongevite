@@ -71,8 +71,9 @@ Règles importantes :
   const data = await res.json();
   const texte = data.content.map((b) => b.text || '').join('');
   const nettoye = texte.replace(/```json|```/g, '').trim();
-  return JSON.parse(nettoye);
-}
+  const match = nettoye.match(/\{[\s\S]*\}/);
+  return JSON.parse(match ? match[0] : nettoye);
+
 
 async function traiterAliment(aliment) {
   console.log(`\n=== ${aliment.slug} ===`);
