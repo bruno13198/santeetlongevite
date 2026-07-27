@@ -47,7 +47,7 @@ Réponds "false" si l'étude porte uniquement sur : des animaux (vétérinaire, 
  
 Étape 2 — Si et seulement si pertinent, rédige les résumés en français.
  
-Réponds UNIQUEMENT avec un objet JSON valide (rien avant, rien après), au format EXACT suivant. N'utilise JAMAIS de guillemets doubles (") à l'intérieur des textes — utilise des guillemets français « » ou des apostrophes si besoin.
+Réponds UNIQUEMENT avec un objet JSON valide (rien avant, rien après), au format EXACT suivant. N'utilise JAMAIS de guillemets doubles (") à l'intérieur des textes — utilise des guillemets français « » ou des apostrophes si besoin. N'utilise JAMAIS de retour à la ligne à l'intérieur des valeurs texte — rédige chaque champ comme un seul paragraphe continu, sans saut de ligne.
  
 Si l'étude N'EST PAS pertinente :
 {
@@ -199,6 +199,4 @@ async function main() {
   console.log('\nTerminé.');
 }
  
-main();
-
 main();
