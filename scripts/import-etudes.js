@@ -1,3 +1,4 @@
+
 // Script d'automatisation : récupère des études sur Europe PMC,
 // génère 2 résumés en français via l'API Claude, et enregistre tout dans Supabase.
 // Le filtrage "humain / pertinent" est fait par Claude lui-même, en lisant le résumé
@@ -10,13 +11,48 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
  
-// --- Phase pilote : 5 aliments de test, avec leur terme de recherche scientifique/anglais ---
+// --- Lot 2 : les 5 aliments pilotes d'hier + 30 aliments courants/populaires supplémentaires ---
 const ALIMENTS_PILOTE = [
   { slug: 'curcuma-poudre', terme: 'turmeric curcumin' },
   { slug: 'ail-cru', terme: 'garlic Allium sativum' },
   { slug: 'saumon-elevage-cru', terme: 'salmon Salmo salar' },
   { slug: 'myrtille-crue', terme: 'blueberry Vaccinium' },
   { slug: 'brocoli-cru', terme: 'broccoli Brassica oleracea' },
+  { slug: 'gingembre-poudre', terme: 'ginger Zingiber officinale' },
+  { slug: 'cannelle-poudre', terme: 'cinnamon Cinnamomum' },
+  { slug: 'romarin-frais', terme: 'rosemary Rosmarinus officinalis' },
+  { slug: 'avocat-chair-sans-peau-sans-noyau-cru', terme: 'avocado Persea americana' },
+  { slug: 'fraise-crue', terme: 'strawberry Fragaria' },
+  { slug: 'framboise-crue', terme: 'raspberry Rubus idaeus' },
+  { slug: 'grenade-chair-sans-peau-avec-pepins-crue', terme: 'pomegranate Punica granatum' },
+  { slug: 'citron-vert-ou-lime-chair-sans-peau-sans-pepins-cru', terme: 'lime Citrus aurantifolia' },
+  { slug: 'raisin-noir-cru', terme: 'grape Vitis vinifera' },
+  { slug: 'epinard-cru', terme: 'spinach Spinacia oleracea' },
+  { slug: 'oignon-cru', terme: 'onion Allium cepa' },
+  { slug: 'patate-douce-crue', terme: 'sweet potato Ipomoea batatas' },
+  { slug: 'tomate-sans-precision-crue-aliment-moyen', terme: 'tomato Solanum lycopersicum' },
+  { slug: 'avoine-crue', terme: 'oat Avena sativa' },
+  { slug: 'quinoa-cru', terme: 'quinoa Chenopodium quinoa' },
+  { slug: 'lentille-verte-seche', terme: 'lentil Lens culinaris' },
+  { slug: 'noix-cerneau-sechee', terme: 'walnut Juglans regia' },
+  { slug: 'amande-grillee-salee', terme: 'almond Prunus dulcis' },
+  { slug: 'noix-de-cajou-grillee-salee', terme: 'cashew Anacardium occidentale' },
+  { slug: 'pistache-grillee-salee', terme: 'pistachio Pistacia vera' },
+  { slug: 'noix-du-bresil-ou-noix-d-amazonie-sans-sel-ajoute', terme: 'Brazil nut Bertholletia excelsa' },
+  { slug: 'noix-de-macadamia-grillee-salee', terme: 'macadamia nut' },
+  { slug: 'noix-de-coco-chair-seche', terme: 'coconut Cocos nucifera' },
+  { slug: 'sardine-crue', terme: 'sardine fish omega-3' },
+  { slug: 'maquereau-cru', terme: 'mackerel fish omega-3' },
+  { slug: 'hareng-cru', terme: 'herring fish omega-3' },
+  { slug: 'kefir-de-lait', terme: 'kefir fermented milk' },
+  { slug: 'yaourt-a-la-grecque-nature', terme: 'Greek yogurt' },
+  { slug: 'huile-d-olive-vierge-extra', terme: 'extra virgin olive oil' },
+  { slug: 'miel', terme: 'honey human health nutrition' },
+  { slug: 'cafe-moulu', terme: 'coffee Coffea arabica' },
+  { slug: 'chocolat-noir-70-de-cacao-environ-de-degustation-tablette', terme: 'dark chocolate cocoa flavanols' },
+  { slug: 'vinaigre-de-cidre', terme: 'apple cider vinegar' },
+  { slug: 'spiruline-spirulina-sp-sechee-ou-deshydratee', terme: 'spirulina Arthrospira' },
+  { slug: 'chou-kale-cru', terme: 'kale Brassica oleracea acephala' },
 ];
  
 // On demande plus de résultats à Europe PMC que nécessaire, car une partie
