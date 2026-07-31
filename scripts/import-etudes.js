@@ -70,18 +70,22 @@ async function chercherEtudesEuropePMC(terme) {
   return data.resultList?.result || [];
 }
  
-async function analyserEtude(titreOriginal, abstractOriginal) {
+async function analyserEtude(titreOriginal, abstractOriginal, nomAliment) {
   const prompt = `Tu es un rédacteur scientifique qui vulgarise des études de nutrition/santé pour un site grand public francophone.
  
-Voici une étude scientifique :
+Cette étude a été trouvée en recherchant des publications sur : ${nomAliment}
+ 
 Titre original : ${titreOriginal}
 Résumé original (anglais) : ${abstractOriginal}
  
-Étape 1 — Évalue la pertinence :
+Étape 1 — Vérifie le SUJET :
+L'étude parle-t-elle vraiment et spécifiquement de « ${nomAliment} » (ou d'un synonyme/nom scientifique direct de cet aliment) ? Une simple co-occurrence de mots-clés ou une confusion terminologique (ex : un homonyme, une espèce différente, un aliment qui n'apparaît que dans la bibliographie ou en comparaison lointaine) ne compte pas. Si l'étude porte en réalité sur un autre sujet qui a seulement été mal indexé sous ce terme de recherche, réponds "false".
+ 
+Étape 2 — Évalue la pertinence humaine :
 Cette étude concerne-t-elle la santé, la nutrition ou la physiologie HUMAINE (directement, ou via une méta-analyse/revue qui synthétise des données humaines) ?
 Réponds "false" si l'étude porte uniquement sur : des animaux (vétérinaire, élevage, modèles animaux sans lien direct avec la santé humaine), des plantes (agronomie, botanique pure), des microbes/environnement sans lien santé humaine, ou tout autre sujet hors nutrition/santé humaine.
  
-Étape 2 — Si et seulement si pertinent, rédige les résumés en français.
+Étape 3 — Si et seulement si pertinente sur les deux points ci-dessus, rédige les résumés en français.
  
 Réponds UNIQUEMENT avec un objet JSON valide (rien avant, rien après), au format EXACT suivant. N'utilise JAMAIS de guillemets doubles (") à l'intérieur des textes — utilise des guillemets français « » ou des apostrophes si besoin. N'utilise JAMAIS de retour à la ligne à l'intérieur des valeurs texte — rédige chaque champ comme un seul paragraphe continu, sans saut de ligne.
  
@@ -150,10 +154,22 @@ async function traiterAliment(aliment) {
     return;
   }
  
+  // On vérifie combien d'études existent déjà pour cet aliment, pour éviter
+  // d'appeler inutilement l'API si le quota est déjà atteint.
+  const { count: nbExistantes } = await supabase
+    .from('aliments_etudes')
+    .select('*', { count: 'exact', head: true })
+    .eq('aliment_id', alimentDB.id);
+ 
+  if ((nbExistantes || 0) >= MAX_ETUDES_PAR_ALIMENT) {
+    console.log(`  Déjà ${nbExistantes} études en base (quota ${MAX_ETUDES_PAR_ALIMENT} atteint), on saute — aucun appel API.`);
+    return;
+  }
+ 
   const resultats = await chercherEtudesEuropePMC(aliment.terme);
   console.log(`  ${resultats.length} études trouvées sur Europe PMC (avant filtrage humain).`);
  
-  let etudesAjoutees = 0;
+  let etudesAjoutees = nbExistantes || 0;
  
   for (const etude of resultats) {
     if (etudesAjoutees >= MAX_ETUDES_PAR_ALIMENT) {
@@ -182,7 +198,7 @@ async function traiterAliment(aliment) {
     }
  
     try {
-      const analyse = await analyserEtude(etude.title, etude.abstractText);
+      const analyse = await analyserEtude(etude.title, etude.abstractText, aliment.terme);
  
       if (!analyse.pertinent) {
         console.log(`  - Écartée (${sourceId}) : ${analyse.raison}`);
@@ -234,5 +250,7 @@ async function main() {
   }
   console.log('\nTerminé.');
 }
+ 
+main();
  
 main();
