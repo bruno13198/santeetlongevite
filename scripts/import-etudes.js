@@ -425,8 +425,17 @@ async function traiterAliment(aliment) {
       continue;
     }
  
-    try {
-      const analyse = await analyserEtude(etude.title, etude.abstractText, aliment.terme);
+    const { data: dejaRejete } = await supabase
+  .from('candidats_rejetes')
+  .select('source_id')
+  .eq('aliment_id', alimentDB.id)
+  .eq('source_id', sourceId)
+  .maybeSingle();
+
+if (dejaRejete) {
+  console.log(`  - Déjà rejeté précédemment (${sourceId}), on passe.`);
+  continue;
+}
  
       if (!analyse.pertinent) {
         console.log(`  - Écartée (${sourceId}) : ${analyse.raison}`);
