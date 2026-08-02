@@ -424,7 +424,7 @@ async function traiterAliment(aliment) {
       console.log(`  - Pas de résumé disponible pour ${sourceId}, on passe.`);
       continue;
     }
- 
+ try { const analyse = await analyserEtude(...)
     const { data: dejaRejete } = await supabase
   .from('candidats_rejetes')
   .select('source_id')
