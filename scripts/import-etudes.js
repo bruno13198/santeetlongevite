@@ -438,7 +438,7 @@ if (dejaRejete) {
 }
  
       if (!analyse.pertinent) {
-        console.log(`  - Écartée (${sourceId}) : ${analyse.raison}`);
+        console.logawait supabase.from('candidats_rejetes').insert({ aliment_id: alimentDB.id, source_id: sourceId });(`  - Écartée (${sourceId}) : ${analyse.raison}`);
         continue;
       }
  
