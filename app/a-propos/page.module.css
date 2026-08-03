@@ -245,8 +245,9 @@
  
 /* --- Accessibilité --- */
 @media (prefers-reduced-motion: reduce) {
-  * {
+  .page * {
     transition: none !important;
     animation: none !important;
   }
 }
+
