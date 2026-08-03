@@ -1,0 +1,252 @@
+.page {
+  --paper: #F1EFE5;
+  --ink: #21261F;
+  --muted: #6C6F62;
+  --line: #D9D4C3;
+  --evidence: #2F6B5E;
+  --evidence-soft: #DCE8E2;
+  --hype: #C97F1D;
+  --hype-soft: #F3E3CC;
+ 
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body), system-ui, sans-serif;
+  min-height: 100vh;
+  line-height: 1.6;
+}
+ 
+.wrap {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 88px 24px 120px;
+}
+ 
+.eyebrow {
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 20px;
+}
+ 
+.h1 {
+  font-family: var(--font-display), serif;
+  font-weight: 500;
+  font-size: clamp(32px, 5vw, 46px);
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  margin: 0 0 28px;
+  max-width: 15ch;
+}
+ 
+.lede {
+  font-size: 18px;
+  color: var(--ink);
+  max-width: 60ch;
+  margin: 0 0 28px;
+}
+ 
+/* --- Élément signature : spectre preuve/promesse --- */
+.spectrum {
+  margin: 40px 0 44px;
+}
+ 
+.spectrumTrack {
+  position: relative;
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+  display: flex;
+  background: var(--line);
+}
+ 
+.spectrumFillHype {
+  flex: 1;
+  background: linear-gradient(90deg, var(--hype-soft), var(--hype));
+}
+ 
+.spectrumFillEvidence {
+  flex: 1;
+  background: linear-gradient(90deg, var(--evidence), var(--evidence-soft));
+}
+ 
+.spectrumLabels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+ 
+.labelHype {
+  color: var(--hype);
+}
+ 
+.labelEvidence {
+  color: var(--evidence);
+}
+ 
+/* --- Checklist d'ouverture --- */
+.checklist {
+  list-style: none;
+  margin: 0 0 56px;
+  padding: 24px 0 0;
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 10px;
+}
+ 
+.checklist li {
+  font-family: var(--font-mono), monospace;
+  font-size: 15px;
+  color: var(--ink);
+  padding-left: 22px;
+  position: relative;
+}
+ 
+.checklist li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--evidence);
+}
+ 
+/* --- Sections --- */
+.section {
+  margin: 0 0 56px;
+  padding-top: 40px;
+  border-top: 1px solid var(--line);
+}
+ 
+.tag {
+  font-family: var(--font-display), serif;
+  font-weight: 600;
+  font-style: italic;
+  font-size: 22px;
+  margin: 0 0 20px;
+  display: inline-block;
+  padding-bottom: 4px;
+  border-bottom: 2px solid var(--line);
+}
+ 
+.tag[data-tone='evidence'] {
+  border-bottom-color: var(--evidence);
+  color: var(--evidence);
+}
+ 
+.tag[data-tone='hype'] {
+  border-bottom-color: var(--hype);
+  color: var(--hype);
+}
+ 
+.tag[data-tone='muted'] {
+  border-bottom-color: var(--line);
+  color: var(--muted);
+}
+ 
+.tag[data-tone='mono'] {
+  font-family: var(--font-mono), monospace;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 15px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+ 
+.body {
+  font-size: 16px;
+  color: var(--ink);
+  max-width: 62ch;
+  margin: 0 0 16px;
+}
+ 
+.list {
+  margin: 0 0 20px;
+  padding-left: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+ 
+.list li {
+  font-size: 16px;
+  padding-left: 20px;
+  position: relative;
+  max-width: 58ch;
+}
+ 
+.list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 6px;
+  height: 6px;
+  background: var(--evidence);
+  border-radius: 50%;
+}
+ 
+/* --- Deux colonnes --- */
+.twoCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin: 0 0 56px;
+  padding-top: 40px;
+  border-top: 1px solid var(--line);
+}
+ 
+.colFind {
+  padding: 24px;
+  background: var(--evidence-soft);
+  border-radius: 4px;
+}
+ 
+.colNot {
+  padding: 24px;
+  background: transparent;
+  border: 1px dashed var(--line);
+  border-radius: 4px;
+}
+ 
+.colFind .tag,
+.colNot .tag {
+  font-size: 17px;
+}
+ 
+@media (max-width: 640px) {
+  .twoCol {
+    grid-template-columns: 1fr;
+  }
+}
+ 
+/* --- Manifeste --- */
+.manifesto {
+  padding-top: 40px;
+  border-top: 1px solid var(--line);
+}
+ 
+.pullQuote {
+  font-family: var(--font-display), serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(20px, 3vw, 26px);
+  line-height: 1.5;
+  color: var(--evidence);
+  margin: 28px 0;
+  padding-left: 20px;
+  border-left: 3px solid var(--evidence);
+}
+ 
+/* --- Accessibilité --- */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
