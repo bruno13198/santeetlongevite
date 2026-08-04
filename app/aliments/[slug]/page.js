@@ -7,7 +7,7 @@ const supabase = createClient(
 );
 
 export default async function FicheAliment({ params }) {
-  const { slug } = params;
+  const { slug } = await params;
 
   // Récupère l'aliment correspondant au slug
   const { data: aliment, error: erreurAliment } = await supabase
