@@ -51,9 +51,13 @@ ou
   const nettoye = texte.replace(/```json|```/g, '').trim();
   const match = nettoye.match(/\{[\s\S]*\}/);
 
-  const resultat = JSON.parse(match ? match[0] : nettoye);
-  return resultat.niveau;
-}
+  try {
+    const resultat = JSON.parse(match ? match[0] : nettoye);
+    return resultat.niveau;
+  } catch (e) {
+    console.log(`    Réponse brute reçue : "${nettoye}"`);
+    throw e;
+  }
 
 async function main() {
   const { data: etudes, error } = await supabase
