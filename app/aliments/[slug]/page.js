@@ -78,7 +78,22 @@ export default async function FicheAliment({ params }) {
             borderRadius: '8px',
           }}
         >
-          <strong>{etude.titre_traduit || etude.titre_original}</strong>
+          {etude.niveau_fiabilite === 'haute' && (
+            <span style={{ backgroundColor: '#d4edda', color: '#155724', padding: '4px 10px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold' }}>
+              🟢 Haute fiabilité
+            </span>
+          )}
+          {etude.niveau_fiabilite === 'moderee' && (
+            <span style={{ backgroundColor: '#fff3cd', color: '#856404', padding: '4px 10px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold' }}>
+              🟡 Fiabilité modérée
+            </span>
+          )}
+          {etude.niveau_fiabilite === 'preliminaire' && (
+            <span style={{ backgroundColor: '#ffe5d0', color: '#9a4d00', padding: '4px 10px', borderRadius: '12px', fontSize: '13px', fontWeight: 'bold' }}>
+              🟠 Préliminaire
+            </span>
+          )}
+          <strong style={{ display: 'block', marginTop: '8px' }}>{etude.titre_traduit || etude.titre_original}</strong>
           <p style={{ color: '#888', fontSize: '14px' }}>
             {etude.source} · {etude.date_publication} · {etude.auteurs}
           </p>
