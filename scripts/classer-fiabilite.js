@@ -6,7 +6,7 @@ const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
-async function classerEtude(titre, resumeOriginal) {
+async function classerEtude(titre, resumeOriginal, tentative = 1) {
   const prompt = `Tu es un méthodologiste scientifique. Classe le TYPE D'ÉTUDE suivant dans une seule des 3 catégories ci-dessous, en te basant uniquement sur le titre et le résumé.
 Titre : ${titre}
 Résumé : ${resumeOriginal}
@@ -46,9 +46,15 @@ ou
   const match = nettoye.match(/\{[\s\S]*\}/);
   try {
     const resultat = JSON.parse(match ? match[0] : nettoye);
+    if (!resultat.niveau) throw new Error('Champ niveau manquant');
     return resultat.niveau;
   } catch (e) {
-    console.log(`    Réponse brute reçue : "${nettoye}"`);
+    if (tentative < 3) {
+      console.log(`    Réponse incomplète ("${nettoye}"), nouvelle tentative (${tentative + 1}/3)...`);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      return classerEtude(titre, resumeOriginal, tentative + 1);
+    }
+    console.log(`    Échec après 3 tentatives. Dernière réponse reçue : "${nettoye}"`);
     throw e;
   }
 }
