@@ -38,6 +38,9 @@ ou
     throw new Error(`Erreur API Claude ${res.status}: ${errText}`);
   }
   const data = await res.json();
+  if (!data.content || data.content.length === 0) {
+    console.log(`    Réponse API complète : ${JSON.stringify(data)}`);
+  }
   const texte = data.content.map((b) => b.text || '').join('');
   const nettoye = texte.replace(/```json|```/g, '').trim();
   const match = nettoye.match(/\{[\s\S]*\}/);
@@ -63,6 +66,7 @@ async function main() {
   for (const etude of etudes) {
     try {
       const niveau = await classerEtude(etude.titre_original, etude.resume_original);
+      await new Promise((resolve) => setTimeout(resolve, 500));
       if (!['haute', 'moderee', 'preliminaire'].includes(niveau)) {
         console.log(`  - Étude ${etude.id} : niveau inattendu reçu (${niveau}), on passe.`);
         continue;
