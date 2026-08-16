@@ -56,12 +56,12 @@ async function main() {
 
   const idsAvecEtudes = new Set((liaisons || []).map((l) => l.aliment_id));
 
-  const aliментsSurs = aliments.filter((a) => !idsAvecEtudes.has(a.id));
+  const alimentsSurs = aliments.filter((a) => !idsAvecEtudes.has(a.id));
 
-  console.log(`${aliments.length} aliments trouvés, ${aliментsSurs.length} sûrs à supprimer (sans études) :`);
-  aliментsSurs.forEach((a) => console.log(`  - ${a.nom}`));
+  console.log(`${aliments.length} aliments trouvés, ${alimentsSurs.length} sûrs à supprimer (sans études) :`);
+  alimentsSurs.forEach((a) => console.log(`  - ${a.nom}`));
 
-  const ids = aliментsSurs.map((a) => a.id);
+  const ids = alimentsSurs.map((a) => a.id);
 
   await supabase.from('candidats_rejetes').delete().in('aliment_id', ids);
 
@@ -75,8 +75,11 @@ async function main() {
     return;
   }
 
-  console.log(`\n${aliментsSurs.length} aliments supprimés.`);
+  console.log(`\n${alimentsSurs.length} aliments supprimés.`);
   console.log('Terminé.');
+}
+
+main();
 }
 
 main();
