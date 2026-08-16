@@ -38,7 +38,7 @@ export default function Home() {
   const rechercheNorm = normaliser(recherche);
 
   const alimentsFiltres = aliments.filter((aliment) => {
-    if (rechercheNorm === '') return true;
+    if (rechercheNorm === '') return false;
     const motsDuNom = normaliser(aliment.nom).split(/[^a-z0-9]+/);
     if (rechercheNorm.length <= 3) {
       return motsDuNom.some((mot) => mot === rechercheNorm);
