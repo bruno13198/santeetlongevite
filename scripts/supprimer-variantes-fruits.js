@@ -78,8 +78,4 @@ async function main() {
   console.log(`\n${alimentsSurs.length} aliments supprimés.`);
   console.log('Terminé.');
 }
-
-main();
-}
-
 main();
