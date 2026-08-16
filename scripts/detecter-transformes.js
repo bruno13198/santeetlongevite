@@ -37,7 +37,8 @@ const EXCEPTIONS = [
   'gelée royale',
   'vin rouge',
   'cola',
-];
+  'viennoiserie',
+]
 
 async function main() {
   const { data: aliments, error } = await supabase
