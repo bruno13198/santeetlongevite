@@ -88,7 +88,10 @@ export default function Home() {
             }}
           >
             <Link href={`/aliments/${aliment.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-              <strong style={{ fontSize: '18px' }}>{aliment.nom}</strong>
+              <strong style={{ fontSize: '18px' }}>{aliment.nom.split(',')[0]}</strong>
+              {aliment.nom.includes(',') && (
+                <span style={{ color: '#aaa', fontSize: '13px' }}> ({aliment.nom.split(',').slice(1).join(',').trim()})</span>
+              )}
               <span style={{ color: '#888' }}> — {aliment.categorie}</span>
               <br />
               <span style={{ color: '#555' }}>{aliment.description}</span>
