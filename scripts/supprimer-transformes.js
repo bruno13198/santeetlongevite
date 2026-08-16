@@ -76,6 +76,17 @@ async function main() {
   console.log('\nSuppression en cours...');
 
   const idsASupprimer = suspects.map((a) => a.id);
+
+  const { error: erreurCandidats } = await supabase
+    .from('candidats_rejetes')
+    .delete()
+    .in('aliment_id', idsASupprimer);
+
+  if (erreurCandidats) {
+    console.log('Erreur suppression candidats_rejetes:', erreurCandidats.message);
+    return;
+  }
+
   const { error: erreurSuppression } = await supabase
     .from('aliments')
     .delete()
