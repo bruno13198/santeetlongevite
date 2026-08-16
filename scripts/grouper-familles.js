@@ -9,12 +9,28 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
+// Noms composés à traiter comme leur propre famille, distincte du premier mot seul
+const FAMILLES_COMPOSEES = [
+  'pomme de terre',
+  'chou de bruxelles',
+  'noix de coco',
+  'noix de cajou',
+  'noix de macadamia',
+  'noix de saint-jacques',
+  'huile de palme',
+  'beurre de cacahuète',
+];
+
 function premierMot(nom) {
-  return nom
-    .split(/[,\s]/)[0]
+  const nomNormalise = nom
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '');
+
+  const composeTrouve = FAMILLES_COMPOSEES.find((c) => nomNormalise.startsWith(c));
+  if (composeTrouve) return composeTrouve;
+
+  return nomNormalise.split(/[,\s]/)[0];
 }
 
 async function main() {
