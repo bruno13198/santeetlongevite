@@ -1,0 +1,4850 @@
+[
+  {
+    "aliment_id": "736177e2-9006-46cb-8e81-a39356b73667",
+    "etude_id": "f87d9cd5-d66f-46ce-8287-c944c9e5eef6"
+  },
+  {
+    "aliment_id": "736177e2-9006-46cb-8e81-a39356b73667",
+    "etude_id": "bf503ad4-1d15-464f-ad33-3ef7f1186d49"
+  },
+  {
+    "aliment_id": "736177e2-9006-46cb-8e81-a39356b73667",
+    "etude_id": "f0eb2b83-1880-48ef-ad15-c659821001ce"
+  },
+  {
+    "aliment_id": "736177e2-9006-46cb-8e81-a39356b73667",
+    "etude_id": "86653e53-f78b-42c0-9a3b-1834dc8c58f8"
+  },
+  {
+    "aliment_id": "736177e2-9006-46cb-8e81-a39356b73667",
+    "etude_id": "71db7a31-cb66-4950-a8a2-47dbd0f32e91"
+  },
+  {
+    "aliment_id": "736177e2-9006-46cb-8e81-a39356b73667",
+    "etude_id": "43bc8a74-8923-42fd-9a2a-66ccf8d5144b"
+  },
+  {
+    "aliment_id": "736177e2-9006-46cb-8e81-a39356b73667",
+    "etude_id": "baf5d299-36d9-481d-b840-c068e7142e4d"
+  },
+  {
+    "aliment_id": "736177e2-9006-46cb-8e81-a39356b73667",
+    "etude_id": "3d9bdbb3-018d-48aa-a35e-d1aef6a84745"
+  },
+  {
+    "aliment_id": "662a527d-1440-4d96-b097-8c03b789c834",
+    "etude_id": "d878758b-6572-4add-abb9-108b5b171449"
+  },
+  {
+    "aliment_id": "662a527d-1440-4d96-b097-8c03b789c834",
+    "etude_id": "a4e7eb6f-5df0-4084-a60a-26559c400ada"
+  },
+  {
+    "aliment_id": "662a527d-1440-4d96-b097-8c03b789c834",
+    "etude_id": "c7917a28-09a0-48e7-8c5c-1894087a0ea1"
+  },
+  {
+    "aliment_id": "662a527d-1440-4d96-b097-8c03b789c834",
+    "etude_id": "48bf08f8-c71f-4b75-bea5-5ba40ed0f350"
+  },
+  {
+    "aliment_id": "662a527d-1440-4d96-b097-8c03b789c834",
+    "etude_id": "6158954d-68c9-405e-b0c9-ea364a92bd76"
+  },
+  {
+    "aliment_id": "662a527d-1440-4d96-b097-8c03b789c834",
+    "etude_id": "995d4527-2981-44a3-867b-654c40787486"
+  },
+  {
+    "aliment_id": "662a527d-1440-4d96-b097-8c03b789c834",
+    "etude_id": "21a97ab7-1575-41cd-93f6-132e87b1786a"
+  },
+  {
+    "aliment_id": "662a527d-1440-4d96-b097-8c03b789c834",
+    "etude_id": "cb8f1d3b-6b86-4b58-9eab-810b33bcea19"
+  },
+  {
+    "aliment_id": "1eb38a91-de99-4a4f-9821-3bb0acdac98f",
+    "etude_id": "31de7ae3-15fa-434e-9aa9-dfe9bd061a52"
+  },
+  {
+    "aliment_id": "1eb38a91-de99-4a4f-9821-3bb0acdac98f",
+    "etude_id": "77ab5202-cdf0-4661-90ad-40b75c1ccd0f"
+  },
+  {
+    "aliment_id": "1eb38a91-de99-4a4f-9821-3bb0acdac98f",
+    "etude_id": "e1adf544-cc5d-4e6c-9995-4acc5a4f28f9"
+  },
+  {
+    "aliment_id": "5b19ee78-c072-4c45-b181-0ebdc11b626d",
+    "etude_id": "3f05a3aa-e9d4-4dac-af23-71004c69adf0"
+  },
+  {
+    "aliment_id": "5b19ee78-c072-4c45-b181-0ebdc11b626d",
+    "etude_id": "753317d8-ebd7-40b9-90c8-651c4148c5c0"
+  },
+  {
+    "aliment_id": "5b19ee78-c072-4c45-b181-0ebdc11b626d",
+    "etude_id": "087f814b-4acf-448b-bb1d-994aa0fc27f3"
+  },
+  {
+    "aliment_id": "5b19ee78-c072-4c45-b181-0ebdc11b626d",
+    "etude_id": "29886e89-f566-4be2-9ce5-149fd8477128"
+  },
+  {
+    "aliment_id": "5b19ee78-c072-4c45-b181-0ebdc11b626d",
+    "etude_id": "cb39837d-2490-4016-af4c-e612e2cd583d"
+  },
+  {
+    "aliment_id": "5b19ee78-c072-4c45-b181-0ebdc11b626d",
+    "etude_id": "1babfc62-52e6-4795-8514-cba4a9e2d977"
+  },
+  {
+    "aliment_id": "5b19ee78-c072-4c45-b181-0ebdc11b626d",
+    "etude_id": "1466a0c9-ea82-464e-8724-1778027e8227"
+  },
+  {
+    "aliment_id": "5b19ee78-c072-4c45-b181-0ebdc11b626d",
+    "etude_id": "871c1453-5f5f-4f35-9145-ef77723f2bf4"
+  },
+  {
+    "aliment_id": "3bd6f3ed-c9cf-4f0e-acb2-1910cb8f60be",
+    "etude_id": "e1cd9c98-0eaf-444e-a064-94cb6fc51481"
+  },
+  {
+    "aliment_id": "3bd6f3ed-c9cf-4f0e-acb2-1910cb8f60be",
+    "etude_id": "77cfde80-4ae4-4913-bd84-b24b6c8184aa"
+  },
+  {
+    "aliment_id": "3bd6f3ed-c9cf-4f0e-acb2-1910cb8f60be",
+    "etude_id": "799069f4-648d-4cb0-9e1c-7ae5acbe2300"
+  },
+  {
+    "aliment_id": "3bd6f3ed-c9cf-4f0e-acb2-1910cb8f60be",
+    "etude_id": "b123ea15-00bd-43f6-aa22-e1be2efc35de"
+  },
+  {
+    "aliment_id": "3bd6f3ed-c9cf-4f0e-acb2-1910cb8f60be",
+    "etude_id": "def991bf-8964-4b0c-983f-46f8cf15cc4f"
+  },
+  {
+    "aliment_id": "3bd6f3ed-c9cf-4f0e-acb2-1910cb8f60be",
+    "etude_id": "43ba96d5-37e0-4855-ade9-53aa6f19af6f"
+  },
+  {
+    "aliment_id": "3bd6f3ed-c9cf-4f0e-acb2-1910cb8f60be",
+    "etude_id": "38204ddd-7364-42c6-bd6a-b74d9c030b9c"
+  },
+  {
+    "aliment_id": "3bd6f3ed-c9cf-4f0e-acb2-1910cb8f60be",
+    "etude_id": "a9b1c7d7-b0d6-45be-af4c-77af7f640a68"
+  },
+  {
+    "aliment_id": "736177e2-9006-46cb-8e81-a39356b73667",
+    "etude_id": "83f282b8-5d3e-463d-ba75-7fb63056b11c"
+  },
+  {
+    "aliment_id": "736177e2-9006-46cb-8e81-a39356b73667",
+    "etude_id": "1e169ebf-a84e-429c-b51d-0e464460ea91"
+  },
+  {
+    "aliment_id": "736177e2-9006-46cb-8e81-a39356b73667",
+    "etude_id": "6ff7020a-c75b-4034-887e-b77f48344f0a"
+  },
+  {
+    "aliment_id": "736177e2-9006-46cb-8e81-a39356b73667",
+    "etude_id": "1c2e0349-eccb-4eea-948f-1e165e44e4a9"
+  },
+  {
+    "aliment_id": "736177e2-9006-46cb-8e81-a39356b73667",
+    "etude_id": "b35c6ef8-85ed-4a05-9fda-7e62c4702be0"
+  },
+  {
+    "aliment_id": "736177e2-9006-46cb-8e81-a39356b73667",
+    "etude_id": "e09eb9f5-df25-4ad3-a4f7-af5c56e051fc"
+  },
+  {
+    "aliment_id": "736177e2-9006-46cb-8e81-a39356b73667",
+    "etude_id": "876fca76-8994-4c5f-aa89-3154aed6c1a0"
+  },
+  {
+    "aliment_id": "736177e2-9006-46cb-8e81-a39356b73667",
+    "etude_id": "02812c83-47a8-4459-9c92-c5031b18f47d"
+  },
+  {
+    "aliment_id": "662a527d-1440-4d96-b097-8c03b789c834",
+    "etude_id": "1e1cab8c-e823-4ae5-a9d6-ff6f34c92c2b"
+  },
+  {
+    "aliment_id": "662a527d-1440-4d96-b097-8c03b789c834",
+    "etude_id": "3578856c-88e6-4cd1-98d6-b030bab3029d"
+  },
+  {
+    "aliment_id": "662a527d-1440-4d96-b097-8c03b789c834",
+    "etude_id": "9453d2a7-3e94-4319-a4e8-7c0fc3b4872b"
+  },
+  {
+    "aliment_id": "662a527d-1440-4d96-b097-8c03b789c834",
+    "etude_id": "7b0306a3-4ee8-4486-916b-e0fe6ed15597"
+  },
+  {
+    "aliment_id": "662a527d-1440-4d96-b097-8c03b789c834",
+    "etude_id": "20d6edf7-7b91-439d-8191-85d7ae618063"
+  },
+  {
+    "aliment_id": "5b19ee78-c072-4c45-b181-0ebdc11b626d",
+    "etude_id": "c3c8e375-221c-4ce6-a52b-cb8f4f41654e"
+  },
+  {
+    "aliment_id": "5b19ee78-c072-4c45-b181-0ebdc11b626d",
+    "etude_id": "24e1e093-bd3f-40fd-bbf4-5212b65b9041"
+  },
+  {
+    "aliment_id": "5b19ee78-c072-4c45-b181-0ebdc11b626d",
+    "etude_id": "985b087a-7696-4c01-a964-5f17807e1721"
+  },
+  {
+    "aliment_id": "5b19ee78-c072-4c45-b181-0ebdc11b626d",
+    "etude_id": "fe4e8ddf-89f8-4199-8393-cc4bf24bc4f8"
+  },
+  {
+    "aliment_id": "5b19ee78-c072-4c45-b181-0ebdc11b626d",
+    "etude_id": "d1f9df07-1c01-46ba-b30f-6e27e4c82f2c"
+  },
+  {
+    "aliment_id": "5b19ee78-c072-4c45-b181-0ebdc11b626d",
+    "etude_id": "71eca10e-9631-4970-a3ca-8e7df9eb2391"
+  },
+  {
+    "aliment_id": "3bd6f3ed-c9cf-4f0e-acb2-1910cb8f60be",
+    "etude_id": "31036954-e69a-48e2-ae78-37667b111d25"
+  },
+  {
+    "aliment_id": "3bd6f3ed-c9cf-4f0e-acb2-1910cb8f60be",
+    "etude_id": "4652377b-9198-4f79-bd75-3a1d596105dd"
+  },
+  {
+    "aliment_id": "3bd6f3ed-c9cf-4f0e-acb2-1910cb8f60be",
+    "etude_id": "0cf98206-9bfd-487d-9209-ac03592761f5"
+  },
+  {
+    "aliment_id": "3bd6f3ed-c9cf-4f0e-acb2-1910cb8f60be",
+    "etude_id": "49485b8b-e137-4096-9f7d-e5bea12ef7db"
+  },
+  {
+    "aliment_id": "3bd6f3ed-c9cf-4f0e-acb2-1910cb8f60be",
+    "etude_id": "46183615-8258-4ad6-baff-e1e671cbda65"
+  },
+  {
+    "aliment_id": "0aa8d5a8-d089-4b83-96c3-c584cc708a3b",
+    "etude_id": "d71647dc-e669-4142-be33-3950bb5e14c2"
+  },
+  {
+    "aliment_id": "0aa8d5a8-d089-4b83-96c3-c584cc708a3b",
+    "etude_id": "14878136-14ea-474a-891e-2618b660a6e9"
+  },
+  {
+    "aliment_id": "0aa8d5a8-d089-4b83-96c3-c584cc708a3b",
+    "etude_id": "d8ff2fb7-348f-4299-a235-113cd26e0f05"
+  },
+  {
+    "aliment_id": "0aa8d5a8-d089-4b83-96c3-c584cc708a3b",
+    "etude_id": "a3f42239-5fff-4adf-a550-c2636f0029c3"
+  },
+  {
+    "aliment_id": "0aa8d5a8-d089-4b83-96c3-c584cc708a3b",
+    "etude_id": "74018fac-2f94-4f98-b21d-d769814ba178"
+  },
+  {
+    "aliment_id": "0aa8d5a8-d089-4b83-96c3-c584cc708a3b",
+    "etude_id": "d0710096-07b2-4e83-9b88-e760dd6be7c8"
+  },
+  {
+    "aliment_id": "0aa8d5a8-d089-4b83-96c3-c584cc708a3b",
+    "etude_id": "fc6669a8-a600-4835-8423-cec608e56dad"
+  },
+  {
+    "aliment_id": "0aa8d5a8-d089-4b83-96c3-c584cc708a3b",
+    "etude_id": "e55495a6-27ad-4646-a009-dedae4d1e8b3"
+  },
+  {
+    "aliment_id": "87bb652f-345f-4c7c-bc18-5e3cb49bf460",
+    "etude_id": "2c890171-ea10-45cc-a4b2-4242bc6890df"
+  },
+  {
+    "aliment_id": "87bb652f-345f-4c7c-bc18-5e3cb49bf460",
+    "etude_id": "0b6b1874-76ec-4858-a7e1-506e5e4df1d4"
+  },
+  {
+    "aliment_id": "87bb652f-345f-4c7c-bc18-5e3cb49bf460",
+    "etude_id": "45bf92eb-f46d-4096-91d6-01a1fa88f5b6"
+  },
+  {
+    "aliment_id": "87bb652f-345f-4c7c-bc18-5e3cb49bf460",
+    "etude_id": "01619bc4-b982-42ca-85f6-a3d1e12f505b"
+  },
+  {
+    "aliment_id": "87bb652f-345f-4c7c-bc18-5e3cb49bf460",
+    "etude_id": "7aaae32b-9ae6-4181-bb68-4b7583ed9b6d"
+  },
+  {
+    "aliment_id": "87bb652f-345f-4c7c-bc18-5e3cb49bf460",
+    "etude_id": "e2ed3ad6-6f4c-4622-94be-444196f49730"
+  },
+  {
+    "aliment_id": "87bb652f-345f-4c7c-bc18-5e3cb49bf460",
+    "etude_id": "3c5de713-e1a6-4451-ac9d-25bfd4ebbe8e"
+  },
+  {
+    "aliment_id": "87bb652f-345f-4c7c-bc18-5e3cb49bf460",
+    "etude_id": "adc6b08f-0ff3-4cfc-b218-bf7ef2fa5b35"
+  },
+  {
+    "aliment_id": "3ef53aa8-25bb-4f39-8cdc-81dc009fbbd1",
+    "etude_id": "a86584a1-a9e8-4f3b-b2ae-ca57420e3a23"
+  },
+  {
+    "aliment_id": "3ef53aa8-25bb-4f39-8cdc-81dc009fbbd1",
+    "etude_id": "2844e582-cf9c-4236-a836-467931268721"
+  },
+  {
+    "aliment_id": "3ef53aa8-25bb-4f39-8cdc-81dc009fbbd1",
+    "etude_id": "6a5c95ce-1452-4646-9454-cfffcd1b342e"
+  },
+  {
+    "aliment_id": "3ef53aa8-25bb-4f39-8cdc-81dc009fbbd1",
+    "etude_id": "89d54b14-10b1-47bf-83e6-2171006422ec"
+  },
+  {
+    "aliment_id": "3ef53aa8-25bb-4f39-8cdc-81dc009fbbd1",
+    "etude_id": "e6f011e7-7d64-4122-84e5-9250209c182c"
+  },
+  {
+    "aliment_id": "3ef53aa8-25bb-4f39-8cdc-81dc009fbbd1",
+    "etude_id": "25d17cc5-e06f-48de-aea3-659ec325090e"
+  },
+  {
+    "aliment_id": "3ef53aa8-25bb-4f39-8cdc-81dc009fbbd1",
+    "etude_id": "cc078aeb-eee1-4c3f-ba3c-39c1a9835408"
+  },
+  {
+    "aliment_id": "3ef53aa8-25bb-4f39-8cdc-81dc009fbbd1",
+    "etude_id": "98c13412-5c65-4437-9a5a-c5d86482d500"
+  },
+  {
+    "aliment_id": "fb7b6883-400a-4103-aac2-569c66646af7",
+    "etude_id": "94ce4234-38c1-4a90-a943-198335365c95"
+  },
+  {
+    "aliment_id": "fb7b6883-400a-4103-aac2-569c66646af7",
+    "etude_id": "672f406a-02f9-46da-aa37-1eaeb23572f9"
+  },
+  {
+    "aliment_id": "fb7b6883-400a-4103-aac2-569c66646af7",
+    "etude_id": "fbb79a08-15ce-4c28-80a8-af9941579c72"
+  },
+  {
+    "aliment_id": "fb7b6883-400a-4103-aac2-569c66646af7",
+    "etude_id": "581a4354-a4a2-47ee-8131-f46b660c1929"
+  },
+  {
+    "aliment_id": "fb7b6883-400a-4103-aac2-569c66646af7",
+    "etude_id": "6914c62d-f649-4e23-91c1-f5b0ca03c14e"
+  },
+  {
+    "aliment_id": "fb7b6883-400a-4103-aac2-569c66646af7",
+    "etude_id": "6ad6ccc9-f5aa-4aed-a1bd-c921ac2f65b9"
+  },
+  {
+    "aliment_id": "fb7b6883-400a-4103-aac2-569c66646af7",
+    "etude_id": "ea907b46-a903-48ac-b1d0-dca324b6de1e"
+  },
+  {
+    "aliment_id": "fb7b6883-400a-4103-aac2-569c66646af7",
+    "etude_id": "ace35e4c-ef26-46dd-bf3d-b7a0378136b6"
+  },
+  {
+    "aliment_id": "56547ef3-cff6-4048-8917-bb9966417e1b",
+    "etude_id": "246174f6-4907-45cd-a3c6-d43bb429d5e7"
+  },
+  {
+    "aliment_id": "56547ef3-cff6-4048-8917-bb9966417e1b",
+    "etude_id": "aecba492-3a68-4238-8451-69bf6cc15498"
+  },
+  {
+    "aliment_id": "56547ef3-cff6-4048-8917-bb9966417e1b",
+    "etude_id": "b9300e3c-f52e-4591-88e4-aa7af406456e"
+  },
+  {
+    "aliment_id": "56547ef3-cff6-4048-8917-bb9966417e1b",
+    "etude_id": "0cc34b61-b26e-47c6-820b-7edebd2a114e"
+  },
+  {
+    "aliment_id": "56547ef3-cff6-4048-8917-bb9966417e1b",
+    "etude_id": "bf542141-3fda-4828-b7fb-3de3e026a1db"
+  },
+  {
+    "aliment_id": "36c665a1-0d01-4763-a718-0c766df5119c",
+    "etude_id": "1ae40a8a-6895-4eec-9634-02553ed68138"
+  },
+  {
+    "aliment_id": "36c665a1-0d01-4763-a718-0c766df5119c",
+    "etude_id": "c2f7f1a8-a635-4467-b8eb-2e3fe1b32f6a"
+  },
+  {
+    "aliment_id": "36c665a1-0d01-4763-a718-0c766df5119c",
+    "etude_id": "e65caec2-6130-46e0-ae93-5bd41719ce59"
+  },
+  {
+    "aliment_id": "36c665a1-0d01-4763-a718-0c766df5119c",
+    "etude_id": "6ef658a3-d01b-43f7-bbf7-63f779b120da"
+  },
+  {
+    "aliment_id": "36c665a1-0d01-4763-a718-0c766df5119c",
+    "etude_id": "b9e40f90-e941-47ae-b74a-55b4cfdaf0c8"
+  },
+  {
+    "aliment_id": "36c665a1-0d01-4763-a718-0c766df5119c",
+    "etude_id": "a272ab6e-85fc-4e2c-93ee-0ce3524b53ce"
+  },
+  {
+    "aliment_id": "36c665a1-0d01-4763-a718-0c766df5119c",
+    "etude_id": "f98c404a-9d5e-431c-86b0-728eeaa9476e"
+  },
+  {
+    "aliment_id": "36c665a1-0d01-4763-a718-0c766df5119c",
+    "etude_id": "9c994761-93fd-4d19-a214-0b694e1a50af"
+  },
+  {
+    "aliment_id": "44feec24-248e-45e6-baf5-82ba6dba54c9",
+    "etude_id": "1e559036-bc40-4f11-9596-d78a387e8a77"
+  },
+  {
+    "aliment_id": "44feec24-248e-45e6-baf5-82ba6dba54c9",
+    "etude_id": "24b912f7-3eb6-4b78-997c-be06c1d248a1"
+  },
+  {
+    "aliment_id": "44feec24-248e-45e6-baf5-82ba6dba54c9",
+    "etude_id": "b044853e-bf1e-4d23-9363-c697d0ca2c78"
+  },
+  {
+    "aliment_id": "44feec24-248e-45e6-baf5-82ba6dba54c9",
+    "etude_id": "f551be9f-024a-42ab-bc60-1a339d623897"
+  },
+  {
+    "aliment_id": "44feec24-248e-45e6-baf5-82ba6dba54c9",
+    "etude_id": "b9816481-ac6b-425f-90eb-b6b140502e24"
+  },
+  {
+    "aliment_id": "44feec24-248e-45e6-baf5-82ba6dba54c9",
+    "etude_id": "2ae7e31a-0707-4ff2-88a3-c3814b38bc12"
+  },
+  {
+    "aliment_id": "44feec24-248e-45e6-baf5-82ba6dba54c9",
+    "etude_id": "cda69651-cf03-40c5-9828-54cd7742b4b0"
+  },
+  {
+    "aliment_id": "44feec24-248e-45e6-baf5-82ba6dba54c9",
+    "etude_id": "6faa59bd-822c-4e6f-94a0-3ce79e490a6c"
+  },
+  {
+    "aliment_id": "0a7c55b9-95ff-400b-81db-4b2b791d5e28",
+    "etude_id": "ae61b1e8-2286-4c8e-9ce9-fd564b94e031"
+  },
+  {
+    "aliment_id": "0a7c55b9-95ff-400b-81db-4b2b791d5e28",
+    "etude_id": "a86e32b0-2b5b-4983-a0a7-5139d3d0ec26"
+  },
+  {
+    "aliment_id": "0a7c55b9-95ff-400b-81db-4b2b791d5e28",
+    "etude_id": "8f244de6-91e2-487e-80e1-d2e5cc6b6a93"
+  },
+  {
+    "aliment_id": "0a7c55b9-95ff-400b-81db-4b2b791d5e28",
+    "etude_id": "931868af-c65b-4a37-b875-7370b7abced6"
+  },
+  {
+    "aliment_id": "0a7c55b9-95ff-400b-81db-4b2b791d5e28",
+    "etude_id": "0aee2c0f-e791-4e01-a455-9fd7c51eeb4b"
+  },
+  {
+    "aliment_id": "0a7c55b9-95ff-400b-81db-4b2b791d5e28",
+    "etude_id": "25a508dc-ca17-4f8c-a721-93076c1e47be"
+  },
+  {
+    "aliment_id": "0a7c55b9-95ff-400b-81db-4b2b791d5e28",
+    "etude_id": "51e51277-6974-4117-9dce-9312736e1ba6"
+  },
+  {
+    "aliment_id": "0a7c55b9-95ff-400b-81db-4b2b791d5e28",
+    "etude_id": "deed941a-2fb4-4440-ae67-19f4584027c6"
+  },
+  {
+    "aliment_id": "3e9c9f17-04e6-4298-8531-6c7fdbb4fff6",
+    "etude_id": "0936399b-bbc4-4c3d-8a12-f88535df8c89"
+  },
+  {
+    "aliment_id": "3e9c9f17-04e6-4298-8531-6c7fdbb4fff6",
+    "etude_id": "83579bc9-fa72-43e7-bdfd-451883b1dce2"
+  },
+  {
+    "aliment_id": "3e9c9f17-04e6-4298-8531-6c7fdbb4fff6",
+    "etude_id": "2f49c903-2d88-4d18-a1f3-00f026ca1119"
+  },
+  {
+    "aliment_id": "3e9c9f17-04e6-4298-8531-6c7fdbb4fff6",
+    "etude_id": "07d5eb9d-6307-4173-a20e-deed2026d94f"
+  },
+  {
+    "aliment_id": "3e9c9f17-04e6-4298-8531-6c7fdbb4fff6",
+    "etude_id": "5162497c-f690-498a-9899-8e001a64a2ae"
+  },
+  {
+    "aliment_id": "3e9c9f17-04e6-4298-8531-6c7fdbb4fff6",
+    "etude_id": "95caf317-2ef9-4b14-aad5-084263337ba1"
+  },
+  {
+    "aliment_id": "3e9c9f17-04e6-4298-8531-6c7fdbb4fff6",
+    "etude_id": "59028734-1829-4444-adcd-2c3d6cb4333c"
+  },
+  {
+    "aliment_id": "3e9c9f17-04e6-4298-8531-6c7fdbb4fff6",
+    "etude_id": "385fb257-7b34-48f8-8b6f-6da8b7f84827"
+  },
+  {
+    "aliment_id": "4a0ec8fd-e1ed-4131-a6d5-470582364756",
+    "etude_id": "fd5cc1d5-ae89-49f6-9f06-9cae959f93b4"
+  },
+  {
+    "aliment_id": "4a0ec8fd-e1ed-4131-a6d5-470582364756",
+    "etude_id": "df247d5e-fc8d-4ae7-a316-680835fb9949"
+  },
+  {
+    "aliment_id": "4a0ec8fd-e1ed-4131-a6d5-470582364756",
+    "etude_id": "aa100851-6f4a-4e79-b88c-459ad9d2280a"
+  },
+  {
+    "aliment_id": "4a0ec8fd-e1ed-4131-a6d5-470582364756",
+    "etude_id": "f2d78fc4-02e2-499f-9644-c2bd993a8d9c"
+  },
+  {
+    "aliment_id": "4a0ec8fd-e1ed-4131-a6d5-470582364756",
+    "etude_id": "937ebc6e-d7dd-4d4f-bf14-76b3906dcac4"
+  },
+  {
+    "aliment_id": "4a0ec8fd-e1ed-4131-a6d5-470582364756",
+    "etude_id": "a68b8b43-1226-4377-9bdf-ddfb1da722c6"
+  },
+  {
+    "aliment_id": "4a0ec8fd-e1ed-4131-a6d5-470582364756",
+    "etude_id": "0d0b8177-7e13-4c0d-bdac-54e20b7841c2"
+  },
+  {
+    "aliment_id": "4a0ec8fd-e1ed-4131-a6d5-470582364756",
+    "etude_id": "8811249c-9f92-460f-9db8-458e19119b59"
+  },
+  {
+    "aliment_id": "83206251-895e-47df-8d56-3ca5a5e2d084",
+    "etude_id": "8afc713a-859c-4523-b10f-7fb868b0dffb"
+  },
+  {
+    "aliment_id": "83206251-895e-47df-8d56-3ca5a5e2d084",
+    "etude_id": "b9b29375-e2a2-4d65-a82c-0cf69a5cfa55"
+  },
+  {
+    "aliment_id": "83206251-895e-47df-8d56-3ca5a5e2d084",
+    "etude_id": "edc0993f-cbd5-4444-a7c4-3665aca4c412"
+  },
+  {
+    "aliment_id": "83206251-895e-47df-8d56-3ca5a5e2d084",
+    "etude_id": "4276a10a-5529-4c6f-a542-9e2b2ad64336"
+  },
+  {
+    "aliment_id": "83206251-895e-47df-8d56-3ca5a5e2d084",
+    "etude_id": "8bcf29c0-2461-4246-9b0d-162354059e90"
+  },
+  {
+    "aliment_id": "83206251-895e-47df-8d56-3ca5a5e2d084",
+    "etude_id": "9e488ccd-385d-4c7c-8684-2d5878f33c11"
+  },
+  {
+    "aliment_id": "83206251-895e-47df-8d56-3ca5a5e2d084",
+    "etude_id": "f063332e-50e2-42fc-9b0f-e25ea635b7a6"
+  },
+  {
+    "aliment_id": "83206251-895e-47df-8d56-3ca5a5e2d084",
+    "etude_id": "7ee66cfd-bd21-4e07-9300-c8a8a2c83d65"
+  },
+  {
+    "aliment_id": "59d411c1-72b8-4986-96f5-81302f152e82",
+    "etude_id": "91cf4f49-36c5-4989-9a73-ac3bde1c4b83"
+  },
+  {
+    "aliment_id": "59d411c1-72b8-4986-96f5-81302f152e82",
+    "etude_id": "24e6d00f-2971-4bce-bed1-67a269a5021c"
+  },
+  {
+    "aliment_id": "59d411c1-72b8-4986-96f5-81302f152e82",
+    "etude_id": "59725108-af7b-4c2b-bd5a-6ea86639d60b"
+  },
+  {
+    "aliment_id": "59d411c1-72b8-4986-96f5-81302f152e82",
+    "etude_id": "19b5dcf3-86b9-42d4-8c6b-317a5b6c4d4e"
+  },
+  {
+    "aliment_id": "59d411c1-72b8-4986-96f5-81302f152e82",
+    "etude_id": "b1abe2aa-933e-480e-b514-e92510eebc36"
+  },
+  {
+    "aliment_id": "59d411c1-72b8-4986-96f5-81302f152e82",
+    "etude_id": "f8cf22b1-2668-4c9c-8b2e-aa9f66e90166"
+  },
+  {
+    "aliment_id": "59d411c1-72b8-4986-96f5-81302f152e82",
+    "etude_id": "8d8e6fc7-5954-400c-a162-6ff80a1a3038"
+  },
+  {
+    "aliment_id": "59d411c1-72b8-4986-96f5-81302f152e82",
+    "etude_id": "bd8dfc74-9361-4fda-a758-e57194b66183"
+  },
+  {
+    "aliment_id": "3d8dc20c-564a-4d70-bf93-2f1b20c4fab9",
+    "etude_id": "01af65d2-8871-48d9-9992-8b52525831f5"
+  },
+  {
+    "aliment_id": "3d8dc20c-564a-4d70-bf93-2f1b20c4fab9",
+    "etude_id": "eda0ce79-a3f8-4888-a390-121961d421a4"
+  },
+  {
+    "aliment_id": "3d8dc20c-564a-4d70-bf93-2f1b20c4fab9",
+    "etude_id": "672e51af-2578-4b0b-be63-7cdb2d8804e7"
+  },
+  {
+    "aliment_id": "3d8dc20c-564a-4d70-bf93-2f1b20c4fab9",
+    "etude_id": "e02096a2-9e4d-49c3-84f4-e55ee023406d"
+  },
+  {
+    "aliment_id": "3d8dc20c-564a-4d70-bf93-2f1b20c4fab9",
+    "etude_id": "fe9ab30c-92b8-41da-8de3-261a48d9f33d"
+  },
+  {
+    "aliment_id": "3d8dc20c-564a-4d70-bf93-2f1b20c4fab9",
+    "etude_id": "0bf98ace-1a3a-43ab-942e-10ef363b99aa"
+  },
+  {
+    "aliment_id": "3d8dc20c-564a-4d70-bf93-2f1b20c4fab9",
+    "etude_id": "99a3342e-dbb6-4da4-b032-3ac01f4651c9"
+  },
+  {
+    "aliment_id": "19fc420f-c2af-430f-9895-24800051e218",
+    "etude_id": "60515a26-c4c6-4e28-a289-0ff037ad5672"
+  },
+  {
+    "aliment_id": "19fc420f-c2af-430f-9895-24800051e218",
+    "etude_id": "55a67e43-3083-498d-a82c-d351cf3ae9a6"
+  },
+  {
+    "aliment_id": "19fc420f-c2af-430f-9895-24800051e218",
+    "etude_id": "0c0b9078-9bd0-456b-8e67-1a54d5325990"
+  },
+  {
+    "aliment_id": "19fc420f-c2af-430f-9895-24800051e218",
+    "etude_id": "430f399c-224f-4778-867e-3ac90df4ba74"
+  },
+  {
+    "aliment_id": "19fc420f-c2af-430f-9895-24800051e218",
+    "etude_id": "06d3ecbf-aabb-4c29-aa10-380773b84078"
+  },
+  {
+    "aliment_id": "19fc420f-c2af-430f-9895-24800051e218",
+    "etude_id": "5f5807ca-99e5-40f1-a238-f5d46db509a5"
+  },
+  {
+    "aliment_id": "19fc420f-c2af-430f-9895-24800051e218",
+    "etude_id": "07d1255b-f929-429c-ad73-cb69652df69d"
+  },
+  {
+    "aliment_id": "19fc420f-c2af-430f-9895-24800051e218",
+    "etude_id": "7659eabe-19f0-4193-a6b3-5fd97cccc672"
+  },
+  {
+    "aliment_id": "a67c43e8-4a5f-4a15-80b3-b947cfbb955c",
+    "etude_id": "32745771-84c7-49f0-8e7e-4b6b4c021354"
+  },
+  {
+    "aliment_id": "a67c43e8-4a5f-4a15-80b3-b947cfbb955c",
+    "etude_id": "8d373640-828b-4501-8961-1bff3415419a"
+  },
+  {
+    "aliment_id": "a67c43e8-4a5f-4a15-80b3-b947cfbb955c",
+    "etude_id": "a80c3b87-7bb6-4dc5-b87c-d1a4547d7f1c"
+  },
+  {
+    "aliment_id": "a67c43e8-4a5f-4a15-80b3-b947cfbb955c",
+    "etude_id": "53ae4f9c-f814-45b9-9213-beaf3e5d3992"
+  },
+  {
+    "aliment_id": "a67c43e8-4a5f-4a15-80b3-b947cfbb955c",
+    "etude_id": "b4867ae8-3105-47ee-8d19-65c8552413ce"
+  },
+  {
+    "aliment_id": "a67c43e8-4a5f-4a15-80b3-b947cfbb955c",
+    "etude_id": "f532497c-9253-450b-a579-ecd5ef6f6879"
+  },
+  {
+    "aliment_id": "a67c43e8-4a5f-4a15-80b3-b947cfbb955c",
+    "etude_id": "6e75a228-416a-4c25-9196-f5904ed4a9a9"
+  },
+  {
+    "aliment_id": "a67c43e8-4a5f-4a15-80b3-b947cfbb955c",
+    "etude_id": "c62ebc6d-9773-4ec4-933e-5c88e530a95f"
+  },
+  {
+    "aliment_id": "70c38bfe-56f8-49a7-8b4d-4b65a7b5a723",
+    "etude_id": "88b86992-451b-4ca3-b3f6-47715919292d"
+  },
+  {
+    "aliment_id": "70c38bfe-56f8-49a7-8b4d-4b65a7b5a723",
+    "etude_id": "a8713e5b-6e40-4678-a467-0897e36b7f72"
+  },
+  {
+    "aliment_id": "70c38bfe-56f8-49a7-8b4d-4b65a7b5a723",
+    "etude_id": "88e9bd78-1240-4beb-818c-f6e96ea8c97e"
+  },
+  {
+    "aliment_id": "70c38bfe-56f8-49a7-8b4d-4b65a7b5a723",
+    "etude_id": "a492c63c-f08c-4154-bfee-2274490ab758"
+  },
+  {
+    "aliment_id": "70c38bfe-56f8-49a7-8b4d-4b65a7b5a723",
+    "etude_id": "18e9388f-c3eb-4c80-9ecd-a2043d2707e7"
+  },
+  {
+    "aliment_id": "70c38bfe-56f8-49a7-8b4d-4b65a7b5a723",
+    "etude_id": "52c18218-1b16-47b7-aec3-cbaaafccf3d0"
+  },
+  {
+    "aliment_id": "70c38bfe-56f8-49a7-8b4d-4b65a7b5a723",
+    "etude_id": "8df457c5-cb6c-4b82-b0f9-7e69d2522a21"
+  },
+  {
+    "aliment_id": "70c38bfe-56f8-49a7-8b4d-4b65a7b5a723",
+    "etude_id": "37e03ce6-908c-448a-99d1-dfa4efc5d7d2"
+  },
+  {
+    "aliment_id": "936cc4c6-a02f-4b8d-9734-006ddb35441e",
+    "etude_id": "84d2661a-1b77-4330-8eb6-61e4050e1aef"
+  },
+  {
+    "aliment_id": "936cc4c6-a02f-4b8d-9734-006ddb35441e",
+    "etude_id": "724fadde-c632-4972-91e6-9deb55722f19"
+  },
+  {
+    "aliment_id": "936cc4c6-a02f-4b8d-9734-006ddb35441e",
+    "etude_id": "e18ed4a3-3df5-4be8-b7e0-c581c8e98803"
+  },
+  {
+    "aliment_id": "936cc4c6-a02f-4b8d-9734-006ddb35441e",
+    "etude_id": "01a4a75a-0f0c-4d7a-8ded-a5ed92eac03e"
+  },
+  {
+    "aliment_id": "936cc4c6-a02f-4b8d-9734-006ddb35441e",
+    "etude_id": "85621fd0-8f62-4217-a58a-6f19ce1d4b63"
+  },
+  {
+    "aliment_id": "936cc4c6-a02f-4b8d-9734-006ddb35441e",
+    "etude_id": "ac7097d2-897a-473d-a18f-e9a7e39d6228"
+  },
+  {
+    "aliment_id": "936cc4c6-a02f-4b8d-9734-006ddb35441e",
+    "etude_id": "6541495e-02a7-4148-9e4a-6b5d7f2b5739"
+  },
+  {
+    "aliment_id": "936cc4c6-a02f-4b8d-9734-006ddb35441e",
+    "etude_id": "9c79f44b-6cea-474a-9abf-32ac3f49721e"
+  },
+  {
+    "aliment_id": "6dd3217e-16cf-4fa1-b872-15bbfb00e71f",
+    "etude_id": "f307cb4f-dbcd-4f46-bff1-5eb350fe6bd7"
+  },
+  {
+    "aliment_id": "6dd3217e-16cf-4fa1-b872-15bbfb00e71f",
+    "etude_id": "57cf5547-1f40-45ed-978c-ab6dec328fb1"
+  },
+  {
+    "aliment_id": "6dd3217e-16cf-4fa1-b872-15bbfb00e71f",
+    "etude_id": "12e34c94-c560-4f10-bdfd-b291c1100c29"
+  },
+  {
+    "aliment_id": "6dd3217e-16cf-4fa1-b872-15bbfb00e71f",
+    "etude_id": "657bcaa0-963f-4e0c-8011-4552d45d665a"
+  },
+  {
+    "aliment_id": "6dd3217e-16cf-4fa1-b872-15bbfb00e71f",
+    "etude_id": "074785dc-6550-4b21-9716-2d165ffb1850"
+  },
+  {
+    "aliment_id": "6dd3217e-16cf-4fa1-b872-15bbfb00e71f",
+    "etude_id": "c72ed490-133c-49ac-8fd8-dcd545faff74"
+  },
+  {
+    "aliment_id": "6dd3217e-16cf-4fa1-b872-15bbfb00e71f",
+    "etude_id": "2013f696-6919-4f4e-acab-1d2684f2505d"
+  },
+  {
+    "aliment_id": "6dd3217e-16cf-4fa1-b872-15bbfb00e71f",
+    "etude_id": "87677c86-26bb-477a-9a05-a93ee914410f"
+  },
+  {
+    "aliment_id": "445968d9-ce70-45ed-b98c-d7a34bf4ddfb",
+    "etude_id": "4760c498-7281-45f3-aa6d-82cb443749bf"
+  },
+  {
+    "aliment_id": "445968d9-ce70-45ed-b98c-d7a34bf4ddfb",
+    "etude_id": "3dc4e95d-fd31-4731-95d0-104ed54df864"
+  },
+  {
+    "aliment_id": "445968d9-ce70-45ed-b98c-d7a34bf4ddfb",
+    "etude_id": "22f96c4f-8051-491e-8033-1e793e8416ed"
+  },
+  {
+    "aliment_id": "445968d9-ce70-45ed-b98c-d7a34bf4ddfb",
+    "etude_id": "74cda003-8f57-469a-b020-471822cd7956"
+  },
+  {
+    "aliment_id": "445968d9-ce70-45ed-b98c-d7a34bf4ddfb",
+    "etude_id": "69e817f5-04a2-4195-8d8e-0949b396ba1b"
+  },
+  {
+    "aliment_id": "445968d9-ce70-45ed-b98c-d7a34bf4ddfb",
+    "etude_id": "31c4ac7b-ab06-4718-9f73-67fa2650c4ba"
+  },
+  {
+    "aliment_id": "445968d9-ce70-45ed-b98c-d7a34bf4ddfb",
+    "etude_id": "fee98319-dd15-4134-b969-c8b54443b09e"
+  },
+  {
+    "aliment_id": "445968d9-ce70-45ed-b98c-d7a34bf4ddfb",
+    "etude_id": "cda18b11-bb4e-4e14-8b9f-5322c8008990"
+  },
+  {
+    "aliment_id": "cb60235b-5cf6-427b-818a-0d1d593232d4",
+    "etude_id": "3cf78c3c-60a8-48fc-8984-7085c8e9eb46"
+  },
+  {
+    "aliment_id": "cb60235b-5cf6-427b-818a-0d1d593232d4",
+    "etude_id": "d14291a2-ded1-46c0-97ce-5fa19e5c025a"
+  },
+  {
+    "aliment_id": "cb60235b-5cf6-427b-818a-0d1d593232d4",
+    "etude_id": "6651c63e-50f1-490d-ae65-03c15cde7777"
+  },
+  {
+    "aliment_id": "cb60235b-5cf6-427b-818a-0d1d593232d4",
+    "etude_id": "ebf689ac-394d-4e0a-97cb-9fdd8ec4139e"
+  },
+  {
+    "aliment_id": "cb60235b-5cf6-427b-818a-0d1d593232d4",
+    "etude_id": "0d628569-cef8-4fa1-8f6e-8c01a096864f"
+  },
+  {
+    "aliment_id": "cb60235b-5cf6-427b-818a-0d1d593232d4",
+    "etude_id": "5cfc24fb-6109-4333-9d5a-d29f1ed316cb"
+  },
+  {
+    "aliment_id": "cb60235b-5cf6-427b-818a-0d1d593232d4",
+    "etude_id": "21fa78f4-84b2-46f3-bd2e-0264c460d1ca"
+  },
+  {
+    "aliment_id": "cb60235b-5cf6-427b-818a-0d1d593232d4",
+    "etude_id": "3c7bff0c-332f-4dbc-9d49-751e2db80494"
+  },
+  {
+    "aliment_id": "988600fd-0e21-43a1-8d72-dbb43e3e21b6",
+    "etude_id": "84638358-65ce-4cc7-ab32-cf8040793cf5"
+  },
+  {
+    "aliment_id": "988600fd-0e21-43a1-8d72-dbb43e3e21b6",
+    "etude_id": "cdb81f04-bae6-4bd1-8e7f-76910836cdee"
+  },
+  {
+    "aliment_id": "988600fd-0e21-43a1-8d72-dbb43e3e21b6",
+    "etude_id": "425fa68c-4c2e-4207-b832-0b49e8c24843"
+  },
+  {
+    "aliment_id": "988600fd-0e21-43a1-8d72-dbb43e3e21b6",
+    "etude_id": "efa035e8-e070-4f08-b591-427912175c81"
+  },
+  {
+    "aliment_id": "988600fd-0e21-43a1-8d72-dbb43e3e21b6",
+    "etude_id": "89224568-c611-4e0c-b4b1-1284504e4dbf"
+  },
+  {
+    "aliment_id": "988600fd-0e21-43a1-8d72-dbb43e3e21b6",
+    "etude_id": "c500518b-461a-4367-a838-77169f238388"
+  },
+  {
+    "aliment_id": "988600fd-0e21-43a1-8d72-dbb43e3e21b6",
+    "etude_id": "f1712451-7522-493f-8f1e-4e91d10fbd8d"
+  },
+  {
+    "aliment_id": "988600fd-0e21-43a1-8d72-dbb43e3e21b6",
+    "etude_id": "6e3ff223-369a-4e38-8bf8-a27a48eaeb68"
+  },
+  {
+    "aliment_id": "d3de5cc1-78b4-47c1-b958-ba2085351f50",
+    "etude_id": "fd3c4993-e570-4ec6-b2d6-f21c1fbaf3d6"
+  },
+  {
+    "aliment_id": "d3de5cc1-78b4-47c1-b958-ba2085351f50",
+    "etude_id": "6839bd4e-8c5c-49e9-80af-dcc57d7281a4"
+  },
+  {
+    "aliment_id": "d3de5cc1-78b4-47c1-b958-ba2085351f50",
+    "etude_id": "aa1e47da-7fc8-4fd6-9bb5-0cb20e1802f5"
+  },
+  {
+    "aliment_id": "d3de5cc1-78b4-47c1-b958-ba2085351f50",
+    "etude_id": "997eb47c-438d-4452-9311-ff050b8cf946"
+  },
+  {
+    "aliment_id": "d3de5cc1-78b4-47c1-b958-ba2085351f50",
+    "etude_id": "0f78d9c5-fe73-4b69-87e8-a491bdb3218d"
+  },
+  {
+    "aliment_id": "d3de5cc1-78b4-47c1-b958-ba2085351f50",
+    "etude_id": "1d1ff772-8625-402c-a259-afa48ac17f63"
+  },
+  {
+    "aliment_id": "d3de5cc1-78b4-47c1-b958-ba2085351f50",
+    "etude_id": "9749f287-fc94-402a-bc94-62b2ce1c324f"
+  },
+  {
+    "aliment_id": "d3de5cc1-78b4-47c1-b958-ba2085351f50",
+    "etude_id": "c08acfb4-d9e6-4a3f-a571-9fce1f8251d8"
+  },
+  {
+    "aliment_id": "eb2a4879-417f-4944-b134-5b8e29c92458",
+    "etude_id": "d3d21631-d06c-420d-a134-baff4f51578a"
+  },
+  {
+    "aliment_id": "eb2a4879-417f-4944-b134-5b8e29c92458",
+    "etude_id": "f3eafcbe-24c1-4fd7-99f3-ddb9b3cdc54d"
+  },
+  {
+    "aliment_id": "eb2a4879-417f-4944-b134-5b8e29c92458",
+    "etude_id": "cdfdadb4-e57c-4a74-b8a9-5b572d64bdf6"
+  },
+  {
+    "aliment_id": "eb2a4879-417f-4944-b134-5b8e29c92458",
+    "etude_id": "3ff22977-cf5b-4373-826e-e7fba97b3cab"
+  },
+  {
+    "aliment_id": "eb2a4879-417f-4944-b134-5b8e29c92458",
+    "etude_id": "2c353366-cc31-45be-ad53-55e4175f329f"
+  },
+  {
+    "aliment_id": "eb2a4879-417f-4944-b134-5b8e29c92458",
+    "etude_id": "8b866c32-520c-4145-b1c2-f0bb4c0dd5ae"
+  },
+  {
+    "aliment_id": "eb2a4879-417f-4944-b134-5b8e29c92458",
+    "etude_id": "ac8864dd-a25d-401d-ae1c-c33d60b979bd"
+  },
+  {
+    "aliment_id": "eb2a4879-417f-4944-b134-5b8e29c92458",
+    "etude_id": "d35f683d-8ba3-402d-944b-09bbd352ab8c"
+  },
+  {
+    "aliment_id": "52a4770b-e902-4d27-8720-e0e9781215c5",
+    "etude_id": "5b32a3e0-d56d-49d5-babb-4660203eb7b9"
+  },
+  {
+    "aliment_id": "52a4770b-e902-4d27-8720-e0e9781215c5",
+    "etude_id": "9eb643c5-5173-4fc7-bcf7-11d9e96783e9"
+  },
+  {
+    "aliment_id": "52a4770b-e902-4d27-8720-e0e9781215c5",
+    "etude_id": "60cabb65-69b3-470e-964d-b42389803267"
+  },
+  {
+    "aliment_id": "52a4770b-e902-4d27-8720-e0e9781215c5",
+    "etude_id": "c57b96dd-31dc-4677-9993-db61b63cc103"
+  },
+  {
+    "aliment_id": "52a4770b-e902-4d27-8720-e0e9781215c5",
+    "etude_id": "4a796fec-9af4-4021-946d-3baf0df4af19"
+  },
+  {
+    "aliment_id": "52a4770b-e902-4d27-8720-e0e9781215c5",
+    "etude_id": "ae78501b-0c4e-4201-a10a-c1d41fdf537c"
+  },
+  {
+    "aliment_id": "52a4770b-e902-4d27-8720-e0e9781215c5",
+    "etude_id": "b15981b3-39f2-4771-b182-06ddcbf707d7"
+  },
+  {
+    "aliment_id": "52a4770b-e902-4d27-8720-e0e9781215c5",
+    "etude_id": "171bf5ba-0fb4-4394-b9cc-03fe502a03c1"
+  },
+  {
+    "aliment_id": "a95a061a-6d41-4288-917f-03dc5b3119d3",
+    "etude_id": "eb21bf68-d619-46c6-a1ee-170629cc33af"
+  },
+  {
+    "aliment_id": "a95a061a-6d41-4288-917f-03dc5b3119d3",
+    "etude_id": "73552882-2735-4dc5-953f-9a3948234975"
+  },
+  {
+    "aliment_id": "a95a061a-6d41-4288-917f-03dc5b3119d3",
+    "etude_id": "b878f938-aff0-470e-a5e9-c7a47795806f"
+  },
+  {
+    "aliment_id": "a95a061a-6d41-4288-917f-03dc5b3119d3",
+    "etude_id": "dcf32a94-3e2b-4294-bfcc-79b2d4f248d6"
+  },
+  {
+    "aliment_id": "a95a061a-6d41-4288-917f-03dc5b3119d3",
+    "etude_id": "86368f62-edb1-437e-bbe2-6fda6a2e8ab0"
+  },
+  {
+    "aliment_id": "a95a061a-6d41-4288-917f-03dc5b3119d3",
+    "etude_id": "7af36723-16fb-413c-9ada-d59c0d48051d"
+  },
+  {
+    "aliment_id": "a95a061a-6d41-4288-917f-03dc5b3119d3",
+    "etude_id": "2b58436e-4cf9-4e21-a7ec-b442c853f890"
+  },
+  {
+    "aliment_id": "a95a061a-6d41-4288-917f-03dc5b3119d3",
+    "etude_id": "3849094c-e107-4219-9b55-0e9ca394d411"
+  },
+  {
+    "aliment_id": "948cf898-6911-45e4-9da0-ab53baae3497",
+    "etude_id": "eb435097-8ec6-464f-baf0-d86df3915a33"
+  },
+  {
+    "aliment_id": "948cf898-6911-45e4-9da0-ab53baae3497",
+    "etude_id": "4bf14b8e-92ba-420b-b226-513350d7b2be"
+  },
+  {
+    "aliment_id": "948cf898-6911-45e4-9da0-ab53baae3497",
+    "etude_id": "0588a926-11b4-4035-ba82-93402cb2901c"
+  },
+  {
+    "aliment_id": "948cf898-6911-45e4-9da0-ab53baae3497",
+    "etude_id": "936c8e42-e68d-48d0-aff4-a3dff96de700"
+  },
+  {
+    "aliment_id": "948cf898-6911-45e4-9da0-ab53baae3497",
+    "etude_id": "b0aea2d6-633a-4870-8e9f-f464588e8610"
+  },
+  {
+    "aliment_id": "948cf898-6911-45e4-9da0-ab53baae3497",
+    "etude_id": "895f096e-c79e-4ac7-83e4-9c0ea55b58ec"
+  },
+  {
+    "aliment_id": "948cf898-6911-45e4-9da0-ab53baae3497",
+    "etude_id": "f94956d8-85cb-4cb8-a154-7e9023636493"
+  },
+  {
+    "aliment_id": "948cf898-6911-45e4-9da0-ab53baae3497",
+    "etude_id": "eadb158b-9230-433d-a514-1ceeaaf2506f"
+  },
+  {
+    "aliment_id": "b7b552e7-7239-4ccb-adcc-28f8e1d68085",
+    "etude_id": "569d4530-8612-4831-b88d-d1e7097c79f0"
+  },
+  {
+    "aliment_id": "b7b552e7-7239-4ccb-adcc-28f8e1d68085",
+    "etude_id": "02f3973a-8183-43a8-ae27-80b6accd8f8e"
+  },
+  {
+    "aliment_id": "b7b552e7-7239-4ccb-adcc-28f8e1d68085",
+    "etude_id": "667e1f46-d070-4dd2-a75e-9a233f3610f7"
+  },
+  {
+    "aliment_id": "b7b552e7-7239-4ccb-adcc-28f8e1d68085",
+    "etude_id": "3aee1334-2d5c-47c6-a59e-fd737a2621bd"
+  },
+  {
+    "aliment_id": "b7b552e7-7239-4ccb-adcc-28f8e1d68085",
+    "etude_id": "a81ffe3b-3ffb-4647-bced-10b8c77ba173"
+  },
+  {
+    "aliment_id": "b7b552e7-7239-4ccb-adcc-28f8e1d68085",
+    "etude_id": "e8755998-a79c-46eb-9a0e-9799826a0586"
+  },
+  {
+    "aliment_id": "b7b552e7-7239-4ccb-adcc-28f8e1d68085",
+    "etude_id": "2c2d7766-8875-46b0-ac46-63137cc233e8"
+  },
+  {
+    "aliment_id": "b7b552e7-7239-4ccb-adcc-28f8e1d68085",
+    "etude_id": "09d18a47-5f7e-4849-b5a7-6dc92d90256e"
+  },
+  {
+    "aliment_id": "d0b4ee8b-24a9-4648-9535-358d7add2c44",
+    "etude_id": "35343078-9946-40d2-9521-9e326bfdba35"
+  },
+  {
+    "aliment_id": "d0b4ee8b-24a9-4648-9535-358d7add2c44",
+    "etude_id": "8eacbab8-1ba9-4aca-89ee-6151c4066e81"
+  },
+  {
+    "aliment_id": "d0b4ee8b-24a9-4648-9535-358d7add2c44",
+    "etude_id": "b8503a66-877e-44ca-bedd-8e46f56fc9a9"
+  },
+  {
+    "aliment_id": "d0b4ee8b-24a9-4648-9535-358d7add2c44",
+    "etude_id": "e8c68e3a-ccd0-44da-9a18-8f2f1e1be122"
+  },
+  {
+    "aliment_id": "d0b4ee8b-24a9-4648-9535-358d7add2c44",
+    "etude_id": "ce2d5295-3a57-45f1-b88f-44e356afd9b8"
+  },
+  {
+    "aliment_id": "d0b4ee8b-24a9-4648-9535-358d7add2c44",
+    "etude_id": "79613857-c117-4514-bf87-5e1188f21b25"
+  },
+  {
+    "aliment_id": "d0b4ee8b-24a9-4648-9535-358d7add2c44",
+    "etude_id": "2c8a70f2-8e43-421c-8657-7cd409efd502"
+  },
+  {
+    "aliment_id": "d0b4ee8b-24a9-4648-9535-358d7add2c44",
+    "etude_id": "6af3f8db-a684-4ba6-b350-abfb04ee9bbc"
+  },
+  {
+    "aliment_id": "803353c0-fa4c-4dac-b1e6-fdc351e2fcb8",
+    "etude_id": "5ff8fd46-43af-42b2-b09f-f2877db589e5"
+  },
+  {
+    "aliment_id": "803353c0-fa4c-4dac-b1e6-fdc351e2fcb8",
+    "etude_id": "bd609429-c633-4650-b337-603cf6eababe"
+  },
+  {
+    "aliment_id": "803353c0-fa4c-4dac-b1e6-fdc351e2fcb8",
+    "etude_id": "325e34e3-2969-495f-ad11-a3aa8d9cb3e3"
+  },
+  {
+    "aliment_id": "803353c0-fa4c-4dac-b1e6-fdc351e2fcb8",
+    "etude_id": "f321a1cd-e926-4780-b6a2-c9a211fb30e6"
+  },
+  {
+    "aliment_id": "803353c0-fa4c-4dac-b1e6-fdc351e2fcb8",
+    "etude_id": "9e3a6492-a065-4636-8007-27e75c53a145"
+  },
+  {
+    "aliment_id": "803353c0-fa4c-4dac-b1e6-fdc351e2fcb8",
+    "etude_id": "a18aa651-ff47-43d8-8c34-8ee766a98cb2"
+  },
+  {
+    "aliment_id": "803353c0-fa4c-4dac-b1e6-fdc351e2fcb8",
+    "etude_id": "5eadf1e1-0e08-4dbf-91a7-b5374fc8172e"
+  },
+  {
+    "aliment_id": "803353c0-fa4c-4dac-b1e6-fdc351e2fcb8",
+    "etude_id": "5e4cc6c7-63b2-4a59-918a-e63fd2f67055"
+  },
+  {
+    "aliment_id": "638ea8cc-e9a4-4e1d-b060-ef5c8500191b",
+    "etude_id": "9c69f7d8-2c3d-4dcd-b586-793eb74ae892"
+  },
+  {
+    "aliment_id": "638ea8cc-e9a4-4e1d-b060-ef5c8500191b",
+    "etude_id": "68251e2b-7093-4d7f-a4e6-701a36747c07"
+  },
+  {
+    "aliment_id": "638ea8cc-e9a4-4e1d-b060-ef5c8500191b",
+    "etude_id": "cf280188-2a08-4499-887a-6e61123a6074"
+  },
+  {
+    "aliment_id": "638ea8cc-e9a4-4e1d-b060-ef5c8500191b",
+    "etude_id": "ebe46d8a-e009-450a-8fd2-dc34ed868d2a"
+  },
+  {
+    "aliment_id": "638ea8cc-e9a4-4e1d-b060-ef5c8500191b",
+    "etude_id": "7f38db8b-708a-49ed-a2c1-8a844ee2932d"
+  },
+  {
+    "aliment_id": "638ea8cc-e9a4-4e1d-b060-ef5c8500191b",
+    "etude_id": "c84f81e5-e40b-40b3-b1a8-1e2075ba4ad6"
+  },
+  {
+    "aliment_id": "638ea8cc-e9a4-4e1d-b060-ef5c8500191b",
+    "etude_id": "57e23318-5cfa-4283-a65f-311fa38fd790"
+  },
+  {
+    "aliment_id": "638ea8cc-e9a4-4e1d-b060-ef5c8500191b",
+    "etude_id": "0e602774-78f7-4f28-bd8d-f5937980f321"
+  },
+  {
+    "aliment_id": "239c9ba7-9b41-415e-a21f-6ca846b8808f",
+    "etude_id": "227cc611-0fdb-48b8-b58b-7770dc00c508"
+  },
+  {
+    "aliment_id": "239c9ba7-9b41-415e-a21f-6ca846b8808f",
+    "etude_id": "ed25d778-128f-4e73-a799-594463c5cf5b"
+  },
+  {
+    "aliment_id": "239c9ba7-9b41-415e-a21f-6ca846b8808f",
+    "etude_id": "50592e43-342e-4f43-86d2-fd77b1fc4aef"
+  },
+  {
+    "aliment_id": "239c9ba7-9b41-415e-a21f-6ca846b8808f",
+    "etude_id": "b82b6890-2f70-456e-aa35-fce7222a2c3e"
+  },
+  {
+    "aliment_id": "239c9ba7-9b41-415e-a21f-6ca846b8808f",
+    "etude_id": "0f91274d-c741-421e-8583-e2cdff8c9a50"
+  },
+  {
+    "aliment_id": "239c9ba7-9b41-415e-a21f-6ca846b8808f",
+    "etude_id": "7f003a6b-d1c0-4d1b-a15f-ff2c72dc1758"
+  },
+  {
+    "aliment_id": "239c9ba7-9b41-415e-a21f-6ca846b8808f",
+    "etude_id": "1223b989-91e2-4a73-8f79-9360a866e273"
+  },
+  {
+    "aliment_id": "239c9ba7-9b41-415e-a21f-6ca846b8808f",
+    "etude_id": "faec59f1-8eeb-410d-9a05-2eec49906cd1"
+  },
+  {
+    "aliment_id": "bf48ea49-b583-458e-9380-523e4d398131",
+    "etude_id": "ce4e874c-f7cd-4865-b105-adb43b1b7ebc"
+  },
+  {
+    "aliment_id": "bf48ea49-b583-458e-9380-523e4d398131",
+    "etude_id": "c06ed0e8-4879-4e11-8606-5bd360d96603"
+  },
+  {
+    "aliment_id": "bf48ea49-b583-458e-9380-523e4d398131",
+    "etude_id": "8ad73e6b-abc1-4467-a659-93c7075c70ac"
+  },
+  {
+    "aliment_id": "bf48ea49-b583-458e-9380-523e4d398131",
+    "etude_id": "82b625d4-7a8b-474d-b00a-32435b993e72"
+  },
+  {
+    "aliment_id": "bf48ea49-b583-458e-9380-523e4d398131",
+    "etude_id": "5b47e929-6711-4bad-9d73-f113236062c3"
+  },
+  {
+    "aliment_id": "bf48ea49-b583-458e-9380-523e4d398131",
+    "etude_id": "8e629904-3ec4-4bc2-92bd-2e9dd177ea0d"
+  },
+  {
+    "aliment_id": "bf48ea49-b583-458e-9380-523e4d398131",
+    "etude_id": "33ea501a-e99d-44e7-a0bb-1c1724295460"
+  },
+  {
+    "aliment_id": "bf48ea49-b583-458e-9380-523e4d398131",
+    "etude_id": "6a68a839-84f1-4b53-98c4-c7103010ab0f"
+  },
+  {
+    "aliment_id": "c0513c98-519c-447e-b3a4-5bd4a1304e3b",
+    "etude_id": "9247d867-9d15-4591-8953-27266481f9fe"
+  },
+  {
+    "aliment_id": "c0513c98-519c-447e-b3a4-5bd4a1304e3b",
+    "etude_id": "04d53457-fb00-4df2-8532-fca2f07c5c89"
+  },
+  {
+    "aliment_id": "c0513c98-519c-447e-b3a4-5bd4a1304e3b",
+    "etude_id": "22b02797-fa9a-4ce3-8f16-b0daaec5485e"
+  },
+  {
+    "aliment_id": "c0513c98-519c-447e-b3a4-5bd4a1304e3b",
+    "etude_id": "ca41f416-1ccd-4282-9ee3-4645feb9a92f"
+  },
+  {
+    "aliment_id": "c0513c98-519c-447e-b3a4-5bd4a1304e3b",
+    "etude_id": "ea90598a-fc8f-4694-9332-ae074ab98e41"
+  },
+  {
+    "aliment_id": "c0513c98-519c-447e-b3a4-5bd4a1304e3b",
+    "etude_id": "4c2eb708-d202-41f4-84a8-1510c5498f89"
+  },
+  {
+    "aliment_id": "c0513c98-519c-447e-b3a4-5bd4a1304e3b",
+    "etude_id": "a365a7a1-f9c5-42e4-883b-234b4d12294d"
+  },
+  {
+    "aliment_id": "c0513c98-519c-447e-b3a4-5bd4a1304e3b",
+    "etude_id": "b52b9c22-3b72-4a7c-9f4c-2efaa631350d"
+  },
+  {
+    "aliment_id": "f3c76ee2-a78f-4cce-a656-a975ed25d1b0",
+    "etude_id": "3e6d86ed-0744-4f17-ad30-65ecc446d6bd"
+  },
+  {
+    "aliment_id": "f3c76ee2-a78f-4cce-a656-a975ed25d1b0",
+    "etude_id": "3add83cb-eac6-47e8-be14-e109a74b2780"
+  },
+  {
+    "aliment_id": "f3c76ee2-a78f-4cce-a656-a975ed25d1b0",
+    "etude_id": "5fc684d9-cbc9-4441-934d-b944b22e7bbb"
+  },
+  {
+    "aliment_id": "f3c76ee2-a78f-4cce-a656-a975ed25d1b0",
+    "etude_id": "4c798bda-3bf0-432e-ace3-58473a8a5f33"
+  },
+  {
+    "aliment_id": "f3c76ee2-a78f-4cce-a656-a975ed25d1b0",
+    "etude_id": "ff77671d-0aea-4074-945f-383f958e33e5"
+  },
+  {
+    "aliment_id": "f3c76ee2-a78f-4cce-a656-a975ed25d1b0",
+    "etude_id": "5f4bfa75-9580-42d4-ae95-a9aac79e4c23"
+  },
+  {
+    "aliment_id": "f3c76ee2-a78f-4cce-a656-a975ed25d1b0",
+    "etude_id": "1f6c42b7-4937-47a3-9005-4e16eea93b11"
+  },
+  {
+    "aliment_id": "f3c76ee2-a78f-4cce-a656-a975ed25d1b0",
+    "etude_id": "e00eb90e-6d3a-4c14-a8b6-91ce38f95d11"
+  },
+  {
+    "aliment_id": "9df8507a-b911-4762-b20d-cde900aa7553",
+    "etude_id": "c0a1c7bb-9d57-4470-919c-3995697a0670"
+  },
+  {
+    "aliment_id": "9df8507a-b911-4762-b20d-cde900aa7553",
+    "etude_id": "f067bfea-4fda-4a40-918a-b8b4da07ea05"
+  },
+  {
+    "aliment_id": "9df8507a-b911-4762-b20d-cde900aa7553",
+    "etude_id": "a590bef5-c523-4f25-bece-45c9d4e141a9"
+  },
+  {
+    "aliment_id": "9df8507a-b911-4762-b20d-cde900aa7553",
+    "etude_id": "b9c1581a-50cd-4f3a-860b-ba4c70b471c5"
+  },
+  {
+    "aliment_id": "9df8507a-b911-4762-b20d-cde900aa7553",
+    "etude_id": "82c1d0c3-9c78-4f4a-9417-ff58e9215b0a"
+  },
+  {
+    "aliment_id": "9df8507a-b911-4762-b20d-cde900aa7553",
+    "etude_id": "da41cc74-e6a1-4e24-84e1-539be407c6ff"
+  },
+  {
+    "aliment_id": "9df8507a-b911-4762-b20d-cde900aa7553",
+    "etude_id": "cbec8045-2bc1-405c-bd33-93de4e242ba1"
+  },
+  {
+    "aliment_id": "9df8507a-b911-4762-b20d-cde900aa7553",
+    "etude_id": "f5fa0def-db46-4074-8871-b54cdd6e8c9b"
+  },
+  {
+    "aliment_id": "56547ef3-cff6-4048-8917-bb9966417e1b",
+    "etude_id": "289fb15e-db32-45d2-8847-9af2b43dc58c"
+  },
+  {
+    "aliment_id": "e84e989d-7b6d-4add-aa2d-868a5de67450",
+    "etude_id": "5d6b6dc0-01d8-4a37-a885-7c5b7b118c13"
+  },
+  {
+    "aliment_id": "e84e989d-7b6d-4add-aa2d-868a5de67450",
+    "etude_id": "e1d31d82-c501-4a2f-a6b4-789176488cfe"
+  },
+  {
+    "aliment_id": "e84e989d-7b6d-4add-aa2d-868a5de67450",
+    "etude_id": "a8dd79fa-e90c-4ab0-bf42-f56acc51c44f"
+  },
+  {
+    "aliment_id": "e84e989d-7b6d-4add-aa2d-868a5de67450",
+    "etude_id": "33585f5d-ae30-46ab-8d53-8001d7f98397"
+  },
+  {
+    "aliment_id": "e84e989d-7b6d-4add-aa2d-868a5de67450",
+    "etude_id": "499cf1c4-c694-4386-9916-f60466959c06"
+  },
+  {
+    "aliment_id": "e84e989d-7b6d-4add-aa2d-868a5de67450",
+    "etude_id": "f5059b21-352a-453f-b6e2-57d9d0b866d5"
+  },
+  {
+    "aliment_id": "e84e989d-7b6d-4add-aa2d-868a5de67450",
+    "etude_id": "5eccc6e9-1d45-48ec-a592-8b921703df15"
+  },
+  {
+    "aliment_id": "96b7b17f-64c0-4583-bded-d6ce3f0a955c",
+    "etude_id": "439ac332-4e64-4f33-be71-a71ab9a6d10f"
+  },
+  {
+    "aliment_id": "3a33d1fe-ae7f-4b76-8578-41f859c734d0",
+    "etude_id": "5175f39c-5c4c-4f8e-bc52-420941a4d8b2"
+  },
+  {
+    "aliment_id": "3a33d1fe-ae7f-4b76-8578-41f859c734d0",
+    "etude_id": "3702a519-99d8-4ce8-9d37-c80fcf944921"
+  },
+  {
+    "aliment_id": "3a33d1fe-ae7f-4b76-8578-41f859c734d0",
+    "etude_id": "ff6e4900-fcbe-4733-94da-11e588c35166"
+  },
+  {
+    "aliment_id": "3a33d1fe-ae7f-4b76-8578-41f859c734d0",
+    "etude_id": "c25772a5-ce3d-4b8e-95c4-a4a5ac56901d"
+  },
+  {
+    "aliment_id": "3a33d1fe-ae7f-4b76-8578-41f859c734d0",
+    "etude_id": "dc2f2a1d-cb14-42fe-80fc-dc690bc97559"
+  },
+  {
+    "aliment_id": "3a33d1fe-ae7f-4b76-8578-41f859c734d0",
+    "etude_id": "6619e48b-ebed-431c-a878-e978445b3712"
+  },
+  {
+    "aliment_id": "3a33d1fe-ae7f-4b76-8578-41f859c734d0",
+    "etude_id": "9f88e49d-9209-4385-a45a-4dba4dbe35ca"
+  },
+  {
+    "aliment_id": "3a33d1fe-ae7f-4b76-8578-41f859c734d0",
+    "etude_id": "5fd6ca8e-d95e-4638-9297-7bbe3d3be348"
+  },
+  {
+    "aliment_id": "3a33d1fe-ae7f-4b76-8578-41f859c734d0",
+    "etude_id": "0c711d82-2fd6-4bb4-ab8f-ef7eb14c6381"
+  },
+  {
+    "aliment_id": "0f2229f0-0725-4852-b4c5-a5debd474cf7",
+    "etude_id": "28dc0295-47a4-4ee7-a2c6-7c1aebc9ff0a"
+  },
+  {
+    "aliment_id": "0f2229f0-0725-4852-b4c5-a5debd474cf7",
+    "etude_id": "34a3c858-eb0d-45d7-b5e6-a3316d20e685"
+  },
+  {
+    "aliment_id": "0f2229f0-0725-4852-b4c5-a5debd474cf7",
+    "etude_id": "8285ae36-c0c8-4e3d-824b-f1a6a68d255e"
+  },
+  {
+    "aliment_id": "0f2229f0-0725-4852-b4c5-a5debd474cf7",
+    "etude_id": "074caaf3-2a88-4c58-b58f-1d0cfe865aab"
+  },
+  {
+    "aliment_id": "0f2229f0-0725-4852-b4c5-a5debd474cf7",
+    "etude_id": "65a17e74-009c-4761-adb0-bc073812adc7"
+  },
+  {
+    "aliment_id": "3153cc16-996b-40c8-936c-767cbfe0d7d7",
+    "etude_id": "63df95c5-a46e-4ec5-8db2-9bf7637a4990"
+  },
+  {
+    "aliment_id": "3153cc16-996b-40c8-936c-767cbfe0d7d7",
+    "etude_id": "e36ed572-c0be-4d76-aa6c-3eafe9e1737c"
+  },
+  {
+    "aliment_id": "3153cc16-996b-40c8-936c-767cbfe0d7d7",
+    "etude_id": "2302da25-a196-44fc-8a56-436d62dc59a6"
+  },
+  {
+    "aliment_id": "3153cc16-996b-40c8-936c-767cbfe0d7d7",
+    "etude_id": "97c90da9-0a00-426f-bc40-0de09082b250"
+  },
+  {
+    "aliment_id": "3153cc16-996b-40c8-936c-767cbfe0d7d7",
+    "etude_id": "bd72a6c4-9826-4657-b0c1-dca5f7d9a329"
+  },
+  {
+    "aliment_id": "c23e9add-db51-4e27-b045-ca8f878cf8b9",
+    "etude_id": "550810ce-28f4-441d-b888-352805fb82f5"
+  },
+  {
+    "aliment_id": "c23e9add-db51-4e27-b045-ca8f878cf8b9",
+    "etude_id": "1b88eaa5-c1f0-404c-a2e2-5fc0d0a20512"
+  },
+  {
+    "aliment_id": "c23e9add-db51-4e27-b045-ca8f878cf8b9",
+    "etude_id": "eaf3f842-4492-4668-b87a-515e47afa77c"
+  },
+  {
+    "aliment_id": "c23e9add-db51-4e27-b045-ca8f878cf8b9",
+    "etude_id": "832a096e-ed1c-4e0a-b4e6-6d468db85510"
+  },
+  {
+    "aliment_id": "c23e9add-db51-4e27-b045-ca8f878cf8b9",
+    "etude_id": "c0479533-ae2b-42d5-99f7-3cc530621b70"
+  },
+  {
+    "aliment_id": "c23e9add-db51-4e27-b045-ca8f878cf8b9",
+    "etude_id": "c331bfbb-e2ee-4efb-a960-5757a3e21448"
+  },
+  {
+    "aliment_id": "c23e9add-db51-4e27-b045-ca8f878cf8b9",
+    "etude_id": "e22dab8d-0948-421a-80a4-79fe48bea54a"
+  },
+  {
+    "aliment_id": "c23e9add-db51-4e27-b045-ca8f878cf8b9",
+    "etude_id": "68510d58-2c4c-443d-b0ed-4cdaef782094"
+  },
+  {
+    "aliment_id": "c23e9add-db51-4e27-b045-ca8f878cf8b9",
+    "etude_id": "cc49660d-c8a2-4d87-8704-28b04f78b6c8"
+  },
+  {
+    "aliment_id": "c23e9add-db51-4e27-b045-ca8f878cf8b9",
+    "etude_id": "5cb64708-e6f3-4c4e-b864-0e8ba551304c"
+  },
+  {
+    "aliment_id": "c23e9add-db51-4e27-b045-ca8f878cf8b9",
+    "etude_id": "6a6e2033-10d3-4f26-9a07-828ed4162402"
+  },
+  {
+    "aliment_id": "c23e9add-db51-4e27-b045-ca8f878cf8b9",
+    "etude_id": "c376a1cf-127a-483c-b4a4-22cf80ac22cd"
+  },
+  {
+    "aliment_id": "c5939b9e-64e1-4c8a-ad4e-17337ffe38a8",
+    "etude_id": "9ff0c818-e9f6-4661-b148-52d398687013"
+  },
+  {
+    "aliment_id": "c5939b9e-64e1-4c8a-ad4e-17337ffe38a8",
+    "etude_id": "4d4a89a6-0a4f-4c92-8404-a23bbebbdfcd"
+  },
+  {
+    "aliment_id": "c5939b9e-64e1-4c8a-ad4e-17337ffe38a8",
+    "etude_id": "e5b6c2ac-b3d4-49b4-958e-1bf14046f33a"
+  },
+  {
+    "aliment_id": "c5939b9e-64e1-4c8a-ad4e-17337ffe38a8",
+    "etude_id": "a5d88cbf-b594-464e-b4bf-d473d31ec543"
+  },
+  {
+    "aliment_id": "154970bf-e740-462e-af64-752253b1ec90",
+    "etude_id": "13ec97b3-97fb-491f-aada-9c17f51737c2"
+  },
+  {
+    "aliment_id": "f98fc3ab-3231-4b29-b22c-6e9cd8d0e805",
+    "etude_id": "2cdc6683-0724-4c44-b07a-cbdfad02d000"
+  },
+  {
+    "aliment_id": "f98fc3ab-3231-4b29-b22c-6e9cd8d0e805",
+    "etude_id": "1070ddf3-50e2-412e-92f8-966dd9fa640a"
+  },
+  {
+    "aliment_id": "e31ddf24-01d1-465e-b7db-fa679335a6d5",
+    "etude_id": "eda1a4d3-4b11-4c64-a8dc-0331aed96dc3"
+  },
+  {
+    "aliment_id": "106a2a0d-ed58-4164-b798-81b56ad84ed4",
+    "etude_id": "12c315bc-c25b-493a-9140-4dbede1cc1b5"
+  },
+  {
+    "aliment_id": "106a2a0d-ed58-4164-b798-81b56ad84ed4",
+    "etude_id": "53f6f8e8-062e-46ce-b9e7-0cc7618f7a66"
+  },
+  {
+    "aliment_id": "106a2a0d-ed58-4164-b798-81b56ad84ed4",
+    "etude_id": "3718e7ab-461e-4b24-a568-6234c3e06f1a"
+  },
+  {
+    "aliment_id": "106a2a0d-ed58-4164-b798-81b56ad84ed4",
+    "etude_id": "6892f774-daf5-48d0-bcb9-74c8f66c2ab3"
+  },
+  {
+    "aliment_id": "106a2a0d-ed58-4164-b798-81b56ad84ed4",
+    "etude_id": "a67f6dfa-d503-484d-9d25-318638b20864"
+  },
+  {
+    "aliment_id": "106a2a0d-ed58-4164-b798-81b56ad84ed4",
+    "etude_id": "5783670d-80c1-4ef0-9708-83c4afa9a0e8"
+  },
+  {
+    "aliment_id": "106a2a0d-ed58-4164-b798-81b56ad84ed4",
+    "etude_id": "0149e452-223a-4d75-a74b-33f92df60d14"
+  },
+  {
+    "aliment_id": "106a2a0d-ed58-4164-b798-81b56ad84ed4",
+    "etude_id": "0c7e7c41-b7a9-42fb-b030-064c2ebd4004"
+  },
+  {
+    "aliment_id": "106a2a0d-ed58-4164-b798-81b56ad84ed4",
+    "etude_id": "1660f013-ed36-424b-a693-b87057bcaa60"
+  },
+  {
+    "aliment_id": "106a2a0d-ed58-4164-b798-81b56ad84ed4",
+    "etude_id": "5fda7be0-70cc-447c-9a97-15b571b135c1"
+  },
+  {
+    "aliment_id": "106a2a0d-ed58-4164-b798-81b56ad84ed4",
+    "etude_id": "93a9a939-6ff8-4648-b4be-ae1a3be3f0b8"
+  },
+  {
+    "aliment_id": "7fdd6107-0173-4667-9847-cbbac1279c95",
+    "etude_id": "e995db47-af56-475d-bd4f-5437bb2ab59f"
+  },
+  {
+    "aliment_id": "106a2a0d-ed58-4164-b798-81b56ad84ed4",
+    "etude_id": "5f768274-b3bf-44db-ad67-7ef39d226963"
+  },
+  {
+    "aliment_id": "7fdd6107-0173-4667-9847-cbbac1279c95",
+    "etude_id": "9b0e27e8-ca41-452d-a341-876a47cad773"
+  },
+  {
+    "aliment_id": "106a2a0d-ed58-4164-b798-81b56ad84ed4",
+    "etude_id": "133339bd-2848-4ad4-89b2-b0a67e38d50b"
+  },
+  {
+    "aliment_id": "7fdd6107-0173-4667-9847-cbbac1279c95",
+    "etude_id": "bff43452-a583-47f3-8db4-184d64c4c71e"
+  },
+  {
+    "aliment_id": "106a2a0d-ed58-4164-b798-81b56ad84ed4",
+    "etude_id": "da209c15-dcc4-4e4b-a1cc-90376eb73224"
+  },
+  {
+    "aliment_id": "7fdd6107-0173-4667-9847-cbbac1279c95",
+    "etude_id": "bd2a369b-d2a7-4ac3-9895-93a77c8b56b6"
+  },
+  {
+    "aliment_id": "7fdd6107-0173-4667-9847-cbbac1279c95",
+    "etude_id": "985af785-439f-4921-a93b-646f373ad7cd"
+  },
+  {
+    "aliment_id": "106a2a0d-ed58-4164-b798-81b56ad84ed4",
+    "etude_id": "0145754a-0c91-4fe8-8a89-fd459c5c55a6"
+  },
+  {
+    "aliment_id": "7fdd6107-0173-4667-9847-cbbac1279c95",
+    "etude_id": "69271215-f986-40ae-a166-a14695774568"
+  },
+  {
+    "aliment_id": "7fdd6107-0173-4667-9847-cbbac1279c95",
+    "etude_id": "e28b6a8c-77f0-4d8a-9671-296545cf2105"
+  },
+  {
+    "aliment_id": "7fdd6107-0173-4667-9847-cbbac1279c95",
+    "etude_id": "cfe170fb-5f23-4afb-99d1-9ef571977b5f"
+  },
+  {
+    "aliment_id": "12b0eadf-e618-436e-8913-7cade13bd73e",
+    "etude_id": "14c03b55-f961-433a-87c4-64d613e01b9a"
+  },
+  {
+    "aliment_id": "12b0eadf-e618-436e-8913-7cade13bd73e",
+    "etude_id": "6ffe57db-1741-4d0a-a607-8f37272c82a5"
+  },
+  {
+    "aliment_id": "29923504-b64f-44a7-83a9-61fa8ca7cebb",
+    "etude_id": "7776acce-e5d4-48e9-b9f5-e1ca8f417a29"
+  },
+  {
+    "aliment_id": "29923504-b64f-44a7-83a9-61fa8ca7cebb",
+    "etude_id": "2766babd-e379-49ef-b57f-2d3b25ed28ef"
+  },
+  {
+    "aliment_id": "29923504-b64f-44a7-83a9-61fa8ca7cebb",
+    "etude_id": "d045872c-e718-4f36-b662-e2b4db3e7092"
+  },
+  {
+    "aliment_id": "29923504-b64f-44a7-83a9-61fa8ca7cebb",
+    "etude_id": "4d00124d-ab4e-4ee4-9638-b7d8b4076324"
+  },
+  {
+    "aliment_id": "29923504-b64f-44a7-83a9-61fa8ca7cebb",
+    "etude_id": "f219747a-2fa2-48e7-b9aa-fd5c543a5124"
+  },
+  {
+    "aliment_id": "29923504-b64f-44a7-83a9-61fa8ca7cebb",
+    "etude_id": "a18fe787-b3e6-4a75-b707-7fa931375bc2"
+  },
+  {
+    "aliment_id": "29923504-b64f-44a7-83a9-61fa8ca7cebb",
+    "etude_id": "02ac86e8-eb56-4015-a980-a5f1d82fb621"
+  },
+  {
+    "aliment_id": "29923504-b64f-44a7-83a9-61fa8ca7cebb",
+    "etude_id": "91f1e532-0c32-457b-9f0e-6bab55b2a84e"
+  },
+  {
+    "aliment_id": "29923504-b64f-44a7-83a9-61fa8ca7cebb",
+    "etude_id": "fef5e808-3898-4e05-803f-40021dcadc33"
+  },
+  {
+    "aliment_id": "29923504-b64f-44a7-83a9-61fa8ca7cebb",
+    "etude_id": "46aea766-a056-4262-8a31-ac782ba55791"
+  },
+  {
+    "aliment_id": "29923504-b64f-44a7-83a9-61fa8ca7cebb",
+    "etude_id": "8b86a6a2-4876-48c8-8d27-0584f6f87a03"
+  },
+  {
+    "aliment_id": "29923504-b64f-44a7-83a9-61fa8ca7cebb",
+    "etude_id": "1f94c4ac-b5de-405d-a7e3-c5a2b0862067"
+  },
+  {
+    "aliment_id": "29923504-b64f-44a7-83a9-61fa8ca7cebb",
+    "etude_id": "1a1c4fdf-fc47-49a1-8cac-3c513b325cd2"
+  },
+  {
+    "aliment_id": "29923504-b64f-44a7-83a9-61fa8ca7cebb",
+    "etude_id": "f0cde4ae-fff8-41c6-94b5-9f815799775a"
+  },
+  {
+    "aliment_id": "4d2731a8-b962-458a-80e8-cf10c2ac5d6c",
+    "etude_id": "e68a862d-4edc-4dd6-8921-fca1d4ea52e1"
+  },
+  {
+    "aliment_id": "4d2731a8-b962-458a-80e8-cf10c2ac5d6c",
+    "etude_id": "f318605a-b9af-469e-b555-15389ec5f02a"
+  },
+  {
+    "aliment_id": "4d2731a8-b962-458a-80e8-cf10c2ac5d6c",
+    "etude_id": "8fa05a8b-521a-40af-ba1e-825f94210abe"
+  },
+  {
+    "aliment_id": "0a8b5df2-cb0c-4a75-9042-ecc491d96aab",
+    "etude_id": "ae7bce24-d98e-46e1-beb8-8861928846bf"
+  },
+  {
+    "aliment_id": "0a8b5df2-cb0c-4a75-9042-ecc491d96aab",
+    "etude_id": "900e32b6-9197-4064-a130-9260c69b9771"
+  },
+  {
+    "aliment_id": "0a8b5df2-cb0c-4a75-9042-ecc491d96aab",
+    "etude_id": "ccb46c87-0b62-42ee-be14-9fe9a1a98332"
+  },
+  {
+    "aliment_id": "0a8b5df2-cb0c-4a75-9042-ecc491d96aab",
+    "etude_id": "e5e856a2-5911-4da6-8996-cbbee83f21a8"
+  },
+  {
+    "aliment_id": "0a8b5df2-cb0c-4a75-9042-ecc491d96aab",
+    "etude_id": "824c9503-726b-4363-ad82-f081f23cb8c6"
+  },
+  {
+    "aliment_id": "0a8b5df2-cb0c-4a75-9042-ecc491d96aab",
+    "etude_id": "2788d84e-c307-4fbb-b9dd-379b65ce5399"
+  },
+  {
+    "aliment_id": "0ec302d2-ec09-4935-b6bf-a9fc370675f1",
+    "etude_id": "8b3a3317-1e55-4f5d-9157-3d3aa5239ee1"
+  },
+  {
+    "aliment_id": "263c86af-d083-4448-b838-1f98c564eb64",
+    "etude_id": "18ee3e09-d49a-476a-973f-7db6f2b0c554"
+  },
+  {
+    "aliment_id": "263c86af-d083-4448-b838-1f98c564eb64",
+    "etude_id": "c443e7e7-b3a3-4237-b7b5-fa73f096a5d0"
+  },
+  {
+    "aliment_id": "263c86af-d083-4448-b838-1f98c564eb64",
+    "etude_id": "77cb5925-5493-49bd-af7a-96be537364fb"
+  },
+  {
+    "aliment_id": "263c86af-d083-4448-b838-1f98c564eb64",
+    "etude_id": "7bb18eeb-23b6-4843-9ba7-ed7d14e0570d"
+  },
+  {
+    "aliment_id": "263c86af-d083-4448-b838-1f98c564eb64",
+    "etude_id": "a6f53254-6f4d-4b8b-af6d-5d203b835035"
+  },
+  {
+    "aliment_id": "263c86af-d083-4448-b838-1f98c564eb64",
+    "etude_id": "4abdd1df-f2e9-4930-8478-42cbd8383a30"
+  },
+  {
+    "aliment_id": "263c86af-d083-4448-b838-1f98c564eb64",
+    "etude_id": "18170d1a-d775-444d-aa14-6bf2d8434c9b"
+  },
+  {
+    "aliment_id": "263c86af-d083-4448-b838-1f98c564eb64",
+    "etude_id": "c9ef9826-8a8e-462d-ab64-79ac2d3c3ab3"
+  },
+  {
+    "aliment_id": "263c86af-d083-4448-b838-1f98c564eb64",
+    "etude_id": "d4700b60-cdc1-4efd-9be2-07011615e607"
+  },
+  {
+    "aliment_id": "cd8425cf-27e2-4488-9b48-76cfe2436086",
+    "etude_id": "f3ca9391-ed5e-4dc6-b196-4bf5b68173e3"
+  },
+  {
+    "aliment_id": "263c86af-d083-4448-b838-1f98c564eb64",
+    "etude_id": "52af2ae9-c422-461a-9aab-59134c57471f"
+  },
+  {
+    "aliment_id": "cd8425cf-27e2-4488-9b48-76cfe2436086",
+    "etude_id": "ef6b77b0-0080-4357-8908-3df26894ce4f"
+  },
+  {
+    "aliment_id": "cd8425cf-27e2-4488-9b48-76cfe2436086",
+    "etude_id": "111ee163-840c-437a-9dcb-dc3a21ac90dd"
+  },
+  {
+    "aliment_id": "cd8425cf-27e2-4488-9b48-76cfe2436086",
+    "etude_id": "eea8537c-d869-4109-b111-590c4a92e960"
+  },
+  {
+    "aliment_id": "f284e2c8-7efc-4b27-893c-82748f2f1edd",
+    "etude_id": "d9d3f256-df83-41fa-9e2f-9fb1fa436c69"
+  },
+  {
+    "aliment_id": "f284e2c8-7efc-4b27-893c-82748f2f1edd",
+    "etude_id": "18aae348-a68b-4c26-815c-508ce5866373"
+  },
+  {
+    "aliment_id": "0b77efb2-fc71-4ff7-8df4-b8b0f78ca681",
+    "etude_id": "fa76e09d-bab8-4d40-8d0b-26dd7b6547ce"
+  },
+  {
+    "aliment_id": "4447c7c3-ef42-454d-93b1-1400c84604e5",
+    "etude_id": "54e1dd67-40d2-4f5a-b9d9-582ffaa242f7"
+  },
+  {
+    "aliment_id": "4447c7c3-ef42-454d-93b1-1400c84604e5",
+    "etude_id": "acf08fa2-5d67-4571-9b71-128124dc894e"
+  },
+  {
+    "aliment_id": "4447c7c3-ef42-454d-93b1-1400c84604e5",
+    "etude_id": "42389c8d-8d2c-4c8d-9757-924e9aafb9c9"
+  },
+  {
+    "aliment_id": "4447c7c3-ef42-454d-93b1-1400c84604e5",
+    "etude_id": "c317bbf6-69a7-4188-aed0-a93a63a42cbd"
+  },
+  {
+    "aliment_id": "4447c7c3-ef42-454d-93b1-1400c84604e5",
+    "etude_id": "248aab2a-acdb-4228-9f65-117192cea97e"
+  },
+  {
+    "aliment_id": "4447c7c3-ef42-454d-93b1-1400c84604e5",
+    "etude_id": "cc4afca2-c16e-4095-ae10-7a606c4d00b8"
+  },
+  {
+    "aliment_id": "4447c7c3-ef42-454d-93b1-1400c84604e5",
+    "etude_id": "99e2b1b4-51a6-4b98-8f99-25e9288bb5c9"
+  },
+  {
+    "aliment_id": "4447c7c3-ef42-454d-93b1-1400c84604e5",
+    "etude_id": "be47b2b3-115f-4b95-9745-39db0e6f95de"
+  },
+  {
+    "aliment_id": "c4813273-e7f5-4481-adfc-781fd4c3115a",
+    "etude_id": "6e355155-64c3-4d0f-af0b-a23b0e347389"
+  },
+  {
+    "aliment_id": "4447c7c3-ef42-454d-93b1-1400c84604e5",
+    "etude_id": "86834ff7-cf00-41aa-a5b6-53fdb7f4a4b9"
+  },
+  {
+    "aliment_id": "4447c7c3-ef42-454d-93b1-1400c84604e5",
+    "etude_id": "76fa6c24-225c-482f-a3ce-c4cb8ce5dec2"
+  },
+  {
+    "aliment_id": "c4813273-e7f5-4481-adfc-781fd4c3115a",
+    "etude_id": "1b357614-4325-4671-8e71-c38ba99bdffd"
+  },
+  {
+    "aliment_id": "4447c7c3-ef42-454d-93b1-1400c84604e5",
+    "etude_id": "6652f97a-4939-4834-a36b-47513c1fb194"
+  },
+  {
+    "aliment_id": "4447c7c3-ef42-454d-93b1-1400c84604e5",
+    "etude_id": "088fa8bf-1cbf-45a7-9363-1dd5f0d4457a"
+  },
+  {
+    "aliment_id": "4447c7c3-ef42-454d-93b1-1400c84604e5",
+    "etude_id": "86eefd1f-767c-49f3-9c6e-5e099152d9f3"
+  },
+  {
+    "aliment_id": "4447c7c3-ef42-454d-93b1-1400c84604e5",
+    "etude_id": "7d32d9f5-652e-435b-839b-3d0e036dbd33"
+  },
+  {
+    "aliment_id": "4447c7c3-ef42-454d-93b1-1400c84604e5",
+    "etude_id": "301677f4-351a-4328-aae7-28ee44574c3a"
+  },
+  {
+    "aliment_id": "598c2ede-a7f1-4f19-9837-af4253239f15",
+    "etude_id": "0495cb0e-2a74-494a-ac2d-a4082b891d73"
+  },
+  {
+    "aliment_id": "4447c7c3-ef42-454d-93b1-1400c84604e5",
+    "etude_id": "019c76a5-f8c8-4c02-839b-a97fc8d5950b"
+  },
+  {
+    "aliment_id": "598c2ede-a7f1-4f19-9837-af4253239f15",
+    "etude_id": "8a5d661f-daa8-4f15-b222-c96f65a151e9"
+  },
+  {
+    "aliment_id": "598c2ede-a7f1-4f19-9837-af4253239f15",
+    "etude_id": "7465ab0c-ef28-411a-affe-f2ec69795f81"
+  },
+  {
+    "aliment_id": "598c2ede-a7f1-4f19-9837-af4253239f15",
+    "etude_id": "7b629498-905e-49b7-9ff8-9f2eacb1458d"
+  },
+  {
+    "aliment_id": "598c2ede-a7f1-4f19-9837-af4253239f15",
+    "etude_id": "86b068dc-76b7-43d9-848e-2940a966d009"
+  },
+  {
+    "aliment_id": "598c2ede-a7f1-4f19-9837-af4253239f15",
+    "etude_id": "5be09531-ab1c-4366-b08b-31fa0e3dbea5"
+  },
+  {
+    "aliment_id": "598c2ede-a7f1-4f19-9837-af4253239f15",
+    "etude_id": "f0ac7397-b2dd-4af6-a710-f0846ef22618"
+  },
+  {
+    "aliment_id": "598c2ede-a7f1-4f19-9837-af4253239f15",
+    "etude_id": "b47ffc0a-cf60-4519-9e58-7e816ecb1845"
+  },
+  {
+    "aliment_id": "598c2ede-a7f1-4f19-9837-af4253239f15",
+    "etude_id": "403926df-6cd2-40c6-900a-387222b42b60"
+  },
+  {
+    "aliment_id": "c824646d-38f1-4888-a2cd-c5aa2b00431f",
+    "etude_id": "d79339e5-e8c9-457f-b680-4bc88e973070"
+  },
+  {
+    "aliment_id": "c824646d-38f1-4888-a2cd-c5aa2b00431f",
+    "etude_id": "d317955a-9356-405e-a3fd-ede79fb5cc57"
+  },
+  {
+    "aliment_id": "c824646d-38f1-4888-a2cd-c5aa2b00431f",
+    "etude_id": "896a0a85-48e6-40b0-aace-aad75ff3842d"
+  },
+  {
+    "aliment_id": "c824646d-38f1-4888-a2cd-c5aa2b00431f",
+    "etude_id": "b7f66f1e-71a4-4325-b6cf-8031727ced57"
+  },
+  {
+    "aliment_id": "c824646d-38f1-4888-a2cd-c5aa2b00431f",
+    "etude_id": "706df265-bd35-4901-a846-6d9279845b2e"
+  },
+  {
+    "aliment_id": "c824646d-38f1-4888-a2cd-c5aa2b00431f",
+    "etude_id": "0a3079e6-a69b-4edf-aebb-6f0e90a236ce"
+  },
+  {
+    "aliment_id": "c824646d-38f1-4888-a2cd-c5aa2b00431f",
+    "etude_id": "d9fa023d-3965-4c71-af47-b2bcc54398ad"
+  },
+  {
+    "aliment_id": "c824646d-38f1-4888-a2cd-c5aa2b00431f",
+    "etude_id": "01523d1b-53b4-425c-8a07-a6b30e6d5b2e"
+  },
+  {
+    "aliment_id": "c824646d-38f1-4888-a2cd-c5aa2b00431f",
+    "etude_id": "0d565801-4fa8-4023-9f2a-e5dd7363414f"
+  },
+  {
+    "aliment_id": "eb7d426b-b555-4226-8098-747d386f9bd2",
+    "etude_id": "62f913af-2ee4-4b2a-a2b1-a045797169aa"
+  },
+  {
+    "aliment_id": "f16a2ed1-55f5-4f7b-a61f-88fc52e283ab",
+    "etude_id": "9846fb05-4145-4060-80c4-dfd7dcd97e2c"
+  },
+  {
+    "aliment_id": "f16a2ed1-55f5-4f7b-a61f-88fc52e283ab",
+    "etude_id": "81f5bdeb-47fb-40ff-ab78-eb753d4ef304"
+  },
+  {
+    "aliment_id": "f16a2ed1-55f5-4f7b-a61f-88fc52e283ab",
+    "etude_id": "b914544d-d221-41f2-8d3a-8315ca7bac4e"
+  },
+  {
+    "aliment_id": "f16a2ed1-55f5-4f7b-a61f-88fc52e283ab",
+    "etude_id": "2a9b89f7-3fe2-4afb-82f1-2c57bedfad03"
+  },
+  {
+    "aliment_id": "f16a2ed1-55f5-4f7b-a61f-88fc52e283ab",
+    "etude_id": "95b019fb-1b15-4358-a061-bab4b7d635c3"
+  },
+  {
+    "aliment_id": "f16a2ed1-55f5-4f7b-a61f-88fc52e283ab",
+    "etude_id": "85986ef3-e364-4d34-a27e-b0f074b2b17f"
+  },
+  {
+    "aliment_id": "f16a2ed1-55f5-4f7b-a61f-88fc52e283ab",
+    "etude_id": "6abb6c87-ba86-4525-b7f8-a36988626b5a"
+  },
+  {
+    "aliment_id": "f16a2ed1-55f5-4f7b-a61f-88fc52e283ab",
+    "etude_id": "1c86a8ea-d83a-4441-8191-ca2291f959c4"
+  },
+  {
+    "aliment_id": "f16a2ed1-55f5-4f7b-a61f-88fc52e283ab",
+    "etude_id": "1c24816c-f509-4db0-9e9d-88745a0aefbc"
+  },
+  {
+    "aliment_id": "f16a2ed1-55f5-4f7b-a61f-88fc52e283ab",
+    "etude_id": "1f323bce-ec0f-4349-b0e4-86484c8f0bd9"
+  },
+  {
+    "aliment_id": "f16a2ed1-55f5-4f7b-a61f-88fc52e283ab",
+    "etude_id": "e022ca66-57be-4d63-aada-1b7e8a8a7dfa"
+  },
+  {
+    "aliment_id": "ca0ddaae-c572-43ec-b84b-9475a5e0d084",
+    "etude_id": "e58f843f-4a27-4600-bead-b344bde6002d"
+  },
+  {
+    "aliment_id": "633767a5-7c8e-43e6-ab8e-0c4d823affe1",
+    "etude_id": "b7b0074e-3e53-40b9-ac4c-74abdba9dd75"
+  },
+  {
+    "aliment_id": "633767a5-7c8e-43e6-ab8e-0c4d823affe1",
+    "etude_id": "8315a8f5-289a-4feb-ad77-89afd8670eea"
+  },
+  {
+    "aliment_id": "633767a5-7c8e-43e6-ab8e-0c4d823affe1",
+    "etude_id": "f8635165-6f15-4e9a-b1ab-e85d0ae9ff12"
+  },
+  {
+    "aliment_id": "633767a5-7c8e-43e6-ab8e-0c4d823affe1",
+    "etude_id": "13f91c93-ea3f-4394-8bd9-e848830ca651"
+  },
+  {
+    "aliment_id": "633767a5-7c8e-43e6-ab8e-0c4d823affe1",
+    "etude_id": "6e3052e6-5287-49ae-95c7-2b354ef790c2"
+  },
+  {
+    "aliment_id": "7418a6c2-b88b-4c2c-850e-851a12c85c7d",
+    "etude_id": "ac38c1dd-9c76-4d24-9966-d7e8a8d49d10"
+  },
+  {
+    "aliment_id": "7418a6c2-b88b-4c2c-850e-851a12c85c7d",
+    "etude_id": "70da30ca-0f0f-496d-8740-2b233027479e"
+  },
+  {
+    "aliment_id": "7418a6c2-b88b-4c2c-850e-851a12c85c7d",
+    "etude_id": "c9e15e12-e6cc-40c2-9915-1166a339417b"
+  },
+  {
+    "aliment_id": "0fcc7323-4c74-46e4-93c0-7f03a1339fd3",
+    "etude_id": "38015f0c-8d45-4c5c-838e-e3b5374baf71"
+  },
+  {
+    "aliment_id": "5adfa833-2fb0-412a-9c37-e77921c116a5",
+    "etude_id": "be12c195-76b0-4efb-8957-394831e9ba8a"
+  },
+  {
+    "aliment_id": "5adfa833-2fb0-412a-9c37-e77921c116a5",
+    "etude_id": "63924b7e-fd4f-427f-9b5f-ff08bc82b871"
+  },
+  {
+    "aliment_id": "5adfa833-2fb0-412a-9c37-e77921c116a5",
+    "etude_id": "ad28760c-f039-4e23-9a09-8f85e1f1e146"
+  },
+  {
+    "aliment_id": "5adfa833-2fb0-412a-9c37-e77921c116a5",
+    "etude_id": "0ae649c9-ddc3-4219-aa8b-ded5fa392747"
+  },
+  {
+    "aliment_id": "5adfa833-2fb0-412a-9c37-e77921c116a5",
+    "etude_id": "f42a0525-3139-4885-8c99-dbfa020a44b7"
+  },
+  {
+    "aliment_id": "5adfa833-2fb0-412a-9c37-e77921c116a5",
+    "etude_id": "793b4a33-a322-4aef-91b9-96904a8a510e"
+  },
+  {
+    "aliment_id": "5adfa833-2fb0-412a-9c37-e77921c116a5",
+    "etude_id": "0861145c-eef3-4e2b-bc7b-c9729ad78e6a"
+  },
+  {
+    "aliment_id": "5adfa833-2fb0-412a-9c37-e77921c116a5",
+    "etude_id": "f3bbb2e5-9528-4ad7-ab7f-3fecd89d45a8"
+  },
+  {
+    "aliment_id": "5adfa833-2fb0-412a-9c37-e77921c116a5",
+    "etude_id": "fda6ebe5-ac09-48b7-ae34-cfedac0298d9"
+  },
+  {
+    "aliment_id": "5adfa833-2fb0-412a-9c37-e77921c116a5",
+    "etude_id": "c64e0888-e88f-4068-9147-f74d30bd6518"
+  },
+  {
+    "aliment_id": "5adfa833-2fb0-412a-9c37-e77921c116a5",
+    "etude_id": "6336b421-704f-4c30-914b-b6ec6e6911cc"
+  },
+  {
+    "aliment_id": "8ef6aa02-511c-47d5-9655-398a15f50b59",
+    "etude_id": "075c924f-198e-4c62-9006-f270bc0b1e03"
+  },
+  {
+    "aliment_id": "8ef6aa02-511c-47d5-9655-398a15f50b59",
+    "etude_id": "be6ad1e0-c6b9-4c01-b7e9-344f9f19c2e8"
+  },
+  {
+    "aliment_id": "8ef6aa02-511c-47d5-9655-398a15f50b59",
+    "etude_id": "f78a5a05-202a-4dde-90fd-143d25310b4b"
+  },
+  {
+    "aliment_id": "8ef6aa02-511c-47d5-9655-398a15f50b59",
+    "etude_id": "295df160-be61-49b3-8d41-daec820d533f"
+  },
+  {
+    "aliment_id": "8ef6aa02-511c-47d5-9655-398a15f50b59",
+    "etude_id": "773ebdf2-367f-4290-9ef9-a9aa8f32a35f"
+  },
+  {
+    "aliment_id": "4e3ba4fe-a8dd-4f10-8419-bc2e901ef4fa",
+    "etude_id": "9f88ed2d-2607-4f12-99e3-f5d4ca5cdc23"
+  },
+  {
+    "aliment_id": "4e3ba4fe-a8dd-4f10-8419-bc2e901ef4fa",
+    "etude_id": "1475418b-1605-4cea-9485-c14157c389ac"
+  },
+  {
+    "aliment_id": "4e3ba4fe-a8dd-4f10-8419-bc2e901ef4fa",
+    "etude_id": "6a2bfe10-39b6-44f9-a330-0e4483a5c0ec"
+  },
+  {
+    "aliment_id": "4e3ba4fe-a8dd-4f10-8419-bc2e901ef4fa",
+    "etude_id": "2e33440c-f905-4a70-b742-569af543787c"
+  },
+  {
+    "aliment_id": "4e3ba4fe-a8dd-4f10-8419-bc2e901ef4fa",
+    "etude_id": "39a0253c-399e-4466-b8f4-e6fed7a72b96"
+  },
+  {
+    "aliment_id": "8e8bf2d8-3d77-420d-b56c-c291c3ddbdfb",
+    "etude_id": "94ebbec3-39b0-4f88-99d3-7bd81e0717d8"
+  },
+  {
+    "aliment_id": "8e8bf2d8-3d77-420d-b56c-c291c3ddbdfb",
+    "etude_id": "6c6436dc-7c30-4fbf-8245-4207e1ecc887"
+  },
+  {
+    "aliment_id": "8e8bf2d8-3d77-420d-b56c-c291c3ddbdfb",
+    "etude_id": "d597af49-cad3-42e1-bc3d-ead3fa85ea6c"
+  },
+  {
+    "aliment_id": "8e8bf2d8-3d77-420d-b56c-c291c3ddbdfb",
+    "etude_id": "645ba4d7-161a-4df5-8615-c442281c5f71"
+  },
+  {
+    "aliment_id": "8e8bf2d8-3d77-420d-b56c-c291c3ddbdfb",
+    "etude_id": "8d6d5eda-c438-4eb2-978f-0043d7c5a62e"
+  },
+  {
+    "aliment_id": "8e8bf2d8-3d77-420d-b56c-c291c3ddbdfb",
+    "etude_id": "92cba1f0-b164-4144-bd33-30a16973cfb0"
+  },
+  {
+    "aliment_id": "8e8bf2d8-3d77-420d-b56c-c291c3ddbdfb",
+    "etude_id": "af9d2f31-c32e-4327-870c-ff90be3a7343"
+  },
+  {
+    "aliment_id": "6daf68b5-9ac3-4550-88d0-5f592dc794c5",
+    "etude_id": "d30c48e1-67b4-4054-82f5-ff3f41c58479"
+  },
+  {
+    "aliment_id": "6daf68b5-9ac3-4550-88d0-5f592dc794c5",
+    "etude_id": "70e65ff3-0767-4999-b530-d49b8b9e68e3"
+  },
+  {
+    "aliment_id": "6daf68b5-9ac3-4550-88d0-5f592dc794c5",
+    "etude_id": "a16ccad4-a553-48ff-bd86-ea761487ab29"
+  },
+  {
+    "aliment_id": "6daf68b5-9ac3-4550-88d0-5f592dc794c5",
+    "etude_id": "47fbe360-51cc-4baa-965c-4926149e0d72"
+  },
+  {
+    "aliment_id": "6daf68b5-9ac3-4550-88d0-5f592dc794c5",
+    "etude_id": "a9093785-c0f5-4ad3-b254-133d04f0fab3"
+  },
+  {
+    "aliment_id": "6daf68b5-9ac3-4550-88d0-5f592dc794c5",
+    "etude_id": "29033db2-c958-410f-9774-e71927f69d49"
+  },
+  {
+    "aliment_id": "6daf68b5-9ac3-4550-88d0-5f592dc794c5",
+    "etude_id": "6c6c8de2-afbc-4d8b-8c4b-bcaa56d0eb58"
+  },
+  {
+    "aliment_id": "5d6adfa9-4c86-4ad0-a012-123c1f125fcb",
+    "etude_id": "774757c8-04fa-470d-aaf1-85fcb672f8df"
+  },
+  {
+    "aliment_id": "b955066f-d06e-4364-b0a1-7404f486a00c",
+    "etude_id": "7ef76868-5e7b-41af-b904-c354704ccbd3"
+  },
+  {
+    "aliment_id": "b955066f-d06e-4364-b0a1-7404f486a00c",
+    "etude_id": "b5aba4a5-8af4-481a-b6da-c6a61ff0362b"
+  },
+  {
+    "aliment_id": "b955066f-d06e-4364-b0a1-7404f486a00c",
+    "etude_id": "179dcaaf-82e7-4431-913c-83a597d65cd6"
+  },
+  {
+    "aliment_id": "b955066f-d06e-4364-b0a1-7404f486a00c",
+    "etude_id": "ee90c0b6-0c03-4b40-9b4b-295eef87fbd2"
+  },
+  {
+    "aliment_id": "b955066f-d06e-4364-b0a1-7404f486a00c",
+    "etude_id": "f4022c23-7b20-4401-917e-bbcdd3a54b65"
+  },
+  {
+    "aliment_id": "b955066f-d06e-4364-b0a1-7404f486a00c",
+    "etude_id": "fa41c370-75fb-44b1-acb1-33916a0ccdb6"
+  },
+  {
+    "aliment_id": "b955066f-d06e-4364-b0a1-7404f486a00c",
+    "etude_id": "398c6f0b-a325-48af-9700-3a55971c50e8"
+  },
+  {
+    "aliment_id": "ffd7cc11-4328-44b2-b42b-ef3f02bd2135",
+    "etude_id": "42000c2b-dbed-4c13-be99-53c1cbb21468"
+  },
+  {
+    "aliment_id": "ffd7cc11-4328-44b2-b42b-ef3f02bd2135",
+    "etude_id": "fc93cc5b-380c-42f2-9fec-0e39852bafc8"
+  },
+  {
+    "aliment_id": "ffd7cc11-4328-44b2-b42b-ef3f02bd2135",
+    "etude_id": "d3032c5a-0351-4fd3-ae37-0306c0cc10eb"
+  },
+  {
+    "aliment_id": "ffd7cc11-4328-44b2-b42b-ef3f02bd2135",
+    "etude_id": "fce0ff75-9064-4251-b4aa-3c294889d14c"
+  },
+  {
+    "aliment_id": "ffd7cc11-4328-44b2-b42b-ef3f02bd2135",
+    "etude_id": "7281b25e-95a2-459e-a305-15dc37f10db6"
+  },
+  {
+    "aliment_id": "17dfcdb9-f460-422a-9d01-80ec19a14b5d",
+    "etude_id": "28ddf950-4f48-44ca-a126-1ae1aa3a8b2d"
+  },
+  {
+    "aliment_id": "17dfcdb9-f460-422a-9d01-80ec19a14b5d",
+    "etude_id": "f28a64a2-2e7f-4c52-aecc-6bc721756be9"
+  },
+  {
+    "aliment_id": "137a0df3-dea1-4ddd-8020-3a509571f2bc",
+    "etude_id": "c899ff8e-fbf5-4693-abb2-f698c3a75133"
+  },
+  {
+    "aliment_id": "137a0df3-dea1-4ddd-8020-3a509571f2bc",
+    "etude_id": "7e9452c0-e584-4577-a65e-8a9ee80227a4"
+  },
+  {
+    "aliment_id": "137a0df3-dea1-4ddd-8020-3a509571f2bc",
+    "etude_id": "b69fd971-fab8-4fd5-9e0a-e307afb40190"
+  },
+  {
+    "aliment_id": "137a0df3-dea1-4ddd-8020-3a509571f2bc",
+    "etude_id": "69dc9279-87a4-4c2b-885c-83756b0993cd"
+  },
+  {
+    "aliment_id": "5c4d1f87-1bfb-419c-a727-3ece2c28617a",
+    "etude_id": "7d41fc38-03a9-4bd8-9ae8-5e3a8cdd4c2e"
+  },
+  {
+    "aliment_id": "5c4d1f87-1bfb-419c-a727-3ece2c28617a",
+    "etude_id": "5ac99dc7-a2f9-4fe5-aede-0212c2d4b627"
+  },
+  {
+    "aliment_id": "5c4d1f87-1bfb-419c-a727-3ece2c28617a",
+    "etude_id": "7b4ea088-d88b-4c12-96a4-71b1cc0e01f3"
+  },
+  {
+    "aliment_id": "1afea169-4a99-4ce2-80ea-854a1616887d",
+    "etude_id": "7579cf56-c4c5-4e21-b0a6-25507b83a4fc"
+  },
+  {
+    "aliment_id": "616e1633-739c-4dda-b614-071fa90eea88",
+    "etude_id": "02ba755f-a2c4-4608-a024-78d3a3c4f712"
+  },
+  {
+    "aliment_id": "616e1633-739c-4dda-b614-071fa90eea88",
+    "etude_id": "8a32e441-7866-41db-b9d4-59aca0bcba90"
+  },
+  {
+    "aliment_id": "616e1633-739c-4dda-b614-071fa90eea88",
+    "etude_id": "7047a35a-12b0-446c-be39-63ffb31b8ac9"
+  },
+  {
+    "aliment_id": "616e1633-739c-4dda-b614-071fa90eea88",
+    "etude_id": "a24928c3-682a-416c-882e-a977cce41213"
+  },
+  {
+    "aliment_id": "616e1633-739c-4dda-b614-071fa90eea88",
+    "etude_id": "26e2151a-951a-41be-86e2-dec48e28f249"
+  },
+  {
+    "aliment_id": "616e1633-739c-4dda-b614-071fa90eea88",
+    "etude_id": "8e175d98-8186-47e4-b8d6-0eae3c890e38"
+  },
+  {
+    "aliment_id": "616e1633-739c-4dda-b614-071fa90eea88",
+    "etude_id": "50325087-326a-41a1-ad61-4d709ba2ca00"
+  },
+  {
+    "aliment_id": "616e1633-739c-4dda-b614-071fa90eea88",
+    "etude_id": "96a23ec5-dfc6-4996-8f01-a7f70e5a9b32"
+  },
+  {
+    "aliment_id": "616e1633-739c-4dda-b614-071fa90eea88",
+    "etude_id": "2b60d057-eac9-49de-9a03-68363412cf80"
+  },
+  {
+    "aliment_id": "d11d04fe-a6b3-4deb-9442-462641ab5202",
+    "etude_id": "deb56a2c-2ca1-41d7-a955-13c8ad24805a"
+  },
+  {
+    "aliment_id": "1525ca9b-76cd-4fd8-9c2f-736483f46f82",
+    "etude_id": "0e299e8f-02eb-437f-909c-31fe6a81e531"
+  },
+  {
+    "aliment_id": "1525ca9b-76cd-4fd8-9c2f-736483f46f82",
+    "etude_id": "7c1fa8dc-a52e-4dfb-8833-f12da3d9629d"
+  },
+  {
+    "aliment_id": "ffe789c8-8d57-4abf-9f2f-8be2e8b0d15a",
+    "etude_id": "fc40a924-ca4a-4fd1-af94-68367057e7a1"
+  },
+  {
+    "aliment_id": "ffe789c8-8d57-4abf-9f2f-8be2e8b0d15a",
+    "etude_id": "950db75a-508c-4034-ba50-b6ebb2703ad0"
+  },
+  {
+    "aliment_id": "ffe789c8-8d57-4abf-9f2f-8be2e8b0d15a",
+    "etude_id": "5ff92c6c-f0b0-4248-bc2e-c3a48d7fa53c"
+  },
+  {
+    "aliment_id": "ffe789c8-8d57-4abf-9f2f-8be2e8b0d15a",
+    "etude_id": "5ddc26df-f943-4823-b5a9-fcc052361b77"
+  },
+  {
+    "aliment_id": "ffe789c8-8d57-4abf-9f2f-8be2e8b0d15a",
+    "etude_id": "7f3159fe-3311-41d1-b434-6a05dd8a364d"
+  },
+  {
+    "aliment_id": "ffe789c8-8d57-4abf-9f2f-8be2e8b0d15a",
+    "etude_id": "7c7e9c73-01f5-4352-b2dc-5fe03dcfb3ed"
+  },
+  {
+    "aliment_id": "ffe789c8-8d57-4abf-9f2f-8be2e8b0d15a",
+    "etude_id": "419d4fb1-820d-488e-b62b-4430dd30bff7"
+  },
+  {
+    "aliment_id": "0b887589-0551-4955-be6a-de5cf29fa510",
+    "etude_id": "761a2bfc-defc-41ca-ae98-4f6754201618"
+  },
+  {
+    "aliment_id": "0b887589-0551-4955-be6a-de5cf29fa510",
+    "etude_id": "7538e9b7-1462-449c-b328-e628875b1ca8"
+  },
+  {
+    "aliment_id": "0b887589-0551-4955-be6a-de5cf29fa510",
+    "etude_id": "d8c9f5c9-c95c-4fc0-ae37-3022fa4f4bde"
+  },
+  {
+    "aliment_id": "0b887589-0551-4955-be6a-de5cf29fa510",
+    "etude_id": "879a07b6-fa37-4a65-9c19-c3ab41488f03"
+  },
+  {
+    "aliment_id": "0b887589-0551-4955-be6a-de5cf29fa510",
+    "etude_id": "da0ebae2-6c18-424c-983c-ae6b3b2afd69"
+  },
+  {
+    "aliment_id": "0b887589-0551-4955-be6a-de5cf29fa510",
+    "etude_id": "4f64d3b1-b4c2-458e-b5f2-608a26db209e"
+  },
+  {
+    "aliment_id": "0b887589-0551-4955-be6a-de5cf29fa510",
+    "etude_id": "b78d016b-044b-42d3-824e-d2a9513a0f1b"
+  },
+  {
+    "aliment_id": "0b887589-0551-4955-be6a-de5cf29fa510",
+    "etude_id": "37a2cca4-7963-4139-94ed-0c53293a3ddc"
+  },
+  {
+    "aliment_id": "0b887589-0551-4955-be6a-de5cf29fa510",
+    "etude_id": "3353cb0b-1d4b-4fb9-b6cd-7338bb37ea18"
+  },
+  {
+    "aliment_id": "0b887589-0551-4955-be6a-de5cf29fa510",
+    "etude_id": "a3734aae-737e-46bd-8c07-7e15752646de"
+  },
+  {
+    "aliment_id": "0b887589-0551-4955-be6a-de5cf29fa510",
+    "etude_id": "d6df707c-9a1d-4cb2-bf91-4e8925636054"
+  },
+  {
+    "aliment_id": "19504a87-ba03-4a41-a7db-189e7066cfae",
+    "etude_id": "401040e3-d6f5-4e4a-ab80-352ca2fee98e"
+  },
+  {
+    "aliment_id": "0b887589-0551-4955-be6a-de5cf29fa510",
+    "etude_id": "63387091-d4e2-4c9b-aabd-57601c56684c"
+  },
+  {
+    "aliment_id": "19504a87-ba03-4a41-a7db-189e7066cfae",
+    "etude_id": "6d22dd1a-79c0-4e92-8a82-66a7d7a3ace3"
+  },
+  {
+    "aliment_id": "0b887589-0551-4955-be6a-de5cf29fa510",
+    "etude_id": "62593e85-b97a-4470-8382-ed37b5732650"
+  },
+  {
+    "aliment_id": "19504a87-ba03-4a41-a7db-189e7066cfae",
+    "etude_id": "8e8953d6-13ad-4a1d-b020-4a137119f2b7"
+  },
+  {
+    "aliment_id": "0b887589-0551-4955-be6a-de5cf29fa510",
+    "etude_id": "33fff313-28bb-4c02-a017-9671c94bb46a"
+  },
+  {
+    "aliment_id": "0b887589-0551-4955-be6a-de5cf29fa510",
+    "etude_id": "cf975905-4782-40a5-af0c-76f4153abbc1"
+  },
+  {
+    "aliment_id": "19504a87-ba03-4a41-a7db-189e7066cfae",
+    "etude_id": "dc95ae7d-6488-4604-afce-d59cd614cc6a"
+  },
+  {
+    "aliment_id": "19504a87-ba03-4a41-a7db-189e7066cfae",
+    "etude_id": "669c5f4b-162d-4702-a7ca-47178d976552"
+  },
+  {
+    "aliment_id": "0b887589-0551-4955-be6a-de5cf29fa510",
+    "etude_id": "f65123ef-1ee4-4fdd-a980-7b382d172acd"
+  },
+  {
+    "aliment_id": "19504a87-ba03-4a41-a7db-189e7066cfae",
+    "etude_id": "cb22ef49-4e36-48b0-8e26-fe90262d37ec"
+  },
+  {
+    "aliment_id": "19504a87-ba03-4a41-a7db-189e7066cfae",
+    "etude_id": "cc670237-41e0-411f-8124-0f6124d1562c"
+  },
+  {
+    "aliment_id": "19504a87-ba03-4a41-a7db-189e7066cfae",
+    "etude_id": "5895a30c-a2ac-463e-bfa2-19d1526c180f"
+  },
+  {
+    "aliment_id": "190036fc-4cc2-431f-b406-c0fa5ef2fd53",
+    "etude_id": "9ec95c92-a7b8-4cdb-9b30-017408995e10"
+  },
+  {
+    "aliment_id": "19504a87-ba03-4a41-a7db-189e7066cfae",
+    "etude_id": "6b4db392-4853-4ebd-8fb9-961fb51eface"
+  },
+  {
+    "aliment_id": "190036fc-4cc2-431f-b406-c0fa5ef2fd53",
+    "etude_id": "6232879d-688f-401b-9c50-bdc365eaffe1"
+  },
+  {
+    "aliment_id": "19504a87-ba03-4a41-a7db-189e7066cfae",
+    "etude_id": "a3b9de6f-6a99-4efd-acf9-ef2a90d6573a"
+  },
+  {
+    "aliment_id": "190036fc-4cc2-431f-b406-c0fa5ef2fd53",
+    "etude_id": "7d648fb7-8f5c-4d5f-8e15-8eb7632ebea6"
+  },
+  {
+    "aliment_id": "19504a87-ba03-4a41-a7db-189e7066cfae",
+    "etude_id": "f2123edf-83ab-456b-abd4-c34f37959b6e"
+  },
+  {
+    "aliment_id": "190036fc-4cc2-431f-b406-c0fa5ef2fd53",
+    "etude_id": "de7425eb-9c8e-4d5a-962b-f1d1734cff5b"
+  },
+  {
+    "aliment_id": "190036fc-4cc2-431f-b406-c0fa5ef2fd53",
+    "etude_id": "5882f77f-1864-49af-a659-2c1a9a159287"
+  },
+  {
+    "aliment_id": "190036fc-4cc2-431f-b406-c0fa5ef2fd53",
+    "etude_id": "f61d989b-fb90-4fb4-acb8-e53377f5c0d1"
+  },
+  {
+    "aliment_id": "190036fc-4cc2-431f-b406-c0fa5ef2fd53",
+    "etude_id": "23b7e4e1-bc1a-4098-9532-1e9a1eb3df46"
+  },
+  {
+    "aliment_id": "190036fc-4cc2-431f-b406-c0fa5ef2fd53",
+    "etude_id": "1db58a84-961d-4c4b-8184-4de6e1936ff0"
+  },
+  {
+    "aliment_id": "ecb1493e-9e42-42c6-9180-26e92251922d",
+    "etude_id": "e02cb1b3-9f80-4a12-b450-16d8679703a4"
+  },
+  {
+    "aliment_id": "190036fc-4cc2-431f-b406-c0fa5ef2fd53",
+    "etude_id": "6c3614be-d665-4129-a2ca-9e983925e7cb"
+  },
+  {
+    "aliment_id": "190036fc-4cc2-431f-b406-c0fa5ef2fd53",
+    "etude_id": "76862e83-79dc-485a-9a16-fd17fed30e73"
+  },
+  {
+    "aliment_id": "2c6a4246-268f-4674-b180-912498f8d0bf",
+    "etude_id": "6e6e4bb1-fed7-4af4-8519-ee9e0225b512"
+  },
+  {
+    "aliment_id": "2c6a4246-268f-4674-b180-912498f8d0bf",
+    "etude_id": "f3b6c647-2bfc-4355-aa78-4659f27dc54f"
+  },
+  {
+    "aliment_id": "7ec59dde-83df-4e89-b366-811edce38685",
+    "etude_id": "d6d08225-7602-431a-949a-a7206c155ba8"
+  },
+  {
+    "aliment_id": "7ec59dde-83df-4e89-b366-811edce38685",
+    "etude_id": "ed98fce7-db9e-4831-b6bf-5393366b92d6"
+  },
+  {
+    "aliment_id": "7ddb6481-0ff6-4b93-bd9f-fbf336c96a9f",
+    "etude_id": "408acf78-966b-41d9-a16f-65cce30dcbd7"
+  },
+  {
+    "aliment_id": "7ddb6481-0ff6-4b93-bd9f-fbf336c96a9f",
+    "etude_id": "7fcc8f30-b7e8-4113-8a2a-84d1ee5aa937"
+  },
+  {
+    "aliment_id": "e3d9a638-1f1c-43a8-a366-899646a26629",
+    "etude_id": "b8225aef-9486-43d8-b71c-c52735d227bf"
+  },
+  {
+    "aliment_id": "f23eeb02-bd84-494a-8851-9b4267cb7562",
+    "etude_id": "2ed07e02-3d99-46a0-8e84-a6020bd101c0"
+  },
+  {
+    "aliment_id": "f23eeb02-bd84-494a-8851-9b4267cb7562",
+    "etude_id": "50dd8a5c-499a-4aa7-bebc-0a27ff4ca30d"
+  },
+  {
+    "aliment_id": "f23eeb02-bd84-494a-8851-9b4267cb7562",
+    "etude_id": "1bde9164-0433-4b64-ba31-7b1f25f23fca"
+  },
+  {
+    "aliment_id": "f23eeb02-bd84-494a-8851-9b4267cb7562",
+    "etude_id": "d8386bf3-4b0b-4fc3-bd2e-296f4c690679"
+  },
+  {
+    "aliment_id": "f23eeb02-bd84-494a-8851-9b4267cb7562",
+    "etude_id": "fc14b733-af90-4dc2-be9e-152dab71bdcc"
+  },
+  {
+    "aliment_id": "0bff5956-ef20-492a-9858-a630c904ab75",
+    "etude_id": "c3d1c7aa-f930-4ec5-a993-ce2d2b7ff7a3"
+  },
+  {
+    "aliment_id": "0bff5956-ef20-492a-9858-a630c904ab75",
+    "etude_id": "d00c2ef0-3408-4d6d-b556-da8b340919b5"
+  },
+  {
+    "aliment_id": "b94f594d-178c-4229-9462-c9fd76859ff4",
+    "etude_id": "a75d8192-090f-4387-95eb-4664a3185aa9"
+  },
+  {
+    "aliment_id": "b94f594d-178c-4229-9462-c9fd76859ff4",
+    "etude_id": "1fecc147-a7a7-45f9-9c7b-d3a1a300ee2c"
+  },
+  {
+    "aliment_id": "57a27475-1063-4e4c-a0bf-3fb2977455ef",
+    "etude_id": "fd9e908a-43b6-4e35-be2d-8a4c4c6a379a"
+  },
+  {
+    "aliment_id": "57a27475-1063-4e4c-a0bf-3fb2977455ef",
+    "etude_id": "0de3fa99-f088-4c2d-8bba-0a930b5e93d9"
+  },
+  {
+    "aliment_id": "57a27475-1063-4e4c-a0bf-3fb2977455ef",
+    "etude_id": "ca6bf721-7a30-43dd-8a3c-c1006c23eaec"
+  },
+  {
+    "aliment_id": "57a27475-1063-4e4c-a0bf-3fb2977455ef",
+    "etude_id": "6a43f01d-b4e0-4e4d-8413-6d08501af404"
+  },
+  {
+    "aliment_id": "57a27475-1063-4e4c-a0bf-3fb2977455ef",
+    "etude_id": "bcaf6798-f67b-4e6b-b39d-413b213732aa"
+  },
+  {
+    "aliment_id": "f71ce93a-40c4-4531-8fb6-0ffb52da9c23",
+    "etude_id": "82b07b90-7544-4f9b-be72-bd986d19a322"
+  },
+  {
+    "aliment_id": "f71ce93a-40c4-4531-8fb6-0ffb52da9c23",
+    "etude_id": "667d6173-056f-4c02-9792-d6d127fa13fd"
+  },
+  {
+    "aliment_id": "f71ce93a-40c4-4531-8fb6-0ffb52da9c23",
+    "etude_id": "7625cde7-e8b6-465f-9138-0fa7516540fa"
+  },
+  {
+    "aliment_id": "32aed8c8-ac38-4ef0-87e2-b47212cda2da",
+    "etude_id": "ed498e2e-7c74-421e-b237-ba23d7175484"
+  },
+  {
+    "aliment_id": "7ba711e7-047b-4dd0-b5a7-c93a0c2ea95b",
+    "etude_id": "e676e841-84f1-4174-8576-af143a851358"
+  },
+  {
+    "aliment_id": "7f34c380-4de3-4237-a397-24f35921ba7d",
+    "etude_id": "0411c244-634e-497b-a88e-386edcec3a7e"
+  },
+  {
+    "aliment_id": "7f34c380-4de3-4237-a397-24f35921ba7d",
+    "etude_id": "5c04a32b-b124-4174-88a9-73f9f3247edc"
+  },
+  {
+    "aliment_id": "c5cb9c9a-0209-4c64-9889-a10836577d20",
+    "etude_id": "3e380a8b-e200-4511-829f-aa072256488e"
+  },
+  {
+    "aliment_id": "c5cb9c9a-0209-4c64-9889-a10836577d20",
+    "etude_id": "338beab9-e915-4628-be04-9b0013a35994"
+  },
+  {
+    "aliment_id": "c5cb9c9a-0209-4c64-9889-a10836577d20",
+    "etude_id": "86903cab-3948-496a-9ba6-42ef58df1705"
+  },
+  {
+    "aliment_id": "c5cb9c9a-0209-4c64-9889-a10836577d20",
+    "etude_id": "f82ed8ff-7ca3-4426-96ee-8882b362cd04"
+  },
+  {
+    "aliment_id": "c5cb9c9a-0209-4c64-9889-a10836577d20",
+    "etude_id": "9ce5637f-bfd0-4a4e-9c33-aba6c36454bf"
+  },
+  {
+    "aliment_id": "c5cb9c9a-0209-4c64-9889-a10836577d20",
+    "etude_id": "2af0c720-f1b7-4b5a-885e-97b8b350a393"
+  },
+  {
+    "aliment_id": "c5cb9c9a-0209-4c64-9889-a10836577d20",
+    "etude_id": "bbec2355-79bc-4540-b576-fb44a259598d"
+  },
+  {
+    "aliment_id": "c5cb9c9a-0209-4c64-9889-a10836577d20",
+    "etude_id": "ddf0c8bb-893f-42ce-9539-4423724d872b"
+  },
+  {
+    "aliment_id": "e440dfc9-24c6-41d5-b570-11e283c86ec5",
+    "etude_id": "5c588b5b-f53e-49bd-987a-bad3ec083935"
+  },
+  {
+    "aliment_id": "e440dfc9-24c6-41d5-b570-11e283c86ec5",
+    "etude_id": "ac2406bf-1539-4317-a671-0a0391521fb1"
+  },
+  {
+    "aliment_id": "24f74b93-0959-4e07-b2cb-4be25ae96df5",
+    "etude_id": "33602857-5d15-4d62-bd5f-49e77da08dd1"
+  },
+  {
+    "aliment_id": "24f74b93-0959-4e07-b2cb-4be25ae96df5",
+    "etude_id": "2eb5a691-56f5-4c8c-9226-5f24a47df0ff"
+  },
+  {
+    "aliment_id": "24f74b93-0959-4e07-b2cb-4be25ae96df5",
+    "etude_id": "4c8943ae-8545-437f-86a0-ecaf84bf30ef"
+  },
+  {
+    "aliment_id": "24f74b93-0959-4e07-b2cb-4be25ae96df5",
+    "etude_id": "3f17333a-b07e-476d-83da-ace38aed6cda"
+  },
+  {
+    "aliment_id": "24f74b93-0959-4e07-b2cb-4be25ae96df5",
+    "etude_id": "7b36f0cd-e231-44b9-abaa-4624765e7fc8"
+  },
+  {
+    "aliment_id": "974141fd-c15a-4986-ae84-c6cbf501858a",
+    "etude_id": "0c17c5fe-2c0e-41f0-a6e3-8a25dafb9d90"
+  },
+  {
+    "aliment_id": "ef6ddbbf-e104-4cc9-a6e4-94c03e3626eb",
+    "etude_id": "374dc4ad-c45f-4f9d-9006-791ac54fdc8b"
+  },
+  {
+    "aliment_id": "ef6ddbbf-e104-4cc9-a6e4-94c03e3626eb",
+    "etude_id": "31436e6e-849e-40d3-ae96-39422fd49baf"
+  },
+  {
+    "aliment_id": "ef6ddbbf-e104-4cc9-a6e4-94c03e3626eb",
+    "etude_id": "6f7ad5d0-73dd-431a-9729-eaa3bb2b77fc"
+  },
+  {
+    "aliment_id": "ef6ddbbf-e104-4cc9-a6e4-94c03e3626eb",
+    "etude_id": "4d67a0f7-5c3d-4fe2-a16b-5adcd9f1e5e9"
+  },
+  {
+    "aliment_id": "ef6ddbbf-e104-4cc9-a6e4-94c03e3626eb",
+    "etude_id": "b27d0dbc-4b33-443c-b5bc-35f5918bffa1"
+  },
+  {
+    "aliment_id": "ef6ddbbf-e104-4cc9-a6e4-94c03e3626eb",
+    "etude_id": "5b312049-476c-47f7-9dc9-37de9684fa3c"
+  },
+  {
+    "aliment_id": "ef6ddbbf-e104-4cc9-a6e4-94c03e3626eb",
+    "etude_id": "384efdba-e034-40e3-ac85-19a3c221511f"
+  },
+  {
+    "aliment_id": "ef6ddbbf-e104-4cc9-a6e4-94c03e3626eb",
+    "etude_id": "81679f4a-eb42-49cb-a794-f9d85f4b8f0d"
+  },
+  {
+    "aliment_id": "ef6ddbbf-e104-4cc9-a6e4-94c03e3626eb",
+    "etude_id": "f0f371af-55aa-4c74-ae06-fe41bc6c7bc1"
+  },
+  {
+    "aliment_id": "ef6ddbbf-e104-4cc9-a6e4-94c03e3626eb",
+    "etude_id": "323fbb7c-7cac-46b3-bca5-d4717e486829"
+  },
+  {
+    "aliment_id": "ef6ddbbf-e104-4cc9-a6e4-94c03e3626eb",
+    "etude_id": "8953e5b1-09fb-438e-b19c-8904e0e34bd8"
+  },
+  {
+    "aliment_id": "ef6ddbbf-e104-4cc9-a6e4-94c03e3626eb",
+    "etude_id": "3c49f52c-95d0-48dc-933a-7f06157161d0"
+  },
+  {
+    "aliment_id": "ef6ddbbf-e104-4cc9-a6e4-94c03e3626eb",
+    "etude_id": "0b5fe0a2-6c6a-448f-ab99-f0d9c62ffa6e"
+  },
+  {
+    "aliment_id": "1e7b41f6-6830-491e-836a-b9eca2667072",
+    "etude_id": "2e445bb3-8bec-4ea6-a082-63885d732791"
+  },
+  {
+    "aliment_id": "9b13e287-33d9-4b63-8d86-c87c5575c847",
+    "etude_id": "5bf44d26-738a-4338-81c1-f5c51ac19298"
+  },
+  {
+    "aliment_id": "9b13e287-33d9-4b63-8d86-c87c5575c847",
+    "etude_id": "1b1a2d78-8b9f-490f-a512-9cffd2b9a1f1"
+  },
+  {
+    "aliment_id": "9b13e287-33d9-4b63-8d86-c87c5575c847",
+    "etude_id": "8106eda4-8280-4f55-8cd6-43bc3060f8e9"
+  },
+  {
+    "aliment_id": "9b13e287-33d9-4b63-8d86-c87c5575c847",
+    "etude_id": "ee6654ff-f5b5-420f-8b5c-f6b5b7bd60c0"
+  },
+  {
+    "aliment_id": "8c78d3f4-ddbd-42e6-a2b5-68d272d102f0",
+    "etude_id": "22fbe26a-8d92-4c21-a8d1-727beaf2561c"
+  },
+  {
+    "aliment_id": "1aa380aa-a9b7-4cf8-9bfc-f63e98a7febd",
+    "etude_id": "49dbe7fe-7ffa-4af7-8bb0-af2539b447f8"
+  },
+  {
+    "aliment_id": "1aa380aa-a9b7-4cf8-9bfc-f63e98a7febd",
+    "etude_id": "9016d824-d0b4-4ffe-a0d9-7b485c19e59f"
+  },
+  {
+    "aliment_id": "1aa380aa-a9b7-4cf8-9bfc-f63e98a7febd",
+    "etude_id": "b0d1baeb-bcf3-4eb8-ac5d-4e22e8237181"
+  },
+  {
+    "aliment_id": "1aa380aa-a9b7-4cf8-9bfc-f63e98a7febd",
+    "etude_id": "25767d82-62c4-4a7c-9597-7dce6e0826ad"
+  },
+  {
+    "aliment_id": "1aa380aa-a9b7-4cf8-9bfc-f63e98a7febd",
+    "etude_id": "e367ce15-0cd3-4a30-932f-c2e585e70a60"
+  },
+  {
+    "aliment_id": "e4f374ce-a043-41e8-8a44-c4362c346108",
+    "etude_id": "53be2853-c514-40bb-ad3e-4996d893115a"
+  },
+  {
+    "aliment_id": "e4f374ce-a043-41e8-8a44-c4362c346108",
+    "etude_id": "0ea1f350-116f-4ebf-b563-6bcd159c4db0"
+  },
+  {
+    "aliment_id": "e4f374ce-a043-41e8-8a44-c4362c346108",
+    "etude_id": "f9aee8f3-f996-48ba-b46e-640ed6e20960"
+  },
+  {
+    "aliment_id": "e4f374ce-a043-41e8-8a44-c4362c346108",
+    "etude_id": "808dae54-3e59-4341-adf2-2b7666414e93"
+  },
+  {
+    "aliment_id": "d28c4072-4ef5-4a7e-bcfc-4a5aab1d3d4c",
+    "etude_id": "d8050ba1-4b32-4934-91ba-18f9fae65fa5"
+  },
+  {
+    "aliment_id": "d28c4072-4ef5-4a7e-bcfc-4a5aab1d3d4c",
+    "etude_id": "7913f9a1-2e6d-4e82-b175-aa1a21ab3ea7"
+  },
+  {
+    "aliment_id": "db84c031-c80e-468e-ad25-d547fd194cbe",
+    "etude_id": "18cfc5c7-3000-4c23-ad56-b08c39ceb3b0"
+  },
+  {
+    "aliment_id": "db84c031-c80e-468e-ad25-d547fd194cbe",
+    "etude_id": "1bbfc5e6-c1a1-414a-aa86-ba05d9813ae5"
+  },
+  {
+    "aliment_id": "66e3bfcd-1b00-4b53-a436-ba926a561acc",
+    "etude_id": "c852bcdc-f34f-4679-98ba-82b6697772c9"
+  },
+  {
+    "aliment_id": "148239a2-67ea-4d27-9713-45d948eaa621",
+    "etude_id": "a25ec958-2276-4f87-9f11-ef2df4691a73"
+  },
+  {
+    "aliment_id": "148239a2-67ea-4d27-9713-45d948eaa621",
+    "etude_id": "a11c4940-9b72-490e-b9eb-998e892fddce"
+  },
+  {
+    "aliment_id": "3a7db00e-6aac-44ca-8936-73f67f15ec0a",
+    "etude_id": "a081ad38-79f8-4083-b123-989bb69c7dad"
+  },
+  {
+    "aliment_id": "3a7db00e-6aac-44ca-8936-73f67f15ec0a",
+    "etude_id": "a5a42fa0-0aa8-4647-a0c6-2bd38c14f659"
+  },
+  {
+    "aliment_id": "6293226d-2c15-40a6-9235-c25e387b8304",
+    "etude_id": "f8035241-1c76-4a74-a0f8-cee702a87b6f"
+  },
+  {
+    "aliment_id": "ca08b6ab-743a-4513-9f93-2ebb9fa90aa3",
+    "etude_id": "346b459d-47d4-4e23-b0ae-3ab698e884cf"
+  },
+  {
+    "aliment_id": "ca08b6ab-743a-4513-9f93-2ebb9fa90aa3",
+    "etude_id": "03ca352f-9b53-422b-81a7-591722831ce4"
+  },
+  {
+    "aliment_id": "ca08b6ab-743a-4513-9f93-2ebb9fa90aa3",
+    "etude_id": "0aede0fd-c342-490b-8ac9-de550ea9cf50"
+  },
+  {
+    "aliment_id": "ca08b6ab-743a-4513-9f93-2ebb9fa90aa3",
+    "etude_id": "702e5853-1df3-4ec7-9a10-4997e0eb9036"
+  },
+  {
+    "aliment_id": "ca08b6ab-743a-4513-9f93-2ebb9fa90aa3",
+    "etude_id": "4e059313-3659-4968-b09f-1f0df967b3e9"
+  },
+  {
+    "aliment_id": "ca08b6ab-743a-4513-9f93-2ebb9fa90aa3",
+    "etude_id": "923a027f-c310-436a-a20f-f0f0a9873891"
+  },
+  {
+    "aliment_id": "ca08b6ab-743a-4513-9f93-2ebb9fa90aa3",
+    "etude_id": "bc39213b-1e22-4582-87c3-2cefaddb5d8f"
+  },
+  {
+    "aliment_id": "b09cd08c-d51c-4f96-b952-82cd5e6cd98a",
+    "etude_id": "12e05e5f-2e25-43a5-956d-bcafc1c855c3"
+  },
+  {
+    "aliment_id": "b09cd08c-d51c-4f96-b952-82cd5e6cd98a",
+    "etude_id": "ede8a23a-79f2-4f95-be71-d22e860752b6"
+  },
+  {
+    "aliment_id": "b09cd08c-d51c-4f96-b952-82cd5e6cd98a",
+    "etude_id": "98c9cb5e-bb3f-45b1-a729-b56cd44844f8"
+  },
+  {
+    "aliment_id": "b09cd08c-d51c-4f96-b952-82cd5e6cd98a",
+    "etude_id": "a0f01637-8d6a-4591-8378-407480cda92b"
+  },
+  {
+    "aliment_id": "b09cd08c-d51c-4f96-b952-82cd5e6cd98a",
+    "etude_id": "14a49575-407d-4702-97ae-026b8d000cca"
+  },
+  {
+    "aliment_id": "b09cd08c-d51c-4f96-b952-82cd5e6cd98a",
+    "etude_id": "335b38c1-28c4-41df-9f73-51c8f85fc34e"
+  },
+  {
+    "aliment_id": "b09cd08c-d51c-4f96-b952-82cd5e6cd98a",
+    "etude_id": "0db0b93c-bce8-456f-a5f1-3a13ff3dffe2"
+  },
+  {
+    "aliment_id": "b09cd08c-d51c-4f96-b952-82cd5e6cd98a",
+    "etude_id": "3cca73a8-af47-4d4a-96b7-8a2bed7848ec"
+  },
+  {
+    "aliment_id": "8ac4d392-286e-48ab-b0b0-af725c8be8fa",
+    "etude_id": "cd3b8285-7950-493d-a1ba-bf9a464ee639"
+  },
+  {
+    "aliment_id": "8ac4d392-286e-48ab-b0b0-af725c8be8fa",
+    "etude_id": "bf3a9433-c917-4bba-bb23-dcb8e0429ab3"
+  },
+  {
+    "aliment_id": "8ac4d392-286e-48ab-b0b0-af725c8be8fa",
+    "etude_id": "dc804fbd-4aa2-4a3d-bcbb-fcc8df69a500"
+  },
+  {
+    "aliment_id": "8ac4d392-286e-48ab-b0b0-af725c8be8fa",
+    "etude_id": "4c231206-3f6b-4087-a91e-f1ed90edf685"
+  },
+  {
+    "aliment_id": "8ac4d392-286e-48ab-b0b0-af725c8be8fa",
+    "etude_id": "e404046e-f250-418e-9ce0-536dccb00072"
+  },
+  {
+    "aliment_id": "8ac4d392-286e-48ab-b0b0-af725c8be8fa",
+    "etude_id": "675053b8-a422-48b0-9a0d-3e4d4026f948"
+  },
+  {
+    "aliment_id": "8cd7e15f-54e2-460b-ac06-d2599e2eb8c3",
+    "etude_id": "620b3b19-053c-4f87-878e-1c27d821ee5f"
+  },
+  {
+    "aliment_id": "8cd7e15f-54e2-460b-ac06-d2599e2eb8c3",
+    "etude_id": "a870dd60-9108-4952-9e21-c1cda8fca02b"
+  },
+  {
+    "aliment_id": "8cd7e15f-54e2-460b-ac06-d2599e2eb8c3",
+    "etude_id": "28282018-1e64-4124-94f8-2d8e775cdcd0"
+  },
+  {
+    "aliment_id": "8cd7e15f-54e2-460b-ac06-d2599e2eb8c3",
+    "etude_id": "63e0968d-beb6-4b24-afdc-55705de8e670"
+  },
+  {
+    "aliment_id": "8cd7e15f-54e2-460b-ac06-d2599e2eb8c3",
+    "etude_id": "fc93f0e3-ee4d-4464-af10-3ca184eaff39"
+  },
+  {
+    "aliment_id": "8cd7e15f-54e2-460b-ac06-d2599e2eb8c3",
+    "etude_id": "90320c15-5aee-444c-a6e0-13a9ee7494d2"
+  },
+  {
+    "aliment_id": "8cd7e15f-54e2-460b-ac06-d2599e2eb8c3",
+    "etude_id": "f635bcd1-f1ff-4119-972f-e4b0f9c76e76"
+  },
+  {
+    "aliment_id": "8cd7e15f-54e2-460b-ac06-d2599e2eb8c3",
+    "etude_id": "ee19f241-5a0f-4d59-9c25-9c4414bd2143"
+  },
+  {
+    "aliment_id": "8cd7e15f-54e2-460b-ac06-d2599e2eb8c3",
+    "etude_id": "c142d172-24f3-4b56-abb0-8517d28b61d2"
+  },
+  {
+    "aliment_id": "8cd7e15f-54e2-460b-ac06-d2599e2eb8c3",
+    "etude_id": "a28228f5-8685-4e89-a6bd-9d00f347c943"
+  },
+  {
+    "aliment_id": "8cd7e15f-54e2-460b-ac06-d2599e2eb8c3",
+    "etude_id": "ce4ee9b5-d522-4133-9392-38bae8e7e71b"
+  },
+  {
+    "aliment_id": "8cd7e15f-54e2-460b-ac06-d2599e2eb8c3",
+    "etude_id": "0557ae9c-ac2f-4179-917d-67074ddbaf55"
+  },
+  {
+    "aliment_id": "3adf27a5-9a7b-4de2-8c5f-76ce08dd1a3f",
+    "etude_id": "6611ec75-78de-4624-aabf-8b2c8c1f49b8"
+  },
+  {
+    "aliment_id": "3adf27a5-9a7b-4de2-8c5f-76ce08dd1a3f",
+    "etude_id": "15039de3-a237-4adf-974e-69341ad74ad2"
+  },
+  {
+    "aliment_id": "3adf27a5-9a7b-4de2-8c5f-76ce08dd1a3f",
+    "etude_id": "e5bab0c2-300a-4eb2-8bbd-c15bfb50d44c"
+  },
+  {
+    "aliment_id": "3adf27a5-9a7b-4de2-8c5f-76ce08dd1a3f",
+    "etude_id": "04d4ca92-0116-4840-a36d-dab9be2ac28b"
+  },
+  {
+    "aliment_id": "3adf27a5-9a7b-4de2-8c5f-76ce08dd1a3f",
+    "etude_id": "0df9891e-ce85-451e-8998-68d8be65fc43"
+  },
+  {
+    "aliment_id": "0e446af5-f22a-41f1-994c-2ea715f3c665",
+    "etude_id": "c365dd53-397d-4d5f-98cf-56e345271566"
+  },
+  {
+    "aliment_id": "0e446af5-f22a-41f1-994c-2ea715f3c665",
+    "etude_id": "7d5bd851-a321-43a5-a97b-95180eb80171"
+  },
+  {
+    "aliment_id": "0e446af5-f22a-41f1-994c-2ea715f3c665",
+    "etude_id": "9967aef4-0fc1-4721-acc5-508c432e04db"
+  },
+  {
+    "aliment_id": "0e446af5-f22a-41f1-994c-2ea715f3c665",
+    "etude_id": "d5384543-7ed2-4db1-ac8f-a40e2064ab70"
+  },
+  {
+    "aliment_id": "0e446af5-f22a-41f1-994c-2ea715f3c665",
+    "etude_id": "ce9e119e-e5b7-4cda-8888-f42f3bed1eed"
+  },
+  {
+    "aliment_id": "ac8bdc31-4ba4-43e4-890e-8c104a33e803",
+    "etude_id": "72954eb3-8284-44b2-9687-5d7cd21951dd"
+  },
+  {
+    "aliment_id": "ac8bdc31-4ba4-43e4-890e-8c104a33e803",
+    "etude_id": "d11f4d23-7ad8-4d66-b2dd-ee2deaf645ea"
+  },
+  {
+    "aliment_id": "ac8bdc31-4ba4-43e4-890e-8c104a33e803",
+    "etude_id": "538bc8c3-dcf1-446f-84a3-a137e98ab644"
+  },
+  {
+    "aliment_id": "ac8bdc31-4ba4-43e4-890e-8c104a33e803",
+    "etude_id": "8652bb0b-c93e-4e49-8b0a-7966f31a3722"
+  },
+  {
+    "aliment_id": "c9a2cb44-208f-4078-9812-a019e8d6ec99",
+    "etude_id": "4aff7383-3f9d-4e08-8156-3859f355587c"
+  },
+  {
+    "aliment_id": "14fdb446-8dc8-4c30-9bd3-4ea86d661ff4",
+    "etude_id": "362d327c-6cd7-479b-b3fa-a0a2a437e8f9"
+  },
+  {
+    "aliment_id": "14fdb446-8dc8-4c30-9bd3-4ea86d661ff4",
+    "etude_id": "768b5b2c-44cf-4b1b-a6b7-d6720f73eb0b"
+  },
+  {
+    "aliment_id": "14fdb446-8dc8-4c30-9bd3-4ea86d661ff4",
+    "etude_id": "fd9f37a3-64c5-49e2-a97e-6cba2b775e4b"
+  },
+  {
+    "aliment_id": "14fdb446-8dc8-4c30-9bd3-4ea86d661ff4",
+    "etude_id": "58ee0e8a-dcb3-4304-92ba-ef1390236a5e"
+  },
+  {
+    "aliment_id": "14fdb446-8dc8-4c30-9bd3-4ea86d661ff4",
+    "etude_id": "9d846115-0bfb-4747-a8b4-405cdd462501"
+  },
+  {
+    "aliment_id": "14fdb446-8dc8-4c30-9bd3-4ea86d661ff4",
+    "etude_id": "d8aa3f02-1648-48cb-a3e4-6a857c337cfd"
+  },
+  {
+    "aliment_id": "14fdb446-8dc8-4c30-9bd3-4ea86d661ff4",
+    "etude_id": "89379a68-09fc-42fe-9251-d5542e2c793f"
+  },
+  {
+    "aliment_id": "14fdb446-8dc8-4c30-9bd3-4ea86d661ff4",
+    "etude_id": "9116a9dd-a827-4c26-8183-a3b103f4cffb"
+  },
+  {
+    "aliment_id": "14fdb446-8dc8-4c30-9bd3-4ea86d661ff4",
+    "etude_id": "21ea14c4-5ce0-4c0f-b53a-a0c499b70d6e"
+  },
+  {
+    "aliment_id": "14fdb446-8dc8-4c30-9bd3-4ea86d661ff4",
+    "etude_id": "b2441e52-0eb9-49bf-a43f-8cc72341e3fa"
+  },
+  {
+    "aliment_id": "14fdb446-8dc8-4c30-9bd3-4ea86d661ff4",
+    "etude_id": "b45ac29d-2444-4122-a53f-fc6e0332d347"
+  },
+  {
+    "aliment_id": "14fdb446-8dc8-4c30-9bd3-4ea86d661ff4",
+    "etude_id": "7a70067f-136f-4450-a534-e0e71894fffa"
+  },
+  {
+    "aliment_id": "14fdb446-8dc8-4c30-9bd3-4ea86d661ff4",
+    "etude_id": "e19123b0-c4c8-4ef7-b352-f1646e92d5d7"
+  },
+  {
+    "aliment_id": "14fdb446-8dc8-4c30-9bd3-4ea86d661ff4",
+    "etude_id": "be338068-5c4c-4f68-9e39-62bcf71af3a6"
+  },
+  {
+    "aliment_id": "14fdb446-8dc8-4c30-9bd3-4ea86d661ff4",
+    "etude_id": "2db2c647-3474-4de2-8610-f1a37614c90a"
+  },
+  {
+    "aliment_id": "590ad0fb-9112-4b0e-858b-dabc4edf6f5d",
+    "etude_id": "105f3583-140a-4814-ae97-ef46e5a2c2f0"
+  },
+  {
+    "aliment_id": "590ad0fb-9112-4b0e-858b-dabc4edf6f5d",
+    "etude_id": "ae8e5a07-517d-455b-899a-5500403b1c35"
+  },
+  {
+    "aliment_id": "590ad0fb-9112-4b0e-858b-dabc4edf6f5d",
+    "etude_id": "fd72d878-eb8f-4cc1-834e-abf663941921"
+  },
+  {
+    "aliment_id": "590ad0fb-9112-4b0e-858b-dabc4edf6f5d",
+    "etude_id": "3ec95149-e1cb-44d1-a655-6697c44c5b83"
+  },
+  {
+    "aliment_id": "590ad0fb-9112-4b0e-858b-dabc4edf6f5d",
+    "etude_id": "548add04-fc9f-4df0-b7fb-bb51aaee65f5"
+  },
+  {
+    "aliment_id": "f0cd0345-78dc-4fa9-8338-14335395fedf",
+    "etude_id": "6a50d746-d9b9-4d0f-9d4f-ea8362d3dcdb"
+  },
+  {
+    "aliment_id": "f0cd0345-78dc-4fa9-8338-14335395fedf",
+    "etude_id": "7c448b5a-0157-4c32-844d-23f8026b401f"
+  },
+  {
+    "aliment_id": "f0cd0345-78dc-4fa9-8338-14335395fedf",
+    "etude_id": "5769307f-ccc4-4151-9c7e-e2f2cfb10ae1"
+  },
+  {
+    "aliment_id": "f0cd0345-78dc-4fa9-8338-14335395fedf",
+    "etude_id": "ba35d0fd-600b-48a9-8491-734351173522"
+  },
+  {
+    "aliment_id": "f0cd0345-78dc-4fa9-8338-14335395fedf",
+    "etude_id": "3221ed16-0115-4c57-b4c6-6fd30c98b998"
+  },
+  {
+    "aliment_id": "98c7cb25-7431-4a79-9f1a-a7c0cf559cf9",
+    "etude_id": "32bfd4f8-b061-4390-b067-4128d6e14288"
+  },
+  {
+    "aliment_id": "98c7cb25-7431-4a79-9f1a-a7c0cf559cf9",
+    "etude_id": "8ecf8c73-2301-4b04-9871-8d5560f5a5b6"
+  },
+  {
+    "aliment_id": "98c7cb25-7431-4a79-9f1a-a7c0cf559cf9",
+    "etude_id": "ec7efe12-c3ea-4b01-bff5-84c9f756462d"
+  },
+  {
+    "aliment_id": "2359f6cc-fe23-40b2-94f1-288bdf6a78af",
+    "etude_id": "9a26dcd1-365d-4f91-a3da-c235ee975c50"
+  },
+  {
+    "aliment_id": "2359f6cc-fe23-40b2-94f1-288bdf6a78af",
+    "etude_id": "1d8446c2-e58f-4af3-8ca7-fee2e4094f8a"
+  },
+  {
+    "aliment_id": "2359f6cc-fe23-40b2-94f1-288bdf6a78af",
+    "etude_id": "77a58529-6a81-4bd6-822e-ec9e0b3f325e"
+  },
+  {
+    "aliment_id": "2359f6cc-fe23-40b2-94f1-288bdf6a78af",
+    "etude_id": "fc83695e-a59a-46c1-90fd-24c89fcff1d9"
+  },
+  {
+    "aliment_id": "2359f6cc-fe23-40b2-94f1-288bdf6a78af",
+    "etude_id": "7dd751a3-dd6b-4acd-a56d-123c86221846"
+  },
+  {
+    "aliment_id": "2359f6cc-fe23-40b2-94f1-288bdf6a78af",
+    "etude_id": "6406a610-7f52-4527-b7c4-548d039090ac"
+  },
+  {
+    "aliment_id": "2359f6cc-fe23-40b2-94f1-288bdf6a78af",
+    "etude_id": "9ec398ca-fbe8-4f4b-8eb6-da94db819ab9"
+  },
+  {
+    "aliment_id": "2359f6cc-fe23-40b2-94f1-288bdf6a78af",
+    "etude_id": "54afedc3-3bf2-4d1b-a1c9-3f74cb12a909"
+  },
+  {
+    "aliment_id": "2359f6cc-fe23-40b2-94f1-288bdf6a78af",
+    "etude_id": "d4dbb44b-cf98-4e7c-af3f-482d1c52a79b"
+  },
+  {
+    "aliment_id": "2359f6cc-fe23-40b2-94f1-288bdf6a78af",
+    "etude_id": "1aaa81f9-046d-4bf0-af30-c5c5e9da3301"
+  },
+  {
+    "aliment_id": "2359f6cc-fe23-40b2-94f1-288bdf6a78af",
+    "etude_id": "90caea2a-a41f-4445-bc14-a6013ba0face"
+  },
+  {
+    "aliment_id": "2359f6cc-fe23-40b2-94f1-288bdf6a78af",
+    "etude_id": "eaa51970-7fd2-4ac3-bfb0-55c9dd7aef95"
+  },
+  {
+    "aliment_id": "2359f6cc-fe23-40b2-94f1-288bdf6a78af",
+    "etude_id": "98c90870-c330-441f-9420-653c7dd56412"
+  },
+  {
+    "aliment_id": "a9995d28-1ee3-4847-bf91-f135fa415c21",
+    "etude_id": "e5305ba0-ae57-43b5-a673-f818e2e5f790"
+  },
+  {
+    "aliment_id": "2359f6cc-fe23-40b2-94f1-288bdf6a78af",
+    "etude_id": "a1810551-15f9-4b94-ba7a-ffb4c75987fe"
+  },
+  {
+    "aliment_id": "a9995d28-1ee3-4847-bf91-f135fa415c21",
+    "etude_id": "5b8752cc-e265-41d6-b67c-3d2ce78d3153"
+  },
+  {
+    "aliment_id": "2359f6cc-fe23-40b2-94f1-288bdf6a78af",
+    "etude_id": "75474497-1900-4a08-b479-95431d941b4e"
+  },
+  {
+    "aliment_id": "a9995d28-1ee3-4847-bf91-f135fa415c21",
+    "etude_id": "5c89751d-67ed-479d-90fd-4c19f4936be3"
+  },
+  {
+    "aliment_id": "2359f6cc-fe23-40b2-94f1-288bdf6a78af",
+    "etude_id": "9bfa9428-a4f4-4223-ae41-75ea655670d4"
+  },
+  {
+    "aliment_id": "a9995d28-1ee3-4847-bf91-f135fa415c21",
+    "etude_id": "fc2956ff-c6ab-4902-a2c9-70db2d7df10d"
+  },
+  {
+    "aliment_id": "a9995d28-1ee3-4847-bf91-f135fa415c21",
+    "etude_id": "bdd421d1-28a4-45ce-a667-2b7f325e264a"
+  },
+  {
+    "aliment_id": "a9995d28-1ee3-4847-bf91-f135fa415c21",
+    "etude_id": "bae35129-e268-41ab-ac59-7421c61f5d70"
+  },
+  {
+    "aliment_id": "a9995d28-1ee3-4847-bf91-f135fa415c21",
+    "etude_id": "476fd9ae-4bec-4939-a669-a7c31f697751"
+  },
+  {
+    "aliment_id": "a9995d28-1ee3-4847-bf91-f135fa415c21",
+    "etude_id": "61aeb87c-ae50-41a5-b524-81cd401bc42b"
+  },
+  {
+    "aliment_id": "248eba7a-3a21-4e6c-89ee-5a33ce77af10",
+    "etude_id": "7ec648be-6754-4275-8732-fe39b81d3dc4"
+  },
+  {
+    "aliment_id": "a9995d28-1ee3-4847-bf91-f135fa415c21",
+    "etude_id": "917f55f6-f29b-4b14-88af-32640d0d935d"
+  },
+  {
+    "aliment_id": "248eba7a-3a21-4e6c-89ee-5a33ce77af10",
+    "etude_id": "d76f2039-9bae-43b0-bd80-36feef4bc84e"
+  },
+  {
+    "aliment_id": "a9995d28-1ee3-4847-bf91-f135fa415c21",
+    "etude_id": "e9cd2ef4-d845-4137-9bc4-a482861f4653"
+  },
+  {
+    "aliment_id": "248eba7a-3a21-4e6c-89ee-5a33ce77af10",
+    "etude_id": "02f2c738-5e36-4ba6-8d11-efd98c682d7f"
+  },
+  {
+    "aliment_id": "a9995d28-1ee3-4847-bf91-f135fa415c21",
+    "etude_id": "1f7ec1f0-0edc-4b7f-bac7-f126a6dc4092"
+  },
+  {
+    "aliment_id": "248eba7a-3a21-4e6c-89ee-5a33ce77af10",
+    "etude_id": "e3b00faf-75fc-48be-ad05-43f06e29c0cb"
+  },
+  {
+    "aliment_id": "a9995d28-1ee3-4847-bf91-f135fa415c21",
+    "etude_id": "fa6e5cd6-f1a5-4bc9-babd-917c1da9970a"
+  },
+  {
+    "aliment_id": "248eba7a-3a21-4e6c-89ee-5a33ce77af10",
+    "etude_id": "cf4bd460-4ab6-4adf-a691-57a797c293a2"
+  },
+  {
+    "aliment_id": "a9995d28-1ee3-4847-bf91-f135fa415c21",
+    "etude_id": "857b1446-49d1-49b4-8346-65f3c6c00383"
+  },
+  {
+    "aliment_id": "248eba7a-3a21-4e6c-89ee-5a33ce77af10",
+    "etude_id": "9012a26d-d56a-4044-b571-a70242a5f9fa"
+  },
+  {
+    "aliment_id": "248eba7a-3a21-4e6c-89ee-5a33ce77af10",
+    "etude_id": "40ea078d-a352-484c-b432-642f4a164bc1"
+  },
+  {
+    "aliment_id": "248eba7a-3a21-4e6c-89ee-5a33ce77af10",
+    "etude_id": "e26d7185-22c0-4e73-92c8-a5eb3ae32c34"
+  },
+  {
+    "aliment_id": "4c2863c3-b791-4d98-b5d1-c737506000a2",
+    "etude_id": "380a6668-3906-4f0a-a213-e3fe0194b30a"
+  },
+  {
+    "aliment_id": "4c2863c3-b791-4d98-b5d1-c737506000a2",
+    "etude_id": "e438cfec-499a-4a48-8de1-d22bd2ca7678"
+  },
+  {
+    "aliment_id": "4c2863c3-b791-4d98-b5d1-c737506000a2",
+    "etude_id": "5f689bde-417b-44aa-b173-a4d4b9d657a1"
+  },
+  {
+    "aliment_id": "4c2863c3-b791-4d98-b5d1-c737506000a2",
+    "etude_id": "7e8b5401-7cb9-4c69-b0bc-9ecb1830eca6"
+  },
+  {
+    "aliment_id": "4c2863c3-b791-4d98-b5d1-c737506000a2",
+    "etude_id": "7cb78154-5b54-4fcb-a9ec-1f4f6554efac"
+  },
+  {
+    "aliment_id": "81b3f698-7697-4e70-b865-960bd992ed70",
+    "etude_id": "4b2d57e3-947e-40eb-890b-6fddb22f332e"
+  },
+  {
+    "aliment_id": "81b3f698-7697-4e70-b865-960bd992ed70",
+    "etude_id": "5a4c7e38-1182-4f1b-bd6e-a10ef1b2d3a5"
+  },
+  {
+    "aliment_id": "81b3f698-7697-4e70-b865-960bd992ed70",
+    "etude_id": "d8e3f9c6-2a0a-46ff-ba79-f5442e1db5fa"
+  },
+  {
+    "aliment_id": "81b3f698-7697-4e70-b865-960bd992ed70",
+    "etude_id": "fc973c32-dded-4b47-9c14-86771f20137b"
+  },
+  {
+    "aliment_id": "81b3f698-7697-4e70-b865-960bd992ed70",
+    "etude_id": "03779efd-4262-48d3-a458-ab68a9f3d1d8"
+  },
+  {
+    "aliment_id": "81b3f698-7697-4e70-b865-960bd992ed70",
+    "etude_id": "f929a9a5-d26d-4395-a50f-f8db3e6f1034"
+  },
+  {
+    "aliment_id": "81b3f698-7697-4e70-b865-960bd992ed70",
+    "etude_id": "a288410f-fe27-444c-8625-7030adadee0d"
+  },
+  {
+    "aliment_id": "e8c97977-99e4-44ad-86d5-07ffb637cd22",
+    "etude_id": "e22a5699-1582-4fff-ae8d-d38484386b3c"
+  },
+  {
+    "aliment_id": "e8c97977-99e4-44ad-86d5-07ffb637cd22",
+    "etude_id": "3261f242-0044-4692-be47-514f38336c8c"
+  },
+  {
+    "aliment_id": "0900eacf-f36c-4ca4-ad02-977edced3e64",
+    "etude_id": "fff44a83-0f27-4c0c-8d7e-ece4ec73568f"
+  },
+  {
+    "aliment_id": "0900eacf-f36c-4ca4-ad02-977edced3e64",
+    "etude_id": "7875f6d0-b8db-4838-821c-39096d491702"
+  },
+  {
+    "aliment_id": "0900eacf-f36c-4ca4-ad02-977edced3e64",
+    "etude_id": "5bb4c2db-bc14-4e20-8cdb-b1a352a8e0ef"
+  },
+  {
+    "aliment_id": "0900eacf-f36c-4ca4-ad02-977edced3e64",
+    "etude_id": "ab3ce9ea-04e6-4d7f-a32b-d3eb09900599"
+  },
+  {
+    "aliment_id": "0900eacf-f36c-4ca4-ad02-977edced3e64",
+    "etude_id": "f6e54e4f-30ba-4ce8-968a-74dac0f1e1b8"
+  },
+  {
+    "aliment_id": "0900eacf-f36c-4ca4-ad02-977edced3e64",
+    "etude_id": "296dc816-94df-44ac-8985-1e91cd196c7b"
+  },
+  {
+    "aliment_id": "a676558a-ad43-4a7d-80c9-53f1a95a9096",
+    "etude_id": "49a35ab7-09f1-4d6b-abf5-e54d0f65acfd"
+  },
+  {
+    "aliment_id": "a676558a-ad43-4a7d-80c9-53f1a95a9096",
+    "etude_id": "0be4c0a2-690a-4aab-8d9d-a984ace08101"
+  },
+  {
+    "aliment_id": "2883dd9a-d99d-4268-ad08-83c208208353",
+    "etude_id": "44aeb632-97f8-40bc-a09d-79aeb41f7651"
+  },
+  {
+    "aliment_id": "2883dd9a-d99d-4268-ad08-83c208208353",
+    "etude_id": "75467db5-0bb9-4587-b205-bafbbf9b6a0a"
+  },
+  {
+    "aliment_id": "2883dd9a-d99d-4268-ad08-83c208208353",
+    "etude_id": "b95a6e02-c161-4db7-b7ad-990f81270596"
+  },
+  {
+    "aliment_id": "b066da77-dab2-4b73-8433-6a325f0b1cdd",
+    "etude_id": "58c490c6-7b17-41fc-a716-22bbe8b3a4cb"
+  },
+  {
+    "aliment_id": "b066da77-dab2-4b73-8433-6a325f0b1cdd",
+    "etude_id": "5797751b-a69b-4036-826f-62312addcdc9"
+  },
+  {
+    "aliment_id": "b066da77-dab2-4b73-8433-6a325f0b1cdd",
+    "etude_id": "14bd7774-6ba2-44dc-ab52-2395df30ce4f"
+  },
+  {
+    "aliment_id": "b066da77-dab2-4b73-8433-6a325f0b1cdd",
+    "etude_id": "4a6f152b-9cc0-489d-9347-73e4f3cb3a98"
+  },
+  {
+    "aliment_id": "b066da77-dab2-4b73-8433-6a325f0b1cdd",
+    "etude_id": "af4cac5e-bb4f-4f92-80d8-23e11e2cf572"
+  },
+  {
+    "aliment_id": "b066da77-dab2-4b73-8433-6a325f0b1cdd",
+    "etude_id": "60f368d1-5346-4611-91e2-ece63e2d3ac5"
+  },
+  {
+    "aliment_id": "b066da77-dab2-4b73-8433-6a325f0b1cdd",
+    "etude_id": "f7d1396b-d702-48e8-a459-58ef721ad856"
+  },
+  {
+    "aliment_id": "b066da77-dab2-4b73-8433-6a325f0b1cdd",
+    "etude_id": "ff43718f-9400-4744-bac4-3cd2dec9276a"
+  },
+  {
+    "aliment_id": "426b3a2c-3692-4a34-b95e-bd2174fdf3c5",
+    "etude_id": "d27a22ee-b837-40fa-9442-b1f8b5060e47"
+  },
+  {
+    "aliment_id": "b066da77-dab2-4b73-8433-6a325f0b1cdd",
+    "etude_id": "cb216b2c-6324-4216-92cc-04740c7c3832"
+  },
+  {
+    "aliment_id": "426b3a2c-3692-4a34-b95e-bd2174fdf3c5",
+    "etude_id": "18681036-4064-4574-82e7-5ce5d1184e07"
+  },
+  {
+    "aliment_id": "b066da77-dab2-4b73-8433-6a325f0b1cdd",
+    "etude_id": "ab1aa5ea-b453-4dbf-b82a-9ff68dfc621a"
+  },
+  {
+    "aliment_id": "b066da77-dab2-4b73-8433-6a325f0b1cdd",
+    "etude_id": "9469ac5f-ec34-4e07-a7fa-56453adf22fe"
+  },
+  {
+    "aliment_id": "b066da77-dab2-4b73-8433-6a325f0b1cdd",
+    "etude_id": "0a9c801c-59aa-40b0-8f6e-b4b91e7adea8"
+  },
+  {
+    "aliment_id": "426b3a2c-3692-4a34-b95e-bd2174fdf3c5",
+    "etude_id": "fd95e895-8219-4889-81e1-4265c226eba0"
+  },
+  {
+    "aliment_id": "b066da77-dab2-4b73-8433-6a325f0b1cdd",
+    "etude_id": "cea865a7-b0df-44de-b664-c68656cafe4a"
+  },
+  {
+    "aliment_id": "88c070e7-273d-4ba9-bff0-90f936db3995",
+    "etude_id": "4369b23f-2865-4893-9c3d-603249915416"
+  },
+  {
+    "aliment_id": "88c070e7-273d-4ba9-bff0-90f936db3995",
+    "etude_id": "f78b9c3b-ed58-4ca2-9032-06272d0b691a"
+  },
+  {
+    "aliment_id": "88c070e7-273d-4ba9-bff0-90f936db3995",
+    "etude_id": "2f9a45d3-02aa-4d4a-bd33-e99fdd0c0fcc"
+  },
+  {
+    "aliment_id": "88c070e7-273d-4ba9-bff0-90f936db3995",
+    "etude_id": "de5d95d5-769b-465e-baa3-56c417a57180"
+  },
+  {
+    "aliment_id": "88c070e7-273d-4ba9-bff0-90f936db3995",
+    "etude_id": "990192fd-e22e-4aec-9e04-599e628c4fe3"
+  },
+  {
+    "aliment_id": "88c070e7-273d-4ba9-bff0-90f936db3995",
+    "etude_id": "14a0c77c-f207-4a75-a039-d8e4851368f3"
+  },
+  {
+    "aliment_id": "88c070e7-273d-4ba9-bff0-90f936db3995",
+    "etude_id": "ee104f2b-afd6-4651-88ce-766ae12fc20e"
+  },
+  {
+    "aliment_id": "88c070e7-273d-4ba9-bff0-90f936db3995",
+    "etude_id": "1b248cd0-3491-4f24-9fc3-c6045b03a0fd"
+  },
+  {
+    "aliment_id": "d13e1078-7619-4e2e-99ac-7e2321c496d1",
+    "etude_id": "60cf7975-eb45-4f30-9d4f-0939f1aeae42"
+  },
+  {
+    "aliment_id": "d13e1078-7619-4e2e-99ac-7e2321c496d1",
+    "etude_id": "c9f052d7-1c6a-472b-8303-75c884b0bf85"
+  },
+  {
+    "aliment_id": "d13e1078-7619-4e2e-99ac-7e2321c496d1",
+    "etude_id": "7df9c696-e756-4a0c-aa30-7067f9248582"
+  },
+  {
+    "aliment_id": "d13e1078-7619-4e2e-99ac-7e2321c496d1",
+    "etude_id": "673fb9f1-99a5-4506-a8e6-57cc5bdb2ed9"
+  },
+  {
+    "aliment_id": "d13e1078-7619-4e2e-99ac-7e2321c496d1",
+    "etude_id": "03d0d58e-0b4a-4dca-9313-fb19a880038f"
+  },
+  {
+    "aliment_id": "d13e1078-7619-4e2e-99ac-7e2321c496d1",
+    "etude_id": "65a4a6a3-f6ce-4820-b208-1b1ee190366e"
+  },
+  {
+    "aliment_id": "d13e1078-7619-4e2e-99ac-7e2321c496d1",
+    "etude_id": "00f8a134-4579-453f-b860-838b5ffa2fa4"
+  },
+  {
+    "aliment_id": "d13e1078-7619-4e2e-99ac-7e2321c496d1",
+    "etude_id": "25b662e6-ed08-4bf6-a4e5-6c8f10bf4cc9"
+  },
+  {
+    "aliment_id": "d13e1078-7619-4e2e-99ac-7e2321c496d1",
+    "etude_id": "feb6ad5c-39cb-4f8a-a45e-b8cd14662b50"
+  },
+  {
+    "aliment_id": "d13e1078-7619-4e2e-99ac-7e2321c496d1",
+    "etude_id": "0f012bef-eb55-4bf0-8c0e-caf2a3a58134"
+  },
+  {
+    "aliment_id": "d13e1078-7619-4e2e-99ac-7e2321c496d1",
+    "etude_id": "5e06b6a0-60b7-4a4d-be4e-ab5acaac1b8e"
+  },
+  {
+    "aliment_id": "d13e1078-7619-4e2e-99ac-7e2321c496d1",
+    "etude_id": "7e3b3c28-073d-4315-b1c0-c5e1a4e21e9a"
+  },
+  {
+    "aliment_id": "d13e1078-7619-4e2e-99ac-7e2321c496d1",
+    "etude_id": "32777d51-bdbd-4edd-8722-163b6082063b"
+  },
+  {
+    "aliment_id": "d13e1078-7619-4e2e-99ac-7e2321c496d1",
+    "etude_id": "ca48f358-8066-4566-bfe1-5e90f0f57a18"
+  },
+  {
+    "aliment_id": "c7b0f348-835c-4ee1-849f-79ae68e369f5",
+    "etude_id": "977eab70-fcfa-4f7c-be79-f957858e8a3c"
+  },
+  {
+    "aliment_id": "d13e1078-7619-4e2e-99ac-7e2321c496d1",
+    "etude_id": "20b8e702-e295-442e-a558-51a4644feefc"
+  },
+  {
+    "aliment_id": "d13e1078-7619-4e2e-99ac-7e2321c496d1",
+    "etude_id": "2458c8a6-d26b-4151-80da-9e092af2b16f"
+  },
+  {
+    "aliment_id": "c7b0f348-835c-4ee1-849f-79ae68e369f5",
+    "etude_id": "b57185f7-04bb-4e4c-9cbc-41345dacf4aa"
+  },
+  {
+    "aliment_id": "c7b0f348-835c-4ee1-849f-79ae68e369f5",
+    "etude_id": "29f879ff-965c-4409-a38f-632a40f6f5c6"
+  },
+  {
+    "aliment_id": "c7b0f348-835c-4ee1-849f-79ae68e369f5",
+    "etude_id": "51a1c2c6-b145-4bbe-8aaa-21ebcfc5dc96"
+  },
+  {
+    "aliment_id": "c7b0f348-835c-4ee1-849f-79ae68e369f5",
+    "etude_id": "9eeaded8-e02a-4499-ab94-8e7021af8951"
+  },
+  {
+    "aliment_id": "4dc91eae-8a54-4d0b-9b04-42293daff120",
+    "etude_id": "7c1835a2-222f-4b16-a0e0-fdb6b2cff864"
+  },
+  {
+    "aliment_id": "1f90acc4-495b-4ba9-99b7-37dd2537fb6e",
+    "etude_id": "4f84e526-0b8e-440e-9901-c1c4e7119463"
+  },
+  {
+    "aliment_id": "1f90acc4-495b-4ba9-99b7-37dd2537fb6e",
+    "etude_id": "de4d41a3-606a-473e-8db5-12b714ddcd36"
+  },
+  {
+    "aliment_id": "1f90acc4-495b-4ba9-99b7-37dd2537fb6e",
+    "etude_id": "ae66413d-fba8-4b6f-9ece-530dc4b69987"
+  },
+  {
+    "aliment_id": "1f90acc4-495b-4ba9-99b7-37dd2537fb6e",
+    "etude_id": "f0d83bef-2efc-49e6-8ffa-49780b67e60b"
+  },
+  {
+    "aliment_id": "1f90acc4-495b-4ba9-99b7-37dd2537fb6e",
+    "etude_id": "ea6958d7-209a-46a7-ab00-98b540f1a525"
+  },
+  {
+    "aliment_id": "1f90acc4-495b-4ba9-99b7-37dd2537fb6e",
+    "etude_id": "262a7798-f4bb-40d3-816b-38cd769f8e0f"
+  },
+  {
+    "aliment_id": "1f90acc4-495b-4ba9-99b7-37dd2537fb6e",
+    "etude_id": "7b3b1353-80cb-4e1a-bb28-b5c991144589"
+  },
+  {
+    "aliment_id": "1f90acc4-495b-4ba9-99b7-37dd2537fb6e",
+    "etude_id": "7a2bfafc-96a9-4ed3-96e9-1cdd4c776005"
+  },
+  {
+    "aliment_id": "1f90acc4-495b-4ba9-99b7-37dd2537fb6e",
+    "etude_id": "b181e90a-2cd3-48d3-a27d-e37f38651f5d"
+  },
+  {
+    "aliment_id": "0c5c9c6f-10bf-4ba9-8395-d84a163ed06d",
+    "etude_id": "4430de34-0e78-450c-a5f7-34e5ba8d606a"
+  },
+  {
+    "aliment_id": "1f90acc4-495b-4ba9-99b7-37dd2537fb6e",
+    "etude_id": "204fb1c1-0999-4b12-90e0-bfc3112d5361"
+  },
+  {
+    "aliment_id": "1f90acc4-495b-4ba9-99b7-37dd2537fb6e",
+    "etude_id": "146cfaab-cd45-4d9e-9e5e-aac9a9aada5c"
+  },
+  {
+    "aliment_id": "1f90acc4-495b-4ba9-99b7-37dd2537fb6e",
+    "etude_id": "f80c1e58-fb27-42e4-8e8a-15fd551d488e"
+  },
+  {
+    "aliment_id": "1f90acc4-495b-4ba9-99b7-37dd2537fb6e",
+    "etude_id": "5f639ac3-7314-41ff-98a9-2d287c5d79c9"
+  },
+  {
+    "aliment_id": "0c5c9c6f-10bf-4ba9-8395-d84a163ed06d",
+    "etude_id": "99df07e6-e03d-4b98-80bd-8c53cdf867f0"
+  },
+  {
+    "aliment_id": "1f90acc4-495b-4ba9-99b7-37dd2537fb6e",
+    "etude_id": "87ad9c83-c640-4d43-adce-54a33a54ac13"
+  },
+  {
+    "aliment_id": "96fa533f-6126-422c-a748-461abf2a1a2b",
+    "etude_id": "c2d07062-0aeb-4c06-97ec-5dd4f9970fa8"
+  },
+  {
+    "aliment_id": "96fa533f-6126-422c-a748-461abf2a1a2b",
+    "etude_id": "d1882a3b-9e08-4d70-a1d8-a2871be230fc"
+  },
+  {
+    "aliment_id": "96fa533f-6126-422c-a748-461abf2a1a2b",
+    "etude_id": "c1bf44a0-0c9e-47ad-977d-a27024c1287a"
+  },
+  {
+    "aliment_id": "e78d52c5-e8f0-4274-b2f6-4a736e6bb192",
+    "etude_id": "dc8268c0-58b1-46da-8488-af7e0e35ddda"
+  },
+  {
+    "aliment_id": "e78d52c5-e8f0-4274-b2f6-4a736e6bb192",
+    "etude_id": "11642d88-43a7-49a1-8aac-18d9e58f9206"
+  },
+  {
+    "aliment_id": "e78d52c5-e8f0-4274-b2f6-4a736e6bb192",
+    "etude_id": "324e5d83-1e9d-42be-a9be-52170195e715"
+  },
+  {
+    "aliment_id": "e78d52c5-e8f0-4274-b2f6-4a736e6bb192",
+    "etude_id": "aa51b3f6-abe5-4ea3-95ec-fe9855b28990"
+  },
+  {
+    "aliment_id": "e78d52c5-e8f0-4274-b2f6-4a736e6bb192",
+    "etude_id": "91d087de-400a-4784-b834-a4db3e6bf978"
+  },
+  {
+    "aliment_id": "e78d52c5-e8f0-4274-b2f6-4a736e6bb192",
+    "etude_id": "8bfec5d9-edd5-491f-8ef1-036c8216f8cc"
+  },
+  {
+    "aliment_id": "e78d52c5-e8f0-4274-b2f6-4a736e6bb192",
+    "etude_id": "0762d798-9ac1-423c-99c1-afe48eddd058"
+  },
+  {
+    "aliment_id": "e78d52c5-e8f0-4274-b2f6-4a736e6bb192",
+    "etude_id": "d6696eb1-1e0d-4b6c-bea0-ba9ba34789a9"
+  },
+  {
+    "aliment_id": "9bb145a7-57e2-481f-bc70-f19fb000f35d",
+    "etude_id": "bf6fedee-6845-4f02-8506-bfb77e2f99a0"
+  },
+  {
+    "aliment_id": "e78d52c5-e8f0-4274-b2f6-4a736e6bb192",
+    "etude_id": "4b9c16fa-48a7-4dfa-ba9d-02f96c2f572d"
+  },
+  {
+    "aliment_id": "9bb145a7-57e2-481f-bc70-f19fb000f35d",
+    "etude_id": "226cf71f-09db-40e0-8ffb-66eecc5ecaba"
+  },
+  {
+    "aliment_id": "e78d52c5-e8f0-4274-b2f6-4a736e6bb192",
+    "etude_id": "48ee7ca2-6c92-4047-b296-5b72ebae33f8"
+  },
+  {
+    "aliment_id": "9bb145a7-57e2-481f-bc70-f19fb000f35d",
+    "etude_id": "fd21044d-e123-4abc-ac61-116354acf790"
+  },
+  {
+    "aliment_id": "e78d52c5-e8f0-4274-b2f6-4a736e6bb192",
+    "etude_id": "c1df761b-1579-42df-ac09-634961661e28"
+  },
+  {
+    "aliment_id": "e78d52c5-e8f0-4274-b2f6-4a736e6bb192",
+    "etude_id": "d2f9b146-c1fd-4b11-a724-d947cc6bf90f"
+  },
+  {
+    "aliment_id": "9bb145a7-57e2-481f-bc70-f19fb000f35d",
+    "etude_id": "c91c1b7a-1d97-48e3-8aac-37d33aebf513"
+  },
+  {
+    "aliment_id": "e78d52c5-e8f0-4274-b2f6-4a736e6bb192",
+    "etude_id": "fd5facb5-0514-4558-9f62-7a407bcd9181"
+  },
+  {
+    "aliment_id": "9bb145a7-57e2-481f-bc70-f19fb000f35d",
+    "etude_id": "e03d94d0-a7c6-4382-81d0-571c085f08a5"
+  },
+  {
+    "aliment_id": "e78d52c5-e8f0-4274-b2f6-4a736e6bb192",
+    "etude_id": "5c8639f2-254d-4ddd-abd8-b1a873bf6d4a"
+  },
+  {
+    "aliment_id": "e78d52c5-e8f0-4274-b2f6-4a736e6bb192",
+    "etude_id": "a11ad0bd-2f1d-45ec-993e-ae73848a7f22"
+  },
+  {
+    "aliment_id": "9bb145a7-57e2-481f-bc70-f19fb000f35d",
+    "etude_id": "fee73a51-101e-4bc8-8ccf-52322ccc7ca4"
+  },
+  {
+    "aliment_id": "9bb145a7-57e2-481f-bc70-f19fb000f35d",
+    "etude_id": "dbd14d6d-3121-4f71-91be-6d29e28b42bb"
+  },
+  {
+    "aliment_id": "ffa2218f-8d16-47b9-8a08-3e3f2f1229f3",
+    "etude_id": "f14caf0d-7943-4626-967e-70bd2194834c"
+  },
+  {
+    "aliment_id": "ffa2218f-8d16-47b9-8a08-3e3f2f1229f3",
+    "etude_id": "eca28be5-6c6a-4071-83c1-775283e3b5dc"
+  },
+  {
+    "aliment_id": "ffa2218f-8d16-47b9-8a08-3e3f2f1229f3",
+    "etude_id": "12f5e822-24b0-4db0-8991-501346f65ce2"
+  },
+  {
+    "aliment_id": "ffa2218f-8d16-47b9-8a08-3e3f2f1229f3",
+    "etude_id": "fac43338-baf7-4517-ac41-dd3c2464c50f"
+  },
+  {
+    "aliment_id": "ffa2218f-8d16-47b9-8a08-3e3f2f1229f3",
+    "etude_id": "7f830019-b01b-499f-97ca-9bad150f2cdb"
+  },
+  {
+    "aliment_id": "ffa2218f-8d16-47b9-8a08-3e3f2f1229f3",
+    "etude_id": "0727b608-b854-49e6-aa55-da23061df1be"
+  },
+  {
+    "aliment_id": "ffa2218f-8d16-47b9-8a08-3e3f2f1229f3",
+    "etude_id": "d839b30f-ff57-465f-8259-bdaf9b0629d6"
+  },
+  {
+    "aliment_id": "ffa2218f-8d16-47b9-8a08-3e3f2f1229f3",
+    "etude_id": "b82e9825-06a3-4b92-9c6f-311c47efa3a1"
+  },
+  {
+    "aliment_id": "875dc290-7388-4b34-b6c7-f6c6af059cc7",
+    "etude_id": "8b61fc4b-ec41-4343-ba5f-f271f09a3767"
+  },
+  {
+    "aliment_id": "ffa2218f-8d16-47b9-8a08-3e3f2f1229f3",
+    "etude_id": "a081c4f9-2359-40e4-a0a4-b588ec9b1d4c"
+  },
+  {
+    "aliment_id": "875dc290-7388-4b34-b6c7-f6c6af059cc7",
+    "etude_id": "04895a4b-17b8-4125-9647-cee5b730a293"
+  },
+  {
+    "aliment_id": "ffa2218f-8d16-47b9-8a08-3e3f2f1229f3",
+    "etude_id": "a7e976f8-8ad5-4916-950c-fa4b7960bd58"
+  },
+  {
+    "aliment_id": "875dc290-7388-4b34-b6c7-f6c6af059cc7",
+    "etude_id": "f53eefe3-8232-489d-a4a8-48167528a429"
+  },
+  {
+    "aliment_id": "875dc290-7388-4b34-b6c7-f6c6af059cc7",
+    "etude_id": "49207c57-e227-43c0-8ded-ef74e1815a94"
+  },
+  {
+    "aliment_id": "ffa2218f-8d16-47b9-8a08-3e3f2f1229f3",
+    "etude_id": "975362b6-a220-46e1-bc07-cfff11a380cf"
+  },
+  {
+    "aliment_id": "875dc290-7388-4b34-b6c7-f6c6af059cc7",
+    "etude_id": "50c5746f-59ba-48c1-9f03-72890112292a"
+  },
+  {
+    "aliment_id": "ffa2218f-8d16-47b9-8a08-3e3f2f1229f3",
+    "etude_id": "1e4c77a9-2299-44bc-b349-a43d0c406705"
+  },
+  {
+    "aliment_id": "875dc290-7388-4b34-b6c7-f6c6af059cc7",
+    "etude_id": "f565e403-e52d-4291-9594-464adf4b0ca5"
+  },
+  {
+    "aliment_id": "875dc290-7388-4b34-b6c7-f6c6af059cc7",
+    "etude_id": "10d04c5b-8eef-469b-959b-127ed69db3d5"
+  },
+  {
+    "aliment_id": "875dc290-7388-4b34-b6c7-f6c6af059cc7",
+    "etude_id": "af61248f-5c60-455b-859a-f46e6112e042"
+  },
+  {
+    "aliment_id": "5dc1e052-dc81-432a-8246-d9ca19c390e0",
+    "etude_id": "6c1950c7-cb08-45ce-98e8-90c7fe6ea03d"
+  },
+  {
+    "aliment_id": "875dc290-7388-4b34-b6c7-f6c6af059cc7",
+    "etude_id": "81bd1de9-aa0d-4b03-9ba3-f3369713ae97"
+  },
+  {
+    "aliment_id": "875dc290-7388-4b34-b6c7-f6c6af059cc7",
+    "etude_id": "15142d3e-a7f2-4a8f-b7a2-eb1d30033f7d"
+  },
+  {
+    "aliment_id": "875dc290-7388-4b34-b6c7-f6c6af059cc7",
+    "etude_id": "320176c8-057b-4317-81d1-df0179173fb0"
+  },
+  {
+    "aliment_id": "111425c4-f754-4cb3-ae94-81b9033d8bb5",
+    "etude_id": "6bfb80bf-c476-4b97-8748-b25baf923e58"
+  },
+  {
+    "aliment_id": "111425c4-f754-4cb3-ae94-81b9033d8bb5",
+    "etude_id": "6e980a58-b2ce-44f6-8f4a-e15eae1783af"
+  },
+  {
+    "aliment_id": "111425c4-f754-4cb3-ae94-81b9033d8bb5",
+    "etude_id": "8863a3d2-531a-4216-87ce-903478a7a79e"
+  },
+  {
+    "aliment_id": "111425c4-f754-4cb3-ae94-81b9033d8bb5",
+    "etude_id": "92e77479-124c-4762-9083-e49c8296da47"
+  },
+  {
+    "aliment_id": "111425c4-f754-4cb3-ae94-81b9033d8bb5",
+    "etude_id": "11037cbc-46da-466f-9e77-b6d932dafcdf"
+  },
+  {
+    "aliment_id": "1ca35a74-76b6-4c4b-83cd-8dc9f2fdaff3",
+    "etude_id": "66f4a87a-b708-416c-8f00-3874c88c9174"
+  },
+  {
+    "aliment_id": "111425c4-f754-4cb3-ae94-81b9033d8bb5",
+    "etude_id": "42ec93da-0039-4266-92a9-08fdecb3ea7e"
+  },
+  {
+    "aliment_id": "111425c4-f754-4cb3-ae94-81b9033d8bb5",
+    "etude_id": "eb6905c2-117f-481e-a6fc-ff2cc66da5da"
+  },
+  {
+    "aliment_id": "111425c4-f754-4cb3-ae94-81b9033d8bb5",
+    "etude_id": "8cbadbfa-126b-46e6-8a84-5ac7c2fe12bb"
+  },
+  {
+    "aliment_id": "f48363df-bb9f-4b8c-b7db-1edd72dfe2aa",
+    "etude_id": "1b7fba6d-73af-4979-9530-31b52bb3ce80"
+  },
+  {
+    "aliment_id": "5ccc976a-1b0e-480e-9bdf-df51fcc90cc4",
+    "etude_id": "20975414-fc86-4df8-966d-e733ad4a8801"
+  },
+  {
+    "aliment_id": "5ccc976a-1b0e-480e-9bdf-df51fcc90cc4",
+    "etude_id": "589c3ffa-3fbc-4439-b7e0-ff5eb137e13c"
+  },
+  {
+    "aliment_id": "c50da3ed-3a68-48b2-ab9a-13cbdce9fea1",
+    "etude_id": "c06d5173-13f7-4503-9ecd-cca6254cab60"
+  },
+  {
+    "aliment_id": "c50da3ed-3a68-48b2-ab9a-13cbdce9fea1",
+    "etude_id": "ee7e2dc6-5aa0-4e81-ad57-164b32d4e48b"
+  },
+  {
+    "aliment_id": "c50da3ed-3a68-48b2-ab9a-13cbdce9fea1",
+    "etude_id": "efceff29-38c4-48d9-9496-89fe8431b611"
+  },
+  {
+    "aliment_id": "c50da3ed-3a68-48b2-ab9a-13cbdce9fea1",
+    "etude_id": "130c6692-ced8-44fb-8c4a-fe008751ee31"
+  },
+  {
+    "aliment_id": "c50da3ed-3a68-48b2-ab9a-13cbdce9fea1",
+    "etude_id": "ac6bd049-109b-4087-b19c-43fd5e4f6a17"
+  },
+  {
+    "aliment_id": "30b5e5e9-2045-44d7-93d9-eb3835a3eb71",
+    "etude_id": "2acea7af-b534-4bd5-917e-e06a1ebaa087"
+  },
+  {
+    "aliment_id": "30b5e5e9-2045-44d7-93d9-eb3835a3eb71",
+    "etude_id": "c65e4e75-660c-40f1-80a1-a8f88057c28c"
+  },
+  {
+    "aliment_id": "30b5e5e9-2045-44d7-93d9-eb3835a3eb71",
+    "etude_id": "08469937-999a-44ab-b906-593591abc68e"
+  },
+  {
+    "aliment_id": "30b5e5e9-2045-44d7-93d9-eb3835a3eb71",
+    "etude_id": "21a99b0e-e45b-49c0-a8b2-c66e41e1d4cc"
+  },
+  {
+    "aliment_id": "30b5e5e9-2045-44d7-93d9-eb3835a3eb71",
+    "etude_id": "a3e6887f-40c6-456d-ba7a-d2a7cb074fbe"
+  },
+  {
+    "aliment_id": "30b5e5e9-2045-44d7-93d9-eb3835a3eb71",
+    "etude_id": "26a76bc3-8cf6-40ff-b06c-0b2db3b42a71"
+  },
+  {
+    "aliment_id": "30b5e5e9-2045-44d7-93d9-eb3835a3eb71",
+    "etude_id": "0dcce7f3-be63-4b2b-b20d-e0ddb8ad83ae"
+  },
+  {
+    "aliment_id": "30b5e5e9-2045-44d7-93d9-eb3835a3eb71",
+    "etude_id": "7ad1ab85-42c2-4c3c-95f3-14a46353a370"
+  },
+  {
+    "aliment_id": "30b5e5e9-2045-44d7-93d9-eb3835a3eb71",
+    "etude_id": "48f70464-2287-4bac-912b-1f96f896376f"
+  },
+  {
+    "aliment_id": "30b5e5e9-2045-44d7-93d9-eb3835a3eb71",
+    "etude_id": "831d9e6d-1d99-48b9-8c72-3e204ca771b8"
+  },
+  {
+    "aliment_id": "52215b6f-dbb9-4cb1-8874-1914fa5fb5f5",
+    "etude_id": "a542f4cf-0e3c-46a9-956e-131c8e51655f"
+  },
+  {
+    "aliment_id": "52215b6f-dbb9-4cb1-8874-1914fa5fb5f5",
+    "etude_id": "3146f03e-778f-424b-b160-0fff5c563ef2"
+  },
+  {
+    "aliment_id": "52215b6f-dbb9-4cb1-8874-1914fa5fb5f5",
+    "etude_id": "c3791bc7-a86a-46af-83db-9f148950c403"
+  },
+  {
+    "aliment_id": "52215b6f-dbb9-4cb1-8874-1914fa5fb5f5",
+    "etude_id": "4dd515b1-f125-4194-8d97-41cfb6bcf422"
+  },
+  {
+    "aliment_id": "d68e7191-07e3-4681-b347-049d2c4d3a2a",
+    "etude_id": "e1e0e62a-08de-4c31-9d6c-8ca5b2d017fd"
+  },
+  {
+    "aliment_id": "d68e7191-07e3-4681-b347-049d2c4d3a2a",
+    "etude_id": "12d79d28-8c52-4a7d-8e92-85779a078801"
+  },
+  {
+    "aliment_id": "d68e7191-07e3-4681-b347-049d2c4d3a2a",
+    "etude_id": "707689c8-e061-4d33-9032-dd3b1add6bf1"
+  },
+  {
+    "aliment_id": "d68e7191-07e3-4681-b347-049d2c4d3a2a",
+    "etude_id": "63402eaf-d897-4d88-8557-7fbbc1937fe2"
+  },
+  {
+    "aliment_id": "d68e7191-07e3-4681-b347-049d2c4d3a2a",
+    "etude_id": "db9b6dad-67dc-4fa0-b9b8-a0c08b664539"
+  },
+  {
+    "aliment_id": "0f2229f0-0725-4852-b4c5-a5debd474cf7",
+    "etude_id": "922fec29-d878-4510-9358-7962dada4635"
+  },
+  {
+    "aliment_id": "f98fc3ab-3231-4b29-b22c-6e9cd8d0e805",
+    "etude_id": "fb185ea1-26e6-446a-839d-738e456cda7f"
+  },
+  {
+    "aliment_id": "22ab7211-ed3a-4aea-9d43-21f2b9efad3e",
+    "etude_id": "53694149-1f33-439b-b923-3f3701043840"
+  },
+  {
+    "aliment_id": "c4813273-e7f5-4481-adfc-781fd4c3115a",
+    "etude_id": "886da529-b06c-4a90-bdf9-f220c83d7917"
+  },
+  {
+    "aliment_id": "eb7d426b-b555-4226-8098-747d386f9bd2",
+    "etude_id": "ade1bab1-9ff2-4f2b-8bfd-ce68eb0a787a"
+  },
+  {
+    "aliment_id": "8e8bf2d8-3d77-420d-b56c-c291c3ddbdfb",
+    "etude_id": "f802e6ea-2989-41a5-9462-1982591639dc"
+  },
+  {
+    "aliment_id": "ffd7cc11-4328-44b2-b42b-ef3f02bd2135",
+    "etude_id": "f36d046c-5ca3-4ca2-818b-143a2f0ae160"
+  },
+  {
+    "aliment_id": "2c6a4246-268f-4674-b180-912498f8d0bf",
+    "etude_id": "ab556a9e-a4c8-4938-a9c7-61ea377250f3"
+  },
+  {
+    "aliment_id": "f23eeb02-bd84-494a-8851-9b4267cb7562",
+    "etude_id": "13af71e6-74c1-4ec8-b49d-f6d95e8a3c97"
+  },
+  {
+    "aliment_id": "b94f594d-178c-4229-9462-c9fd76859ff4",
+    "etude_id": "df519953-c215-41b3-9266-18e53f8ebc80"
+  },
+  {
+    "aliment_id": "32b20aae-275c-4ea2-87d6-d6fdc6379521",
+    "etude_id": "fd8205bb-35ac-4f1b-8188-0d59e614fd0c"
+  },
+  {
+    "aliment_id": "24f74b93-0959-4e07-b2cb-4be25ae96df5",
+    "etude_id": "6059d2e3-d8f8-41dc-b64f-3649a9f85950"
+  },
+  {
+    "aliment_id": "d28c4072-4ef5-4a7e-bcfc-4a5aab1d3d4c",
+    "etude_id": "1c2a8e1d-6c0b-4b38-8a2b-57eb345ccf3c"
+  },
+  {
+    "aliment_id": "96b7b17f-64c0-4583-bded-d6ce3f0a955c",
+    "etude_id": "78b7c557-351d-4363-a86a-128d39ec8578"
+  },
+  {
+    "aliment_id": "c5939b9e-64e1-4c8a-ad4e-17337ffe38a8",
+    "etude_id": "bc16c9b1-6d48-4c40-9859-a1814b703040"
+  },
+  {
+    "aliment_id": "e31ddf24-01d1-465e-b7db-fa679335a6d5",
+    "etude_id": "cbe3877d-b981-45ee-a68d-ba477056306e"
+  },
+  {
+    "aliment_id": "4d2731a8-b962-458a-80e8-cf10c2ac5d6c",
+    "etude_id": "09dbd7df-73c5-49a4-9a81-63d6a2423876"
+  },
+  {
+    "aliment_id": "974141fd-c15a-4986-ae84-c6cbf501858a",
+    "etude_id": "a62db9eb-eab9-4027-bc7f-f955ec7d6d7c"
+  },
+  {
+    "aliment_id": "a5dfe1df-016d-48a9-bdfe-ebf3cfbb465e",
+    "etude_id": "c7f1052b-b61c-44f5-8d07-7565be2a8f9e"
+  },
+  {
+    "aliment_id": "590ad0fb-9112-4b0e-858b-dabc4edf6f5d",
+    "etude_id": "599949e8-fcfc-440b-a0cc-91412ec6a69c"
+  },
+  {
+    "aliment_id": "81b3f698-7697-4e70-b865-960bd992ed70",
+    "etude_id": "d7312d19-f4b1-4439-8f33-3155dbfcd0ae"
+  },
+  {
+    "aliment_id": "5dc1e052-dc81-432a-8246-d9ca19c390e0",
+    "etude_id": "4f7b1dd7-cd89-4a56-894f-b5a0a4aabfa2"
+  },
+  {
+    "aliment_id": "d68e7191-07e3-4681-b347-049d2c4d3a2a",
+    "etude_id": "57c75d76-314a-4a8c-9eba-2f7b568fd6c0"
+  },
+  {
+    "aliment_id": "0a325bc0-b11a-4a46-9eba-d6629a46aaa9",
+    "etude_id": "acff816f-caab-42dd-a4de-d8d52eda9d38"
+  },
+  {
+    "aliment_id": "22b17528-5e71-4003-82f9-475146879b8f",
+    "etude_id": "e74f1d52-7073-45e8-8965-930c82649edf"
+  },
+  {
+    "aliment_id": "22b17528-5e71-4003-82f9-475146879b8f",
+    "etude_id": "28e63af7-42f2-4a06-8f13-2d52e347ac30"
+  },
+  {
+    "aliment_id": "22b17528-5e71-4003-82f9-475146879b8f",
+    "etude_id": "d3bfc6f4-94ca-4538-9df7-f22d2c2cb1ed"
+  },
+  {
+    "aliment_id": "22b17528-5e71-4003-82f9-475146879b8f",
+    "etude_id": "6f6fc14b-ab5b-4bc2-914e-11d727a7a6ca"
+  },
+  {
+    "aliment_id": "22b17528-5e71-4003-82f9-475146879b8f",
+    "etude_id": "b35ed8b1-e8b5-404e-a611-0b71cc66f469"
+  },
+  {
+    "aliment_id": "22b17528-5e71-4003-82f9-475146879b8f",
+    "etude_id": "cb14fc70-c3f0-40df-aa23-680cfb391cea"
+  },
+  {
+    "aliment_id": "22b17528-5e71-4003-82f9-475146879b8f",
+    "etude_id": "6a904252-4976-4c5f-b3b2-0dfa97ff9e8e"
+  },
+  {
+    "aliment_id": "f47545e0-68e6-4cc8-b004-5e41d7c03e9d",
+    "etude_id": "bbaf0e33-6e64-4a4c-a167-ee721e37f888"
+  },
+  {
+    "aliment_id": "9910c183-421d-477f-8c85-a07eb4e12de7",
+    "etude_id": "b5c438b6-cdf0-4cda-823e-b659bbb17501"
+  },
+  {
+    "aliment_id": "9910c183-421d-477f-8c85-a07eb4e12de7",
+    "etude_id": "ad318c46-2993-4261-8dca-bac03881c56f"
+  },
+  {
+    "aliment_id": "9910c183-421d-477f-8c85-a07eb4e12de7",
+    "etude_id": "e73c1772-acea-43ac-a11a-24cc9842be03"
+  },
+  {
+    "aliment_id": "9910c183-421d-477f-8c85-a07eb4e12de7",
+    "etude_id": "009031e2-27ef-49d1-b849-74be89fa9e5f"
+  },
+  {
+    "aliment_id": "9910c183-421d-477f-8c85-a07eb4e12de7",
+    "etude_id": "a22cf175-6179-4699-8227-cee576efa809"
+  },
+  {
+    "aliment_id": "ca8ffb45-e647-4cef-9e38-c8858d70b97b",
+    "etude_id": "4a542268-14d4-455a-9563-56157dca750d"
+  },
+  {
+    "aliment_id": "ca8ffb45-e647-4cef-9e38-c8858d70b97b",
+    "etude_id": "d9fccb3b-9c2a-455a-ac4a-804ce467072e"
+  },
+  {
+    "aliment_id": "ca8ffb45-e647-4cef-9e38-c8858d70b97b",
+    "etude_id": "bdeef989-b1ff-49f3-96d9-5c11c4d1801b"
+  },
+  {
+    "aliment_id": "ca8ffb45-e647-4cef-9e38-c8858d70b97b",
+    "etude_id": "9dc756fe-eb9c-436b-b71a-6133e51774b8"
+  },
+  {
+    "aliment_id": "5e4880a5-f5ed-4aa0-a936-124375cb7b5a",
+    "etude_id": "2897da84-0ee7-428c-bfe3-705b99133044"
+  },
+  {
+    "aliment_id": "5e4880a5-f5ed-4aa0-a936-124375cb7b5a",
+    "etude_id": "ff1f41cf-ca56-4789-9e04-c2d1e4362001"
+  },
+  {
+    "aliment_id": "5e4880a5-f5ed-4aa0-a936-124375cb7b5a",
+    "etude_id": "3eb29134-8091-422a-97c0-4a1e9722e53e"
+  },
+  {
+    "aliment_id": "5e4880a5-f5ed-4aa0-a936-124375cb7b5a",
+    "etude_id": "640b8c1a-f777-459c-ad29-d255227fb828"
+  },
+  {
+    "aliment_id": "5e4880a5-f5ed-4aa0-a936-124375cb7b5a",
+    "etude_id": "29032094-2239-4823-b239-2b4005099e9d"
+  },
+  {
+    "aliment_id": "090a8dbb-47b6-4d5a-82ce-6b7347a2f8f1",
+    "etude_id": "19e5d548-c959-411b-8551-7cc393c8e925"
+  },
+  {
+    "aliment_id": "090a8dbb-47b6-4d5a-82ce-6b7347a2f8f1",
+    "etude_id": "a2b45c18-2aae-4e7b-b83b-0599d8fe57a0"
+  },
+  {
+    "aliment_id": "090a8dbb-47b6-4d5a-82ce-6b7347a2f8f1",
+    "etude_id": "f92bff4c-89ff-4004-819e-052fc65d83f4"
+  },
+  {
+    "aliment_id": "090a8dbb-47b6-4d5a-82ce-6b7347a2f8f1",
+    "etude_id": "6e88091d-43da-4180-b3ad-1e72a7c56304"
+  },
+  {
+    "aliment_id": "090a8dbb-47b6-4d5a-82ce-6b7347a2f8f1",
+    "etude_id": "74ebeb46-469c-4263-8a62-5b39e42c7425"
+  },
+  {
+    "aliment_id": "090a8dbb-47b6-4d5a-82ce-6b7347a2f8f1",
+    "etude_id": "fbffc0f6-6f84-43a9-8bca-748a92a3097b"
+  },
+  {
+    "aliment_id": "090a8dbb-47b6-4d5a-82ce-6b7347a2f8f1",
+    "etude_id": "928bf2e4-1ac6-445b-a47e-a30fb6908cb8"
+  },
+  {
+    "aliment_id": "090a8dbb-47b6-4d5a-82ce-6b7347a2f8f1",
+    "etude_id": "7dea2d13-2bdf-42d4-88ab-9c86b81f2a5a"
+  },
+  {
+    "aliment_id": "30759dcd-1c09-4a07-95e8-9ccdcdc1efc6",
+    "etude_id": "c50fc84f-ae85-4d9d-bc6d-494baeeb653e"
+  },
+  {
+    "aliment_id": "30759dcd-1c09-4a07-95e8-9ccdcdc1efc6",
+    "etude_id": "e3581e39-bb32-4a86-b47f-52122fc7ae3a"
+  },
+  {
+    "aliment_id": "30759dcd-1c09-4a07-95e8-9ccdcdc1efc6",
+    "etude_id": "713c4628-b915-4060-885b-fc9c49e960f8"
+  },
+  {
+    "aliment_id": "30759dcd-1c09-4a07-95e8-9ccdcdc1efc6",
+    "etude_id": "509a34a0-09dd-4d08-97a3-846e8ad37c50"
+  },
+  {
+    "aliment_id": "30759dcd-1c09-4a07-95e8-9ccdcdc1efc6",
+    "etude_id": "0b24d0f0-ca34-451e-92ee-11f32e2515f3"
+  },
+  {
+    "aliment_id": "30759dcd-1c09-4a07-95e8-9ccdcdc1efc6",
+    "etude_id": "08075c83-a0c8-40c0-bd5c-d0ea5cd5eef3"
+  },
+  {
+    "aliment_id": "30759dcd-1c09-4a07-95e8-9ccdcdc1efc6",
+    "etude_id": "b276d133-6799-4a99-8c3e-f4a755cc41f4"
+  },
+  {
+    "aliment_id": "392c0f21-1fba-4568-9ed7-7be289bbf61a",
+    "etude_id": "92d9bb3a-bb77-4d9f-ac5c-6f1f776907cf"
+  },
+  {
+    "aliment_id": "392c0f21-1fba-4568-9ed7-7be289bbf61a",
+    "etude_id": "d68c0f9d-f266-46b4-8c28-6e2116301873"
+  },
+  {
+    "aliment_id": "0e7e496e-bb53-4a95-959c-a8c64f7be7dd",
+    "etude_id": "5913b864-9e79-4ee7-800c-8af772dd4894"
+  },
+  {
+    "aliment_id": "9bd8867f-1797-4cd6-ab50-68cbe2141abf",
+    "etude_id": "549ceb6f-466d-45bf-93da-f6d2767262c1"
+  },
+  {
+    "aliment_id": "9bd8867f-1797-4cd6-ab50-68cbe2141abf",
+    "etude_id": "6173530a-d1ea-4a2c-8a55-8057698a09b4"
+  },
+  {
+    "aliment_id": "9bd8867f-1797-4cd6-ab50-68cbe2141abf",
+    "etude_id": "3665df59-d790-4d27-a0b3-0ecfeef60b75"
+  },
+  {
+    "aliment_id": "9bd8867f-1797-4cd6-ab50-68cbe2141abf",
+    "etude_id": "42553b69-a67d-4d1f-9c79-be2f1e687f7a"
+  },
+  {
+    "aliment_id": "9bd8867f-1797-4cd6-ab50-68cbe2141abf",
+    "etude_id": "c6f9cbf4-a972-4b17-a80e-366cfc318583"
+  },
+  {
+    "aliment_id": "9bd8867f-1797-4cd6-ab50-68cbe2141abf",
+    "etude_id": "7e5daa75-ac1f-467b-8d71-fee202bd1a79"
+  },
+  {
+    "aliment_id": "2e591cf3-d21b-4fd5-8962-d746137dce23",
+    "etude_id": "8d357fc0-8039-4066-9f76-0ddc4bb13009"
+  },
+  {
+    "aliment_id": "2e591cf3-d21b-4fd5-8962-d746137dce23",
+    "etude_id": "fe345fa6-da4b-4e40-900d-6d2fd02c87d6"
+  },
+  {
+    "aliment_id": "9c79e23c-4e48-4e79-a854-b623dce2f8c4",
+    "etude_id": "975091e6-f0ed-4e69-b4e5-3c0b13bdf3af"
+  },
+  {
+    "aliment_id": "9c79e23c-4e48-4e79-a854-b623dce2f8c4",
+    "etude_id": "37fb8161-7384-4aa2-98c7-0b11e50d4e4b"
+  },
+  {
+    "aliment_id": "f92aa541-26da-4b41-95eb-70d78ddc7dcd",
+    "etude_id": "90fb6d23-f3ab-48e7-8c39-1d72cf7a9aac"
+  },
+  {
+    "aliment_id": "f92aa541-26da-4b41-95eb-70d78ddc7dcd",
+    "etude_id": "27d603b5-6d67-48fd-a9ec-7be0effa2ebb"
+  },
+  {
+    "aliment_id": "f92aa541-26da-4b41-95eb-70d78ddc7dcd",
+    "etude_id": "bcd5e25c-fef7-4ff2-aa0c-0220cb6ce438"
+  },
+  {
+    "aliment_id": "f92aa541-26da-4b41-95eb-70d78ddc7dcd",
+    "etude_id": "1ddb039f-14f1-41f8-ab96-f54c8817c5fc"
+  },
+  {
+    "aliment_id": "f92aa541-26da-4b41-95eb-70d78ddc7dcd",
+    "etude_id": "64835c61-2988-41ad-be41-79f892d9eb0b"
+  },
+  {
+    "aliment_id": "f92aa541-26da-4b41-95eb-70d78ddc7dcd",
+    "etude_id": "3f24d700-0562-4713-9f1a-6c50156077fd"
+  },
+  {
+    "aliment_id": "f92aa541-26da-4b41-95eb-70d78ddc7dcd",
+    "etude_id": "84be0892-06be-498b-82a7-807b81a7a791"
+  },
+  {
+    "aliment_id": "f92aa541-26da-4b41-95eb-70d78ddc7dcd",
+    "etude_id": "bcec59b7-c550-45e0-b164-cbd00d7f34a5"
+  },
+  {
+    "aliment_id": "6a8da3b2-0283-4b5b-b717-4dca493ae133",
+    "etude_id": "3df70135-ba3a-4257-a7ff-725b2f8b7da5"
+  },
+  {
+    "aliment_id": "6a8da3b2-0283-4b5b-b717-4dca493ae133",
+    "etude_id": "540da578-3f19-4b16-935c-d03bc3fc3f1a"
+  },
+  {
+    "aliment_id": "2422e147-9b2f-434d-94ac-ea0fb5541216",
+    "etude_id": "25f73316-b5d7-47fc-ae86-2eb677aa6798"
+  },
+  {
+    "aliment_id": "2422e147-9b2f-434d-94ac-ea0fb5541216",
+    "etude_id": "45df1aba-e5be-426f-981d-52cc6bbf69a3"
+  },
+  {
+    "aliment_id": "47ba9bcc-1e07-4dae-b28b-16d003b22f97",
+    "etude_id": "80035d48-ef07-4705-92c6-e456621a327e"
+  },
+  {
+    "aliment_id": "47ba9bcc-1e07-4dae-b28b-16d003b22f97",
+    "etude_id": "4861e11a-20e4-46bc-8e56-80ac55211568"
+  },
+  {
+    "aliment_id": "47ba9bcc-1e07-4dae-b28b-16d003b22f97",
+    "etude_id": "be27d881-17e5-425c-b576-e622a5ae0e9e"
+  },
+  {
+    "aliment_id": "47ba9bcc-1e07-4dae-b28b-16d003b22f97",
+    "etude_id": "5a813040-1cc9-466e-a07b-2fa1f36ee566"
+  },
+  {
+    "aliment_id": "47ba9bcc-1e07-4dae-b28b-16d003b22f97",
+    "etude_id": "843e7cfb-c938-480b-b6ac-639b14758554"
+  },
+  {
+    "aliment_id": "e5124138-1c54-47c3-b2b3-f15cfb25118a",
+    "etude_id": "9f7a2854-c650-46e9-b0ae-6eeb70f2ded0"
+  },
+  {
+    "aliment_id": "e5124138-1c54-47c3-b2b3-f15cfb25118a",
+    "etude_id": "a518d805-273b-453e-8e88-ea6f9400e5a2"
+  },
+  {
+    "aliment_id": "0e11c135-fc32-44ea-9074-d415f4c83f77",
+    "etude_id": "3ec5f180-f166-49c2-8bc5-aed32f4e4611"
+  },
+  {
+    "aliment_id": "0e11c135-fc32-44ea-9074-d415f4c83f77",
+    "etude_id": "34827f3f-5f45-4258-9135-c8e2fa79c017"
+  },
+  {
+    "aliment_id": "2eb53455-838a-4425-a413-85204ad1ae88",
+    "etude_id": "2a6087c5-8d4f-413d-92ee-5843603df230"
+  },
+  {
+    "aliment_id": "2eb53455-838a-4425-a413-85204ad1ae88",
+    "etude_id": "6d75e27f-400b-435f-a24a-b51e1f7c862c"
+  },
+  {
+    "aliment_id": "2eb53455-838a-4425-a413-85204ad1ae88",
+    "etude_id": "14df90fc-20b2-4232-a929-e5499879cd80"
+  },
+  {
+    "aliment_id": "799eb21c-fd16-4575-a9fd-cd817931631b",
+    "etude_id": "cd533e02-cc76-41f5-a161-6bcfdc190110"
+  },
+  {
+    "aliment_id": "799eb21c-fd16-4575-a9fd-cd817931631b",
+    "etude_id": "3c2d2f7b-40e0-4fed-9465-4940ea7b180c"
+  },
+  {
+    "aliment_id": "799eb21c-fd16-4575-a9fd-cd817931631b",
+    "etude_id": "02713b8a-f608-422c-9444-055ea5bc4a5a"
+  },
+  {
+    "aliment_id": "799eb21c-fd16-4575-a9fd-cd817931631b",
+    "etude_id": "c23e354d-b579-4315-9d44-7c9ca8270005"
+  },
+  {
+    "aliment_id": "799eb21c-fd16-4575-a9fd-cd817931631b",
+    "etude_id": "99bd7a69-0220-455b-a04d-0ef0c52b8197"
+  },
+  {
+    "aliment_id": "799eb21c-fd16-4575-a9fd-cd817931631b",
+    "etude_id": "75b5a2f3-c1e4-49c8-b1e7-e68d3af27e6b"
+  },
+  {
+    "aliment_id": "799eb21c-fd16-4575-a9fd-cd817931631b",
+    "etude_id": "6dd29cc5-6c4c-4440-b308-1f5e3825b6df"
+  },
+  {
+    "aliment_id": "799eb21c-fd16-4575-a9fd-cd817931631b",
+    "etude_id": "c1a7ac62-8986-4f9f-9d65-b402d22cd8e7"
+  },
+  {
+    "aliment_id": "7edf7deb-bdf6-4db0-9596-d07057b91685",
+    "etude_id": "85e3675e-d308-42aa-855f-5b4f45e80d18"
+  },
+  {
+    "aliment_id": "7edf7deb-bdf6-4db0-9596-d07057b91685",
+    "etude_id": "51939bc6-2a84-442b-a1e1-4d68805ffa05"
+  },
+  {
+    "aliment_id": "7edf7deb-bdf6-4db0-9596-d07057b91685",
+    "etude_id": "9c35a221-67fe-4d9e-8a5e-60358cdc6c36"
+  },
+  {
+    "aliment_id": "5ad97d78-3f3d-41d4-b17e-9f948e0abaf0",
+    "etude_id": "8e6bce44-2cf2-4f12-a464-08f5c2093451"
+  },
+  {
+    "aliment_id": "5ad97d78-3f3d-41d4-b17e-9f948e0abaf0",
+    "etude_id": "e8e98751-b71e-4f9f-b89d-b52189b225cf"
+  },
+  {
+    "aliment_id": "5ad97d78-3f3d-41d4-b17e-9f948e0abaf0",
+    "etude_id": "38a1a700-b653-45fa-9544-4eff6840e1ba"
+  },
+  {
+    "aliment_id": "5ad97d78-3f3d-41d4-b17e-9f948e0abaf0",
+    "etude_id": "97d19011-4ec6-4ce8-856c-11976a13eef4"
+  },
+  {
+    "aliment_id": "5ad97d78-3f3d-41d4-b17e-9f948e0abaf0",
+    "etude_id": "ed0d98e3-598c-409d-88c6-a1cd0e78d9c1"
+  },
+  {
+    "aliment_id": "81a46d5e-622b-4b92-abe9-f8a4dc7d3f05",
+    "etude_id": "8e295509-1405-4841-ba13-6d6191d95760"
+  },
+  {
+    "aliment_id": "81a46d5e-622b-4b92-abe9-f8a4dc7d3f05",
+    "etude_id": "c04c9883-6b34-4555-953e-b3ba49ff4b8c"
+  },
+  {
+    "aliment_id": "81a46d5e-622b-4b92-abe9-f8a4dc7d3f05",
+    "etude_id": "6f4295e8-2ccb-4362-a221-025bb214a447"
+  },
+  {
+    "aliment_id": "81a46d5e-622b-4b92-abe9-f8a4dc7d3f05",
+    "etude_id": "1b41dea2-1ebf-45d7-93a7-f4584299e335"
+  },
+  {
+    "aliment_id": "81a46d5e-622b-4b92-abe9-f8a4dc7d3f05",
+    "etude_id": "20259342-f67f-48f5-b611-32d6ff013392"
+  },
+  {
+    "aliment_id": "612dee92-4821-4a3f-859f-b0d843a03d5d",
+    "etude_id": "d196fb8f-d468-4bac-a8c4-d30c0ecb067a"
+  },
+  {
+    "aliment_id": "612dee92-4821-4a3f-859f-b0d843a03d5d",
+    "etude_id": "910e4a4a-ac5a-4b56-9fa1-498dabba3ebb"
+  },
+  {
+    "aliment_id": "55510f62-f53e-4de1-a13f-705bfc389d64",
+    "etude_id": "edc7f78a-32ba-4997-a59c-d6be39eb320b"
+  },
+  {
+    "aliment_id": "55510f62-f53e-4de1-a13f-705bfc389d64",
+    "etude_id": "1e0bad59-9b00-41f1-819d-b747b0b097af"
+  },
+  {
+    "aliment_id": "55510f62-f53e-4de1-a13f-705bfc389d64",
+    "etude_id": "89424c97-f07a-46ec-9170-0d9ddb445b9c"
+  },
+  {
+    "aliment_id": "55510f62-f53e-4de1-a13f-705bfc389d64",
+    "etude_id": "e9aea736-94d4-4e68-9cab-536b988f416e"
+  },
+  {
+    "aliment_id": "55510f62-f53e-4de1-a13f-705bfc389d64",
+    "etude_id": "75475f6a-fef5-43ba-b5cb-a326eea15a7a"
+  },
+  {
+    "aliment_id": "55510f62-f53e-4de1-a13f-705bfc389d64",
+    "etude_id": "52b40e32-4295-42d7-a78c-0ac279ac2dae"
+  },
+  {
+    "aliment_id": "55510f62-f53e-4de1-a13f-705bfc389d64",
+    "etude_id": "19655331-e526-41b1-94ba-0009cdfcdf39"
+  },
+  {
+    "aliment_id": "55510f62-f53e-4de1-a13f-705bfc389d64",
+    "etude_id": "debdb17f-f7dd-4267-9b63-133ce421e346"
+  },
+  {
+    "aliment_id": "c413669b-988d-4791-a3bd-cac3bdf14344",
+    "etude_id": "a1187c1b-705a-44d6-b32b-aa0ebdedf7cb"
+  },
+  {
+    "aliment_id": "c413669b-988d-4791-a3bd-cac3bdf14344",
+    "etude_id": "1972c833-5811-400a-bff1-1294f7064da5"
+  },
+  {
+    "aliment_id": "2292d469-aed7-44db-8807-96790a085a2e",
+    "etude_id": "469aa81f-44a4-4859-b4f9-3349fee2d82c"
+  },
+  {
+    "aliment_id": "e4729e56-467b-4a09-b7b5-e18b9b458306",
+    "etude_id": "27d19767-444c-44d1-bb99-1386b1b3e763"
+  },
+  {
+    "aliment_id": "8c297ba6-975e-4e69-a48a-04ae1461ff73",
+    "etude_id": "9d71c801-f4b3-456f-b57c-fbbea5c2a7c7"
+  },
+  {
+    "aliment_id": "8c297ba6-975e-4e69-a48a-04ae1461ff73",
+    "etude_id": "e527bf9e-c4b4-4466-bb57-98e9cba589ef"
+  },
+  {
+    "aliment_id": "8c297ba6-975e-4e69-a48a-04ae1461ff73",
+    "etude_id": "3003ad2f-64f5-4d84-ba42-f37d44518464"
+  },
+  {
+    "aliment_id": "8c297ba6-975e-4e69-a48a-04ae1461ff73",
+    "etude_id": "56590020-f0f7-421a-a002-1c51caf5568b"
+  },
+  {
+    "aliment_id": "8c297ba6-975e-4e69-a48a-04ae1461ff73",
+    "etude_id": "8b314e19-1bb1-4473-a0f1-1e2f86f99f4d"
+  },
+  {
+    "aliment_id": "8c297ba6-975e-4e69-a48a-04ae1461ff73",
+    "etude_id": "1e1271f9-a2dc-47e1-a2e1-c6048c4e633d"
+  },
+  {
+    "aliment_id": "8c297ba6-975e-4e69-a48a-04ae1461ff73",
+    "etude_id": "c4ba0e75-03bc-4e4c-9bc4-e1e47aa6f2da"
+  },
+  {
+    "aliment_id": "8c297ba6-975e-4e69-a48a-04ae1461ff73",
+    "etude_id": "cdb19c45-f30a-4f14-a154-3111fbbf4fca"
+  },
+  {
+    "aliment_id": "3d9f9c9b-fa0e-4edc-a152-b8cccff3fe61",
+    "etude_id": "d8cf7d35-03b7-430f-8793-bcb272276d48"
+  },
+  {
+    "aliment_id": "3d9f9c9b-fa0e-4edc-a152-b8cccff3fe61",
+    "etude_id": "b9e7dff9-2f8e-41f5-b515-c8f646cff300"
+  },
+  {
+    "aliment_id": "3d9f9c9b-fa0e-4edc-a152-b8cccff3fe61",
+    "etude_id": "191b5608-5526-44dc-a788-d4c57cdebbd1"
+  },
+  {
+    "aliment_id": "28be4060-b5d3-4d1a-b9a3-c3d243bad0f6",
+    "etude_id": "889c2119-b545-4f52-b90c-e52f746c4ee2"
+  },
+  {
+    "aliment_id": "28be4060-b5d3-4d1a-b9a3-c3d243bad0f6",
+    "etude_id": "cfefb7d7-3a09-416c-8678-74aaa66491a6"
+  },
+  {
+    "aliment_id": "28be4060-b5d3-4d1a-b9a3-c3d243bad0f6",
+    "etude_id": "133d71cb-9af0-474d-9a85-29d83467b194"
+  },
+  {
+    "aliment_id": "28be4060-b5d3-4d1a-b9a3-c3d243bad0f6",
+    "etude_id": "3991e30f-ed2b-49fc-97d7-c2902c3503d9"
+  },
+  {
+    "aliment_id": "28be4060-b5d3-4d1a-b9a3-c3d243bad0f6",
+    "etude_id": "4914b922-1b16-4ebd-b121-8caedad42cd5"
+  },
+  {
+    "aliment_id": "28be4060-b5d3-4d1a-b9a3-c3d243bad0f6",
+    "etude_id": "f600b2bb-8a19-49ed-a973-06b75a9a45ce"
+  },
+  {
+    "aliment_id": "78f7a02d-a7bb-4e3c-b8d9-fb6d4d93e930",
+    "etude_id": "a90fe862-e2bb-4f84-8b5d-4f0ce42e21c2"
+  },
+  {
+    "aliment_id": "78f7a02d-a7bb-4e3c-b8d9-fb6d4d93e930",
+    "etude_id": "431663bd-c22e-4d39-a120-673c335839dc"
+  },
+  {
+    "aliment_id": "78f7a02d-a7bb-4e3c-b8d9-fb6d4d93e930",
+    "etude_id": "ea1bf378-8137-4fc3-a290-b54bed7b394e"
+  },
+  {
+    "aliment_id": "78f7a02d-a7bb-4e3c-b8d9-fb6d4d93e930",
+    "etude_id": "9c507b17-069f-445a-917a-1cabff65ef5e"
+  },
+  {
+    "aliment_id": "78f7a02d-a7bb-4e3c-b8d9-fb6d4d93e930",
+    "etude_id": "589c643b-f474-4998-b05a-910622b8eac6"
+  },
+  {
+    "aliment_id": "58a55f1b-d761-42a9-921d-24ae08d10383",
+    "etude_id": "f719cd25-c876-4a78-b057-f739956a8418"
+  },
+  {
+    "aliment_id": "58a55f1b-d761-42a9-921d-24ae08d10383",
+    "etude_id": "6e229074-b68f-420f-84e7-7a788d81bdee"
+  },
+  {
+    "aliment_id": "58a55f1b-d761-42a9-921d-24ae08d10383",
+    "etude_id": "f9a2cba2-1656-4e47-88e9-ed7a5c1fe766"
+  },
+  {
+    "aliment_id": "58a55f1b-d761-42a9-921d-24ae08d10383",
+    "etude_id": "72c442b2-a3f9-442a-9035-c905d8c6c87d"
+  },
+  {
+    "aliment_id": "a4103bf2-5057-433d-b009-f449422f15c7",
+    "etude_id": "a1f7b417-bf98-45d6-a170-0895dea021b3"
+  },
+  {
+    "aliment_id": "a4103bf2-5057-433d-b009-f449422f15c7",
+    "etude_id": "10bfd47e-27f9-4772-83b5-200452004ed3"
+  },
+  {
+    "aliment_id": "a4103bf2-5057-433d-b009-f449422f15c7",
+    "etude_id": "1baeac30-c9e1-49a3-956e-3330d90a6c12"
+  },
+  {
+    "aliment_id": "b11297e2-5580-456e-8eef-efae6ffdc04f",
+    "etude_id": "0cad0cc4-c345-4266-9684-ad6837024042"
+  },
+  {
+    "aliment_id": "5da580c8-dc6f-4884-93c1-79d2bcb11a87",
+    "etude_id": "116d40f4-c1fc-4f6f-b567-c67cd7f45264"
+  },
+  {
+    "aliment_id": "5da580c8-dc6f-4884-93c1-79d2bcb11a87",
+    "etude_id": "48db695b-fd50-4fe8-897d-026f6638aca6"
+  },
+  {
+    "aliment_id": "5da580c8-dc6f-4884-93c1-79d2bcb11a87",
+    "etude_id": "312ae704-b1b5-49ab-9d0b-8076e650fc5e"
+  },
+  {
+    "aliment_id": "5da580c8-dc6f-4884-93c1-79d2bcb11a87",
+    "etude_id": "4ec1b5ab-fe5d-4d19-9f6f-14a7f62f2b12"
+  },
+  {
+    "aliment_id": "f0e85b64-f592-49a7-964c-40523580bb34",
+    "etude_id": "865bea48-6787-4751-89e9-550d00d824f9"
+  },
+  {
+    "aliment_id": "f0e85b64-f592-49a7-964c-40523580bb34",
+    "etude_id": "52c86780-26e7-4047-af68-0356e8d115bd"
+  },
+  {
+    "aliment_id": "f0e85b64-f592-49a7-964c-40523580bb34",
+    "etude_id": "1a9e2517-7be1-4569-9ed2-3a8aed438c13"
+  },
+  {
+    "aliment_id": "f0e85b64-f592-49a7-964c-40523580bb34",
+    "etude_id": "87773083-2034-44be-a537-6afc70505a74"
+  },
+  {
+    "aliment_id": "3a6bdbf3-9485-41ae-b2bb-54d2bcc1bc79",
+    "etude_id": "a6e077b3-3b3b-490d-b8d8-d81785c02295"
+  },
+  {
+    "aliment_id": "3a6bdbf3-9485-41ae-b2bb-54d2bcc1bc79",
+    "etude_id": "9fd33e8a-fa06-429f-8967-29d646b97b60"
+  },
+  {
+    "aliment_id": "3a6bdbf3-9485-41ae-b2bb-54d2bcc1bc79",
+    "etude_id": "50120980-7023-4911-8d6e-7fd74beab801"
+  },
+  {
+    "aliment_id": "3a6bdbf3-9485-41ae-b2bb-54d2bcc1bc79",
+    "etude_id": "3ad3a71b-6ce2-42df-ae54-a82c06f287e5"
+  },
+  {
+    "aliment_id": "3a6bdbf3-9485-41ae-b2bb-54d2bcc1bc79",
+    "etude_id": "3cbe1558-32b4-47f6-ba2e-f59aea692731"
+  },
+  {
+    "aliment_id": "3a6bdbf3-9485-41ae-b2bb-54d2bcc1bc79",
+    "etude_id": "5c01faf7-d21a-4f5c-81f2-eb962de325fc"
+  },
+  {
+    "aliment_id": "3a6bdbf3-9485-41ae-b2bb-54d2bcc1bc79",
+    "etude_id": "ea4dc03b-65e5-44e0-b280-51e80745500b"
+  },
+  {
+    "aliment_id": "3a6bdbf3-9485-41ae-b2bb-54d2bcc1bc79",
+    "etude_id": "6e4252eb-c0d2-40f7-b7b5-3fff58ade3c0"
+  },
+  {
+    "aliment_id": "1f06be66-573e-48fa-bba9-f41c22070174",
+    "etude_id": "6706e6fb-54ea-42d0-9cc6-0b6a37a2e531"
+  },
+  {
+    "aliment_id": "1f06be66-573e-48fa-bba9-f41c22070174",
+    "etude_id": "40fccc21-7292-40c7-b4d2-4bde3d92b116"
+  },
+  {
+    "aliment_id": "1f06be66-573e-48fa-bba9-f41c22070174",
+    "etude_id": "41315d72-928a-4b70-a545-cb5eb4c36740"
+  },
+  {
+    "aliment_id": "19edbd95-338b-48e2-bf9a-9a1c31475df3",
+    "etude_id": "c98c7d9a-2c5f-4b54-987b-7c8c21c0f1b8"
+  },
+  {
+    "aliment_id": "19edbd95-338b-48e2-bf9a-9a1c31475df3",
+    "etude_id": "148fd6da-b253-4f98-9296-f0912950085f"
+  },
+  {
+    "aliment_id": "19edbd95-338b-48e2-bf9a-9a1c31475df3",
+    "etude_id": "2e973586-4009-495a-ac54-b01fcbdeb269"
+  },
+  {
+    "aliment_id": "19edbd95-338b-48e2-bf9a-9a1c31475df3",
+    "etude_id": "9c7b0a71-91ef-4d22-b6bb-669dd6ca36c8"
+  },
+  {
+    "aliment_id": "19edbd95-338b-48e2-bf9a-9a1c31475df3",
+    "etude_id": "0378c1ab-777a-4341-ace8-4d1347c72cd1"
+  },
+  {
+    "aliment_id": "19edbd95-338b-48e2-bf9a-9a1c31475df3",
+    "etude_id": "b6036133-a290-4524-8407-ee5d30fd79a5"
+  },
+  {
+    "aliment_id": "19edbd95-338b-48e2-bf9a-9a1c31475df3",
+    "etude_id": "f018fc19-deee-49d9-8702-954a632aab5f"
+  },
+  {
+    "aliment_id": "c3a931db-476a-4890-92da-38720df811e9",
+    "etude_id": "03b18228-1533-4783-9cf3-8dc4e72af024"
+  },
+  {
+    "aliment_id": "31fc9a74-1227-463b-b6af-0f6477159c35",
+    "etude_id": "8d225a48-2502-4067-8433-d4f6009cb3a2"
+  },
+  {
+    "aliment_id": "31fc9a74-1227-463b-b6af-0f6477159c35",
+    "etude_id": "62bd37f0-b596-412e-b42b-e49d30df6abd"
+  },
+  {
+    "aliment_id": "31fc9a74-1227-463b-b6af-0f6477159c35",
+    "etude_id": "41e89bce-ae7d-464c-b541-75df2b31e3c8"
+  },
+  {
+    "aliment_id": "053da087-1d20-4140-9039-3aea76ff18a7",
+    "etude_id": "9c59d63d-2b4d-4b7c-b81a-eae6d8900aca"
+  },
+  {
+    "aliment_id": "93a9eeee-b565-4f52-b5ee-a13a93723d25",
+    "etude_id": "d4a2f392-dd72-4044-85d1-dd2fd9ae5b51"
+  },
+  {
+    "aliment_id": "ca70e71c-b91e-4635-8dca-48867ebdc1a4",
+    "etude_id": "bb3a68b7-c2e9-4133-903e-6a3a7cca2d20"
+  },
+  {
+    "aliment_id": "ca70e71c-b91e-4635-8dca-48867ebdc1a4",
+    "etude_id": "a8e410ef-ae81-4097-9f0f-f314ec103303"
+  },
+  {
+    "aliment_id": "ca70e71c-b91e-4635-8dca-48867ebdc1a4",
+    "etude_id": "bca99b5b-8e34-42fd-985d-b09540e114ab"
+  },
+  {
+    "aliment_id": "ca70e71c-b91e-4635-8dca-48867ebdc1a4",
+    "etude_id": "fe3f166c-8a0c-44e8-ba36-2f1de267a2c1"
+  },
+  {
+    "aliment_id": "ca70e71c-b91e-4635-8dca-48867ebdc1a4",
+    "etude_id": "991b0eeb-b5c5-4ac2-a5ac-ea5a28ed942f"
+  },
+  {
+    "aliment_id": "ca70e71c-b91e-4635-8dca-48867ebdc1a4",
+    "etude_id": "10775641-a222-4506-835b-46c4ece7a64a"
+  },
+  {
+    "aliment_id": "ca02f19c-3be5-48d2-b894-ee884a4dd15e",
+    "etude_id": "f1fbe139-616c-4682-8c5a-db23867bc677"
+  },
+  {
+    "aliment_id": "ca02f19c-3be5-48d2-b894-ee884a4dd15e",
+    "etude_id": "7d492b2e-9db9-4e0c-8632-62897c9650b1"
+  },
+  {
+    "aliment_id": "ca02f19c-3be5-48d2-b894-ee884a4dd15e",
+    "etude_id": "694211f9-5844-460d-8b8f-b6bb1596ebd1"
+  },
+  {
+    "aliment_id": "ca02f19c-3be5-48d2-b894-ee884a4dd15e",
+    "etude_id": "ac09e2bc-f5c3-4e08-875d-a4525a3c6a44"
+  },
+  {
+    "aliment_id": "ca02f19c-3be5-48d2-b894-ee884a4dd15e",
+    "etude_id": "4886bb78-fd4b-40a4-ad87-9e5e3f0ec2ff"
+  },
+  {
+    "aliment_id": "ca02f19c-3be5-48d2-b894-ee884a4dd15e",
+    "etude_id": "2260e2a9-5d60-4a00-9b0b-dbfe70e9496b"
+  },
+  {
+    "aliment_id": "4b974eb8-fbf6-4e45-b302-dde1f984c1ed",
+    "etude_id": "3f9611f6-0793-43c9-8693-9794c69bace8"
+  },
+  {
+    "aliment_id": "44f7271d-f275-439c-8edd-3930fc8e38a7",
+    "etude_id": "ed070e61-72c9-4dc4-9d2a-3e23c9076260"
+  },
+  {
+    "aliment_id": "0b46e056-b6a9-4562-877b-1761066e444a",
+    "etude_id": "201f2689-c94f-452a-8acf-ff93aa2c43bb"
+  },
+  {
+    "aliment_id": "59262580-a0ce-429d-a7e2-0fc7ba311741",
+    "etude_id": "c4b88072-1139-4daa-b803-42818eba5d46"
+  },
+  {
+    "aliment_id": "59262580-a0ce-429d-a7e2-0fc7ba311741",
+    "etude_id": "dc66212f-41e0-4f49-868f-8e7245079ab3"
+  },
+  {
+    "aliment_id": "59262580-a0ce-429d-a7e2-0fc7ba311741",
+    "etude_id": "099c2bec-d1ae-41dd-99cb-fab5ba088892"
+  },
+  {
+    "aliment_id": "59262580-a0ce-429d-a7e2-0fc7ba311741",
+    "etude_id": "12e65ffd-04cd-4d98-98d5-720edbc3e871"
+  },
+  {
+    "aliment_id": "59262580-a0ce-429d-a7e2-0fc7ba311741",
+    "etude_id": "90768c82-f26f-4312-a9f6-52985eef8964"
+  },
+  {
+    "aliment_id": "59262580-a0ce-429d-a7e2-0fc7ba311741",
+    "etude_id": "6ea11ed3-71ea-4817-b7e8-8856775ce495"
+  },
+  {
+    "aliment_id": "59262580-a0ce-429d-a7e2-0fc7ba311741",
+    "etude_id": "43c8f0e2-48d5-4540-b9a1-dbd1f049a042"
+  },
+  {
+    "aliment_id": "59262580-a0ce-429d-a7e2-0fc7ba311741",
+    "etude_id": "b222d1dd-4223-461a-a1a2-5ffe3ceb7434"
+  },
+  {
+    "aliment_id": "8c06b82d-95af-417c-ac73-a0a0a2328d2d",
+    "etude_id": "d9e61d50-fb1c-43a4-8e73-ff4125ae7af9"
+  },
+  {
+    "aliment_id": "8c06b82d-95af-417c-ac73-a0a0a2328d2d",
+    "etude_id": "e04bb2a8-2e83-4767-902d-89620ca367c0"
+  },
+  {
+    "aliment_id": "8c06b82d-95af-417c-ac73-a0a0a2328d2d",
+    "etude_id": "e6a4833f-f0ea-426b-9d28-ad12e3140d33"
+  },
+  {
+    "aliment_id": "8c06b82d-95af-417c-ac73-a0a0a2328d2d",
+    "etude_id": "50ed4c18-e847-4613-95bd-1e1274247648"
+  },
+  {
+    "aliment_id": "8c06b82d-95af-417c-ac73-a0a0a2328d2d",
+    "etude_id": "e326f9a8-cc8a-441d-a908-20f0d2e0d0ce"
+  }
+]
