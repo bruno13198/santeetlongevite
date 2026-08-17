@@ -2,7 +2,9 @@ import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import styles from './page.module.css';
+import './badges.css';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -33,7 +35,7 @@ export default async function FicheArticle({ params }) {
       <Link href="/articles" style={{ color: '#555' }}>← Retour aux articles</Link>
       <h1 style={{ marginTop: '16px' }}>{article.titre}</h1>
       <div className={styles.contenu}>
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
           {article.contenu}
         </ReactMarkdown>
       </div>
