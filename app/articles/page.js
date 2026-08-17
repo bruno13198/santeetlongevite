@@ -1,44 +1,60 @@
+'use client';
+import { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import rehypeRaw from 'rehype-raw';
-import styles from './page.module.css';
-import './badges.css';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
-export default async function FicheArticle({ params }) {
-  const { slug } = await params;
+export default function Articles() {
+  const [articles, setArticles] = useState([]);
+  const [chargement, setChargement] = useState(true);
 
-  const { data: article, error } = await supabase
-    .from('articles')
-    .select('*')
-    .eq('slug', slug)
-    .eq('publie', true)
-    .single();
+  useEffect(() => {
+    async function chargerArticles() {
+      const { data, error } = await supabase
+        .from('articles')
+        .select('titre, slug, created_at')
+        .eq('publie', true)
+        .order('created_at', { ascending: false });
 
-  if (error || !article) {
-    return (
-      <main style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '700px', margin: '0 auto' }}>
-        <p>Article introuvable.</p>
-        <Link href="/articles">← Retour aux articles</Link>
-      </main>
-    );
-  }
+      if (!error) {
+        setArticles(data);
+      }
+      setChargement(false);
+    }
+    chargerArticles();
+  }, []);
 
   return (
-    <main style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '700px', margin: '0 auto', lineHeight: '1.6' }}>
-      <Link href="/articles" style={{ color: '#555' }}>← Retour aux articles</Link>
-      <h1 style={{ marginTop: '16px' }}>{article.titre}</h1>
-      <div className={styles.contenu}>
-        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
-          {article.contenu}
-        </ReactMarkdown>
-      </div>
+    <main style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '700px', margin: '0 auto' }}>
+      <Link href="/" style={{ color: '#555' }}>← Retour à l'accueil</Link>
+      <h1 style={{ marginTop: '16px' }}>Articles</h1>
+
+      {chargement && <p>Chargement...</p>}
+      {!chargement && articles.length === 0 && (
+        <p style={{ color: '#888' }}>Aucun article publié pour le moment.</p>
+      )}
+
+      <ul style={{ listStyle: 'none', padding: 0 }}>
+        {articles.map((article) => (
+          <li
+            key={article.slug}
+            style={{
+              marginBottom: '16px',
+              padding: '16px',
+              border: '1px solid #eee',
+              borderRadius: '8px',
+            }}
+          >
+            <Link href={`/articles/${article.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <strong style={{ fontSize: '18px' }}>{article.titre}</strong>
+            </Link>
+          </li>
+        ))}
+      </ul>
     </main>
   );
 }
