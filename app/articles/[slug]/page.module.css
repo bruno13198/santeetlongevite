@@ -1,1 +1,60 @@
+.contenu :global(h1) {
+  font-size: 28px;
+  margin-top: 32px;
+  margin-bottom: 12px;
+}
 
+.contenu :global(h2) {
+  font-size: 22px;
+  margin-top: 28px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 6px;
+}
+
+.contenu :global(h3) {
+  font-size: 18px;
+  margin-top: 20px;
+  margin-bottom: 8px;
+}
+
+.contenu :global(p) {
+  margin-bottom: 16px;
+}
+
+.contenu :global(table) {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 20px 0;
+  font-size: 14px;
+}
+
+.contenu :global(th),
+.contenu :global(td) {
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.contenu :global(th) {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+.contenu :global(a) {
+  color: #2a6f4b;
+}
+
+.contenu :global(ul),
+.contenu :global(ol) {
+  margin-bottom: 16px;
+  padding-left: 24px;
+}
+
+.contenu :global(li) {
+  margin-bottom: 6px;
+}
+
+.contenu :global(strong) {
+  font-weight: 700;
+}
