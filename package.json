@@ -13,6 +13,7 @@
     "react-dom": "19.2.0",
     "@supabase/supabase-js": "2.45.0",
     "react-markdown": "9.0.1",
-    "remark-gfm": "4.0.0"
+    "remark-gfm": "4.0.0",
+    "rehype-raw": "7.0.0"
   }
 }
