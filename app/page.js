@@ -1,5 +1,4 @@
 'use client';
-
 import { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
@@ -9,79 +8,40 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
-export default function Home() {
-  const [aliments, setAliments] = useState([]);
-  const [recherche, setRecherche] = useState('');
+export default function Articles() {
+  const [articles, setArticles] = useState([]);
   const [chargement, setChargement] = useState(true);
-  const [erreur, setErreur] = useState(null);
 
   useEffect(() => {
-    async function chargerAliments() {
-      const { data, error } = await supabase.from('aliments').select('*').range(0, 3999);
-      if (error) {
-        setErreur(error.message);
-      } else {
-        setAliments(data);
+    async function chargerArticles() {
+      const { data, error } = await supabase
+        .from('articles')
+        .select('titre, slug, created_at')
+        .eq('publie', true)
+        .order('created_at', { ascending: false });
+
+      if (!error) {
+        setArticles(data);
       }
       setChargement(false);
     }
-    chargerAliments();
+    chargerArticles();
   }, []);
-
-  function normaliser(texte) {
-    return texte
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, ''); // enlève les accents
-  }
-
-  const rechercheNorm = normaliser(recherche);
-
-  const alimentsFiltres = aliments.filter((aliment) => {
-    if (rechercheNorm === '') return false;
-    const motsDuNom = normaliser(aliment.nom).split(/[^a-z0-9]+/);
-    if (rechercheNorm.length <= 3) {
-      return motsDuNom.some((mot) => mot === rechercheNorm);
-    }
-    return motsDuNom.some((mot) => mot.startsWith(rechercheNorm));
-  });
 
   return (
     <main style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '700px', margin: '0 auto' }}>
-      <h1>Super Aliments Santé</h1>
-      <p style={{ marginBottom: '24px' }}>
-        <Link href="/a-propos" style={{ color: '#555' }}>À propos de ce site</Link>
-        {' · '}
-        <Link href="/articles" style={{ color: '#555' }}>Articles</Link>
-      </p>
+      <Link href="/" style={{ color: '#555' }}>← Retour à l'accueil</Link>
+      <h1 style={{ marginTop: '16px' }}>Articles</h1>
 
-      <input
-        type="text"
-        placeholder="Rechercher un aliment (ex: curcuma)..."
-        value={recherche}
-        onChange={(e) => setRecherche(e.target.value)}
-        style={{
-          width: '100%',
-          padding: '12px',
-          fontSize: '16px',
-          marginBottom: '24px',
-          border: '1px solid #ccc',
-          borderRadius: '8px',
-          boxSizing: 'border-box',
-        }}
-      />
-
-      {erreur && <p style={{ color: 'red' }}>Erreur : {erreur}</p>}
       {chargement && <p>Chargement...</p>}
-
-      {!chargement && alimentsFiltres.length === 0 && (
-        <p style={{ color: '#888' }}>Aucun aliment trouvé pour "{recherche}".</p>
+      {!chargement && articles.length === 0 && (
+        <p style={{ color: '#888' }}>Aucun article publié pour le moment.</p>
       )}
 
       <ul style={{ listStyle: 'none', padding: 0 }}>
-        {alimentsFiltres.map((aliment) => (
+        {articles.map((article) => (
           <li
-            key={aliment.id}
+            key={article.slug}
             style={{
               marginBottom: '16px',
               padding: '16px',
@@ -89,14 +49,8 @@ export default function Home() {
               borderRadius: '8px',
             }}
           >
-            <Link href={`/aliments/${aliment.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-              <strong style={{ fontSize: '18px' }}>{aliment.nom.split(',')[0]}</strong>
-              {aliment.nom.includes(',') && (
-                <span style={{ color: '#aaa', fontSize: '13px' }}> ({aliment.nom.split(',').slice(1).join(',').trim()})</span>
-              )}
-              <span style={{ color: '#888' }}> — {aliment.categorie}</span>
-              <br />
-              <span style={{ color: '#555' }}>{aliment.description}</span>
+            <Link href={`/articles/${article.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <strong style={{ fontSize: '18px' }}>{article.titre}</strong>
             </Link>
           </li>
         ))}
