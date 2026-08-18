@@ -13,6 +13,14 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
+function insererBadges(texte) {
+  return texte
+    .replaceAll('{{A}}', '<span class="badge badge-a">Grade A</span>')
+    .replaceAll('{{B}}', '<span class="badge badge-b">Grade B</span>')
+    .replaceAll('{{C}}', '<span class="badge badge-c">Grade C</span>')
+    .replaceAll('{{D}}', '<span class="badge badge-d">Grade D</span>');
+}
+
 export default async function FicheArticle({ params }) {
   const { slug } = await params;
   const { data: article, error } = await supabase
@@ -35,7 +43,7 @@ export default async function FicheArticle({ params }) {
       <h1 style={{ marginTop: '16px' }}>{article.titre}</h1>
       <div className={styles.contenu}>
         <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
-          {article.contenu}
+          {insererBadges(article.contenu)}
         </ReactMarkdown>
       </div>
     </main>
