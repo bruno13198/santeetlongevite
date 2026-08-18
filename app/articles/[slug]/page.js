@@ -5,14 +5,11 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import styles from './page.module.css';
 import './badges.css';
-
 export const dynamic = 'force-dynamic';
-
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
-
 function insererBadges(texte) {
   return texte
     .replaceAll('{{A}}', '<span class="badge badge-a">Grade A</span>')
@@ -21,12 +18,16 @@ function insererBadges(texte) {
     .replaceAll('{{D}}', '<span class="badge badge-d">Grade D</span>')
     .replaceAll('{{B–C}}', '<span class="badge badge-b">Grade B</span>–<span class="badge badge-c">Grade C</span>');
 }
-
 function corrigerImages(texte) {
   // Ajoute les parenthèses manquantes autour des URL d'images collées depuis Word
   return texte.replace(/!\[([^\]]+)\]\s*(https?:\/\/\S+)/g, '![$1]($2)');
 }
-
+function autoLiens(texte) {
+  return texte.replace(
+    /(?<!\]\()(?<!["'])(https?:\/\/[^\s)]+)/g,
+    '[$1]($1)'
+  );
+}
 function convertirTableaux(texte) {
   const lignes = texte.split('\n');
   const resultat = [];
@@ -60,14 +61,13 @@ function convertirTableaux(texte) {
   }
   return resultat.join('\n');
 }
-
 function preparerContenu(texte) {
   let t = insererBadges(texte);
   t = convertirTableaux(t);
   t = corrigerImages(t);
+  t = autoLiens(t);
   return t;
 }
-
 export default async function FicheArticle({ params }) {
   const { slug } = await params;
   const { data: article, error } = await supabase
