@@ -88,7 +88,7 @@ export default async function FicheArticle({ params }) {
     <main style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '700px', margin: '0 auto', lineHeight: '1.6' }}>
       <Link href="/articles" style={{ color: '#555' }}>← Retour aux articles</Link>
       <h1 style={{ marginTop: '16px' }}>{article.titre}</h1>
-      <div className={styles.contenu}>
+      <div className={`${styles.contenu} article-body`}>
         <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
           {preparerContenu(article.contenu)}
         </ReactMarkdown>
