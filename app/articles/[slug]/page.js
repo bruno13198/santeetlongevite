@@ -18,7 +18,54 @@ function insererBadges(texte) {
     .replaceAll('{{A}}', '<span class="badge badge-a">Grade A</span>')
     .replaceAll('{{B}}', '<span class="badge badge-b">Grade B</span>')
     .replaceAll('{{C}}', '<span class="badge badge-c">Grade C</span>')
-    .replaceAll('{{D}}', '<span class="badge badge-d">Grade D</span>');
+    .replaceAll('{{D}}', '<span class="badge badge-d">Grade D</span>')
+    .replaceAll('{{B–C}}', '<span class="badge badge-b">Grade B</span>–<span class="badge badge-c">Grade C</span>');
+}
+
+function corrigerImages(texte) {
+  // Ajoute les parenthèses manquantes autour des URL d'images collées depuis Word
+  return texte.replace(/!\[([^\]]+)\]\s*(https?:\/\/\S+)/g, '![$1]($2)');
+}
+
+function convertirTableaux(texte) {
+  const lignes = texte.split('\n');
+  const resultat = [];
+  let i = 0;
+  while (i < lignes.length) {
+    if (lignes[i].includes('\t')) {
+      const bloc = [];
+      while (i < lignes.length && lignes[i].includes('\t')) {
+        bloc.push(lignes[i]);
+        i++;
+      }
+      if (bloc.length >= 2) {
+        const cellules = bloc.map((l) => l.split('\t').map((c) => c.trim()));
+        let html = '<table class="tableau-article"><thead><tr>';
+        cellules[0].forEach((c) => { html += `<th>${c}</th>`; });
+        html += '</tr></thead><tbody>';
+        for (let r = 1; r < cellules.length; r++) {
+          html += '<tr>';
+          cellules[r].forEach((c) => { html += `<td>${c}</td>`; });
+          html += '</tr>';
+        }
+        html += '</tbody></table>';
+        resultat.push(html);
+      } else {
+        resultat.push(...bloc);
+      }
+    } else {
+      resultat.push(lignes[i]);
+      i++;
+    }
+  }
+  return resultat.join('\n');
+}
+
+function preparerContenu(texte) {
+  let t = insererBadges(texte);
+  t = convertirTableaux(t);
+  t = corrigerImages(t);
+  return t;
 }
 
 export default async function FicheArticle({ params }) {
@@ -43,7 +90,7 @@ export default async function FicheArticle({ params }) {
       <h1 style={{ marginTop: '16px' }}>{article.titre}</h1>
       <div className={styles.contenu}>
         <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
-          {insererBadges(article.contenu)}
+          {preparerContenu(article.contenu)}
         </ReactMarkdown>
       </div>
     </main>
