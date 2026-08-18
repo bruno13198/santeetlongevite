@@ -22,3 +22,18 @@
 .badge-d {
   background-color: #c62828;
 }
+.tableau-article {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+}
+.tableau-article th,
+.tableau-article td {
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  text-align: left;
+}
+.tableau-article th {
+  background-color: #f5f5f5;
+  font-weight: 700;
+}
