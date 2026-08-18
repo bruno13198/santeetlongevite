@@ -37,3 +37,10 @@
   background-color: #f5f5f5;
   font-weight: 700;
 }
+.contenu img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  display: block;
+  margin: 24px auto;
+}
