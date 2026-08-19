@@ -42,6 +42,14 @@ export default async function FicheAliment({ params }) {
     etudes = etudesData || [];
   }
 
+  // Récupère un éventuel article lié à cet aliment
+  const { data: articleLie } = await supabase
+    .from('articles')
+    .select('titre, slug')
+    .eq('aliment_id', aliment.id)
+    .eq('publie', true)
+    .maybeSingle();
+
   return (
     <main style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '700px', margin: '0 auto' }}>
       <Link href="/" style={{ color: '#555' }}>← Retour à la recherche</Link>
@@ -52,6 +60,24 @@ export default async function FicheAliment({ params }) {
       )}
       <p style={{ color: '#888' }}>{aliment.categorie}</p>
       <p>{aliment.description}</p>
+
+      {articleLie && (
+        <Link
+          href={`/articles/${articleLie.slug}`}
+          style={{
+            display: 'block',
+            marginTop: '16px',
+            marginBottom: '24px',
+            padding: '16px',
+            backgroundColor: '#f5f5f5',
+            borderRadius: '8px',
+            textDecoration: 'none',
+            color: 'inherit',
+          }}
+        >
+          📖 Lire l'article complet : <strong>{articleLie.titre}</strong>
+        </Link>
+      )}
 
       {aliment.composition && (
         <div style={{ marginTop: '16px', marginBottom: '32px' }}>
