@@ -51,8 +51,10 @@ export default function Home() {
       <h1>Super Aliments Santé</h1>
       <p style={{ marginBottom: '24px' }}>
         <Link href="/a-propos" style={{ color: '#555' }}>À propos de ce site</Link>
-        {' · '}
-        <Link href="/articles" style={{ color: '#555' }}>Articles</Link>
+{' · '}
+<Link href="/articles" style={{ color: '#555' }}>Articles</Link>
+{' · '}
+<Link href="/articles/Pourquoi-ce-site" style={{ color: '#555' }}>Pourquoi ce site ?</Link>
       </p>
 
       <input
