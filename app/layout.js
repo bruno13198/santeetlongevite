@@ -11,21 +11,21 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="fr">
-      <body>
+      <head>
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-F6HGY41SC6"
-          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=G-ZPTWSTEHH0"
+          strategy="beforeInteractive"
         />
-        <Script id="google-analytics" strategy="afterInteractive">
+        <Script id="google-analytics" strategy="beforeInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-            gtag('config', 'G-F6HGY41SC6');
+            gtag('config', 'G-ZPTWSTEHH0');
           `}
         </Script>
-        {children}
-      </body>
+      </head>
+      <body>{children}</body>
     </html>
   );
 }
