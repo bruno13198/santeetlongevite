@@ -14,11 +14,12 @@ export default function Articles() {
 
   useEffect(() => {
     async function chargerArticles() {
-      const { data, error } = await supabase
-        .from('articles')
-        .select('titre, slug, created_at')
-        .eq('publie', true)
-        .order('created_at', { ascending: false });
+     const { data, error } = await supabase
+  .from('articles')
+  .select('titre, slug, created_at')
+  .eq('publie', true)
+  .neq('slug', 'Pourquoi-ce-site')
+  .order('created_at', { ascending: false });
 
       if (!error) {
         setArticles(data);
