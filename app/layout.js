@@ -1,4 +1,5 @@
 import Script from 'next/script';
+import Footer from './components/Footer';
 
 export const metadata = {
   title: 'Super Aliments Santé',
@@ -25,7 +26,10 @@ export default function RootLayout({ children }) {
           `}
         </Script>
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }
