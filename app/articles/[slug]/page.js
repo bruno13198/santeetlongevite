@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import styles from './page.module.css';
 import './badges.css';
+import Disclaimer from '../../components/Disclaimer';
 export const dynamic = 'force-dynamic';
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -93,6 +94,7 @@ export default async function FicheArticle({ params }) {
           {preparerContenu(article.contenu)}
         </ReactMarkdown>
       </div>
+      <Disclaimer />
     </main>
   );
 }
