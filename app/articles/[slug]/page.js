@@ -1,17 +1,19 @@
 import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
-import Disclaimer from '../../components/Disclaimer';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import styles from './page.module.css';
 import './badges.css';
 import Disclaimer from '../../components/Disclaimer';
+ 
 export const dynamic = 'force-dynamic';
+ 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
+ 
 function insererBadges(texte) {
   return texte
     .replaceAll('{{A}}', '<span class="badge badge-a">Grade A</span>')
@@ -20,16 +22,18 @@ function insererBadges(texte) {
     .replaceAll('{{D}}', '<span class="badge badge-d">Grade D</span>')
     .replaceAll('{{B–C}}', '<span class="badge badge-b">Grade B</span>–<span class="badge badge-c">Grade C</span>');
 }
+ 
 function corrigerImages(texte) {
-  // Ajoute les parenthèses manquantes autour des URL d'images collées depuis Word
   return texte.replace(/!\[([^\]]+)\]\s*(https?:\/\/\S+)/g, '![$1]($2)');
 }
+ 
 function autoLiens(texte) {
   return texte.replace(
     /(?<!\]\()(?<!["'])(https?:\/\/[^\s)]+)/g,
     '[$1]($1)'
   );
 }
+ 
 function convertirTableaux(texte) {
   const lignes = texte.split('\n');
   const resultat = [];
@@ -63,6 +67,7 @@ function convertirTableaux(texte) {
   }
   return resultat.join('\n');
 }
+ 
 function preparerContenu(texte) {
   let t = insererBadges(texte);
   t = convertirTableaux(t);
@@ -70,6 +75,7 @@ function preparerContenu(texte) {
   t = autoLiens(t);
   return t;
 }
+ 
 export default async function FicheArticle({ params }) {
   const { slug } = await params;
   const { data: article, error } = await supabase
@@ -78,6 +84,7 @@ export default async function FicheArticle({ params }) {
     .eq('slug', slug)
     .eq('publie', true)
     .single();
+ 
   if (error || !article) {
     return (
       <main style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '700px', margin: '0 auto' }}>
@@ -86,6 +93,7 @@ export default async function FicheArticle({ params }) {
       </main>
     );
   }
+ 
   return (
     <main style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '700px', margin: '0 auto', lineHeight: '1.6' }}>
       <Link href="/articles" style={{ color: '#555' }}>← Retour aux articles</Link>
@@ -95,7 +103,6 @@ export default async function FicheArticle({ params }) {
           {preparerContenu(article.contenu)}
         </ReactMarkdown>
       </div>
-      ))}
       <Disclaimer />
     </main>
   );
