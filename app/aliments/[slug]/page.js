@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
+import Disclaimer from '../../components/Disclaimer';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -137,6 +138,7 @@ export default async function FicheAliment({ params }) {
           )}
         </div>
       ))}
+      <Disclaimer />
     </main>
   );
 }
