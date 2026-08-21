@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
+import Disclaimer from '../../components/Disclaimer';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
@@ -94,6 +95,7 @@ export default async function FicheArticle({ params }) {
           {preparerContenu(article.contenu)}
         </ReactMarkdown>
       </div>
+      ))}
       <Disclaimer />
     </main>
   );
