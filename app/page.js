@@ -47,10 +47,6 @@ export default function Home() {
       return motsDuNom.some((mot) => mot.startsWith(motRecherche));
     });
   });
-
-    return motsDuNom.some((mot) => mot.startsWith(rechercheNorm));
-  });
-
   return (
     <main style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '700px', margin: '0 auto' }}>
       <h1>Super Aliments Santé</h1>
