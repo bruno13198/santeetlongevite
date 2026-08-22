@@ -14,6 +14,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="fr">
       <body>
+        <Nav />
         {children}
         <Footer />
         <CookieConsent />
