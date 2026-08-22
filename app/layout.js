@@ -1,5 +1,6 @@
 import Footer from './components/Footer';
 import CookieConsent from './components/CookieConsent';
+import Nav from './components/Nav';
 
 export const metadata = {
   title: 'Super Aliments Santé',
