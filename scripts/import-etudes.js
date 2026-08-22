@@ -289,7 +289,13 @@ const RESULTATS_A_RECUPERER = 20;
 const MAX_ETUDES_PAR_ALIMENT = 8;
  
 async function chercherEtudesEuropePMC(terme) {
-  const requete = `(${terme}) AND (SRC:MED) AND (PUB_TYPE:"review" OR PUB_TYPE:"meta-analysis" OR PUB_TYPE:"systematic review" OR PUB_TYPE:"randomized controlled trial" OR PUB_TYPE:"clinical trial")`;
+  // On cible le titre et le résumé (au lieu du texte complet / mots-clés / affiliations)
+  // pour ne récupérer que des études réellement centrées sur l'aliment recherché.
+  const motsClefs = terme
+    .split(' ')
+    .map((mot) => `(TITLE:"${mot}" OR ABSTRACT:"${mot}")`)
+    .join(' AND ');
+  const requete = `(${motsClefs}) AND (SRC:MED) AND (PUB_TYPE:"review" OR PUB_TYPE:"meta-analysis" OR PUB_TYPE:"systematic review" OR PUB_TYPE:"randomized controlled trial" OR PUB_TYPE:"clinical trial")`;
   const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(requete)}&format=json&pageSize=${RESULTATS_A_RECUPERER}&resultType=core`;
  
   const res = await fetch(url);
