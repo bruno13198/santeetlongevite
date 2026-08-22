@@ -1,1 +1,186 @@
+.page {
+  --paper: #FFFFFF;
+  --ink: #1A1D18;
+  --muted: #6B6E63;
+  --line: #E5E3DA;
+  --evidence: #1F6B52;
+  --evidence-soft: #EBF3EF;
+  --hype: #B8651A;
+  --hype-soft: #FBF0E4;
 
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body), system-ui, sans-serif;
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+.wrap {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 64px 24px 100px;
+}
+
+.eyebrow {
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 20px;
+}
+
+.h1 {
+  font-family: var(--font-display), serif;
+  font-weight: 500;
+  font-size: clamp(32px, 5vw, 46px);
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  margin: 0 0 28px;
+  max-width: 15ch;
+}
+
+.lede {
+  font-size: 18px;
+  color: var(--ink);
+  max-width: 60ch;
+  margin: 0 0 44px;
+}
+
+.spectrum {
+  margin: 0 0 56px;
+}
+
+.spectrumTrack {
+  position: relative;
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+  display: flex;
+  background: var(--line);
+}
+
+.spectrumFillHype {
+  flex: 1;
+  background: linear-gradient(90deg, var(--hype-soft), var(--hype));
+}
+
+.spectrumFillEvidence {
+  flex: 1;
+  background: linear-gradient(90deg, var(--evidence), var(--evidence-soft));
+}
+
+.spectrumLabels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.labelHype {
+  color: var(--hype);
+}
+
+.labelEvidence {
+  color: var(--evidence);
+}
+
+.twoCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin: 0 0 56px;
+  padding-top: 40px;
+  border-top: 1px solid var(--line);
+}
+
+.col {
+  min-width: 0;
+}
+
+.tag {
+  font-family: var(--font-display), serif;
+  font-weight: 600;
+  font-style: italic;
+  font-size: 20px;
+  margin: 0 0 20px;
+  display: inline-block;
+  padding-bottom: 4px;
+  border-bottom: 2px solid var(--line);
+}
+
+.tag[data-tone='evidence'] {
+  border-bottom-color: var(--evidence);
+  color: var(--evidence);
+}
+
+.tag[data-tone='mono'] {
+  font-family: var(--font-mono), monospace;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+
+.empty {
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.itemList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+
+.itemLink {
+  display: block;
+  font-size: 16px;
+  color: var(--ink);
+  text-decoration: none;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+  line-height: 1.4;
+}
+
+.itemLink:hover {
+  color: var(--evidence);
+}
+
+.cta {
+  display: inline-block;
+  font-family: var(--font-mono), monospace;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--evidence);
+  text-decoration: none;
+  padding: 14px 0;
+  border-bottom: 2px solid var(--evidence);
+}
+
+.cta:hover {
+  opacity: 0.75;
+}
+
+@media (max-width: 640px) {
+  .twoCol {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
