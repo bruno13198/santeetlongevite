@@ -47,15 +47,7 @@ export default function Home() {
       return motsDuNom.some((mot) => mot.startsWith(motRecherche));
     });
   });
-Ce que ça change : "pain blanc" devient maintenant deux mots à chercher (pain, blanc), et un aliment ne s'affiche que si les deux sont trouvés dans son nom (.every() au lieu de tester la phrase entière). Donc "Pain blanc" matchera, mais "Pain au chocolat" ne matchera plus (il n'a pas "blanc").
 
-Étape 3 : Commit avec le message Fix: recherche multi-mots
-
-Une fois fait, teste à nouveau "pain blanc", "chocolat noir" et "cacao" et dis-moi ce que tu obtiens.
-
-
-
-Vous avez utilisé 90 % de votre limite de session.
     return motsDuNom.some((mot) => mot.startsWith(rechercheNorm));
   });
 
