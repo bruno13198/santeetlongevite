@@ -73,10 +73,46 @@ export default async function Home() {
         <h1 className={styles.h1}>Comment fonctionne ce site</h1>
 
         <p className={styles.lede}>
-          [Ton texte d'explication du fonctionnement du site — à rédiger. Deux ou trois
-          paragraphes suffisent : ce que le visiteur va trouver, comment naviguer entre
-          Articles et Veille scientifique, et ce qui distingue le site.]
+          Nous voulons faire un site qui tient au courant des plus récentes recherches sur
+          la santé et la longévité. Il est encore en cours de construction, mais vous pouvez
+          déjà voir :
         </p>
+
+        <div className={styles.intro}>
+          <p className={styles.introItem}>
+            <strong>Les articles</strong> — Des contenus accessibles et documentés sur la
+            nutrition, le sport, le sommeil et la longévité, basés sur les données
+            scientifiques disponibles.
+          </p>
+          <p className={styles.introItem}>
+            <strong>La veille scientifique</strong> — Une sélection des nouvelles recherches
+            les plus pertinentes, pour suivre l'évolution des connaissances dans ces différents
+            domaines (en cours d'élaboration).
+          </p>
+        </div>
+
+        <p className={styles.lede}>Prochainement :</p>
+
+        <div className={styles.intro}>
+          <p className={styles.introItem}>
+            <strong>Des outils pratiques</strong> — Calculateurs, évaluations et outils autour
+            de la nutrition, de l'activité physique et de la longévité.
+          </p>
+          <p className={styles.introItem}>
+            <strong>Des alertes personnalisées</strong> — Recevez par e-mail les nouvelles
+            recherches importantes sur les sujets que vous avez choisis.
+          </p>
+          <p className={styles.introItem}>
+            <strong>Une recherche scientifique toujours plus complète</strong> — La base
+            d'études continuera à s'enrichir et à devenir plus facile à explorer. L'objectif :
+            comprendre les connaissances actuelles, suivre leur évolution et pouvoir les
+            utiliser concrètement au quotidien.
+          </p>
+          <p className={styles.introItem}>
+            <strong>La base scientifique</strong> — Une base permettant de retrouver et
+            d'explorer les études scientifiques utilisées pour la veille et les articles.
+          </p>
+        </div>
 
         <div className={styles.spectrum} role="img" aria-label="Spectre allant des promesses non prouvées aux preuves scientifiques solides">
           <div className={styles.spectrumTrack}>
