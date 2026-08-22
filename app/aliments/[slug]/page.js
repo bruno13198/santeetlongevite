@@ -53,7 +53,7 @@ export default async function FicheAliment({ params }) {
 
   return (
     <main style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '700px', margin: '0 auto' }}>
-      <Link href="/" style={{ color: '#555' }}>← Retour à la recherche</Link>
+      <Link href="/veille-scientifique" style={{ color: '#555' }}>← Retour à la recherche</Link>
 
       <h1 style={{ marginTop: '16px' }}>{aliment.nom}</h1>
       {aliment.nom_scientifique && (
