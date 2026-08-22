@@ -1,109 +1,137 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
+import { createClient } from '@supabase/supabase-js';
+import { Fraunces, IBM_Plex_Sans, IBM_Plex_Mono } from 'next/font/google';
+import styles from './page.module.css';
+
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  style: ['normal', 'italic'],
+  variable: '--font-display',
+});
+
+const plexSans = IBM_Plex_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  variable: '--font-body',
+});
+
+const plexMono = IBM_Plex_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  variable: '--font-mono',
+});
+
+export const dynamic = 'force-dynamic';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
-export default function Home() {
-  const [aliments, setAliments] = useState([]);
-  const [recherche, setRecherche] = useState('');
-  const [chargement, setChargement] = useState(true);
-  const [erreur, setErreur] = useState(null);
+export default async function Home() {
+  const { data: articles } = await supabase
+    .from('articles')
+    .select('titre, slug, created_at')
+    .eq('publie', true)
+    .neq('slug', 'Pourquoi-ce-site')
+    .order('created_at', { ascending: false })
+    .limit(5);
 
-  useEffect(() => {
-    async function chargerAliments() {
-      const { data, error } = await supabase.from('aliments').select('*').range(0, 3999);
-      if (error) {
-        setErreur(error.message);
-      } else {
-        setAliments(data);
-      }
-      setChargement(false);
-    }
-    chargerAliments();
-  }, []);
+  const { data: etudes } = await supabase
+    .from('etudes')
+    .select('id, titre_traduit, created_at')
+    .order('created_at', { ascending: false, nullsFirst: false })
+    .limit(5);
 
-  function normaliser(texte) {
-    return texte
-      .toLowerCase()
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, ''); // enlève les accents
+  let etudesAvecLien = [];
+  if (etudes && etudes.length > 0) {
+    const etudeIds = etudes.map((e) => e.id);
+    const { data: liaisons } = await supabase
+      .from('aliments_etudes')
+      .select('etude_id, aliment_id')
+      .in('etude_id', etudeIds);
+
+    const alimentIds = liaisons ? liaisons.map((l) => l.aliment_id) : [];
+    const { data: alimentsData } = await supabase
+      .from('aliments')
+      .select('id, nom, slug')
+      .in('id', alimentIds.length > 0 ? alimentIds : [0]);
+
+    etudesAvecLien = etudes.map((etude) => {
+      const liaison = liaisons?.find((l) => l.etude_id === etude.id);
+      const aliment = liaison ? alimentsData?.find((a) => a.id === liaison.aliment_id) : null;
+      return { ...etude, aliment };
+    });
   }
 
-  const rechercheNorm = normaliser(recherche);
-  const motsRecherche = rechercheNorm.split(/[^a-z0-9]+/).filter((m) => m !== '');
-  const alimentsFiltres = aliments.filter((aliment) => {
-    if (motsRecherche.length === 0) return false;
-    const motsDuNom = normaliser(aliment.nom).split(/[^a-z0-9]+/);
-    return motsRecherche.every((motRecherche) => {
-      if (motRecherche.length <= 3) {
-        return motsDuNom.some((mot) => mot === motRecherche);
-      }
-      return motsDuNom.some((mot) => mot.startsWith(motRecherche));
-    });
-  });
   return (
-    <main style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '700px', margin: '0 auto' }}>
-      <h1>Super Aliments Santé</h1>
-      <p style={{ marginBottom: '24px' }}>
-        <Link href="/a-propos" style={{ color: '#555' }}>À propos de ce site</Link>
-{' · '}
-<Link href="/articles" style={{ color: '#555' }}>Articles</Link>
-{' · '}
-<Link href="/articles/Pourquoi-ce-site" style={{ color: '#555' }}>Pourquoi ce site ?</Link>
-      </p>
+    <main className={`${fraunces.variable} ${plexSans.variable} ${plexMono.variable} ${styles.page}`}>
+      <div className={styles.wrap}>
 
-      <input
-        type="text"
-        placeholder="Rechercher un aliment (ex: curcuma)..."
-        value={recherche}
-        onChange={(e) => setRecherche(e.target.value)}
-        style={{
-          width: '100%',
-          padding: '12px',
-          fontSize: '16px',
-          marginBottom: '24px',
-          border: '1px solid #ccc',
-          borderRadius: '8px',
-          boxSizing: 'border-box',
-        }}
-      />
+        <p className={styles.eyebrow}>sciencetruths.com</p>
+        <h1 className={styles.h1}>Comment fonctionne ce site</h1>
 
-      {erreur && <p style={{ color: 'red' }}>Erreur : {erreur}</p>}
-      {chargement && <p>Chargement...</p>}
+        <p className={styles.lede}>
+          [Ton texte d'explication du fonctionnement du site — à rédiger. Deux ou trois
+          paragraphes suffisent : ce que le visiteur va trouver, comment naviguer entre
+          Articles et Veille scientifique, et ce qui distingue le site.]
+        </p>
 
-      {!chargement && alimentsFiltres.length === 0 && (
-        <p style={{ color: '#888' }}>Aucun aliment trouvé pour "{recherche}".</p>
-      )}
+        <div className={styles.spectrum} role="img" aria-label="Spectre allant des promesses non prouvées aux preuves scientifiques solides">
+          <div className={styles.spectrumTrack}>
+            <span className={styles.spectrumFillHype} />
+            <span className={styles.spectrumFillEvidence} />
+          </div>
+          <div className={styles.spectrumLabels}>
+            <span className={styles.labelHype}>Promesses</span>
+            <span className={styles.labelEvidence}>Preuves</span>
+          </div>
+        </div>
 
-      <ul style={{ listStyle: 'none', padding: 0 }}>
-        {alimentsFiltres.map((aliment) => (
-          <li
-            key={aliment.id}
-            style={{
-              marginBottom: '16px',
-              padding: '16px',
-              border: '1px solid #eee',
-              borderRadius: '8px',
-            }}
-          >
-            <Link href={`/aliments/${aliment.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-              <strong style={{ fontSize: '18px' }}>{aliment.nom.split(',')[0]}</strong>
-              {aliment.nom.includes(',') && (
-                <span style={{ color: '#aaa', fontSize: '13px' }}> ({aliment.nom.split(',').slice(1).join(',').trim()})</span>
-              )}
-              <span style={{ color: '#888' }}> — {aliment.categorie}</span>
-              <br />
-              <span style={{ color: '#555' }}>{aliment.description}</span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+        <div className={styles.twoCol}>
+          <section className={styles.col}>
+            <p className={styles.tag} data-tone="evidence">Derniers articles</p>
+            {(!articles || articles.length === 0) && (
+              <p className={styles.empty}>Aucun article pour le moment.</p>
+            )}
+            <ul className={styles.itemList}>
+              {articles?.map((article) => (
+                <li key={article.slug}>
+                  <Link href={`/articles/${article.slug}`} className={styles.itemLink}>
+                    {article.titre}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section className={styles.col}>
+            <p className={styles.tag} data-tone="mono">Dernières études ajoutées</p>
+            {etudesAvecLien.length === 0 && (
+              <p className={styles.empty}>Aucune étude pour le moment.</p>
+            )}
+            <ul className={styles.itemList}>
+              {etudesAvecLien.map((etude) => (
+                <li key={etude.id}>
+                  {etude.aliment ? (
+                    <Link href={`/aliments/${etude.aliment.slug}`} className={styles.itemLink}>
+                      {etude.titre_traduit}
+                    </Link>
+                  ) : (
+                    <span className={styles.itemLink}>{etude.titre_traduit}</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
+
+        <Link href="/veille-scientifique" className={styles.cta}>
+          Explorer la veille scientifique →
+        </Link>
+
+      </div>
     </main>
   );
 }
