@@ -287,7 +287,13 @@ const ALIMENTS_PILOTE = [
 // sera écartée par le filtre de pertinence humaine (voir plus bas).
 const RESULTATS_A_RECUPERER = 20;
 const MAX_ETUDES_PAR_ALIMENT = 8;
- 
+// Aliments NOVA 4 (ultra-transformés) qu'on choisit quand même de couvrir,
+// car leur transformation ou leur usage a une littérature scientifique dédiée.
+const EXCEPTIONS_NOVA4 = [
+  'isolat-de-soja',
+  'cola-sucre',
+  'lecithine-de-soja',
+]; 
 async function chercherEtudesEuropePMC(terme) {
   // On cible le titre et le résumé (au lieu du texte complet / mots-clés / affiliations)
   // pour ne récupérer que des études réellement centrées sur l'aliment recherché.
@@ -379,12 +385,17 @@ async function traiterAliment(aliment) {
  
   const { data: alimentDB, error: erreurAliment } = await supabase
     .from('aliments')
-    .select('id')
+    .select('id, niveau_nova')
     .eq('slug', aliment.slug)
     .single();
- 
+
   if (erreurAliment || !alimentDB) {
     console.log(`  Aliment introuvable en base, on saute.`);
+    return;
+  }
+
+  if (alimentDB.niveau_nova === 4 && !EXCEPTIONS_NOVA4.includes(aliment.slug)) {
+    console.log(`  Aliment NOVA 4 (ultra-transformé), non listé en exception, on saute.`);
     return;
   }
  
