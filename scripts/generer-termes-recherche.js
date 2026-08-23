@@ -1,5 +1,5 @@
 // Script de génération : attribue un terme de recherche (anglais, pour Europe PMC)
-// à chaque aliment déjà en base qui n'en a pas encore.
+// à chaque aliment NOVA 1/2/3 (+ exceptions) qui n'en a pas encore.
 const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -64,7 +64,7 @@ Réponds UNIQUEMENT avec un objet JSON, rien avant, rien après, au format exact
 async function main() {
   const { data: aliments, error } = await supabase
     .from('aliments')
-    .select('id, nom')
+    .select('id, nom, niveau_nova')
     .or('terme_recherche.is.null,terme_recherche.eq.');
 
   if (error) {
@@ -72,9 +72,14 @@ async function main() {
     return;
   }
 
-  console.log(`${aliments.length} aliments à traiter.`);
+  const exceptions = ['isolat-de-soja', 'cola-sucre', 'lecithine-de-soja'];
+  const alimentsAFaire = aliments.filter(
+    (a) => [1, 2, 3].includes(a.niveau_nova) || exceptions.includes(a.nom)
+  );
 
-  for (const aliment of aliments) {
+  console.log(`${aliments.length} aliments sans terme_recherche, dont ${alimentsAFaire.length} à traiter (NOVA 1/2/3 + exceptions).`);
+
+  for (const aliment of alimentsAFaire) {
     try {
       const terme = await genererTerme(aliment.nom);
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -97,5 +102,7 @@ async function main() {
 
   console.log('\nTerminé.');
 }
+
+main();
 
 main();
