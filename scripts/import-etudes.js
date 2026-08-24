@@ -1,12 +1,8 @@
 // Script d'automatisation : récupère des études sur Europe PMC,
 // génère 2 résumés en français via l'API Claude, classe leur fiabilité,
 // et enregistre tout dans Supabase.
-// Le filtrage "humain / pertinent" est fait par Claude lui-même, en lisant le résumé
-// (plus fiable que les tags MeSH, qui manquent souvent sur les articles récents).
-// Pas de plafond permanent, jamais de remplacement : c'est une veille continue,
-// chaque run ajoute les nouvelles études sérieuses trouvées.
-// Traite 200 aliments par run max (curseur mémorisé dans la table etat_import),
-// pour des runs plus courts et faciles à surveiller.
+// Phase actuelle : remplissage initial de la base, plafonné à 8 études par aliment.
+// Traite un lot d'aliments (offset/limite passés en variables d'environnement).
  
 const { createClient } = require('@supabase/supabase-js');
  
@@ -15,11 +11,10 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
  
-const PAGE_SIZE_MAX = 30;
-const SEUIL_ALIMENT_RECHERCHE = 100;
-const NB_RESULTATS_ALIMENT_RECHERCHE = 30;
-const NB_RESULTATS_ALIMENT_STANDARD = 8;
-const TAILLE_LOT = 200;
+const RESULTATS_A_RECUPERER = 20;
+const MAX_ETUDES_PAR_ALIMENT = 8;
+const OFFSET = parseInt(process.env.OFFSET || '0', 10);
+const LIMITE = parseInt(process.env.LIMITE || '200', 10);
 
 const EXCEPTIONS_NOVA4 = [
   'isolat-de-soja',
@@ -43,58 +38,19 @@ async function recupererAlimentsATraiter() {
     (a) => [1, 2, 3].includes(a.niveau_nova) || EXCEPTIONS_NOVA4.includes(a.slug)
   );
 }
-
-async function recupererLotDuJour(tousLesAliments) {
-  const { data: etat, error } = await supabase
-    .from('etat_import')
-    .select('id, dernier_offset')
-    .limit(1)
-    .single();
-
-  if (error || !etat) {
-    throw new Error(`Erreur récupération etat_import: ${error?.message || 'ligne introuvable'}`);
-  }
-
-  const total = tousLesAliments.length;
-  const offset = etat.dernier_offset % total;
-
-  let lot = tousLesAliments.slice(offset, offset + TAILLE_LOT);
-  if (lot.length < TAILLE_LOT) {
-    const manquant = TAILLE_LOT - lot.length;
-    lot = lot.concat(tousLesAliments.slice(0, manquant));
-  }
-
-  const prochainOffset = (offset + TAILLE_LOT) % total;
-
-  return { lot, etatId: etat.id, offset, prochainOffset, total };
-}
-
-async function sauvegarderProchainOffset(etatId, prochainOffset) {
-  const { error } = await supabase
-    .from('etat_import')
-    .update({ dernier_offset: prochainOffset })
-    .eq('id', etatId);
-
-  if (error) {
-    console.log(`Erreur sauvegarde curseur:`, error.message);
-  }
-}
  
 async function chercherEtudesEuropePMC(terme) {
   const motsClefs = terme
     .split(' ')
     .map((mot) => `(TITLE:"${mot}" OR ABSTRACT:"${mot}")`)
     .join(' AND ');
-  const requete = `(${motsClefs}) AND (SRC:MED) AND (PUB_TYPE:"review" OR PUB_TYPE:"meta-analysis" OR PUB_TYPE:"systematic review" OR PUB_TYPE:"randomized controlled trial" OR PUB_TYPE:"clinical trial") sort_date:y`;
-  const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(requete)}&format=json&pageSize=${PAGE_SIZE_MAX}&resultType=core`;
+  const requete = `(${motsClefs}) AND (SRC:MED) AND (PUB_TYPE:"review" OR PUB_TYPE:"meta-analysis" OR PUB_TYPE:"systematic review" OR PUB_TYPE:"randomized controlled trial" OR PUB_TYPE:"clinical trial")`;
+  const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(requete)}&format=json&pageSize=${RESULTATS_A_RECUPERER}&resultType=core`;
  
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Europe PMC erreur ${res.status}`);
   const data = await res.json();
-  return {
-    hitCount: data.hitCount || 0,
-    resultats: data.resultList?.result || [],
-  };
+  return data.resultList?.result || [];
 }
  
 async function analyserEtude(titreOriginal, abstractOriginal, nomAliment) {
@@ -112,7 +68,7 @@ L'étude parle-t-elle vraiment et spécifiquement de « ${nomAliment} » (ou d'u
 Cette étude mesure-t-elle un EFFET ou un BÉNÉFICE (sur la santé, une maladie, un marqueur biologique...) directement chez des sujets HUMAINS, ou via une méta-analyse/revue qui synthétise de tels résultats humains ?
 Réponds "false" dans les cas suivants :
 - L'étude porte uniquement sur des animaux, des cellules en laboratoire (in vitro), ou des plantes (agronomie, botanique), SANS effet mesuré chez l'humain.
-- L'étude décrit seulement l'absorption, le métabolisme ou la biodisponibilité d'un composé chez l'humain (ex : "ce composé est absorbé par l'intestin puis transformé par le microbiote"), mais SANS mesurer un effet ou bénéfice de santé concret chez l'humain. La simple présence de données pharmacocinétiques humaines ne suffit pas si l'effet biologique testé (ex : effet antitumoral, anti-inflammatoire) n'a été observé qu'en laboratoire ou chez l'animal.
+- L'étude décrit seulement l'absorption, le métabolisme ou la biodisponibilité d'un composé chez l'humain, mais SANS mesurer un effet ou bénéfice de santé concret chez l'humain. La simple présence de données pharmacocinétiques humaines ne suffit pas si l'effet biologique testé n'a été observé qu'en laboratoire ou chez l'animal.
 - Tout autre sujet hors nutrition/santé humaine.
 Ne réponds "true" que si un effet ou bénéfice a été concrètement évalué chez des sujets humains (essai clinique, cohorte, méta-analyse de données humaines).
  
@@ -229,10 +185,13 @@ async function traiterAliment(aliment) {
     .select('*', { count: 'exact', head: true })
     .eq('aliment_id', aliment.id);
 
-  const { hitCount, resultats } = await chercherEtudesEuropePMC(aliment.terme_recherche);
+  if ((nbExistantes || 0) >= MAX_ETUDES_PAR_ALIMENT) {
+    console.log(`  Déjà ${nbExistantes} études en base (quota ${MAX_ETUDES_PAR_ALIMENT} atteint), on saute — aucun appel API.`);
+    return;
+  }
 
-  const alimentRecherche = hitCount >= SEUIL_ALIMENT_RECHERCHE;
-  const nbATraiter = alimentRecherche ? NB_RESULTATS_ALIMENT_RECHERCHE : NB_RESULTATS_ALIMENT_STANDARD;
+  const resultats = await chercherEtudesEuropePMC(aliment.terme_recherche);
+  console.log(`  ${resultats.length} études trouvées sur Europe PMC (avant filtrage humain).`);
 
   // Déduplication défensive : Europe PMC peut renvoyer le même article deux fois
   // dans une même page de résultats.
@@ -244,11 +203,14 @@ async function traiterAliment(aliment) {
     return true;
   });
 
-  const resultatsATraiter = resultatsUniques.slice(0, nbATraiter);
-
-  console.log(`  ${nbExistantes || 0} études déjà en base. ${hitCount} études sérieuses au total sur Europe PMC (aliment ${alimentRecherche ? 'très recherché' : 'standard'}, on traite ${resultatsATraiter.length} résultats).`);
+  let etudesAjoutees = nbExistantes || 0;
  
-  for (const etude of resultatsATraiter) {
+  for (const etude of resultatsUniques) {
+    if (etudesAjoutees >= MAX_ETUDES_PAR_ALIMENT) {
+      console.log(`  - Quota de ${MAX_ETUDES_PAR_ALIMENT} atteint, on arrête ici.`);
+      break;
+    }
+
     const sourceId = etude.id || etude.pmid;
     if (!sourceId) continue;
  
@@ -260,8 +222,6 @@ async function traiterAliment(aliment) {
       .maybeSingle();
  
     if (existant) {
-      // L'étude existe déjà (trouvée par un autre aliment) : on la relie
-      // simplement à cet aliment-ci si ce n'est pas déjà fait.
       const { data: lienExistant } = await supabase
         .from('aliments_etudes')
         .select('aliment_id')
@@ -274,6 +234,7 @@ async function traiterAliment(aliment) {
           aliment_id: aliment.id,
           etude_id: existant.id,
         });
+        etudesAjoutees++;
         console.log(`  - Déjà en base (${sourceId}), reliée à cet aliment.`);
       } else {
         console.log(`  - Déjà en base et déjà liée (${sourceId}), on passe.`);
@@ -367,7 +328,8 @@ async function traiterAliment(aliment) {
         aliment_id: aliment.id,
         etude_id: etudeId,
       });
- 
+
+      etudesAjoutees++;
       console.log(`  - Ajoutée (${niveauFiabilite || 'fiabilité inconnue'}) : ${analyse.titre_traduit}`);
     } catch (e) {
       console.log(`  - Erreur traitement ${sourceId}:`, e.message);
@@ -377,10 +339,8 @@ async function traiterAliment(aliment) {
  
 async function main() {
   const tousLesAliments = await recupererAlimentsATraiter();
-  console.log(`${tousLesAliments.length} aliments éligibles au total (NOVA 1/2/3 + exceptions, terme_recherche non vide).`);
-
-  const { lot, etatId, offset, prochainOffset, total } = await recupererLotDuJour(tousLesAliments);
-  console.log(`Lot de ce run : ${lot.length} aliments (offset ${offset}/${total}). Prochain offset : ${prochainOffset}.`);
+  const lot = tousLesAliments.slice(OFFSET, OFFSET + LIMITE);
+  console.log(`${tousLesAliments.length} aliments éligibles au total. Lot traité : offset ${OFFSET}, ${lot.length} aliments (jusqu'à l'offset ${OFFSET + lot.length}).`);
 
   for (const aliment of lot) {
     try {
@@ -389,12 +349,8 @@ async function main() {
       console.log(`Erreur générale sur ${aliment.slug}:`, e.message);
     }
   }
-
-  await sauvegarderProchainOffset(etatId, prochainOffset);
   console.log('\nTerminé.');
 }
- 
-main();
  
 main();
  
