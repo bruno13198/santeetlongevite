@@ -20,6 +20,7 @@ const EXCEPTIONS_NOVA4 = [
   'isolat-de-soja',
   'cola-sucre',
   'lecithine-de-soja',
+  'kimchi',
 ];
 
 async function recupererAlimentsATraiter() {
