@@ -47,6 +47,12 @@ function formaterDate(date) {
   return date.toISOString().split('T')[0];
 }
 
+const JOURS_VEILLE = 10; // fenêtre de recherche : un peu plus qu'une semaine, pour couvrir le délai d'indexation d'Europe PMC
+
+function formaterDate(date) {
+  return date.toISOString().split('T')[0];
+}
+
 async function chercherEtudesEuropePMC(terme) {
   const motsClefs = terme
     .split(' ')
