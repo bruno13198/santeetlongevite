@@ -1,8 +1,9 @@
 // Script d'automatisation : récupère des études sur Europe PMC,
 // génère 2 résumés en français via l'API Claude, classe leur fiabilité,
 // et enregistre tout dans Supabase.
-// Phase actuelle : enrichissement continu de la base, avec un garde-fou
-// limitant le nombre de nouvelles études ajoutées par aliment à chaque run.
+// Phase actuelle : veille continue, avec recherche limitée aux études publiées
+// récemment (JOURS_VEILLE) et un garde-fou sur le nombre de nouvelles études
+// ajoutées par aliment à chaque run.
 // Traite un lot d'aliments (offset/limite passés en variables d'environnement).
 
 const { createClient } = require('@supabase/supabase-js');
@@ -16,6 +17,7 @@ const RESULTATS_A_RECUPERER = 20;
 const MAX_NOUVELLES_ETUDES_PAR_RUN = 8; // garde-fou : pas plus de 8 nouvelles études ajoutées par aliment en un seul run
 const OFFSET = parseInt(process.env.OFFSET || '0', 10);
 const LIMITE = parseInt(process.env.LIMITE || '200', 10);
+const JOURS_VEILLE = 10; // fenêtre de recherche : un peu plus qu'une semaine, pour couvrir le délai d'indexation d'Europe PMC
 
 const EXCEPTIONS_NOVA4 = [
   'isolat-de-soja',
@@ -23,6 +25,10 @@ const EXCEPTIONS_NOVA4 = [
   'lecithine-de-soja',
   'kimchi',
 ];
+
+function formaterDate(date) {
+  return date.toISOString().split('T')[0];
+}
 
 async function recupererAlimentsATraiter() {
   const { data: aliments, error } = await supabase
@@ -41,13 +47,7 @@ async function recupererAlimentsATraiter() {
   );
 }
 
-const JOURS_VEILLE = 10; // fenêtre de recherche : un peu plus qu'une semaine, pour couvrir le délai d'indexation d'Europe PMC
-
-function formaterDate(date) {
-  return date.toISOString().split('T')[0];
-}
-
-async function chercherEtudesEuropePMC(terme) {
+async function chercherEtudesEuropePMC(terme, tentative = 1) {
   const motsClefs = terme
     .split(' ')
     .map((mot) => `(TITLE:"${mot}" OR ABSTRACT:"${mot}")`)
@@ -61,7 +61,16 @@ async function chercherEtudesEuropePMC(terme) {
   const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(requete)}&format=json&pageSize=${RESULTATS_A_RECUPERER}&resultType=core&sort=P_PDATE_D`;
 
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`Europe PMC erreur ${res.status}`);
+
+  if (!res.ok) {
+    if (res.status === 503 && tentative < 3) {
+      console.log(`  Europe PMC indisponible (503), nouvelle tentative dans 3s (${tentative + 1}/3)...`);
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      return chercherEtudesEuropePMC(terme, tentative + 1);
+    }
+    throw new Error(`Europe PMC erreur ${res.status}`);
+  }
+
   const data = await res.json();
   return data.resultList?.result || [];
 }
@@ -195,6 +204,7 @@ async function traiterAliment(aliment) {
 
   const resultats = await chercherEtudesEuropePMC(aliment.terme_recherche);
   console.log(`  ${resultats.length} études trouvées sur Europe PMC (avant filtrage humain).`);
+  await new Promise((resolve) => setTimeout(resolve, 300)); // pause pour éviter de saturer Europe PMC
 
   // Déduplication défensive : Europe PMC peut renvoyer le même article deux fois
   // dans une même page de résultats.
