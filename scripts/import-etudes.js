@@ -351,6 +351,7 @@ async function traiterAliment(aliment) {
 }
 
 async function main() {
+  console.log(`Paramètres de ce run : OFFSET=${OFFSET}, LIMITE=${LIMITE}, JOURS_VEILLE=${JOURS_VEILLE}`);
   const tousLesAliments = await recupererAlimentsATraiter();
   const lot = tousLesAliments.slice(OFFSET, OFFSET + LIMITE);
   console.log(`${tousLesAliments.length} aliments éligibles au total. Lot traité : offset ${OFFSET}, ${lot.length} aliments (jusqu'à l'offset ${OFFSET + lot.length}).`);
