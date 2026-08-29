@@ -37,7 +37,7 @@ export default function VeilleScientifique() {
 
   useEffect(() => {
     async function chargerAliments() {
-      const { data, error } = await supabase.from('aliments').select('*').range(0, 3999);
+      const { data, error } = await supabase.from('aliments').select('*').eq('actif', true).range(0, 3999);
       if (error) {
         setErreur(error.message);
       } else {
