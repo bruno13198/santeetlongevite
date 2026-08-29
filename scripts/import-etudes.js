@@ -41,13 +41,24 @@ async function recupererAlimentsATraiter() {
   );
 }
 
+const JOURS_VEILLE = 10; // fenêtre de recherche : un peu plus qu'une semaine, pour couvrir le délai d'indexation d'Europe PMC
+
+function formaterDate(date) {
+  return date.toISOString().split('T')[0];
+}
+
 async function chercherEtudesEuropePMC(terme) {
   const motsClefs = terme
     .split(' ')
     .map((mot) => `(TITLE:"${mot}" OR ABSTRACT:"${mot}")`)
     .join(' AND ');
-  const requete = `(${motsClefs}) AND (SRC:MED) AND (PUB_TYPE:"review" OR PUB_TYPE:"meta-analysis" OR PUB_TYPE:"systematic review" OR PUB_TYPE:"randomized controlled trial" OR PUB_TYPE:"clinical trial")`;
-  const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(requete)}&format=json&pageSize=${RESULTATS_A_RECUPERER}&resultType=core`;
+
+  const dateDebut = new Date();
+  dateDebut.setDate(dateDebut.getDate() - JOURS_VEILLE);
+  const filtreDate = `AND (FIRST_PDATE:[${formaterDate(dateDebut)} TO ${formaterDate(new Date())}])`;
+
+  const requete = `(${motsClefs}) AND (SRC:MED) AND (PUB_TYPE:"review" OR PUB_TYPE:"meta-analysis" OR PUB_TYPE:"systematic review" OR PUB_TYPE:"randomized controlled trial" OR PUB_TYPE:"clinical trial") ${filtreDate}`;
+  const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(requete)}&format=json&pageSize=${RESULTATS_A_RECUPERER}&resultType=core&sort=P_PDATE_D`;
 
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Europe PMC erreur ${res.status}`);
