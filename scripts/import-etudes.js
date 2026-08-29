@@ -12,7 +12,7 @@ const supabase = createClient(
 );
  
 const RESULTATS_A_RECUPERER = 20;
-const MAX_ETUDES_PAR_ALIMENT = 8;
+const MAX_NOUVELLES_ETUDES_PAR_RUN = 8; // garde-fou : pas plus de 8 nouvelles études ajoutées par aliment en un seul run
 const OFFSET = parseInt(process.env.OFFSET || '0', 10);
 const LIMITE = parseInt(process.env.LIMITE || '200', 10);
 
