@@ -17,7 +17,7 @@ const RESULTATS_A_RECUPERER = 20;
 const MAX_NOUVELLES_ETUDES_PAR_RUN = 8; // garde-fou : pas plus de 8 nouvelles études ajoutées par aliment en un seul run
 const OFFSET = parseInt(process.env.OFFSET || '0', 10);
 const LIMITE = parseInt(process.env.LIMITE || '200', 10);
-const JOURS_VEILLE = 10; // fenêtre de recherche : un peu plus qu'une semaine, pour couvrir le délai d'indexation d'Europe PMC
+const JOURS_VEILLE = parseInt(process.env.JOURS_VEILLE || '10', 10); // fenêtre de recherche en jours ; 10 par défaut pour le cron hebdomadaire, ajustable ponctuellement via la variable d'environnement
 
 const EXCEPTIONS_NOVA4 = [
   'isolat-de-soja',
