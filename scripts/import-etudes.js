@@ -1,16 +1,17 @@
 // Script d'automatisation : récupère des études sur Europe PMC,
 // génère 2 résumés en français via l'API Claude, classe leur fiabilité,
 // et enregistre tout dans Supabase.
-// Phase actuelle : remplissage initial de la base, plafonné à 8 études par aliment.
+// Phase actuelle : enrichissement continu de la base, avec un garde-fou
+// limitant le nombre de nouvelles études ajoutées par aliment à chaque run.
 // Traite un lot d'aliments (offset/limite passés en variables d'environnement).
- 
+
 const { createClient } = require('@supabase/supabase-js');
- 
+
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
- 
+
 const RESULTATS_A_RECUPERER = 20;
 const MAX_NOUVELLES_ETUDES_PAR_RUN = 8; // garde-fou : pas plus de 8 nouvelles études ajoutées par aliment en un seul run
 const OFFSET = parseInt(process.env.OFFSET || '0', 10);
@@ -39,7 +40,7 @@ async function recupererAlimentsATraiter() {
     (a) => [1, 2, 3].includes(a.niveau_nova) || EXCEPTIONS_NOVA4.includes(a.slug)
   );
 }
- 
+
 async function chercherEtudesEuropePMC(terme) {
   const motsClefs = terme
     .split(' ')
@@ -47,24 +48,24 @@ async function chercherEtudesEuropePMC(terme) {
     .join(' AND ');
   const requete = `(${motsClefs}) AND (SRC:MED) AND (PUB_TYPE:"review" OR PUB_TYPE:"meta-analysis" OR PUB_TYPE:"systematic review" OR PUB_TYPE:"randomized controlled trial" OR PUB_TYPE:"clinical trial")`;
   const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(requete)}&format=json&pageSize=${RESULTATS_A_RECUPERER}&resultType=core`;
- 
+
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Europe PMC erreur ${res.status}`);
   const data = await res.json();
   return data.resultList?.result || [];
 }
- 
+
 async function analyserEtude(titreOriginal, abstractOriginal, nomAliment) {
   const prompt = `Tu es un rédacteur scientifique qui vulgarise des études de nutrition/santé pour un site grand public francophone.
- 
+
 Cette étude a été trouvée en recherchant des publications sur : ${nomAliment}
- 
+
 Titre original : ${titreOriginal}
 Résumé original (anglais) : ${abstractOriginal}
- 
+
 Étape 1 — Vérifie le SUJET :
 L'étude parle-t-elle vraiment et spécifiquement de « ${nomAliment} » (ou d'un synonyme/nom scientifique direct de cet aliment) ? Une simple co-occurrence de mots-clés ou une confusion terminologique (ex : un homonyme, une espèce différente, un aliment qui n'apparaît que dans la bibliographie ou en comparaison lointaine) ne compte pas. Si l'étude porte en réalité sur un autre sujet qui a seulement été mal indexé sous ce terme de recherche, réponds "false".
- 
+
 Étape 2 — Évalue la pertinence humaine :
 Cette étude mesure-t-elle un EFFET ou un BÉNÉFICE (sur la santé, une maladie, un marqueur biologique...) directement chez des sujets HUMAINS, ou via une méta-analyse/revue qui synthétise de tels résultats humains ?
 Réponds "false" dans les cas suivants :
@@ -72,17 +73,17 @@ Réponds "false" dans les cas suivants :
 - L'étude décrit seulement l'absorption, le métabolisme ou la biodisponibilité d'un composé chez l'humain, mais SANS mesurer un effet ou bénéfice de santé concret chez l'humain. La simple présence de données pharmacocinétiques humaines ne suffit pas si l'effet biologique testé n'a été observé qu'en laboratoire ou chez l'animal.
 - Tout autre sujet hors nutrition/santé humaine.
 Ne réponds "true" que si un effet ou bénéfice a été concrètement évalué chez des sujets humains (essai clinique, cohorte, méta-analyse de données humaines).
- 
+
 Étape 3 — Si et seulement si pertinente sur les deux points ci-dessus, rédige les résumés en français.
- 
+
 Réponds UNIQUEMENT avec un objet JSON valide (rien avant, rien après), au format EXACT suivant. N'utilise JAMAIS de guillemets doubles (") à l'intérieur des textes — utilise des guillemets français « » ou des apostrophes si besoin. N'utilise JAMAIS de retour à la ligne à l'intérieur des valeurs texte — rédige chaque champ comme un seul paragraphe continu, sans saut de ligne.
- 
+
 Si l'étude N'EST PAS pertinente :
 {
   "pertinent": false,
   "raison": "courte explication en français (une phrase)"
 }
- 
+
 Si l'étude EST pertinente :
 {
   "pertinent": true,
@@ -90,13 +91,13 @@ Si l'étude EST pertinente :
   "resume_simplifie": "un résumé très simple et accessible en français (80-120 mots), sans jargon, compréhensible par un lecteur non-scientifique",
   "resume_reformule": "une reformulation plus détaillée en français (100-150 mots), qui garde davantage de nuance scientifique et de précision, mais reste lisible"
 }
- 
+
 Règles importantes :
 - Ne jamais transformer une corrélation en causalité si l'étude ne le permet pas
 - Rester factuel, ne pas exagérer les conclusions
 - Varier le style et la structure des phrases (éviter les formulations répétitives d'un résumé à l'autre)
 - Rédiger uniquement en français`;
- 
+
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
@@ -110,17 +111,17 @@ Règles importantes :
       messages: [{ role: 'user', content: prompt }],
     }),
   });
- 
+
   if (!res.ok) {
     const errText = await res.text();
     throw new Error(`Erreur API Claude ${res.status}: ${errText}`);
   }
- 
+
   const data = await res.json();
   const texte = data.content.map((b) => b.text || '').join('');
   const nettoye = texte.replace(/```json|```/g, '').trim();
   const match = nettoye.match(/\{[\s\S]*\}/);
- 
+
   try {
     return JSON.parse(match ? match[0] : nettoye);
   } catch (e) {
@@ -177,7 +178,7 @@ ou
     return null;
   }
 }
- 
+
 async function traiterAliment(aliment) {
   console.log(`\n=== ${aliment.slug} ===`);
 
@@ -204,14 +205,14 @@ async function traiterAliment(aliment) {
 
     const sourceId = etude.id || etude.pmid;
     if (!sourceId) continue;
- 
+
     const { data: existant } = await supabase
       .from('etudes')
       .select('id')
       .eq('source', 'Europe PMC')
       .eq('source_id', sourceId)
       .maybeSingle();
- 
+
     if (existant) {
       const { data: lienExistant } = await supabase
         .from('aliments_etudes')
@@ -225,34 +226,34 @@ async function traiterAliment(aliment) {
           aliment_id: aliment.id,
           etude_id: existant.id,
         });
-        etudesAjoutees++;
+        nouvellesEtudesAjoutees++;
         console.log(`  - Déjà en base (${sourceId}), reliée à cet aliment.`);
       } else {
         console.log(`  - Déjà en base et déjà liée (${sourceId}), on passe.`);
       }
       continue;
     }
- 
+
     if (!etude.abstractText) {
       console.log(`  - Pas de résumé disponible pour ${sourceId}, on passe.`);
       continue;
     }
- 
+
     const { data: dejaRejete } = await supabase
       .from('candidats_rejetes')
       .select('source_id')
       .eq('aliment_id', aliment.id)
       .eq('source_id', sourceId)
       .maybeSingle();
- 
+
     if (dejaRejete) {
       console.log(`  - Déjà rejeté précédemment (${sourceId}), on passe.`);
       continue;
     }
- 
+
     try {
       const analyse = await analyserEtude(etude.title, etude.abstractText, aliment.terme_recherche);
- 
+
       if (!analyse.pertinent) {
         console.log(`  - Écartée (${sourceId}) : ${analyse.raison}`);
         await supabase.from('candidats_rejetes').insert({ aliment_id: aliment.id, source_id: sourceId });
@@ -261,7 +262,7 @@ async function traiterAliment(aliment) {
 
       const niveauFiabilite = await classerFiabilite(etude.title, etude.abstractText);
       await new Promise((resolve) => setTimeout(resolve, 500));
- 
+
       let etudeId;
       const { data: nouvelleEtude, error: erreurInsert } = await supabase
         .from('etudes')
@@ -320,14 +321,14 @@ async function traiterAliment(aliment) {
         etude_id: etudeId,
       });
 
-      etudesAjoutees++;
+      nouvellesEtudesAjoutees++;
       console.log(`  - Ajoutée (${niveauFiabilite || 'fiabilité inconnue'}) : ${analyse.titre_traduit}`);
     } catch (e) {
       console.log(`  - Erreur traitement ${sourceId}:`, e.message);
     }
   }
 }
- 
+
 async function main() {
   const tousLesAliments = await recupererAlimentsATraiter();
   const lot = tousLesAliments.slice(OFFSET, OFFSET + LIMITE);
@@ -342,6 +343,8 @@ async function main() {
   }
   console.log('\nTerminé.');
 }
+
+main();
  
 main();
  
