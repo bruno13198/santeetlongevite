@@ -12,6 +12,9 @@ on:
         description: 'Nombre d''aliments à traiter'
         required: false
         default: '2000'
+concurrency:
+  group: import-etudes
+  cancel-in-progress: true
 jobs:
   import:
     runs-on: ubuntu-latest
