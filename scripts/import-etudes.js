@@ -181,16 +181,6 @@ ou
 async function traiterAliment(aliment) {
   console.log(`\n=== ${aliment.slug} ===`);
 
-  const { count: nbExistantes } = await supabase
-    .from('aliments_etudes')
-    .select('*', { count: 'exact', head: true })
-    .eq('aliment_id', aliment.id);
-
-  if ((nbExistantes || 0) >= MAX_ETUDES_PAR_ALIMENT) {
-    console.log(`  Déjà ${nbExistantes} études en base (quota ${MAX_ETUDES_PAR_ALIMENT} atteint), on saute — aucun appel API.`);
-    return;
-  }
-
   const resultats = await chercherEtudesEuropePMC(aliment.terme_recherche);
   console.log(`  ${resultats.length} études trouvées sur Europe PMC (avant filtrage humain).`);
 
@@ -204,11 +194,11 @@ async function traiterAliment(aliment) {
     return true;
   });
 
-  let etudesAjoutees = nbExistantes || 0;
- 
+  let nouvellesEtudesAjoutees = 0;
+
   for (const etude of resultatsUniques) {
-    if (etudesAjoutees >= MAX_ETUDES_PAR_ALIMENT) {
-      console.log(`  - Quota de ${MAX_ETUDES_PAR_ALIMENT} atteint, on arrête ici.`);
+    if (nouvellesEtudesAjoutees >= MAX_NOUVELLES_ETUDES_PAR_RUN) {
+      console.log(`  - Garde-fou de ${MAX_NOUVELLES_ETUDES_PAR_RUN} nouvelles études atteint pour ce run, on arrête ici.`);
       break;
     }
 
