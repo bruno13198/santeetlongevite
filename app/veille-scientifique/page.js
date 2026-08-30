@@ -42,12 +42,14 @@ export default function VeilleScientifique() {
         .from('aliments')
         .select('*')
         .eq('actif', true)
-        .or(`niveau_nova.neq.4,slug.in.(${EXCEPTIONS_NOVA4.join(',')})`)
         .range(0, 3999);
       if (error) {
         setErreur(error.message);
       } else {
-        setAliments(data);
+        const filtres = data.filter(
+          (a) => a.niveau_nova !== 4 || EXCEPTIONS_NOVA4.includes(a.slug)
+        );
+        setAliments(filtres);
       }
       setChargement(false);
     }
