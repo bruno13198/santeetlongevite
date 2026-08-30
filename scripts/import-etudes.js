@@ -88,7 +88,7 @@ async function chercherEtudesEuropePMC(terme, tentative = 1) {
   return data.resultList?.result || [];
 }
 
-async function analyserEtude(titreOriginal, abstractOriginal, nomAliment) {
+async function analyserEtude(titreOriginal, abstractOriginal, nomAliment, tentative = 1) {
   const prompt = `Tu es un rédacteur scientifique qui vulgarise des études de nutrition/santé pour un site grand public francophone.
 
 Cette étude a été trouvée en recherchant des publications sur : ${nomAliment}
@@ -158,7 +158,12 @@ Règles importantes :
   try {
     return JSON.parse(match ? match[0] : nettoye);
   } catch (e) {
-    throw new Error(`JSON invalide reçu de Claude : ${e.message} | Début du texte reçu : ${nettoye.slice(0, 200)}`);
+    if (tentative < 3) {
+      console.log(`  Réponse d'analyse incomplète, nouvelle tentative (${tentative + 1}/3)...`);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      return analyserEtude(titreOriginal, abstractOriginal, nomAliment, tentative + 1);
+    }
+    throw new Error(`JSON invalide reçu de Claude après 3 tentatives : ${e.message} | Début du texte reçu : ${nettoye.slice(0, 200)}`);
   }
 }
 
