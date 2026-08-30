@@ -63,8 +63,10 @@ export default function VeilleScientifique() {
       .replace(/[\u0300-\u036f]/g, '');
   }
 
-  const rechercheNorm = normaliser(recherche);
-  const motsRecherche = rechercheNorm.split(/[^a-z0-9]+/).filter((m) => m !== '');
+ function singulariser(mot) {
+    return mot.endsWith('s') && mot.length > 4 ? mot.slice(0, -1) : mot;
+  }
+
   const alimentsFiltres = aliments.filter((aliment) => {
     if (motsRecherche.length === 0) return false;
     const motsDuNom = normaliser(aliment.nom).split(/[^a-z0-9]+/);
@@ -72,9 +74,13 @@ export default function VeilleScientifique() {
       if (motRecherche.length <= 3) {
         return motsDuNom.some((mot) => mot === motRecherche);
       }
-      return motsDuNom.some((mot) => mot.startsWith(motRecherche));
+      const motRechercheSing = singulariser(motRecherche);
+      return motsDuNom.some((mot) => {
+        const motSing = singulariser(mot);
+        return motSing.startsWith(motRechercheSing) || motRechercheSing.startsWith(motSing);
+      });
     });
-  });
+  });;
 
   return (
     <main className={`${fraunces.variable} ${plexSans.variable} ${plexMono.variable} ${styles.page}`}>
