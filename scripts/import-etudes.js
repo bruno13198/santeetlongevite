@@ -61,9 +61,11 @@ async function chercherEtudesEuropePMC(terme, tentative = 1) {
  const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(requete)}&format=json&pageSize=${RESULTATS_A_RECUPERER}&resultType=core`;
   const res = await fetch(url);
 
+  const ERREURS_TEMPORAIRES = [500, 502, 503, 504];
+
   if (!res.ok) {
-    if (res.status === 503 && tentative < 3) {
-      console.log(`  Europe PMC indisponible (503), nouvelle tentative dans 3s (${tentative + 1}/3)...`);
+    if (ERREURS_TEMPORAIRES.includes(res.status) && tentative < 3) {
+      console.log(`  Europe PMC indisponible (${res.status}), nouvelle tentative dans 3s (${tentative + 1}/3)...`);
       await new Promise((resolve) => setTimeout(resolve, 3000));
       return chercherEtudesEuropePMC(terme, tentative + 1);
     }
