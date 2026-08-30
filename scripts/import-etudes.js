@@ -60,8 +60,8 @@ async function chercherEtudesEuropePMC(terme, tentative = 1) {
   const requete = `(${motsClefs}) AND (SRC:MED) AND (PUB_TYPE:"review" OR PUB_TYPE:"meta-analysis" OR PUB_TYPE:"systematic review" OR PUB_TYPE:"randomized controlled trial" OR PUB_TYPE:"clinical trial") ${filtreDate}`;
  const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(requete)}&format=json&pageSize=${RESULTATS_A_RECUPERER}&resultType=core`;
   const res = await fetch(url);
-
-  const ERREURS_TEMPORAIRES = [500, 502, 503, 504];
+  
+ const ERREURS_TEMPORAIRES = [500, 502, 503, 504];
 
   if (!res.ok) {
     if (ERREURS_TEMPORAIRES.includes(res.status) && tentative < 3) {
