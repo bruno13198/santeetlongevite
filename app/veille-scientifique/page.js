@@ -72,7 +72,7 @@ export default function VeilleScientifique() {
 
   const alimentsFiltres = aliments.filter((aliment) => {
     if (motsRecherche.length === 0) return false;
-    const motsDuNom = normaliser(aliment.nom).split(/[^a-z0-9]+/);
+    const motsDuNom = normaliser(aliment.nom).split(/[^a-z0-9]+/).filter((m) => m !== '');
     return motsRecherche.every((motRecherche) => {
       if (motRecherche.length <= 3) {
         return motsDuNom.some((mot) => mot === motRecherche);
