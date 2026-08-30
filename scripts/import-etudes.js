@@ -362,6 +362,11 @@ async function main() {
       await traiterAliment(aliment);
     } catch (e) {
       console.log(`Erreur générale sur ${aliment.slug}:`, e.message);
+      await supabase.from('erreurs_import').insert({
+        aliment_slug: aliment.slug,
+        type_erreur: 'echec_recherche',
+        message: e.message,
+      });
     }
   }
   console.log('\nTerminé.');
