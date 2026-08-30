@@ -24,6 +24,7 @@ const EXCEPTIONS_NOVA4 = [
   'cola-sucre',
   'lecithine-de-soja',
   'kimchi',
+  'kombucha',
 ];
 
 function formaterDate(date) {
