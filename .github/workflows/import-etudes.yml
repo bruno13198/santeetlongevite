@@ -16,6 +16,18 @@ on:
         description: 'Fenêtre de recherche en jours (10 par défaut)'
         required: false
         default: '10'
+      resultats_a_recuperer:
+        description: 'Nombre de résultats Europe PMC à examiner par aliment (20 par défaut)'
+        required: false
+        default: '20'
+      max_nouvelles_etudes:
+        description: 'Nombre max de nouvelles études ajoutées par aliment (8 par défaut)'
+        required: false
+        default: '8'
+      slugs_cibles:
+        description: 'Slugs ciblés séparés par virgules (vide = tous les aliments)'
+        required: false
+        default: ''
 concurrency:
   group: import-etudes
   cancel-in-progress: true
@@ -39,4 +51,7 @@ jobs:
           OFFSET: ${{ github.event.inputs.offset || '0' }}
           LIMITE: ${{ github.event.inputs.limite || '2000' }}
           JOURS_VEILLE: ${{ github.event.inputs.jours_veille || '10' }}
+          RESULTATS_A_RECUPERER: ${{ github.event.inputs.resultats_a_recuperer || '20' }}
+          MAX_NOUVELLES_ETUDES_PAR_RUN: ${{ github.event.inputs.max_nouvelles_etudes || '8' }}
+          SLUGS_CIBLES: ${{ github.event.inputs.slugs_cibles || '' }}
         run: node scripts/import-etudes.js
