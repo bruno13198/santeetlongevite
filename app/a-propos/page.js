@@ -229,6 +229,12 @@ export default function APropos() {
             L'IA est donc un outil pour faciliter l'accès à la connaissance scientifique, pas pour
             remplacer la recherche scientifique elle-même.
           </p>
+          <p className={styles.body}>
+            Chaque article est rédigé avec cette assistance, puis relu et validé par la rédaction
+            avant publication. Si vous repérez une erreur, une imprécision ou une source manquante,
+            écrivez-nous à{' '}
+            <a href="mailto:contact@sciencetruths.com">contact@sciencetruths.com</a>.
+          </p>
         </section>
  
         {/* --- Pas de super-aliments --- */}
