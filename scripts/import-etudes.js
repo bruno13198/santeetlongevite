@@ -13,8 +13,8 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-const RESULTATS_A_RECUPERER = 20;
-const MAX_NOUVELLES_ETUDES_PAR_RUN = 8; // garde-fou : pas plus de 8 nouvelles études ajoutées par aliment en un seul run
+const RESULTATS_A_RECUPERER = parseInt(process.env.RESULTATS_A_RECUPERER || '20', 10);
+const MAX_NOUVELLES_ETUDES_PAR_RUN = parseInt(process.env.MAX_NOUVELLES_ETUDES_PAR_RUN || '8', 10);
 const OFFSET = parseInt(process.env.OFFSET || '0', 10);
 const LIMITE = parseInt(process.env.LIMITE || '200', 10);
 const JOURS_VEILLE = parseInt(process.env.JOURS_VEILLE || '10', 10); // fenêtre de recherche en jours ; 10 par défaut pour le cron hebdomadaire, ajustable ponctuellement via la variable d'environnement
@@ -42,9 +42,17 @@ async function recupererAlimentsATraiter() {
     throw new Error(`Erreur récupération aliments: ${error.message}`);
   }
 
-  return aliments.filter(
+  const eligibles = aliments.filter(
     (a) => [1, 2, 3].includes(a.niveau_nova) || EXCEPTIONS_NOVA4.includes(a.slug)
   );
+
+  const slugsCibles = process.env.SLUGS_CIBLES;
+  if (slugsCibles) {
+    const listeSlugs = slugsCibles.split(',').map((s) => s.trim());
+    return eligibles.filter((a) => listeSlugs.includes(a.slug));
+  }
+
+  return eligibles;
 }
 
 async function chercherEtudesEuropePMC(terme, tentative = 1) {
