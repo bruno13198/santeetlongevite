@@ -48,7 +48,11 @@ async function recupererAlimentsATraiter() {
 }
 
 async function chercherEtudesEuropePMC(terme, tentative = 1) {
-  const motsClefs = terme
+  // Retire un nom scientifique latin (Genre espèce) en fin de terme,
+  // ex. "garlic Allium sativum" -> "garlic", "sweet potato Ipomoea batatas" -> "sweet potato"
+  const termeSansNomScientifique = terme.replace(/\s+[A-Z][a-zà-ÿ]+\s+[a-zà-ÿ]+$/, '');
+
+  const motsClefs = termeSansNomScientifique
     .split(' ')
     .map((mot) => `(TITLE:"${mot}" OR ABSTRACT:"${mot}")`)
     .join(' AND ');
