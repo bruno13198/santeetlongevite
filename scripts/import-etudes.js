@@ -30,7 +30,39 @@ const EXCEPTIONS_NOVA4 = [
 function formaterDate(date) {
   return date.toISOString().split('T')[0];
 }
+function normaliserTypeEtude(pubTypeList) {
+  if (!pubTypeList || pubTypeList.length === 0) return null;
+  const types = pubTypeList.map((t) => t.toLowerCase());
 
+  if (types.includes('meta-analysis')) return 'Méta-analyse';
+  if (types.includes('systematic review')) return 'Revue systématique';
+  if (types.includes('randomized controlled trial')) return 'Essai contrôlé randomisé';
+  if (types.includes('clinical trial')) return 'Essai clinique';
+  if (types.some((t) => t.includes('cohort'))) return 'Étude de cohorte';
+  if (types.some((t) => t.includes('case-control'))) return 'Étude cas-témoins';
+  if (types.some((t) => t.includes('cross-sectional') || t.includes('observational'))) return 'Étude transversale';
+  if (types.some((t) => t.includes('comparative study'))) return 'Étude comparative';
+  if (types.includes('review')) return 'Revue narrative';
+  return null;
+}
+
+function extraireNbParticipants(abstractText) {
+  if (!abstractText) return null;
+  const patterns = [
+    /(\d[\d,\s]{1,6})\s+(participants|patients|subjects|adults|volunteers|individuals)/i,
+    /(n\s*=\s*)(\d[\d,\s]{1,6})/i,
+  ];
+  for (const pattern of patterns) {
+    const match = abstractText.match(pattern);
+    if (match) {
+      const nombre = (match[2] && !isNaN(match[2].replace(/[,\s]/g, '')) ? match[2] : match[1])
+        .replace(/[,\s]/g, '');
+      const parsed = parseInt(nombre, 10);
+      if (!isNaN(parsed) && parsed > 0 && parsed < 10000000) return parsed;
+    }
+  }
+  return null;
+}
 async function recupererAlimentsATraiter() {
   const { data: aliments, error } = await supabase
     .from('aliments')
