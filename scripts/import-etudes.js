@@ -48,19 +48,50 @@ function normaliserTypeEtude(pubTypeList) {
 
 function extraireNbParticipants(abstractText) {
   if (!abstractText) return null;
-  const patterns = [
-    /(\d[\d,\s]{1,6})\s+(participants|patients|subjects|adults|volunteers|individuals)/i,
-    /(n\s*=\s*)(\d[\d,\s]{1,6})/i,
-  ];
-  for (const pattern of patterns) {
-    const match = abstractText.match(pattern);
-    if (match) {
-      const nombre = (match[2] && !isNaN(match[2].replace(/[,\s]/g, '')) ? match[2] : match[1])
-        .replace(/[,\s]/g, '');
-      const parsed = parseInt(nombre, 10);
-      if (!isNaN(parsed) && parsed > 0 && parsed < 10000000) return parsed;
+
+  // Retire les balises HTML qui peuvent s'intercaler (ex: <i>n</i> = 31)
+  const texte = abstractText.replace(/<[^>]+>/g, '');
+
+  const nombresEnLettres = {
+    one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10,
+    eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16,
+    seventeen: 17, eighteen: 18, nineteen: 19, twenty: 20,
+    thirty: 30, forty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90,
+  };
+
+  function motEnNombre(mot) {
+    const parties = mot.toLowerCase().split('-');
+    if (parties.length === 2 && nombresEnLettres[parties[0]] && nombresEnLettres[parties[1]]) {
+      return nombresEnLettres[parties[0]] + nombresEnLettres[parties[1]];
     }
+    return nombresEnLettres[mot.toLowerCase()] || null;
   }
+
+  // Cas 1 : "n = 31" ou "n=31"
+  const matchN = texte.match(/\bn\s*=\s*(\d[\d,\s]{0,6})/i);
+  if (matchN) {
+    const parsed = parseInt(matchN[1].replace(/[,\s]/g, ''), 10);
+    if (!isNaN(parsed) && parsed > 0 && parsed < 100000) return parsed;
+  }
+
+  // Cas 2 : un nombre (chiffres) suivi, dans les 4 mots suivants, de "participants/patients/subjects/..."
+  const matchChiffres = texte.match(
+    /(\d[\d,]{0,6})\s+(?:\w+\s+){0,3}?(participants|patients|subjects|adults|volunteers|individuals)/i
+  );
+  if (matchChiffres) {
+    const parsed = parseInt(matchChiffres[1].replace(/,/g, ''), 10);
+    if (!isNaN(parsed) && parsed > 0 && parsed < 100000) return parsed;
+  }
+
+  // Cas 3 : nombre écrit en toutes lettres (ex: "Sixty-seven hypercholesterolemic individuals")
+  const matchLettres = texte.match(
+    /\b([A-Za-z]+(?:-[A-Za-z]+)?)\s+(?:\w+\s+){0,3}?(participants|patients|subjects|adults|volunteers|individuals)/i
+  );
+  if (matchLettres) {
+    const nombre = motEnNombre(matchLettres[1]);
+    if (nombre && nombre > 0) return nombre;
+  }
+
   return null;
 }
 async function recupererAlimentsATraiter() {
