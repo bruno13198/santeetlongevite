@@ -31,9 +31,20 @@ function formaterDate(date) {
   return date.toISOString().split('T')[0];
 }
 
+async function compterEtudesExistantes(alimentId) {
+  const { count, error } = await supabase
+    .from('aliments_etudes')
+    .select('*', { count: 'exact', head: true })
+    .eq('aliment_id', alimentId);
+
+  if (error) {
+    console.log(`  Erreur comptage études existantes: ${error.message}`);
+    return null;
+  }
+  return count;
+}
+
 function normaliserTypeEtude(pubTypeList) {
-
-
   if (!pubTypeList || pubTypeList.length === 0) return null;
   const types = pubTypeList.map((t) => t.toLowerCase());
 
@@ -121,7 +132,7 @@ async function recupererAlimentsATraiter() {
   return eligibles;
 }
 
-async function chercherEtudesEuropePMC(terme, tentative = 1) {
+async function chercherEtudesEuropePMC(terme, tentative = 1, elargir = false) {
   // Retire un nom scientifique latin (Genre espèce) en fin de terme,
   // ex. "garlic Allium sativum" -> "garlic", "sweet potato Ipomoea batatas" -> "sweet potato"
   const termeSansNomScientifique = terme.replace(/\s+[A-Z][a-zà-ÿ]+\s+[a-zà-ÿ]+$/, '');
@@ -135,8 +146,12 @@ async function chercherEtudesEuropePMC(terme, tentative = 1) {
   dateDebut.setDate(dateDebut.getDate() - JOURS_VEILLE);
   const filtreDate = `AND (FIRST_PDATE:[${formaterDate(dateDebut)} TO ${formaterDate(new Date())}])`;
 
-  const requete = `(${motsClefs}) AND (SRC:MED) AND (PUB_TYPE:"review" OR PUB_TYPE:"meta-analysis" OR PUB_TYPE:"systematic review" OR PUB_TYPE:"randomized controlled trial" OR PUB_TYPE:"clinical trial") ${filtreDate}`;
- const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(requete)}&format=json&pageSize=${RESULTATS_A_RECUPERER}&resultType=core`;
+  const filtrePubType = elargir
+    ? `(PUB_TYPE:"review" OR PUB_TYPE:"meta-analysis" OR PUB_TYPE:"systematic review" OR PUB_TYPE:"randomized controlled trial" OR PUB_TYPE:"clinical trial" OR PUB_TYPE:"observational study" OR PUB_TYPE:"comparative study" OR PUB_TYPE:"case reports")`
+    : `(PUB_TYPE:"review" OR PUB_TYPE:"meta-analysis" OR PUB_TYPE:"systematic review" OR PUB_TYPE:"randomized controlled trial" OR PUB_TYPE:"clinical trial")`;
+
+  const requete = `(${motsClefs}) AND (SRC:MED) AND ${filtrePubType} ${filtreDate}`;
+  const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(requete)}&format=json&pageSize=${RESULTATS_A_RECUPERER}&resultType=core`;
   const res = await fetch(url);
   
  const ERREURS_TEMPORAIRES = [500, 502, 503, 504];
@@ -145,7 +160,7 @@ async function chercherEtudesEuropePMC(terme, tentative = 1) {
     if (ERREURS_TEMPORAIRES.includes(res.status) && tentative < 3) {
       console.log(`  Europe PMC indisponible (${res.status}), nouvelle tentative dans 3s (${tentative + 1}/3)...`);
       await new Promise((resolve) => setTimeout(resolve, 3000));
-      return chercherEtudesEuropePMC(terme, tentative + 1);
+      return chercherEtudesEuropePMC(terme, tentative + 1, elargir);
     }
     throw new Error(`Europe PMC erreur ${res.status}`);
   }
@@ -286,7 +301,13 @@ ou
 async function traiterAliment(aliment) {
   console.log(`\n=== ${aliment.slug} ===`);
 
-  const resultats = await chercherEtudesEuropePMC(aliment.terme_recherche);
+  const nbEtudesExistantes = await compterEtudesExistantes(aliment.id);
+  const litteratureFaible = nbEtudesExistantes === 0;
+  if (litteratureFaible) {
+    console.log(`  Aucune étude en base pour cet aliment : filtre élargi pour ce run.`);
+  }
+
+  const resultats = await chercherEtudesEuropePMC(aliment.terme_recherche, 1, litteratureFaible);
   console.log(`  ${resultats.length} études trouvées sur Europe PMC (avant filtrage humain).`);
   await new Promise((resolve) => setTimeout(resolve, 300)); // pause pour éviter de saturer Europe PMC
 
