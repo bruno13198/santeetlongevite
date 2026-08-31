@@ -27,22 +27,20 @@ const EXCEPTIONS_NOVA4 = [
   'kombucha',
 ];
 
-function formaterDate(date) {
-  return date.toISOString().split('T')[0];
-}
 function normaliserTypeEtude(pubTypeList) {
   if (!pubTypeList || pubTypeList.length === 0) return null;
   const types = pubTypeList.map((t) => t.toLowerCase());
 
   if (types.includes('meta-analysis')) return 'Méta-analyse';
   if (types.includes('systematic review')) return 'Revue systématique';
+  if (types.some((t) => t.includes('scoping review'))) return 'Revue de portée';
   if (types.includes('randomized controlled trial')) return 'Essai contrôlé randomisé';
   if (types.includes('clinical trial')) return 'Essai clinique';
   if (types.some((t) => t.includes('cohort'))) return 'Étude de cohorte';
   if (types.some((t) => t.includes('case-control'))) return 'Étude cas-témoins';
   if (types.some((t) => t.includes('cross-sectional') || t.includes('observational'))) return 'Étude transversale';
   if (types.some((t) => t.includes('comparative study'))) return 'Étude comparative';
-  if (types.includes('review')) return 'Revue narrative';
+  if (types.some((t) => t.includes('review'))) return 'Revue narrative';
   return null;
 }
 
