@@ -350,6 +350,8 @@ async function traiterAliment(aliment) {
           resume_simplifie: analyse.resume_simplifie,
           resume_reformule: analyse.resume_reformule,
           niveau_fiabilite: niveauFiabilite,
+          type_etude: normaliserTypeEtude(etude.pubTypeList?.pubType),
+          nb_participants: extraireNbParticipants(etude.abstractText),
         })
         .select('id')
         .single();
