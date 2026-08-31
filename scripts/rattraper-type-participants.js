@@ -16,16 +16,16 @@ function normaliserTypeEtude(pubTypeList) {
 
   if (types.includes('meta-analysis')) return 'Méta-analyse';
   if (types.includes('systematic review')) return 'Revue systématique';
+  if (types.some((t) => t.includes('scoping review'))) return 'Revue de portée';
   if (types.includes('randomized controlled trial')) return 'Essai contrôlé randomisé';
   if (types.includes('clinical trial')) return 'Essai clinique';
   if (types.some((t) => t.includes('cohort'))) return 'Étude de cohorte';
   if (types.some((t) => t.includes('case-control'))) return 'Étude cas-témoins';
   if (types.some((t) => t.includes('cross-sectional') || t.includes('observational'))) return 'Étude transversale';
   if (types.some((t) => t.includes('comparative study'))) return 'Étude comparative';
-  if (types.includes('review')) return 'Revue narrative';
+  if (types.some((t) => t.includes('review'))) return 'Revue narrative';
   return null;
 }
-
 function extraireNbParticipants(abstractText) {
   if (!abstractText) return null;
   const texte = abstractText.replace(/<[^>]+>/g, '');
