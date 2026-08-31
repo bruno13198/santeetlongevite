@@ -27,7 +27,13 @@ const EXCEPTIONS_NOVA4 = [
   'kombucha',
 ];
 
+function formaterDate(date) {
+  return date.toISOString().split('T')[0];
+}
+
 function normaliserTypeEtude(pubTypeList) {
+Une fois committé, relance le workflow Actions avec les mêmes paramètres (SLUGS_CIBLES=bouillon-os, JOURS_VEILLE=3650).
+
   if (!pubTypeList || pubTypeList.length === 0) return null;
   const types = pubTypeList.map((t) => t.toLowerCase());
 
