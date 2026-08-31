@@ -159,9 +159,9 @@ Cette étude a été trouvée en recherchant des publications sur : ${nomAliment
 
 Titre original : ${titreOriginal}
 Résumé original (anglais) : ${abstractOriginal}
-
 Étape 1 — Vérifie le SUJET :
 L'étude parle-t-elle vraiment et spécifiquement de « ${nomAliment} » (ou d'un synonyme/nom scientifique direct de cet aliment) ? Une simple co-occurrence de mots-clés ou une confusion terminologique (ex : un homonyme, une espèce différente, un aliment qui n'apparaît que dans la bibliographie ou en comparaison lointaine) ne compte pas. Si l'étude porte en réalité sur un autre sujet qui a seulement été mal indexé sous ce terme de recherche, réponds "false".
+Réponds également "false" si l'étude porte sur une catégorie large regroupant plusieurs aliments différents (ex : « les épices », « les légumineuses », « les crucifères »), sans isoler de résultat spécifique et individualisé propre à « ${nomAliment} » — même si « ${nomAliment} » est cité une ou plusieurs fois dans la liste des aliments couverts par l'étude.
 
 Étape 2 — Évalue la pertinence humaine :
 Cette étude mesure-t-elle un EFFET ou un BÉNÉFICE (sur la santé, une maladie, un marqueur biologique...) directement chez des sujets HUMAINS, ou via une méta-analyse/revue qui synthétise de tels résultats humains ?
