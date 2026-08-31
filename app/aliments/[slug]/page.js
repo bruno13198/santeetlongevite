@@ -120,7 +120,16 @@ export default async function FicheAliment({ params }) {
               🟠 Préliminaire
             </span>
           )}
-          <strong style={{ display: 'block', marginTop: '8px' }}>{etude.titre_traduit || etude.titre_original}</strong>
+          {(etude.type_etude || etude.nb_participants) && (
+            <p style={{ color: '#555', fontSize: '13px', fontWeight: 'bold', marginTop: '8px', marginBottom: '4px' }}>
+              {[
+                etude.type_etude,
+                etude.nb_participants ? `${etude.nb_participants} participants` : null,
+              ].filter(Boolean).join(' • ')}
+            </p>
+          )}
+
+          <strong style={{ display: 'block', marginTop: '4px' }}>{etude.titre_traduit || etude.titre_original}</strong>
           <p style={{ color: '#888', fontSize: '14px' }}>
             {etude.source} · {etude.date_publication} · {etude.auteurs}
           </p>
