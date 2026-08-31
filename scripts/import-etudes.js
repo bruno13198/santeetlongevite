@@ -75,7 +75,7 @@ function extraireNbParticipants(abstractText) {
 
   // Cas 2 : un nombre en chiffres suivi (dans les 3 mots suivants) de participants/patients/...
   for (const match of texte.matchAll(
-    /(\d[\d,]{0,6})\s+(?:\w+\s+){0,3}?(participants|patients|subjects|adults|volunteers|individuals)/gi
+    /(\d[\d,]{0,6})\s+(?:\w+\s+){0,3}?(participants|patients|subjects|adults|volunteers|individuals|men|women|males|females|children|adolescents)/gi
   )) {
     const parsed = parseInt(match[1].replace(/,/g, ''), 10);
     if (!isNaN(parsed) && parsed > 0 && parsed < 100000) return parsed;
@@ -84,7 +84,7 @@ function extraireNbParticipants(abstractText) {
   // Cas 3 : nombre écrit en toutes lettres (ex: "Sixty-seven hypercholesterolemic individuals")
   // On essaie CHAQUE correspondance jusqu'à en trouver une qui donne vraiment un nombre.
   for (const match of texte.matchAll(
-    /\b([A-Za-z]+(?:-[A-Za-z]+)?)\s+(?:\w+\s+){0,3}?(participants|patients|subjects|adults|volunteers|individuals)/gi
+    /\b([A-Za-z]+(?:-[A-Za-z]+)?)\s+(?:\w+\s+){0,3}?(participants|patients|subjects|adults|volunteers|individuals|men|women|males|females|children|adolescents)/gi
   )) {
     const nombre = motEnNombre(match[1]);
     if (nombre && nombre > 0) return nombre;
