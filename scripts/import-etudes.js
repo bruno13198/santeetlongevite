@@ -67,28 +67,26 @@ function extraireNbParticipants(abstractText) {
     return nombresEnLettres[mot.toLowerCase()] || null;
   }
 
-  // Cas 1 : "n = 31" ou "n=31"
-  const matchN = texte.match(/\bn\s*=\s*(\d[\d,\s]{0,6})/i);
-  if (matchN) {
-    const parsed = parseInt(matchN[1].replace(/[,\s]/g, ''), 10);
+  // Cas 1 : "n = 31" ou "n=31" — on prend la première occurrence valide
+  for (const match of texte.matchAll(/\bn\s*=\s*(\d[\d,\s]{0,6})/gi)) {
+    const parsed = parseInt(match[1].replace(/[,\s]/g, ''), 10);
     if (!isNaN(parsed) && parsed > 0 && parsed < 100000) return parsed;
   }
 
-  // Cas 2 : un nombre (chiffres) suivi, dans les 4 mots suivants, de "participants/patients/subjects/..."
-  const matchChiffres = texte.match(
-    /(\d[\d,]{0,6})\s+(?:\w+\s+){0,3}?(participants|patients|subjects|adults|volunteers|individuals)/i
-  );
-  if (matchChiffres) {
-    const parsed = parseInt(matchChiffres[1].replace(/,/g, ''), 10);
+  // Cas 2 : un nombre en chiffres suivi (dans les 3 mots suivants) de participants/patients/...
+  for (const match of texte.matchAll(
+    /(\d[\d,]{0,6})\s+(?:\w+\s+){0,3}?(participants|patients|subjects|adults|volunteers|individuals)/gi
+  )) {
+    const parsed = parseInt(match[1].replace(/,/g, ''), 10);
     if (!isNaN(parsed) && parsed > 0 && parsed < 100000) return parsed;
   }
 
   // Cas 3 : nombre écrit en toutes lettres (ex: "Sixty-seven hypercholesterolemic individuals")
-  const matchLettres = texte.match(
-    /\b([A-Za-z]+(?:-[A-Za-z]+)?)\s+(?:\w+\s+){0,3}?(participants|patients|subjects|adults|volunteers|individuals)/i
-  );
-  if (matchLettres) {
-    const nombre = motEnNombre(matchLettres[1]);
+  // On essaie CHAQUE correspondance jusqu'à en trouver une qui donne vraiment un nombre.
+  for (const match of texte.matchAll(
+    /\b([A-Za-z]+(?:-[A-Za-z]+)?)\s+(?:\w+\s+){0,3}?(participants|patients|subjects|adults|volunteers|individuals)/gi
+  )) {
+    const nombre = motEnNombre(match[1]);
     if (nombre && nombre > 0) return nombre;
   }
 
