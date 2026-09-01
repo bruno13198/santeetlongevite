@@ -185,8 +185,9 @@ Cette étude mesure-t-elle un EFFET ou un BÉNÉFICE (sur la santé, une maladie
 Réponds "false" dans les cas suivants :
 - L'étude porte uniquement sur des animaux, des cellules en laboratoire (in vitro), ou des plantes (agronomie, botanique), SANS effet mesuré chez l'humain.
 - L'étude décrit seulement l'absorption, le métabolisme ou la biodisponibilité d'un composé chez l'humain, mais SANS mesurer un effet ou bénéfice de santé concret chez l'humain. La simple présence de données pharmacocinétiques humaines ne suffit pas si l'effet biologique testé n'a été observé qu'en laboratoire ou chez l'animal.
+- L'étude évalue un usage TOPIQUE, CUTANÉ ou COSMÉTIQUE de « ${nomAliment} » (crème, gel, lotion, gant enduit, application sur la peau...), plutôt qu'une CONSOMMATION ALIMENTAIRE (ingestion orale). Un bénéfice observé sur la peau ou via une application externe ne compte pas, même s'il est mesuré chez l'humain.
 - Tout autre sujet hors nutrition/santé humaine.
-Ne réponds "true" que si un effet ou bénéfice a été concrètement évalué chez des sujets humains (essai clinique, cohorte, méta-analyse de données humaines).
+Ne réponds "true" que si un effet ou bénéfice a été concrètement évalué chez des sujets humains suite à une consommation alimentaire (essai clinique, cohorte, méta-analyse de données humaines).
 
 Étape 3 — Si et seulement si pertinente sur les deux points ci-dessus, rédige les résumés en français.
 
