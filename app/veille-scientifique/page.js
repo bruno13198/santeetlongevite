@@ -79,6 +79,7 @@ export default function VeilleScientifique() {
       }
       const motRechercheSing = singulariser(motRecherche);
       return motsDuNom.some((mot) => {
+        if (mot.length <= 3) return false;
         const motSing = singulariser(mot);
         return motSing.startsWith(motRechercheSing) || motRechercheSing.startsWith(motSing);
       });
