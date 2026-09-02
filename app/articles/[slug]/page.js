@@ -78,12 +78,14 @@ function preparerContenu(texte) {
  
 export default async function FicheArticle({ params }) {
   const { slug } = await params;
-  const { data: article, error } = await supabase
+  const { data: articles, error } = await supabase
     .from('articles')
     .select('*')
     .eq('slug', slug)
     .eq('publie', true)
-    .single();
+    .limit(1);
+
+  const article = articles?.[0];
  
   if (error || !article) {
     return (
