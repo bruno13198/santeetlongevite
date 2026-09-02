@@ -2,17 +2,14 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
-
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
-
 export default function Articles() {
   const [articles, setArticles] = useState([]);
   const [recherche, setRecherche] = useState('');
   const [chargement, setChargement] = useState(true);
-
   useEffect(() => {
     async function chargerArticles() {
       const { data, error } = await supabase
@@ -21,33 +18,30 @@ export default function Articles() {
         .eq('publie', true)
         .neq('slug', 'Pourquoi-ce-site')
         .order('created_at', { ascending: false });
-
       if (!error) {
-        setArticles(data);
+        const articlesUniques = Array.from(
+          new Map(data.map((article) => [article.slug, article])).values()
+        );
+        setArticles(articlesUniques);
       }
       setChargement(false);
     }
     chargerArticles();
   }, []);
-
   function normaliser(texte) {
     return texte
       .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '');
   }
-
   const rechercheNorm = normaliser(recherche);
-
   const articlesFiltres = articles.filter((article) =>
     normaliser(article.titre).includes(rechercheNorm)
   );
-
   return (
     <main style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '700px', margin: '0 auto' }}>
       <Link href="/" style={{ color: '#555' }}>← Retour à l'accueil</Link>
       <h1 style={{ marginTop: '16px' }}>Articles</h1>
-
       <input
         type="text"
         placeholder="Rechercher un article..."
@@ -63,12 +57,10 @@ export default function Articles() {
           boxSizing: 'border-box',
         }}
       />
-
       {chargement && <p>Chargement...</p>}
       {!chargement && articlesFiltres.length === 0 && (
         <p style={{ color: '#888' }}>Aucun article trouvé.</p>
       )}
-
       <ul style={{ listStyle: 'none', padding: 0 }}>
         {articlesFiltres.map((article) => (
           <li
