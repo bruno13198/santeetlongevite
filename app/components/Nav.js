@@ -11,6 +11,7 @@ export default function Nav() {
           <li><Link href="/veille-scientifique" className={styles.link}>Veille scientifique</Link></li>
         </ul>
         <ul className={styles.right}>
+          <li><Link href="/mes-alertes" className={styles.link}>Alertes</Link></li>
           <li><Link href="/a-propos" className={styles.link}>À propos</Link></li>
           <li><Link href="/articles/Pourquoi-ce-site" className={styles.link}>Pourquoi ce site</Link></li>
         </ul>
