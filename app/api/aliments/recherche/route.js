@@ -22,7 +22,7 @@ export async function GET(request) {
     .limit(10);
 
   if (error) {
-    return Response.json({ resultats: [] });
+    return Response.json({ resultats: [], erreur_debug: error.message });
   }
 
   return Response.json({ resultats: data });
