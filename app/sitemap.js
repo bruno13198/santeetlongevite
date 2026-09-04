@@ -6,7 +6,7 @@ const supabase = createClient(
 );
 
 export default async function sitemap() {
-  const baseUrl = 'https://santeetlongevite.vercel.app';
+  const baseUrl = 'https://sciencetruths.com';
 
   const { data: aliments } = await supabase
     .from('aliments')
