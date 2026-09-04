@@ -9,6 +9,7 @@ export default function Nav() {
           <li><Link href="/" className={styles.link}>Accueil</Link></li>
           <li><Link href="/articles" className={styles.link}>Articles</Link></li>
           <li><Link href="/veille-scientifique" className={styles.link}>Veille scientifique</Link></li>
+          <li><Link href="/mes-alertes" className={styles.link}>Alertes</Link></li>
         </ul>
         <ul className={styles.right}>
           <li><Link href="/mes-alertes" className={styles.link}>Alertes</Link></li>
