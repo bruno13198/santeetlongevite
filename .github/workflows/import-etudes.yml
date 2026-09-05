@@ -55,3 +55,9 @@ jobs:
           MAX_NOUVELLES_ETUDES_PAR_RUN: ${{ github.event.inputs.max_nouvelles_etudes || '8' }}
           SLUGS_CIBLES: ${{ github.event.inputs.slugs_cibles || '' }}
         run: node scripts/import-etudes.js
+      - name: Envoyer les alertes email
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+        run: node scripts/envoyer-alertes.js
