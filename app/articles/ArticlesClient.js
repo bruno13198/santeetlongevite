@@ -12,11 +12,19 @@ function normaliser(texte) {
 
 export default function ArticlesClient({ articles }) {
   const [recherche, setRecherche] = useState('');
+  const [nombreAffiche, setNombreAffiche] = useState(20);
+
+  function gererRecherche(e) {
+    setRecherche(e.target.value);
+    setNombreAffiche(20);
+  }
 
   const rechercheNorm = normaliser(recherche);
   const articlesFiltres = articles.filter((article) =>
     normaliser(article.titre).includes(rechercheNorm)
   );
+  const articlesAffiches = articlesFiltres.slice(0, nombreAffiche);
+  const ilResteDesArticles = articlesFiltres.length > nombreAffiche;
 
   return (
     <main style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '700px', margin: '0 auto' }}>
@@ -26,7 +34,7 @@ export default function ArticlesClient({ articles }) {
         type="text"
         placeholder="Rechercher un article..."
         value={recherche}
-        onChange={(e) => setRecherche(e.target.value)}
+        onChange={gererRecherche}
         style={{
           width: '100%',
           padding: '12px',
@@ -41,7 +49,7 @@ export default function ArticlesClient({ articles }) {
         <p style={{ color: '#888' }}>Aucun article trouvé.</p>
       )}
       <ul style={{ listStyle: 'none', padding: 0 }}>
-        {articlesFiltres.map((article) => (
+        {articlesAffiches.map((article) => (
           <li
             key={article.slug}
             style={{
@@ -57,6 +65,23 @@ export default function ArticlesClient({ articles }) {
           </li>
         ))}
       </ul>
+      {ilResteDesArticles && (
+        <button
+          onClick={() => setNombreAffiche((n) => n + 20)}
+          style={{
+            display: 'block',
+            margin: '24px auto',
+            padding: '10px 24px',
+            border: '1px solid #ccc',
+            borderRadius: '8px',
+            backgroundColor: '#fff',
+            cursor: 'pointer',
+            fontSize: '14px',
+          }}
+        >
+          Voir plus d'articles
+        </button>
+      )}
     </main>
   );
 }
