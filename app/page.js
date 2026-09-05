@@ -89,21 +89,6 @@ export default async function Home() {
             les plus pertinentes, pour suivre l'évolution des connaissances dans ces différents
             domaines (en cours d'élaboration).
           </p>
-        </div>
-
-        <p className={styles.lede}>Prochainement :</p>
-
-        <div className={styles.intro}>
-          <p className={styles.introItem}>
-            <strong>Les articles</strong> — Des contenus accessibles et documentés sur la
-            nutrition, le sport, le sommeil et la longévité, basés sur les données
-            scientifiques disponibles.
-          </p>
-          <p className={styles.introItem}>
-            <strong>La veille scientifique</strong> — Une sélection des nouvelles recherches
-            les plus pertinentes, pour suivre l'évolution des connaissances dans ces différents
-            domaines (en cours d'élaboration).
-          </p>
           <p className={styles.introItem}>
             <strong>Des alertes personnalisées</strong> — Recevez par e-mail les nouvelles
             recherches importantes sur les sujets que vous avez choisis.
