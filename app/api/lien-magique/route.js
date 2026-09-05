@@ -22,6 +22,20 @@ export async function POST(request) {
     // pour ne pas révéler si une adresse est déjà abonnée à quelque chose (confidentialité).
     const messageGenerique = 'Si cette adresse est associée à des abonnements, un lien de gestion vient de lui être envoyé.';
 
+    // Rate-limiting : maximum 3 demandes de lien par heure pour une même adresse,
+    // pour empêcher qu'on puisse spammer la boîte mail de quelqu'un d'autre.
+    const uneHeureAvant = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const { count: demandesRecentes } = await supabase
+      .from('liens_magiques')
+      .select('*', { count: 'exact', head: true })
+      .eq('email', email)
+      .gte('date_creation', uneHeureAvant);
+
+    if (demandesRecentes >= 3) {
+      // On répond le message générique habituel, sans révéler que la limite a été atteinte.
+      return Response.json({ message: messageGenerique });
+    }
+
     const { data: lienMagique, error: erreurInsert } = await supabase
       .from('liens_magiques')
       .insert({ email })
