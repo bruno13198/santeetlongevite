@@ -1,4 +1,4 @@
-import FormulaireAlertes from '../../components/FormulaireAlertes';
+import FormulaireAlertes from '../components/FormulaireAlertes';
 import DemandeLienGestion from '../components/DemandeLienGestion';
 
 export default function MesAlertes() {
