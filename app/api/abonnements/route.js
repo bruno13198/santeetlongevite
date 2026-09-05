@@ -33,10 +33,9 @@ export async function POST(request) {
     let premierToken = null;
 
     for (const ligne of lignesAInserer) {
-      // Vérifie l'état actuel AVANT modification, pour savoir si c'est une réactivation
       let requeteExistant = supabase
         .from('abonnements')
-        .select('id, actif, confirme')
+        .select('id, actif, confirme, token_confirmation')
         .eq('email', ligne.email)
         .eq('type_sujet', ligne.type_sujet);
 
@@ -46,29 +45,33 @@ export async function POST(request) {
 
       const { data: existant } = await requeteExistant.maybeSingle();
 
-      // On force toujours actif à true : que ce soit une création ou une réactivation
-      const { data, error } = await supabase
-        .from('abonnements')
-        .upsert(
-          { ...ligne, actif: true },
-          {
-            onConflict: ligne.sujet_id === null ? 'email,type_sujet' : 'email,type_sujet,sujet_id',
-            ignoreDuplicates: false,
-          }
-        )
-        .select('id, token_confirmation, confirme')
-        .single();
+      if (existant) {
+        // La ligne existe déjà : on s'assure qu'elle est active, sans créer de doublon
+        if (!existant.actif) {
+          await supabase.from('abonnements').update({ actif: true }).eq('id', existant.id);
+        }
 
-      if (error) {
-        console.error('Erreur insertion abonnement:', error.message);
-        continue;
-      }
+        if (!existant.confirme) {
+          nombreCrees++;
+          if (!premierToken) premierToken = existant.token_confirmation;
+        } else if (!existant.actif) {
+          nombreReactives++;
+        }
+      } else {
+        // Aucune ligne existante : véritable création
+        const { data: nouvelle, error } = await supabase
+          .from('abonnements')
+          .insert({ ...ligne, actif: true })
+          .select('id, token_confirmation, confirme')
+          .single();
 
-      if (!data.confirme) {
+        if (error) {
+          console.error('Erreur insertion abonnement:', error.message);
+          continue;
+        }
+
         nombreCrees++;
-        if (!premierToken) premierToken = data.token_confirmation;
-      } else if (existant && !existant.actif) {
-        nombreReactives++;
+        if (!premierToken) premierToken = nouvelle.token_confirmation;
       }
     }
 
@@ -80,7 +83,6 @@ export async function POST(request) {
       return Response.json({ message: 'Vos alertes ont été réactivées avec succès.' });
     }
 
-    // Au moins une nouvelle inscription à confirmer par email
     const lienConfirmation = `https://sciencetruths.com/api/abonnements/confirmer-tout?email=${encodeURIComponent(email)}&token=${premierToken}`;
 
     const res = await fetch('https://api.brevo.com/v3/smtp/email', {
