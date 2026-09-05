@@ -49,7 +49,7 @@ export async function POST(request) {
           <p>Bonjour,</p>
           <p>Voici votre lien pour gérer vos abonnements aux alertes ScienceTruths :</p>
           <p><a href="${lienGestion}">Gérer mes alertes</a></p>
-          <p>Ce lien est valable 1 heure et ne peut être utilisé qu'une seule fois.</p>
+          <p>Ce lien est valable pendant 1 heure.</p>
           <p>Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet email.</p>
         `,
       }),
