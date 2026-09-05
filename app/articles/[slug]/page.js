@@ -84,7 +84,6 @@ export default async function FicheArticle({ params }) {
     .eq('slug', slug)
     .eq('publie', true)
     .limit(1);
-
   const article = articles?.[0];
  
   if (error || !article) {
@@ -95,9 +94,32 @@ export default async function FicheArticle({ params }) {
       </main>
     );
   }
+
+  const articleJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: article.titre,
+    datePublished: article.created_at,
+    author: {
+      '@type': 'Organization',
+      name: 'ScienceTruths',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'ScienceTruths',
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://sciencetruths.com/articles/${slug}`,
+    },
+  };
  
   return (
     <main style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '700px', margin: '0 auto', lineHeight: '1.6' }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
       <Link href="/articles" style={{ color: '#555' }}>← Retour aux articles</Link>
       <h1 style={{ marginTop: '16px' }}>{article.titre}</h1>
       <div className={`${styles.contenu} article-body`}>
