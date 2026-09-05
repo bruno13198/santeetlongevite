@@ -16,6 +16,8 @@ const organizationJsonLd = {
   name: 'ScienceTruths',
   url: 'https://sciencetruths.com',
   description: 'Études scientifiques sur les aliments et la santé, expliquées simplement.',
+  logo: 'https://sciencetruths.com/logo-nav.png',
+  image: 'https://sciencetruths.com/logo-nav.png',
 };
 
 export default function RootLayout({ children }) {
