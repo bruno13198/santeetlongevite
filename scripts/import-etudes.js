@@ -111,6 +111,7 @@ async function recupererAlimentsATraiter() {
   const { data: aliments, error } = await supabase
     .from('aliments')
     .select('id, slug, niveau_nova, terme_recherche')
+    .eq('actif', true)
     .not('terme_recherche', 'is', null)
     .neq('terme_recherche', '')
     .order('id', { ascending: true });
