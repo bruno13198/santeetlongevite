@@ -57,9 +57,9 @@ export default async function FicheAliment({ params }) {
 
       <h1 style={{ marginTop: '16px' }}>{aliment.nom}</h1>
       {aliment.nom_scientifique && (
-        <p style={{ fontStyle: 'italic', color: '#888' }}>{aliment.nom_scientifique}</p>
+        <p style={{ fontStyle: 'italic', color: '#6B6E63' }}>{aliment.nom_scientifique}</p>
       )}
-      <p style={{ color: '#888' }}>{aliment.categorie}</p>
+      <p style={{ color: '#6B6E63' }}>{aliment.categorie}</p>
       <p>{aliment.description}</p>
 
       {articleLie && (
@@ -93,7 +93,7 @@ export default async function FicheAliment({ params }) {
 
       <h2>Études scientifiques ({etudes.length})</h2>
 
-      {etudes.length === 0 && <p style={{ color: '#888' }}>Aucune étude pour le moment.</p>}
+      {etudes.length === 0 && <p style={{ color: '#6B6E63' }}>Aucune étude pour le moment.</p>}
 
       {etudes.map((etude) => (
         <div
@@ -130,7 +130,7 @@ export default async function FicheAliment({ params }) {
           )}
 
           <strong style={{ display: 'block', marginTop: '4px' }}>{etude.titre_traduit || etude.titre_original}</strong>
-          <p style={{ color: '#888', fontSize: '14px' }}>
+          <p style={{ color: '#6B6E63', fontSize: '14px' }}>
             {etude.source} · {etude.date_publication} · {etude.auteurs}
           </p>
 
