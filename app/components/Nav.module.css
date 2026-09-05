@@ -65,3 +65,23 @@
     gap: 16px;
   }
 }
+
+.leftGroup {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+.logoLink {
+  display: flex;
+  align-items: center;
+}
+.logoLink img {
+  height: 34px;
+  width: auto;
+}
+@media (max-width: 640px) {
+  .leftGroup {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
