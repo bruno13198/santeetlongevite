@@ -10,27 +10,26 @@ export default function Footer() {
         borderTop: '1px solid #eee',
         textAlign: 'center',
         fontSize: '13px',
-        color: '#999',
+        color: '#6B6E63',
       }}
     >
       <div style={{ marginBottom: '12px', opacity: 0.6 }}>
         <Image
           src="/logo-nav.png"
           alt="ScienceTruths"
-          width={94}
-          height={60}
-          style={{ height: '24px', width: 'auto' }}
+          width={38}
+          height={24}
         />
       </div>
-      <Link href="/mentions-legales" style={{ color: '#999', textDecoration: 'none' }}>
+      <Link href="/mentions-legales" style={{ color: '#6B6E63', textDecoration: 'none' }}>
         Mentions légales
       </Link>
       {' · '}
-      <Link href="/politique-confidentialite" style={{ color: '#999', textDecoration: 'none' }}>
+      <Link href="/politique-confidentialite" style={{ color: '#6B6E63', textDecoration: 'none' }}>
         Politique de confidentialité
       </Link>
       {' · '}
-      <a href="mailto:contact@sciencetruths.com" style={{ color: '#999', textDecoration: 'none' }}>
+      <a href="mailto:contact@sciencetruths.com" style={{ color: '#6B6E63', textDecoration: 'none' }}>
         Contact
       </a>
     </footer>
