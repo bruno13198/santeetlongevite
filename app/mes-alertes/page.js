@@ -1,4 +1,5 @@
 import FormulaireAlertes from '../../components/FormulaireAlertes';
+import DemandeLienGestion from '../components/DemandeLienGestion';
 
 export default function MesAlertes() {
   return (
@@ -10,6 +11,10 @@ export default function MesAlertes() {
       </p>
 
       <FormulaireAlertes />
+
+      <hr style={{ margin: '40px 0', border: 'none', borderTop: '1px solid #eee' }} />
+
+      <DemandeLienGestion />
     </main>
   );
 }
