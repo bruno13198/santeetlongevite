@@ -6,7 +6,7 @@ export default function Disclaimer() {
         padding: '16px',
         backgroundColor: '#f9f9f9',
         borderLeft: '3px solid #ccc',
-        color: '#777',
+        color: '#6B6E63',
         fontSize: '13px',
         lineHeight: '1.6',
       }}
