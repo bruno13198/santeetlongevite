@@ -24,23 +24,38 @@ export async function POST(request) {
       return Response.json({ erreur: 'Sélectionnez au moins un aliment, ou "Tous les aliments".' }, { status: 400 });
     }
 
-    // Construit la liste des lignes à insérer : soit une seule ligne "tous",
-    // soit une ligne par aliment sélectionné.
     const lignesAInserer = tousLesAliments
       ? [{ email, type_sujet: 'aliment', sujet_id: null }]
       : listeAliments.map((id) => ({ email, type_sujet: 'aliment', sujet_id: id }));
 
     let nombreCrees = 0;
+    let nombreReactives = 0;
     let premierToken = null;
 
     for (const ligne of lignesAInserer) {
-      // upsert : si l'abonnement existe déjà (même email + même sujet), on ne duplique pas.
+      // Vérifie l'état actuel AVANT modification, pour savoir si c'est une réactivation
+      let requeteExistant = supabase
+        .from('abonnements')
+        .select('id, actif, confirme')
+        .eq('email', ligne.email)
+        .eq('type_sujet', ligne.type_sujet);
+
+      requeteExistant = ligne.sujet_id === null
+        ? requeteExistant.is('sujet_id', null)
+        : requeteExistant.eq('sujet_id', ligne.sujet_id);
+
+      const { data: existant } = await requeteExistant.maybeSingle();
+
+      // On force toujours actif à true : que ce soit une création ou une réactivation
       const { data, error } = await supabase
         .from('abonnements')
-        .upsert(ligne, {
-          onConflict: ligne.sujet_id === null ? 'email,type_sujet' : 'email,type_sujet,sujet_id',
-          ignoreDuplicates: false,
-        })
+        .upsert(
+          { ...ligne, actif: true },
+          {
+            onConflict: ligne.sujet_id === null ? 'email,type_sujet' : 'email,type_sujet,sujet_id',
+            ignoreDuplicates: false,
+          }
+        )
         .select('id, token_confirmation, confirme')
         .single();
 
@@ -52,14 +67,20 @@ export async function POST(request) {
       if (!data.confirme) {
         nombreCrees++;
         if (!premierToken) premierToken = data.token_confirmation;
+      } else if (existant && !existant.actif) {
+        nombreReactives++;
       }
     }
 
-    if (nombreCrees === 0) {
+    if (nombreCrees === 0 && nombreReactives === 0) {
       return Response.json({ message: 'Ces abonnements sont déjà actifs et confirmés pour cet email.' });
     }
 
-    // Un seul email de confirmation, qui valide TOUS les abonnements non confirmés de cet email d'un coup.
+    if (nombreCrees === 0 && nombreReactives > 0) {
+      return Response.json({ message: 'Vos alertes ont été réactivées avec succès.' });
+    }
+
+    // Au moins une nouvelle inscription à confirmer par email
     const lienConfirmation = `https://sciencetruths.com/api/abonnements/confirmer-tout?email=${encodeURIComponent(email)}&token=${premierToken}`;
 
     const res = await fetch('https://api.brevo.com/v3/smtp/email', {
