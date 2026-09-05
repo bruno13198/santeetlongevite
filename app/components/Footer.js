@@ -1,5 +1,6 @@
 import Link from 'next/link';
- 
+import Image from 'next/image';
+
 export default function Footer() {
   return (
     <footer
@@ -12,6 +13,15 @@ export default function Footer() {
         color: '#999',
       }}
     >
+      <div style={{ marginBottom: '12px', opacity: 0.6 }}>
+        <Image
+          src="/logo-nav.png"
+          alt="ScienceTruths"
+          width={94}
+          height={60}
+          style={{ height: '24px', width: 'auto' }}
+        />
+      </div>
       <Link href="/mentions-legales" style={{ color: '#999', textDecoration: 'none' }}>
         Mentions légales
       </Link>
