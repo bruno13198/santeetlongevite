@@ -28,6 +28,7 @@ export default function DemandeLienGestion() {
     return (
       <p style={{ fontSize: '14px', color: '#555' }}>
         Si cette adresse est associée à des alertes, un lien de gestion vient de lui être envoyé.
+        Pensez à vérifier vos spams si vous ne le voyez pas arriver.
       </p>
     );
   }
