@@ -96,6 +96,23 @@ export default async function FicheArticle({ params }) {
     );
   }
 
+// Cherche les articles enfants (si cet article est une famille) ou l'article parent (si c'est un enfant)
+  const { data: articlesEnfants } = await supabase
+    .from('articles')
+    .select('titre, slug')
+    .eq('famille_slug', slug)
+    .eq('publie', true);
+
+  let articleParent = null;
+  if (article.famille_slug) {
+    const { data: parents } = await supabase
+      .from('articles')
+      .select('titre, slug')
+      .eq('slug', article.famille_slug)
+      .eq('publie', true)
+      .limit(1);
+    articleParent = parents?.[0] || null;
+  }
   const articleJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -135,6 +152,29 @@ export default async function FicheArticle({ params }) {
           {preparerContenu(article.contenu)}
         </ReactMarkdown>
       </div>
+
+      {articleParent && (
+        <p style={{ marginTop: '24px', fontSize: '14px' }}>
+          Cet article fait partie du dossier :{' '}
+          <Link href={`/articles/${articleParent.slug}`}>{articleParent.titre}</Link>
+        </p>
+      )}
+
+      {articlesEnfants && articlesEnfants.length > 0 && (
+        <div style={{ marginTop: '24px' }}>
+          <p style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '8px' }}>
+            Voir aussi dans ce dossier :
+          </p>
+          <ul style={{ fontSize: '14px' }}>
+            {articlesEnfants.map((enfant) => (
+              <li key={enfant.slug}>
+                <Link href={`/articles/${enfant.slug}`}>{enfant.titre}</Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <Disclaimer />
     </main>
   );
