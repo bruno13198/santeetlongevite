@@ -100,6 +100,7 @@ export async function POST(request) {
           <p>Vous avez demandé à recevoir des alertes par email sur ScienceTruths.</p>
           <p>Pour confirmer votre inscription, cliquez sur ce lien :</p>
           <p><a href="${lienConfirmation}">Confirmer mes alertes</a></p>
+          <p style="font-size: 13px; color: #888;">Si vous ne trouvez pas cet email la prochaine fois, pensez à vérifier vos spams / courriers indésirables.</p>
           <p>Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet email.</p>
         `,
       }),
