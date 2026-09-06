@@ -1,6 +1,7 @@
 import { Fraunces, IBM_Plex_Sans, IBM_Plex_Mono } from 'next/font/google';
 import styles from './page.module.css';
- 
+import RelectureForm from '../components/RelectureForm';
+
 const fraunces = Fraunces({
   subsets: ['latin'],
   weight: ['400', '500', '600'],
@@ -283,7 +284,64 @@ export default function APropos() {
             au-delà des contenus déjà publiés.
           </p>
         </section>
- 
+        {/* --- Recherche relecteur scientifique --- */}
+        <section id="relecture-scientifique" className={styles.section}>
+          <p className={styles.tag} data-tone="evidence">Nous recherchons un professionnel de santé</p>
+          <p className={styles.body}>
+            ScienceTruths est en développement, et nous souhaitons renforcer notre démarche
+            scientifique.
+          </p>
+          <p className={styles.body}>
+            Nous recherchons un médecin, pharmacien, chercheur ou autre professionnel de santé
+            ayant une expertise en nutrition, médecine préventive, physiologie, sport ou longévité,
+            souhaitant participer à la relecture de nos contenus.
+          </p>
+          <p className={styles.body}>
+            L'objectif n'est pas de déléguer la rédaction des articles, mais de bénéficier d'un
+            regard scientifique indépendant sur leur exactitude, leur interprétation des études et
+            leurs conclusions.
+          </p>
+          <p className={styles.body}>
+            Les articles s'appuient déjà prioritairement sur des méta-analyses, des revues
+            systématiques et des essais cliniques, avec les sources citées et accessibles à chaque
+            section. Nous souhaitons maintenant ajouter une étape de relecture scientifique
+            externe.
+          </p>
+
+          <p className={styles.body} style={{ fontWeight: '600', marginTop: '24px' }}>
+            Ce que nous recherchons
+          </p>
+          <ul className={styles.list}>
+            <li>Professionnel de santé ou chercheur avec une formation scientifique solide</li>
+            <li>Intérêt pour la nutrition, la santé, le sport, le sommeil ou la longévité</li>
+            <li>Habitude de consulter et d'interpréter la littérature scientifique</li>
+            <li>Esprit critique et indépendance éditoriale</li>
+            <li>Quelques heures de relecture ponctuelle plutôt qu'un engagement lourd</li>
+          </ul>
+
+          <p className={styles.body} style={{ fontWeight: '600', marginTop: '24px' }}>
+            Comment cela fonctionnerait
+          </p>
+          <p className={styles.body}>
+            Les articles seraient transmis pour relecture. Le relecteur pourrait signaler les
+            erreurs, les formulations excessives, les interprétations discutables ou les
+            références importantes manquantes.
+          </p>
+          <p className={styles.body}>
+            La décision éditoriale finale resterait indépendante.
+          </p>
+          <p className={styles.body}>
+            Cette collaboration serait bénévole dans un premier temps.
+          </p>
+          <p className={styles.body}>
+            Aucune rémunération, affiliation ou partenariat commercial avec une marque de
+            complément alimentaire ou un fabricant ne doit influencer la relecture.
+          </p>
+
+          <div style={{ marginTop: '32px' }}>
+            <RelectureForm />
+          </div>
+        </section>
         {/* --- Engagement / manifeste --- */}
         <section className={styles.manifesto}>
           <p className={styles.tag} data-tone="evidence">Notre objectif</p>
