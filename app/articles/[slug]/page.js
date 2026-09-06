@@ -6,6 +6,7 @@ import rehypeRaw from 'rehype-raw';
 import styles from './page.module.css';
 import './badges.css';
 import Disclaimer from '../../components/Disclaimer';
+import Breadcrumbs from '../../components/Breadcrumbs';
  
 export const dynamic = 'force-dynamic';
  
@@ -119,6 +120,13 @@ export default async function FicheArticle({ params }) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <Breadcrumbs
+        items={[
+          { nom: 'Accueil', url: 'https://sciencetruths.com' },
+          { nom: 'Articles', url: 'https://sciencetruths.com/articles' },
+          { nom: article.titre, url: `https://sciencetruths.com/articles/${slug}` },
+        ]}
       />
       <Link href="/articles" style={{ color: '#555' }}>← Retour aux articles</Link>
       <h1 style={{ marginTop: '16px' }}>{article.titre}</h1>
