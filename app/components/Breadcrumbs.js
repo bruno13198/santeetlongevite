@@ -18,14 +18,14 @@ export default function Breadcrumbs({ items }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      <nav aria-label="Fil d'Ariane" style={{ fontSize: '13px', color: '#888', marginBottom: '16px' }}>
+      <nav aria-label="Fil d'Ariane" style={{ fontSize: '13px', color: '#6B6E63', marginBottom: '16px' }}>
         {items.map((item, index) => (
           <span key={item.url}>
             {index > 0 && ' › '}
             {index === items.length - 1 ? (
               <span>{item.nom}</span>
             ) : (
-              <Link href={item.url} style={{ color: '#888' }}>{item.nom}</Link>
+              <Link href={item.url} style={{ color: '#6B6E63' }}>{item.nom}</Link>
             )}
           </span>
         ))}
