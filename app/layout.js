@@ -3,8 +3,8 @@ import CookieConsent from './components/CookieConsent';
 import Nav from './components/Nav';
 
 export const metadata = {
-  title: 'Super Aliments Santé',
-  description: 'Études scientifiques sur les aliments et la santé',
+  title: 'ScienceTruths',
+  description: 'Études scientifiques sur les aliments et la santé, expliquées simplement.',
   verification: {
     google: 'bcKpWEIEXZZai9xkX-fSanCo3fa1MoPSvQTDxQ7knFs',
   },
