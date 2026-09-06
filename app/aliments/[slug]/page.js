@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
 import Disclaimer from '../../components/Disclaimer';
+import Breadcrumbs from '../../components/Breadcrumbs';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -53,6 +54,14 @@ export default async function FicheAliment({ params }) {
 
   return (
     <main style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '700px', margin: '0 auto' }}>
+      <Breadcrumbs
+        items={[
+          { nom: 'Accueil', url: 'https://sciencetruths.com' },
+          { nom: 'Veille scientifique', url: 'https://sciencetruths.com/veille-scientifique' },
+          { nom: aliment.nom, url: `https://sciencetruths.com/aliments/${slug}` },
+        ]}
+      />
+
       <Link href="/veille-scientifique" style={{ color: '#555' }}>← Retour à la recherche</Link>
 
       <h1 style={{ marginTop: '16px' }}>{aliment.nom}</h1>
