@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import Image from 'next/image';
-
 export default function Footer() {
   return (
     <footer
@@ -32,6 +31,10 @@ export default function Footer() {
       <a href="mailto:contact@sciencetruths.com" style={{ color: '#6B6E63', textDecoration: 'none' }}>
         Contact
       </a>
+      {' · '}
+      <Link href="/a-propos#relecture-scientifique" style={{ color: '#6B6E63', textDecoration: 'none' }}>
+        Relecture scientifique
+      </Link>
     </footer>
   );
 }
