@@ -72,6 +72,9 @@ export default function FormulaireAlertes() {
     return (
       <div style={{ padding: '24px', backgroundColor: '#f0f7ff', borderRadius: '8px' }}>
         <p style={{ margin: 0 }}>{message}</p>
+        <p style={{ margin: '8px 0 0', fontSize: '13px', color: '#555' }}>
+          Pensez à vérifier vos spams / courriers indésirables si vous ne voyez rien arriver.
+        </p>
       </div>
     );
   }
