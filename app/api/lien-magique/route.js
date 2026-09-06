@@ -64,6 +64,7 @@ export async function POST(request) {
           <p>Voici votre lien pour gérer vos abonnements aux alertes ScienceTruths :</p>
           <p><a href="${lienGestion}">Gérer mes alertes</a></p>
           <p>Ce lien est valable pendant 1 heure.</p>
+          <p style="font-size: 13px; color: #888;">Si vous ne trouvez pas cet email la prochaine fois, pensez à vérifier vos spams / courriers indésirables.</p>
           <p>Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet email.</p>
         `,
       }),
