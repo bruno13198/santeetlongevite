@@ -44,13 +44,23 @@ export default async function FicheAliment({ params }) {
     etudes = etudesData || [];
   }
 
-  // Récupère un éventuel article lié à cet aliment
-  const { data: articleLie } = await supabase
-    .from('articles')
-    .select('titre, slug')
+  // Récupère un éventuel article lié à cet aliment via la table de liaison
+  const { data: liaisonArticle } = await supabase
+    .from('articles_aliments')
+    .select('article_id')
     .eq('aliment_id', aliment.id)
-    .eq('publie', true)
     .maybeSingle();
+
+  let articleLie = null;
+  if (liaisonArticle) {
+    const { data: articleData } = await supabase
+      .from('articles')
+      .select('titre, slug')
+      .eq('id', liaisonArticle.article_id)
+      .eq('publie', true)
+      .maybeSingle();
+    articleLie = articleData;
+  }
 
   return (
     <main style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '700px', margin: '0 auto' }}>
