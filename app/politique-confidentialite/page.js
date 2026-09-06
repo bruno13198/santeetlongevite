@@ -36,7 +36,6 @@ export default function PolitiqueConfidentialite() {
         (adresse IP tronquée, identifiant anonyme de visite).
       </p>
       <p>
-        <p>
         Ces données sont traitées par Google LLC, susceptible de les transférer vers des serveurs
         situés hors de l'Union européenne, notamment aux États-Unis.
       </p>
