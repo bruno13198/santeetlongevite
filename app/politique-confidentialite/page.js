@@ -36,8 +36,23 @@ export default function PolitiqueConfidentialite() {
         (adresse IP tronquée, identifiant anonyme de visite).
       </p>
       <p>
+        <p>
         Ces données sont traitées par Google LLC, susceptible de les transférer vers des serveurs
         situés hors de l'Union européenne, notamment aux États-Unis.
+      </p>
+      <p>
+        Si vous vous inscrivez aux <strong>alertes par email</strong> (page « Alertes »), nous
+        collectons votre adresse email ainsi que les aliments ou catégories que vous choisissez de
+        suivre. Cette adresse est utilisée uniquement pour vous envoyer les alertes demandées et
+        gérer votre abonnement (confirmation, désinscription). Vous pouvez vous désabonner à tout
+        moment via le lien présent dans chaque email d'alerte, ou en demandant un lien de gestion
+        depuis la page « Alertes ».
+      </p>
+      <p>
+        Si vous soumettez une candidature via le <strong>formulaire de relecture scientifique</strong>
+        {' '}(page « À propos »), nous collectons votre profession, votre formation, votre domaine
+        d'expertise, votre motivation et votre adresse email. Ces informations sont utilisées
+        uniquement pour étudier votre candidature et ne sont partagées avec aucun tiers.
       </p>
  
       <h2>3. Cookies</h2>
