@@ -15,6 +15,7 @@ export default function RelectureForm() {
     motivation: '',
     email: '',
   });
+  const [siteWeb, setSiteWeb] = useState(''); // piège à robots, doit rester vide
   const [statut, setStatut] = useState('idle'); // idle | envoi | succes | erreur
 
   function handleChange(e) {
@@ -23,8 +24,19 @@ export default function RelectureForm() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+
+    // Piège à robots : ce champ est invisible pour un humain (caché en CSS),
+    // seuls les robots automatisés le remplissent. S'il est rempli, on ignore
+    // silencieusement la soumission sans révéler qu'elle a été bloquée.
+    if (siteWeb) {
+      setStatut('succes');
+      return;
+    }
+
     setStatut('envoi');
+
     const { error } = await supabase.from('candidatures_relecture').insert([formData]);
+
     if (error) {
       setStatut('erreur');
     } else {
@@ -42,6 +54,16 @@ export default function RelectureForm() {
 
   return (
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '500px' }}>
+      <input
+        type="text"
+        name="site_web"
+        value={siteWeb}
+        onChange={(e) => setSiteWeb(e.target.value)}
+        tabIndex={-1}
+        autoComplete="off"
+        style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', opacity: 0 }}
+        aria-hidden="true"
+      />
       <label>
         Profession / spécialité
         <input
