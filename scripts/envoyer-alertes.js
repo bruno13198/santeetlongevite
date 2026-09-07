@@ -49,16 +49,28 @@ async function recupererEtudesPourAbonnement(abonnement) {
 
   if (etudeIds.length === 0) return [];
 
-  const { data: etudes } = await supabase
-    .from('etudes')
-    .select('id, titre_traduit, titre_original, resume_simplifie, url_originale, created_at')
-    .in('id', etudeIds);
+  // Découpe en lots de 200 : une requête .in() avec des milliers d'identifiants
+  // dépasse la limite de taille acceptée par Supabase et échoue silencieusement.
+  let etudes = [];
+  const tailleLotEtudes = 200;
+  for (let i = 0; i < etudeIds.length; i += tailleLotEtudes) {
+    const lotIds = etudeIds.slice(i, i + tailleLotEtudes);
+    const { data: lotEtudes, error } = await supabase
+      .from('etudes')
+      .select('id, titre_traduit, titre_original, resume_simplifie, url_originale, created_at')
+      .in('id', lotIds);
+
+    if (error) {
+      console.log(`  Erreur récupération études (lot ${i}): ${error.message}`);
+      continue;
+    }
+    etudes = etudes.concat(lotEtudes || []);
+  }
 
   // Ne garde que les études : ajoutées après la confirmation de l'abonnement, et jamais encore envoyées pour cet abonnement
-  return (etudes || []).filter(
+  return etudes.filter(
     (e) => new Date(e.created_at) > new Date(abonnement.date_confirmation) && !idsDejaEnvoyees.has(e.id)
   );
-}
 
 async function construireEmailPourPersonne(email, abonnementsDeCettePersonne) {
   const sections = [];
