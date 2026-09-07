@@ -71,6 +71,7 @@ async function recupererEtudesPourAbonnement(abonnement) {
   return etudes.filter(
     (e) => new Date(e.created_at) > new Date(abonnement.date_confirmation) && !idsDejaEnvoyees.has(e.id)
   );
+}
 
 async function construireEmailPourPersonne(email, abonnementsDeCettePersonne) {
   const sections = [];
