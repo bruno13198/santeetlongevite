@@ -1,7 +1,7 @@
 name: Import études scientifiques
 on:
   schedule:
-    - cron: '0 3 * * 1'  # tous les lundis à 3h UTC
+    - cron: '17 3 * * 1'  # tous les lundis à 3h17 UTC (horaire décalé pour éviter la congestion des cron jobs GitHub à 3h00 pile)
   workflow_dispatch:
     inputs:
       offset:
