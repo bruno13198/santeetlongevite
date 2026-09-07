@@ -21,11 +21,23 @@ async function recupererEtudesPourAbonnement(abonnement) {
   let etudeIds = [];
 
   if (abonnement.sujet_id === null) {
-    // "Tous les aliments" : toutes les études liées à n'importe quel aliment
-    const { data: liaisons } = await supabase
-      .from('aliments_etudes')
-      .select('etude_id');
-    etudeIds = [...new Set((liaisons || []).map((l) => l.etude_id))];
+    // "Tous les aliments" : toutes les études liées à n'importe quel aliment.
+    // Pagination explicite car Supabase limite silencieusement à 1000 lignes par défaut,
+    // et cette table dépasse largement ce seuil.
+    let toutesLesLiaisons = [];
+    let debut = 0;
+    const tailleLot = 1000;
+    while (true) {
+      const { data: lot } = await supabase
+        .from('aliments_etudes')
+        .select('etude_id')
+        .range(debut, debut + tailleLot - 1);
+      if (!lot || lot.length === 0) break;
+      toutesLesLiaisons = toutesLesLiaisons.concat(lot);
+      if (lot.length < tailleLot) break;
+      debut += tailleLot;
+    }
+    etudeIds = [...new Set(toutesLesLiaisons.map((l) => l.etude_id))];
   } else {
     // Un aliment précis
     const { data: liaisons } = await supabase
