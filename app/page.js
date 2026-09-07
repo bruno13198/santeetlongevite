@@ -85,9 +85,12 @@ export default async function Home() {
             scientifiques disponibles.
           </p>
           <p className={styles.introItem}>
-            <strong>La veille scientifique</strong> — Une sélection des nouvelles recherches
-            les plus pertinentes, pour suivre l'évolution des connaissances dans ces différents
-            domaines (en cours d'élaboration).
+            <p className={styles.introItem}>
+            <strong>La veille scientifique</strong> — Elle fonctionne déjà pour les aliments :
+            nous ne l'alimentons qu'avec des études sérieuses (méta-analyses, revues
+            systématiques, essais cliniques randomisés), pour vous offrir une information fiable plutôt qu'un flux de publications au niveau de preuve souvent très bas, voire inexistant. Nous travaillons
+            actuellement à l'étendre au sport, avant de nous attaquer au sommeil et aux
+            compléments alimentaires.
           </p>
           <p className={styles.introItem}>
             <strong>Des alertes personnalisées</strong> — Recevez par e-mail les nouvelles
