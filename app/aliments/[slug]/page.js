@@ -40,7 +40,8 @@ export default async function FicheAliment({ params }) {
     const { data: etudesData } = await supabase
       .from('etudes')
       .select('*')
-      .in('id', etudeIds);
+      .in('id', etudeIds)
+      .order('created_at', { ascending: false });
     etudes = etudesData || [];
   }
 
