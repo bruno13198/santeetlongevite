@@ -11,7 +11,6 @@ const supabase = createClient(
 );
 
 async function recupererEtudesPourAbonnement(abonnement) {
-  // Récupère les IDs d'études déjà envoyées pour cet abonnement précis
   const { data: dejaEnvoyees } = await supabase
     .from('alertes_envoyees')
     .select('etude_id')
@@ -19,6 +18,7 @@ async function recupererEtudesPourAbonnement(abonnement) {
   const idsDejaEnvoyees = new Set((dejaEnvoyees || []).map((a) => a.etude_id));
 
   let etudeIds = [];
+  let alimentParEtude = {}; // etude_id -> { nom, slug }
 
   if (abonnement.sujet_id === null) {
     // "Tous les aliments" : toutes les études liées à n'importe quel aliment.
@@ -30,7 +30,7 @@ async function recupererEtudesPourAbonnement(abonnement) {
     while (true) {
       const { data: lot } = await supabase
         .from('aliments_etudes')
-        .select('etude_id')
+        .select('etude_id, aliment_id')
         .range(debut, debut + tailleLot - 1);
       if (!lot || lot.length === 0) break;
       toutesLesLiaisons = toutesLesLiaisons.concat(lot);
@@ -38,26 +38,39 @@ async function recupererEtudesPourAbonnement(abonnement) {
       debut += tailleLot;
     }
     etudeIds = [...new Set(toutesLesLiaisons.map((l) => l.etude_id))];
+
+    const idsAlimentsConcernes = [...new Set(toutesLesLiaisons.map((l) => l.aliment_id))];
+    let infosParAliment = {};
+    for (let i = 0; i < idsAlimentsConcernes.length; i += 200) {
+      const lotIds = idsAlimentsConcernes.slice(i, i + 200);
+      const { data: lotAliments } = await supabase.from('aliments').select('id, nom, slug').in('id', lotIds);
+      (lotAliments || []).forEach((a) => {
+        infosParAliment[a.id] = { nom: a.nom, slug: a.slug };
+      });
+    }
+    toutesLesLiaisons.forEach((l) => {
+      if (!alimentParEtude[l.etude_id]) alimentParEtude[l.etude_id] = infosParAliment[l.aliment_id];
+    });
   } else {
-    // Un aliment précis
     const { data: liaisons } = await supabase
       .from('aliments_etudes')
       .select('etude_id')
       .eq('aliment_id', abonnement.sujet_id);
     etudeIds = (liaisons || []).map((l) => l.etude_id);
+    etudeIds.forEach((id) => {
+      alimentParEtude[id] = { nom: abonnement.nomAliment, slug: abonnement.slugAliment };
+    });
   }
 
   if (etudeIds.length === 0) return [];
 
-  // Découpe en lots de 200 : une requête .in() avec des milliers d'identifiants
-  // dépasse la limite de taille acceptée par Supabase et échoue silencieusement.
   let etudes = [];
   const tailleLotEtudes = 200;
   for (let i = 0; i < etudeIds.length; i += tailleLotEtudes) {
     const lotIds = etudeIds.slice(i, i + tailleLotEtudes);
     const { data: lotEtudes, error } = await supabase
       .from('etudes')
-      .select('id, titre_traduit, titre_original, resume_simplifie, url_originale, created_at')
+      .select('id, created_at')
       .in('id', lotIds);
 
     if (error) {
@@ -67,62 +80,48 @@ async function recupererEtudesPourAbonnement(abonnement) {
     etudes = etudes.concat(lotEtudes || []);
   }
 
-  // Ne garde que les études : ajoutées après la confirmation de l'abonnement, et jamais encore envoyées pour cet abonnement
-  return etudes.filter(
-    (e) => new Date(e.created_at) > new Date(abonnement.date_confirmation) && !idsDejaEnvoyees.has(e.id)
-  );
+  return etudes
+    .filter(
+      (e) => new Date(e.created_at) > new Date(abonnement.date_confirmation) && !idsDejaEnvoyees.has(e.id)
+    )
+    .map((e) => ({ ...e, aliment: alimentParEtude[e.id] || null }));
 }
 
 async function construireEmailPourPersonne(email, abonnementsDeCettePersonne) {
-  const sections = [];
-  const pairesAEnregistrer = []; // { abonnement_id, etude_id } à noter après envoi réussi
-  const etudesDejaIncluses = new Set(); // évite d'afficher deux fois la même étude dans l'email
+  const pairesAEnregistrer = [];
+  const etudesParAliment = {}; // slug -> { nom, count, etudeIds: [] }
 
   for (const abonnement of abonnementsDeCettePersonne) {
     const etudes = await recupererEtudesPourAbonnement(abonnement);
     if (etudes.length === 0) continue;
 
-    const nomSujet = abonnement.sujet_id === null ? 'Tous les aliments' : abonnement.nomAliment;
-    const lienDesabonnement = `https://sciencetruths.com/api/abonnements/desabonner?token=${abonnement.token_desabonnement}`;
-
-    const etudesNouvellesPourCetteSection = etudes.filter((e) => !etudesDejaIncluses.has(e.id));
-    etudesNouvellesPourCetteSection.forEach((e) => etudesDejaIncluses.add(e.id));
-
-    // On enregistre TOUTES les études trouvées pour cet abonnement (même si déjà affichées
-    // via un autre abonnement de la même personne), pour que ce même abonnement ne les
-    // reproduise pas la semaine prochaine.
     etudes.forEach((e) => pairesAEnregistrer.push({ abonnement_id: abonnement.id, etude_id: e.id }));
 
-    if (etudesNouvellesPourCetteSection.length === 0) continue;
-
-    const listeEtudes = etudesNouvellesPourCetteSection
-      .map(
-        (e) => `
-          <li style="margin-bottom: 12px;">
-            <strong>${e.titre_traduit || e.titre_original}</strong><br/>
-            ${e.resume_simplifie ? e.resume_simplifie.slice(0, 200) + '...' : ''}<br/>
-            <a href="${e.url_originale}">Voir l'étude →</a>
-          </li>
-        `
-      )
-      .join('');
-
-    sections.push(`
-      <h2>${nomSujet}</h2>
-      <ul>${listeEtudes}</ul>
-      <p style="font-size: 13px;"><a href="${lienDesabonnement}">Ne plus suivre ${nomSujet === 'Tous les aliments' ? 'tous les aliments' : nomSujet}</a></p>
-      <hr/>
-    `);
+    etudes.forEach((e) => {
+      if (!e.aliment || !e.aliment.slug) return;
+      if (!etudesParAliment[e.aliment.slug]) {
+        etudesParAliment[e.aliment.slug] = { nom: e.aliment.nom, count: 0 };
+      }
+      etudesParAliment[e.aliment.slug].count++;
+    });
   }
 
-  if (sections.length === 0) return null;
+  const alimentsAvecNouveautes = Object.entries(etudesParAliment);
+  if (alimentsAvecNouveautes.length === 0) return null;
+
+  const listeLiens = alimentsAvecNouveautes
+    .map(([slug, info]) => {
+      const suffixe = info.count > 1 ? ` (${info.count} nouvelles études)` : '';
+      return `<li style="margin-bottom: 8px;"><a href="https://sciencetruths.com/aliments/${slug}">${info.nom}${suffixe} →</a></li>`;
+    })
+    .join('');
 
   return {
     html: `
       <p>Bonjour,</p>
-      <p>Voici les nouvelles études scientifiques ajoutées cette semaine sur les sujets que vous suivez :</p>
-      ${sections.join('')}
-      <p style="font-size: 12px; color: #888;">
+      <p>Voici les nouvelles études ajoutées cette semaine sur les sujets que vous suivez :</p>
+      <ul>${listeLiens}</ul>
+      <p style="font-size: 12px; color: #888; margin-top: 24px;">
         <a href="https://sciencetruths.com/mes-alertes">Gérer mes alertes</a>
       </p>
     `,
@@ -164,18 +163,19 @@ async function main() {
   if (error) throw new Error(`Erreur récupération abonnements: ${error.message}`);
   console.log(`${abonnements.length} abonnements actifs à traiter.`);
 
-  // Récupère les noms des aliments concernés (pour l'affichage dans l'email)
   const idsAliments = [...new Set(abonnements.filter((a) => a.sujet_id).map((a) => a.sujet_id))];
   let nomsParId = {};
+  let slugsParId = {};
   if (idsAliments.length > 0) {
-    const { data: aliments } = await supabase.from('aliments').select('id, nom').in('id', idsAliments);
+    const { data: aliments } = await supabase.from('aliments').select('id, nom, slug').in('id', idsAliments);
     nomsParId = Object.fromEntries((aliments || []).map((a) => [a.id, a.nom]));
+    slugsParId = Object.fromEntries((aliments || []).map((a) => [a.id, a.slug]));
   }
   abonnements.forEach((a) => {
     a.nomAliment = a.sujet_id ? nomsParId[a.sujet_id] : null;
+    a.slugAliment = a.sujet_id ? slugsParId[a.sujet_id] : null;
   });
 
-  // Regroupe les abonnements par email
   const parEmail = {};
   for (const a of abonnements) {
     if (!parEmail[a.email]) parEmail[a.email] = [];
@@ -194,14 +194,13 @@ async function main() {
 
       await envoyerEmail(email, resultat.html);
 
-      // On note ce qui a été envoyé seulement après le succès de l'envoi
       for (const paire of resultat.pairesAEnregistrer) {
         await supabase.from('alertes_envoyees').upsert(paire, { onConflict: 'abonnement_id,etude_id' });
       }
 
       emailsEnvoyes++;
       console.log(`  - ${email} : email envoyé.`);
-      await new Promise((resolve) => setTimeout(resolve, 300)); // pause pour ne pas saturer Brevo
+      await new Promise((resolve) => setTimeout(resolve, 300));
     } catch (e) {
       console.log(`  - Erreur pour ${email}: ${e.message}`);
     }
