@@ -85,7 +85,6 @@ export default async function Home() {
             scientifiques disponibles.
           </p>
           <p className={styles.introItem}>
-            <p className={styles.introItem}>
             <strong>La veille scientifique</strong> — Elle fonctionne déjà pour les aliments :
             nous ne l'alimentons qu'avec des études sérieuses (méta-analyses, revues
             systématiques, essais cliniques randomisés), pour vous offrir une information fiable plutôt qu'un flux de publications au niveau de preuve souvent très bas, voire inexistant. Nous travaillons
