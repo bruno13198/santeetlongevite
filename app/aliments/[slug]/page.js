@@ -41,7 +41,7 @@ export default async function FicheAliment({ params }) {
       .from('etudes')
       .select('*')
       .in('id', etudeIds)
-      .order('created_at', { ascending: false });
+      .order('date_publication', { ascending: false, nullsFirst: false });
     etudes = etudesData || [];
   }
 
