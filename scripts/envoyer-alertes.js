@@ -123,19 +123,33 @@ async function construireEmailPourPersonne(email, abonnementsDeCettePersonne) {
       if (!e.sujet || !e.sujet.slug) return;
       const cle = `${e.prefixeUrl}/${e.sujet.slug}`;
       if (!etudesParSujet[cle]) {
-        etudesParSujet[cle] = { nom: e.sujet.nom, prefixeUrl: e.prefixeUrl, count: 0 };
+        etudesParSujet[cle] = { nom: e.sujet.nom, prefixeUrl: e.prefixeUrl, titres: [] };
       }
-      etudesParSujet[cle].count++;
+      etudesParSujet[cle].titres.push(e.titre_traduit || e.titre_original);
     });
   }
 
   const sujetsAvecNouveautes = Object.entries(etudesParSujet);
   if (sujetsAvecNouveautes.length === 0) return null;
 
+  const MAX_TITRES_AFFICHES = 3;
   const listeLiens = sujetsAvecNouveautes
     .map(([cle, info]) => {
-      const suffixe = info.count > 1 ? ` (${info.count} nouvelles études)` : '';
-      return `<li style="margin-bottom: 8px;"><a href="https://sciencetruths.com/${cle}">${info.nom}${suffixe} →</a></li>`;
+      const count = info.titres.length;
+      const suffixe = count > 1 ? ` (${count} nouvelles études)` : '';
+      const titresAffiches = info.titres.slice(0, MAX_TITRES_AFFICHES);
+      const titresHtml = titresAffiches
+        .map((t) => `<li style="font-size: 13px; color: #555; margin-bottom: 4px;">${t}</li>`)
+        .join('');
+      const resteHtml = count > MAX_TITRES_AFFICHES
+        ? `<li style="font-size: 13px; color: #888;">et ${count - MAX_TITRES_AFFICHES} autre(s)...</li>`
+        : '';
+      return `
+        <li style="margin-bottom: 16px;">
+          <a href="https://sciencetruths.com/${cle}" style="font-weight: bold;">${info.nom}${suffixe} →</a>
+          <ul style="margin-top: 4px; padding-left: 20px;">${titresHtml}${resteHtml}</ul>
+        </li>
+      `;
     })
     .join('');
 
