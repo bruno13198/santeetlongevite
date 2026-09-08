@@ -7,10 +7,17 @@ export default function FormulaireAlertes() {
   const [resultats, setResultats] = useState([]);
   const [alimentsChoisis, setAlimentsChoisis] = useState([]);
   const [tousLesAliments, setTousLesAliments] = useState(false);
+
+  const [rechercheHabitude, setRechercheHabitude] = useState('');
+  const [resultatsHabitudes, setResultatsHabitudes] = useState([]);
+  const [habitudesChoisies, setHabitudesChoisies] = useState([]);
+  const [toutesLesHabitudes, setToutesLesHabitudes] = useState(false);
+
   const [email, setEmail] = useState('');
   const [statut, setStatut] = useState('repos'); // repos | envoi | succes | erreur
   const [message, setMessage] = useState('');
   const timeoutRef = useRef(null);
+  const timeoutHabitudeRef = useRef(null);
 
   useEffect(() => {
     if (recherche.trim().length < 2) {
@@ -25,6 +32,19 @@ export default function FormulaireAlertes() {
     }, 300);
   }, [recherche]);
 
+  useEffect(() => {
+    if (rechercheHabitude.trim().length < 2) {
+      setResultatsHabitudes([]);
+      return;
+    }
+    clearTimeout(timeoutHabitudeRef.current);
+    timeoutHabitudeRef.current = setTimeout(async () => {
+      const res = await fetch(`/api/habitudes/recherche?q=${encodeURIComponent(rechercheHabitude)}`);
+      const data = await res.json();
+      setResultatsHabitudes(data.resultats || []);
+    }, 300);
+  }, [rechercheHabitude]);
+
   function ajouterAliment(aliment) {
     if (!alimentsChoisis.find((a) => a.id === aliment.id)) {
       setAlimentsChoisis([...alimentsChoisis, aliment]);
@@ -35,6 +55,18 @@ export default function FormulaireAlertes() {
 
   function retirerAliment(id) {
     setAlimentsChoisis(alimentsChoisis.filter((a) => a.id !== id));
+  }
+
+  function ajouterHabitude(habitude) {
+    if (!habitudesChoisies.find((h) => h.id === habitude.id)) {
+      setHabitudesChoisies([...habitudesChoisies, habitude]);
+    }
+    setRechercheHabitude('');
+    setResultatsHabitudes([]);
+  }
+
+  function retirerHabitude(id) {
+    setHabitudesChoisies(habitudesChoisies.filter((h) => h.id !== id));
   }
 
   async function handleSubmit(e) {
@@ -50,6 +82,8 @@ export default function FormulaireAlertes() {
           email,
           alimentIds: alimentsChoisis.map((a) => a.id),
           tousLesAliments,
+          habitudeIds: habitudesChoisies.map((h) => h.id),
+          toutesLesHabitudes,
         }),
       });
       const data = await res.json();
@@ -72,9 +106,6 @@ export default function FormulaireAlertes() {
     return (
       <div style={{ padding: '24px', backgroundColor: '#f0f7ff', borderRadius: '8px' }}>
         <p style={{ margin: 0 }}>{message}</p>
-        <p style={{ margin: '8px 0 0', fontSize: '13px', color: '#555' }}>
-          Pensez à vérifier vos spams / courriers indésirables si vous ne voyez rien arriver.
-        </p>
       </div>
     );
   }
@@ -133,6 +164,70 @@ export default function FormulaireAlertes() {
                 <button
                   type="button"
                   onClick={() => retirerAliment(aliment.id)}
+                  style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '14px', lineHeight: 1 }}
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <hr style={{ margin: '24px 0', border: 'none', borderTop: '1px solid #eee' }} />
+
+      {/* Toutes les habitudes alimentaires */}
+      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', fontWeight: 'bold' }}>
+        <input
+          type="checkbox"
+          checked={toutesLesHabitudes}
+          onChange={(e) => setToutesLesHabitudes(e.target.checked)}
+        />
+        Toutes les habitudes alimentaires (régimes, jeûne...)
+      </label>
+
+      {/* Sélection d'habitudes précises, désactivée si "toutes" est coché */}
+      <div style={{ opacity: toutesLesHabitudes ? 0.4 : 1, pointerEvents: toutesLesHabitudes ? 'none' : 'auto', marginBottom: '24px' }}>
+        <label style={{ display: 'block', marginBottom: '8px' }}>
+          Ou choisissez une ou plusieurs habitudes précises :
+        </label>
+
+        <div style={{ position: 'relative' }}>
+          <input
+            type="text"
+            placeholder="Rechercher un régime (ex: méditerranéen, jeûne)"
+            value={rechercheHabitude}
+            onChange={(e) => setRechercheHabitude(e.target.value)}
+            style={{ width: '100%', padding: '8px 12px', border: '1px solid #ccc', borderRadius: '6px' }}
+          />
+          {resultatsHabitudes.length > 0 && (
+            <ul style={{ position: 'absolute', top: '100%', left: 0, right: 0, backgroundColor: 'white', border: '1px solid #ccc', borderRadius: '6px', listStyle: 'none', margin: 0, padding: '4px 0', zIndex: 10 }}>
+              {resultatsHabitudes.map((habitude) => (
+                <li
+                  key={habitude.id}
+                  onClick={() => ajouterHabitude(habitude)}
+                  style={{ padding: '8px 12px', cursor: 'pointer' }}
+                  onMouseEnter={(e) => (e.target.style.backgroundColor = '#f5f5f5')}
+                  onMouseLeave={(e) => (e.target.style.backgroundColor = 'white')}
+                >
+                  {habitude.nom}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        {habitudesChoisies.length > 0 && (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '12px' }}>
+            {habitudesChoisies.map((habitude) => (
+              <span
+                key={habitude.id}
+                style={{ backgroundColor: '#e8f0fe', padding: '4px 10px', borderRadius: '14px', fontSize: '14px', display: 'flex', alignItems: 'center', gap: '6px' }}
+              >
+                {habitude.nom}
+                <button
+                  type="button"
+                  onClick={() => retirerHabitude(habitude.id)}
                   style={{ border: 'none', background: 'none', cursor: 'pointer', fontSize: '14px', lineHeight: 1 }}
                 >
                   ×
