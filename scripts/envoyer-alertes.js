@@ -1,7 +1,8 @@
 // Script hebdomadaire : envoie un email récapitulatif à chaque personne
 // abonnée aux alertes, avec les nouvelles études ajoutées depuis son inscription.
-// Un seul email par personne, même si elle suit plusieurs aliments.
-// À lancer après le script d'import (les nouvelles études doivent déjà être en base).
+// Gère deux types de sujets : aliments et habitudes alimentaires (régimes).
+// Un seul email par personne, même si elle suit plusieurs sujets de types différents.
+// À lancer après les scripts d'import (les nouvelles études doivent déjà être en base).
 
 const { createClient } = require('@supabase/supabase-js');
 
@@ -10,7 +11,29 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
+// Configuration par type de sujet : quelle table de liaison, quelle table de noms,
+// quel préfixe d'URL sur le site.
+const CONFIG_PAR_TYPE = {
+  aliment: {
+    tableLiaison: 'aliments_etudes',
+    colonneLiaison: 'aliment_id',
+    tableSujets: 'aliments',
+    prefixeUrl: 'aliments',
+    labelTous: 'Tous les aliments',
+  },
+  habitude_alimentaire: {
+    tableLiaison: 'habitudes_etudes',
+    colonneLiaison: 'habitude_id',
+    tableSujets: 'habitudes_alimentaires',
+    prefixeUrl: 'habitudes',
+    labelTous: 'Toutes les habitudes alimentaires',
+  },
+};
+
 async function recupererEtudesPourAbonnement(abonnement) {
+  const config = CONFIG_PAR_TYPE[abonnement.type_sujet];
+  if (!config) return [];
+
   const { data: dejaEnvoyees } = await supabase
     .from('alertes_envoyees')
     .select('etude_id')
@@ -18,19 +41,18 @@ async function recupererEtudesPourAbonnement(abonnement) {
   const idsDejaEnvoyees = new Set((dejaEnvoyees || []).map((a) => a.etude_id));
 
   let etudeIds = [];
-  let alimentParEtude = {}; // etude_id -> { nom, slug }
+  let sujetParEtude = {}; // etude_id -> { nom, slug }
 
   if (abonnement.sujet_id === null) {
-    // "Tous les aliments" : toutes les études liées à n'importe quel aliment.
-    // Pagination explicite car Supabase limite silencieusement à 1000 lignes par défaut,
-    // et cette table dépasse largement ce seuil.
+    // "Tous les X" : toutes les études liées à n'importe quel sujet de ce type.
+    // Pagination explicite car Supabase limite silencieusement à 1000 lignes par défaut.
     let toutesLesLiaisons = [];
     let debut = 0;
     const tailleLot = 1000;
     while (true) {
       const { data: lot } = await supabase
-        .from('aliments_etudes')
-        .select('etude_id, aliment_id')
+        .from(config.tableLiaison)
+        .select(`etude_id, ${config.colonneLiaison}`)
         .range(debut, debut + tailleLot - 1);
       if (!lot || lot.length === 0) break;
       toutesLesLiaisons = toutesLesLiaisons.concat(lot);
@@ -39,26 +61,26 @@ async function recupererEtudesPourAbonnement(abonnement) {
     }
     etudeIds = [...new Set(toutesLesLiaisons.map((l) => l.etude_id))];
 
-    const idsAlimentsConcernes = [...new Set(toutesLesLiaisons.map((l) => l.aliment_id))];
-    let infosParAliment = {};
-    for (let i = 0; i < idsAlimentsConcernes.length; i += 200) {
-      const lotIds = idsAlimentsConcernes.slice(i, i + 200);
-      const { data: lotAliments } = await supabase.from('aliments').select('id, nom, slug').in('id', lotIds);
-      (lotAliments || []).forEach((a) => {
-        infosParAliment[a.id] = { nom: a.nom, slug: a.slug };
+    const idsSujetsConcernes = [...new Set(toutesLesLiaisons.map((l) => l[config.colonneLiaison]))];
+    let infosParSujet = {};
+    for (let i = 0; i < idsSujetsConcernes.length; i += 200) {
+      const lotIds = idsSujetsConcernes.slice(i, i + 200);
+      const { data: lotSujets } = await supabase.from(config.tableSujets).select('id, nom, slug').in('id', lotIds);
+      (lotSujets || []).forEach((s) => {
+        infosParSujet[s.id] = { nom: s.nom, slug: s.slug };
       });
     }
     toutesLesLiaisons.forEach((l) => {
-      if (!alimentParEtude[l.etude_id]) alimentParEtude[l.etude_id] = infosParAliment[l.aliment_id];
+      if (!sujetParEtude[l.etude_id]) sujetParEtude[l.etude_id] = infosParSujet[l[config.colonneLiaison]];
     });
   } else {
     const { data: liaisons } = await supabase
-      .from('aliments_etudes')
+      .from(config.tableLiaison)
       .select('etude_id')
-      .eq('aliment_id', abonnement.sujet_id);
+      .eq(config.colonneLiaison, abonnement.sujet_id);
     etudeIds = (liaisons || []).map((l) => l.etude_id);
     etudeIds.forEach((id) => {
-      alimentParEtude[id] = { nom: abonnement.nomAliment, slug: abonnement.slugAliment };
+      sujetParEtude[id] = { nom: abonnement.nomSujet, slug: abonnement.slugSujet };
     });
   }
 
@@ -84,12 +106,12 @@ async function recupererEtudesPourAbonnement(abonnement) {
     .filter(
       (e) => new Date(e.created_at) > new Date(abonnement.date_confirmation) && !idsDejaEnvoyees.has(e.id)
     )
-    .map((e) => ({ ...e, aliment: alimentParEtude[e.id] || null }));
+    .map((e) => ({ ...e, sujet: sujetParEtude[e.id] || null, prefixeUrl: config.prefixeUrl }));
 }
 
 async function construireEmailPourPersonne(email, abonnementsDeCettePersonne) {
   const pairesAEnregistrer = [];
-  const etudesParAliment = {}; // slug -> { nom, count, etudeIds: [] }
+  const etudesParSujet = {}; // "prefixeUrl/slug" -> { nom, prefixeUrl, count }
 
   for (const abonnement of abonnementsDeCettePersonne) {
     const etudes = await recupererEtudesPourAbonnement(abonnement);
@@ -98,21 +120,22 @@ async function construireEmailPourPersonne(email, abonnementsDeCettePersonne) {
     etudes.forEach((e) => pairesAEnregistrer.push({ abonnement_id: abonnement.id, etude_id: e.id }));
 
     etudes.forEach((e) => {
-      if (!e.aliment || !e.aliment.slug) return;
-      if (!etudesParAliment[e.aliment.slug]) {
-        etudesParAliment[e.aliment.slug] = { nom: e.aliment.nom, count: 0 };
+      if (!e.sujet || !e.sujet.slug) return;
+      const cle = `${e.prefixeUrl}/${e.sujet.slug}`;
+      if (!etudesParSujet[cle]) {
+        etudesParSujet[cle] = { nom: e.sujet.nom, prefixeUrl: e.prefixeUrl, count: 0 };
       }
-      etudesParAliment[e.aliment.slug].count++;
+      etudesParSujet[cle].count++;
     });
   }
 
-  const alimentsAvecNouveautes = Object.entries(etudesParAliment);
-  if (alimentsAvecNouveautes.length === 0) return null;
+  const sujetsAvecNouveautes = Object.entries(etudesParSujet);
+  if (sujetsAvecNouveautes.length === 0) return null;
 
-  const listeLiens = alimentsAvecNouveautes
-    .map(([slug, info]) => {
+  const listeLiens = sujetsAvecNouveautes
+    .map(([cle, info]) => {
       const suffixe = info.count > 1 ? ` (${info.count} nouvelles études)` : '';
-      return `<li style="margin-bottom: 8px;"><a href="https://sciencetruths.com/aliments/${slug}">${info.nom}${suffixe} →</a></li>`;
+      return `<li style="margin-bottom: 8px;"><a href="https://sciencetruths.com/${cle}">${info.nom}${suffixe} →</a></li>`;
     })
     .join('');
 
@@ -155,26 +178,29 @@ async function main() {
 
   const { data: abonnements, error } = await supabase
     .from('abonnements')
-    .select('id, email, sujet_id, date_confirmation, token_desabonnement')
-    .eq('type_sujet', 'aliment')
+    .select('id, email, type_sujet, sujet_id, date_confirmation, token_desabonnement')
     .eq('confirme', true)
     .eq('actif', true);
 
   if (error) throw new Error(`Erreur récupération abonnements: ${error.message}`);
   console.log(`${abonnements.length} abonnements actifs à traiter.`);
 
-  const idsAliments = [...new Set(abonnements.filter((a) => a.sujet_id).map((a) => a.sujet_id))];
-  let nomsParId = {};
-  let slugsParId = {};
-  if (idsAliments.length > 0) {
-    const { data: aliments } = await supabase.from('aliments').select('id, nom, slug').in('id', idsAliments);
-    nomsParId = Object.fromEntries((aliments || []).map((a) => [a.id, a.nom]));
-    slugsParId = Object.fromEntries((aliments || []).map((a) => [a.id, a.slug]));
+  // Récupère noms/slugs des sujets précis, par type
+  for (const type of Object.keys(CONFIG_PAR_TYPE)) {
+    const config = CONFIG_PAR_TYPE[type];
+    const idsConcernes = [...new Set(abonnements.filter((a) => a.type_sujet === type && a.sujet_id).map((a) => a.sujet_id))];
+    let infosParId = {};
+    if (idsConcernes.length > 0) {
+      const { data: sujets } = await supabase.from(config.tableSujets).select('id, nom, slug').in('id', idsConcernes);
+      infosParId = Object.fromEntries((sujets || []).map((s) => [s.id, s]));
+    }
+    abonnements.forEach((a) => {
+      if (a.type_sujet === type && a.sujet_id) {
+        a.nomSujet = infosParId[a.sujet_id]?.nom || null;
+        a.slugSujet = infosParId[a.sujet_id]?.slug || null;
+      }
+    });
   }
-  abonnements.forEach((a) => {
-    a.nomAliment = a.sujet_id ? nomsParId[a.sujet_id] : null;
-    a.slugAliment = a.sujet_id ? slugsParId[a.sujet_id] : null;
-  });
 
   const parEmail = {};
   for (const a of abonnements) {
