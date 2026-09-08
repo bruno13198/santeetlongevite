@@ -326,11 +326,6 @@ async function traiterAliment(aliment) {
   let nouvellesEtudesAjoutees = 0;
 
   for (const etude of resultatsUniques) {
-    if (nouvellesEtudesAjoutees >= MAX_NOUVELLES_ETUDES_PAR_RUN) {
-      console.log(`  - Garde-fou de ${MAX_NOUVELLES_ETUDES_PAR_RUN} nouvelles études atteint pour ce run, on arrête ici.`);
-      break;
-    }
-
     const sourceId = etude.id || etude.pmid;
     if (!sourceId) continue;
 
@@ -342,6 +337,9 @@ async function traiterAliment(aliment) {
       .maybeSingle();
 
     if (existant) {
+      // Rattacher une étude déjà en base ne coûte aucun appel API — ça ne doit
+      // jamais être limité par le garde-fou, contrairement à une vraie nouvelle
+      // analyse juste en dessous.
       const { data: lienExistant } = await supabase
         .from('aliments_etudes')
         .select('aliment_id')
@@ -354,12 +352,18 @@ async function traiterAliment(aliment) {
           aliment_id: aliment.id,
           etude_id: existant.id,
         });
-        nouvellesEtudesAjoutees++;
         console.log(`  - Déjà en base (${sourceId}), reliée à cet aliment.`);
       } else {
         console.log(`  - Déjà en base et déjà liée (${sourceId}), on passe.`);
       }
       continue;
+    }
+
+    // À partir d'ici, on s'apprête à faire un vrai appel Claude (coûteux) :
+    // c'est uniquement ici que le garde-fou doit s'appliquer.
+    if (nouvellesEtudesAjoutees >= MAX_NOUVELLES_ETUDES_PAR_RUN) {
+      console.log(`  - Garde-fou de ${MAX_NOUVELLES_ETUDES_PAR_RUN} nouvelles études atteint pour ce run, on arrête ici.`);
+      break;
     }
 
     if (!etude.abstractText) {
