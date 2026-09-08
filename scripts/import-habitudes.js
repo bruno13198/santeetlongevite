@@ -317,9 +317,9 @@ async function traiterHabitude(habitude) {
     }
 
     const { data: dejaRejete } = await supabase
-      .from('candidats_rejetes')
+      .from('candidats_rejetes_habitudes')
       .select('source_id')
-      .eq('aliment_id', habitude.id)
+      .eq('habitude_id', habitude.id)
       .eq('source_id', sourceId)
       .maybeSingle();
 
@@ -333,7 +333,7 @@ async function traiterHabitude(habitude) {
 
       if (!analyse.pertinent) {
         console.log(`  - Écartée (${sourceId}) : ${analyse.raison}`);
-        await supabase.from('candidats_rejetes').insert({ aliment_id: habitude.id, source_id: sourceId });
+        await supabase.from('candidats_rejetes_habitudes').insert({ habitude_id: habitude.id, source_id: sourceId });
         continue;
       }
 
