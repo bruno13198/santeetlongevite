@@ -7,7 +7,7 @@ const supabase = createClient(
 
 export async function POST(request) {
   try {
-    const { email, alimentIds, tousLesAliments } = await request.json();
+    const { email, alimentIds, tousLesAliments, habitudeIds, toutesLesHabitudes } = await request.json();
 
     if (!email) {
       return Response.json({ erreur: 'Email requis.' }, { status: 400 });
@@ -19,14 +19,21 @@ export async function POST(request) {
     }
 
     const listeAliments = Array.isArray(alimentIds) ? alimentIds : [];
+    const listeHabitudes = Array.isArray(habitudeIds) ? habitudeIds : [];
 
-    if (!tousLesAliments && listeAliments.length === 0) {
-      return Response.json({ erreur: 'Sélectionnez au moins un aliment, ou "Tous les aliments".' }, { status: 400 });
+    if (!tousLesAliments && listeAliments.length === 0 && !toutesLesHabitudes && listeHabitudes.length === 0) {
+      return Response.json({ erreur: 'Sélectionnez au moins un aliment ou une habitude alimentaire.' }, { status: 400 });
     }
 
-    const lignesAInserer = tousLesAliments
+    const lignesAliments = tousLesAliments
       ? [{ email, type_sujet: 'aliment', sujet_id: null }]
       : listeAliments.map((id) => ({ email, type_sujet: 'aliment', sujet_id: id }));
+
+    const lignesHabitudes = toutesLesHabitudes
+      ? [{ email, type_sujet: 'habitude_alimentaire', sujet_id: null }]
+      : listeHabitudes.map((id) => ({ email, type_sujet: 'habitude_alimentaire', sujet_id: id }));
+
+    const lignesAInserer = [...lignesAliments, ...lignesHabitudes];
 
     let nombreCrees = 0;
     let nombreReactives = 0;
@@ -46,7 +53,6 @@ export async function POST(request) {
       const { data: existant } = await requeteExistant.maybeSingle();
 
       if (existant) {
-        // La ligne existe déjà : on s'assure qu'elle est active, sans créer de doublon
         if (!existant.actif) {
           await supabase.from('abonnements').update({ actif: true }).eq('id', existant.id);
         }
@@ -58,7 +64,6 @@ export async function POST(request) {
           nombreReactives++;
         }
       } else {
-        // Aucune ligne existante : véritable création
         const { data: nouvelle, error } = await supabase
           .from('abonnements')
           .insert({ ...ligne, actif: true })
@@ -100,8 +105,8 @@ export async function POST(request) {
           <p>Vous avez demandé à recevoir des alertes par email sur ScienceTruths.</p>
           <p>Pour confirmer votre inscription, cliquez sur ce lien :</p>
           <p><a href="${lienConfirmation}">Confirmer mes alertes</a></p>
-          <p style="font-size: 13px; color: #888;">Si vous ne trouvez pas cet email la prochaine fois, pensez à vérifier vos spams / courriers indésirables.</p>
           <p>Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet email.</p>
+          <p style="font-size: 13px; color: #888;">Si vous ne trouvez pas cet email la prochaine fois, pensez à vérifier vos spams / courriers indésirables.</p>
         `,
       }),
     });
