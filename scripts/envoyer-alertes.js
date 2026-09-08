@@ -92,7 +92,7 @@ async function recupererEtudesPourAbonnement(abonnement) {
     const lotIds = etudeIds.slice(i, i + tailleLotEtudes);
     const { data: lotEtudes, error } = await supabase
       .from('etudes')
-      .select('id, created_at')
+      .select('id, created_at, titre_traduit, titre_original')
       .in('id', lotIds);
 
     if (error) {
