@@ -30,30 +30,53 @@ const supabase = createClient(
 );
 
 export default function VeilleScientifique() {
-  const [aliments, setAliments] = useState([]);
+  const [items, setItems] = useState([]);
   const [recherche, setRecherche] = useState('');
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState(null);
 
   useEffect(() => {
-    async function chargerAliments() {
+    async function chargerDonnees() {
       const EXCEPTIONS_NOVA4 = ['isolat-de-soja', 'cola-sucre', 'lecithine-de-soja', 'kimchi', 'kombucha'];
-      const { data, error } = await supabase
-        .from('aliments')
-        .select('*')
-        .eq('actif', true)
-        .range(0, 3999);
-      if (error) {
-        setErreur(error.message);
-      } else {
-        const filtres = data.filter(
-          (a) => a.niveau_nova !== 4 || EXCEPTIONS_NOVA4.includes(a.slug)
-        );
-        setAliments(filtres);
+
+      const [{ data: aliments, error: erreurAliments }, { data: habitudes, error: erreurHabitudes }] = await Promise.all([
+        supabase.from('aliments').select('*').eq('actif', true).range(0, 3999),
+        supabase.from('habitudes_alimentaires').select('*').eq('actif', true),
+      ]);
+
+      if (erreurAliments) {
+        setErreur(erreurAliments.message);
+        setChargement(false);
+        return;
       }
+      if (erreurHabitudes) {
+        setErreur(erreurHabitudes.message);
+        setChargement(false);
+        return;
+      }
+
+      const alimentsFiltres = aliments
+        .filter((a) => a.niveau_nova !== 4 || EXCEPTIONS_NOVA4.includes(a.slug))
+        .map((a) => ({
+          type: 'aliment',
+          slug: a.slug,
+          nom: a.nom,
+          categorie: a.categorie,
+          description: a.description,
+        }));
+
+      const habitudesFormatees = (habitudes || []).map((h) => ({
+        type: 'habitude',
+        slug: h.slug,
+        nom: h.nom,
+        categorie: 'Habitude alimentaire',
+        description: h.description,
+      }));
+
+      setItems([...alimentsFiltres, ...habitudesFormatees]);
       setChargement(false);
     }
-    chargerAliments();
+    chargerDonnees();
   }, []);
 
   function normaliser(texte) {
@@ -63,16 +86,16 @@ export default function VeilleScientifique() {
       .replace(/[\u0300-\u036f]/g, '');
   }
 
- function singulariser(mot) {
+  function singulariser(mot) {
     return mot.endsWith('s') && mot.length > 4 ? mot.slice(0, -1) : mot;
   }
 
   const rechercheNorm = normaliser(recherche);
   const motsRecherche = rechercheNorm.split(/[^a-z0-9]+/).filter((m) => m !== '');
 
-  const alimentsFiltres = aliments.filter((aliment) => {
+  const itemsFiltres = items.filter((item) => {
     if (motsRecherche.length === 0) return false;
-    const motsDuNom = normaliser(aliment.nom).split(/[^a-z0-9]+/).filter((m) => m !== '');
+    const motsDuNom = normaliser(item.nom).split(/[^a-z0-9]+/).filter((m) => m !== '');
     return motsRecherche.every((motRecherche) => {
       if (motRecherche.length <= 3) {
         return motsDuNom.some((mot) => mot === motRecherche);
@@ -84,7 +107,7 @@ export default function VeilleScientifique() {
         return motSing.startsWith(motRechercheSing) || motRechercheSing.startsWith(motSing);
       });
     });
-  });;
+  });
 
   return (
     <main className={`${fraunces.variable} ${plexSans.variable} ${plexMono.variable} ${styles.page}`}>
@@ -93,12 +116,12 @@ export default function VeilleScientifique() {
         <p className={styles.eyebrow}>sciencetruths.com</p>
         <h1 className={styles.h1}>Veille scientifique</h1>
         <p className={styles.lede}>
-          Recherchez un aliment pour consulter les études scientifiques qui lui sont associées.
+          Recherchez un aliment ou une habitude alimentaire (régime méditerranéen, jeûne intermittent...) pour consulter les études scientifiques qui lui sont associées.
         </p>
 
         <input
           type="text"
-          placeholder="Rechercher un aliment (ex : curcuma)..."
+          placeholder="Rechercher un aliment ou un régime (ex : curcuma, jeûne)..."
           value={recherche}
           onChange={(e) => setRecherche(e.target.value)}
           className={styles.input}
@@ -106,23 +129,23 @@ export default function VeilleScientifique() {
 
         {erreur && <p className={styles.error}>Erreur : {erreur}</p>}
         {chargement && <p className={styles.empty}>Chargement...</p>}
-        {!chargement && recherche !== '' && alimentsFiltres.length === 0 && (
-          <p className={styles.empty}>Aucun aliment trouvé pour « {recherche} ».</p>
+        {!chargement && recherche !== '' && itemsFiltres.length === 0 && (
+          <p className={styles.empty}>Aucun résultat trouvé pour « {recherche} ».</p>
         )}
 
         <ul className={styles.resultList}>
-          {alimentsFiltres.map((aliment) => (
-            <li key={aliment.id} className={styles.resultItem}>
-              <Link href={`/aliments/${aliment.slug}`} className={styles.resultLink}>
-                <strong className={styles.resultNom}>{aliment.nom.split(',')[0]}</strong>
-                {aliment.nom.includes(',') && (
+          {itemsFiltres.map((item) => (
+            <li key={`${item.type}-${item.slug}`} className={styles.resultItem}>
+              <Link href={`/${item.type === 'habitude' ? 'habitudes' : 'aliments'}/${item.slug}`} className={styles.resultLink}>
+                <strong className={styles.resultNom}>{item.nom.split(',')[0]}</strong>
+                {item.nom.includes(',') && (
                   <span className={styles.resultDetail}>
-                    {' '}({aliment.nom.split(',').slice(1).join(',').trim()})
+                    {' '}({item.nom.split(',').slice(1).join(',').trim()})
                   </span>
                 )}
-                <span className={styles.resultCategorie}> — {aliment.categorie}</span>
+                <span className={styles.resultCategorie}> — {item.categorie}</span>
                 <br />
-                <span className={styles.resultDescription}>{aliment.description}</span>
+                <span className={styles.resultDescription}>{item.description}</span>
               </Link>
             </li>
           ))}
