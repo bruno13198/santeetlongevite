@@ -275,11 +275,6 @@ async function traiterHabitude(habitude) {
   let nouvellesEtudesAjoutees = 0;
 
   for (const etude of resultatsUniques) {
-    if (nouvellesEtudesAjoutees >= MAX_NOUVELLES_ETUDES_PAR_RUN) {
-      console.log(`  - Garde-fou de ${MAX_NOUVELLES_ETUDES_PAR_RUN} nouvelles études atteint pour ce run, on arrête ici.`);
-      break;
-    }
-
     const sourceId = etude.id || etude.pmid;
     if (!sourceId) continue;
 
@@ -291,6 +286,9 @@ async function traiterHabitude(habitude) {
       .maybeSingle();
 
     if (existant) {
+      // Rattacher une étude déjà en base ne coûte aucun appel API (pas de passage
+      // par Claude) — ça ne doit donc jamais être limité par le garde-fou, contrairement
+      // à l'ajout d'une étude réellement nouvelle juste en dessous.
       const { data: lienExistant } = await supabase
         .from('habitudes_etudes')
         .select('habitude_id')
@@ -303,12 +301,18 @@ async function traiterHabitude(habitude) {
           habitude_id: habitude.id,
           etude_id: existant.id,
         });
-        nouvellesEtudesAjoutees++;
         console.log(`  - Déjà en base (${sourceId}), reliée à cette habitude.`);
       } else {
         console.log(`  - Déjà en base et déjà liée (${sourceId}), on passe.`);
       }
       continue;
+    }
+
+    // À partir d'ici, on s'apprête à faire un vrai appel Claude (coûteux) :
+    // c'est uniquement ici que le garde-fou doit s'appliquer.
+    if (nouvellesEtudesAjoutees >= MAX_NOUVELLES_ETUDES_PAR_RUN) {
+      console.log(`  - Garde-fou de ${MAX_NOUVELLES_ETUDES_PAR_RUN} nouvelles études atteint pour ce run, on arrête ici.`);
+      break;
     }
 
     if (!etude.abstractText) {
