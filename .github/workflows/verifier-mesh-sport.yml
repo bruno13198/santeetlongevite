@@ -1,1 +1,17 @@
+name: Vérifier termes MeSH sport
 
+on:
+  workflow_dispatch:
+
+jobs:
+  verifier:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Lancer la vérification
+        run: node scripts/verifier-mesh-sport.js
