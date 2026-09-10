@@ -104,15 +104,20 @@ async function recupererHabitudesATraiter() {
   return habitudes;
 }
 
-async function chercherEtudesEuropePMC(termeMesh, tentative = 1) {
+async function chercherEtudesEuropePMC(terme, estTermeMesh, tentative = 1) {
   const dateDebut = new Date();
   dateDebut.setDate(dateDebut.getDate() - JOURS_VEILLE);
   const filtreDate = `AND (FIRST_PDATE:[${formaterDate(dateDebut)} TO ${formaterDate(new Date())}])`;
 
-  const requete = `(MESH:"${termeMesh}") AND (SRC:MED) AND (PUB_TYPE:"review" OR PUB_TYPE:"meta-analysis" OR PUB_TYPE:"systematic review" OR PUB_TYPE:"randomized controlled trial" OR PUB_TYPE:"clinical trial") ${filtreDate}`;
+  // Pour les entrées sans descripteur MeSH officiel (ex: Okinawa, Zones bleues),
+  // on retombe sur une recherche par mots-clés en texte libre, comme pour les aliments.
+  const filtreSujet = estTermeMesh
+    ? `MESH:"${terme}"`
+    : terme.split(' ').map((mot) => `(TITLE:"${mot}" OR ABSTRACT:"${mot}")`).join(' AND ');
+
+  const requete = `(${filtreSujet}) AND (SRC:MED) AND (PUB_TYPE:"review" OR PUB_TYPE:"meta-analysis" OR PUB_TYPE:"systematic review" OR PUB_TYPE:"randomized controlled trial" OR PUB_TYPE:"clinical trial") ${filtreDate}`;
   const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(requete)}&format=json&pageSize=${RESULTATS_A_RECUPERER}&resultType=core`;
   const res = await fetch(url);
-
   const ERREURS_TEMPORAIRES = [500, 502, 503, 504];
 
   if (!res.ok) {
