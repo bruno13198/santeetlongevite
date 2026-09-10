@@ -1,12 +1,9 @@
 // Script d'automatisation : récupère des études sur Europe PMC pour les habitudes
 // alimentaires (régimes, patterns), génère 2 résumés en français via l'API Claude,
 // classe leur fiabilité, et enregistre tout dans Supabase.
-// Contrairement à import-etudes.js, la recherche utilise le champ MeSH dédié
-// (MESH:"...") plutôt qu'une recherche par mots-clés dans le titre/résumé —
-// les termes des habitudes alimentaires sont des descripteurs MeSH officiels,
-// pas des noms communs, et une recherche par mots-clés serait imprécise
-// (ex: "Dietary Approaches To Stop Hypertension" découpé en mots séparés
-// raterait la plupart des études qui utilisent l'acronyme "DASH").
+// La plupart des entrées utilisent la syntaxe MeSH (MESH:"...") pour une recherche
+// précise ; les entrées sans descripteur MeSH officiel (ex: Okinawa, Zones bleues)
+// utilisent une recherche par mots-clés en texte libre, comme pour les aliments.
 
 const { createClient } = require('@supabase/supabase-js');
 
@@ -86,7 +83,7 @@ function extraireNbParticipants(abstractText) {
 async function recupererHabitudesATraiter() {
   const { data: habitudes, error } = await supabase
     .from('habitudes_alimentaires')
-    .select('id, slug, nom, terme_recherche')
+    .select('id, slug, nom, terme_recherche, est_terme_mesh')
     .eq('actif', true)
     .not('terme_recherche', 'is', null)
     .order('id', { ascending: true });
@@ -118,13 +115,14 @@ async function chercherEtudesEuropePMC(terme, estTermeMesh, tentative = 1) {
   const requete = `(${filtreSujet}) AND (SRC:MED) AND (PUB_TYPE:"review" OR PUB_TYPE:"meta-analysis" OR PUB_TYPE:"systematic review" OR PUB_TYPE:"randomized controlled trial" OR PUB_TYPE:"clinical trial") ${filtreDate}`;
   const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(requete)}&format=json&pageSize=${RESULTATS_A_RECUPERER}&resultType=core`;
   const res = await fetch(url);
+
   const ERREURS_TEMPORAIRES = [500, 502, 503, 504];
 
   if (!res.ok) {
     if (ERREURS_TEMPORAIRES.includes(res.status) && tentative < 3) {
       console.log(`  Europe PMC indisponible (${res.status}), nouvelle tentative dans 3s (${tentative + 1}/3)...`);
       await new Promise((resolve) => setTimeout(resolve, 3000));
-      return chercherEtudesEuropePMC(termeMesh, tentative + 1);
+      return chercherEtudesEuropePMC(terme, estTermeMesh, tentative + 1);
     }
     throw new Error(`Europe PMC erreur ${res.status}`);
   }
@@ -142,7 +140,7 @@ Titre original : ${titreOriginal}
 Résumé original (anglais) : ${abstractOriginal}
 
 Étape 1 — Vérifie le SUJET :
-L'étude teste-t-elle vraiment et spécifiquement ce régime/pattern alimentaire (« ${nomHabitude} »), pas juste une mention en passant ou une comparaison lointaine ? Si l'étude porte sur un sujet différent qui a seulement été indexé sous ce terme MeSH par erreur ou de façon marginale, réponds "false".
+L'étude teste-t-elle vraiment et spécifiquement ce régime/pattern alimentaire (« ${nomHabitude} »), pas juste une mention en passant ou une comparaison lointaine ? Si l'étude porte sur un sujet différent qui a seulement été indexé sous ce terme par erreur ou de façon marginale, réponds "false".
 
 Étape 2 — Évalue la pertinence humaine :
 Cette étude mesure-t-elle un EFFET ou un BÉNÉFICE (sur la santé, une maladie, un marqueur biologique...) directement chez des sujets HUMAINS suivant ce régime, ou via une méta-analyse/revue qui synthétise de tels résultats humains ?
@@ -265,7 +263,7 @@ ou
 async function traiterHabitude(habitude) {
   console.log(`\n=== ${habitude.slug} ===`);
 
-  const resultats = await chercherEtudesEuropePMC(habitude.terme_recherche);
+  const resultats = await chercherEtudesEuropePMC(habitude.terme_recherche, habitude.est_terme_mesh);
   console.log(`  ${resultats.length} études trouvées sur Europe PMC (avant filtrage humain).`);
   await new Promise((resolve) => setTimeout(resolve, 300));
 
@@ -291,9 +289,9 @@ async function traiterHabitude(habitude) {
       .maybeSingle();
 
     if (existant) {
-      // Rattacher une étude déjà en base ne coûte aucun appel API (pas de passage
-      // par Claude) — ça ne doit donc jamais être limité par le garde-fou, contrairement
-      // à l'ajout d'une étude réellement nouvelle juste en dessous.
+      // Rattacher une étude déjà en base ne coûte aucun appel API — ça ne doit
+      // jamais être limité par le garde-fou, contrairement à une vraie nouvelle
+      // analyse juste en dessous.
       const { data: lienExistant } = await supabase
         .from('habitudes_etudes')
         .select('habitude_id')
