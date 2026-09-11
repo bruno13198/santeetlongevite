@@ -7,6 +7,10 @@ on:
         description: 'Numéro du lot à traiter (0 à 9)'
         required: false
         default: '0'
+      mode_simulation:
+        description: 'true = rapport seul, aucune écriture. false = applique les retraits.'
+        required: false
+        default: 'true'
 
 jobs:
   auditer:
@@ -26,4 +30,5 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           LOT_ACTUEL: ${{ github.event.inputs.lot_actuel }}
+          MODE_SIMULATION: ${{ github.event.inputs.mode_simulation }}
         run: node scripts/rattraper-pertinence-aliments.js
