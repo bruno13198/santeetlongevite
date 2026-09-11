@@ -110,7 +110,7 @@ function extraireNbParticipants(abstractText) {
 async function recupererAlimentsATraiter() {
   const { data: aliments, error } = await supabase
     .from('aliments')
-    .select('id, slug, niveau_nova, terme_recherche')
+    .select('id, nom, slug, niveau_nova, terme_recherche')
     .eq('actif', true)
     .not('terme_recherche', 'is', null)
     .neq('terme_recherche', '')
@@ -384,7 +384,7 @@ async function traiterAliment(aliment) {
     }
 
     try {
-      const analyse = await analyserEtude(etude.title, etude.abstractText, aliment.terme_recherche);
+      const analyse = await analyserEtude(etude.title, etude.abstractText, aliment.nom);
 
       if (!analyse.pertinent) {
         console.log(`  - Écartée (${sourceId}) : ${analyse.raison}`);
