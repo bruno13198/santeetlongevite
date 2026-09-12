@@ -110,7 +110,7 @@ function extraireNbParticipants(abstractText) {
 async function recupererAlimentsATraiter() {
   const { data: aliments, error } = await supabase
     .from('aliments')
-    .select('id, nom, slug, niveau_nova, terme_recherche')
+    .select('id, nom, slug, niveau_nova, terme_recherche, termes_recherche')
     .eq('actif', true)
     .not('terme_recherche', 'is', null)
     .neq('terme_recherche', '')
@@ -332,7 +332,7 @@ async function traiterAliment(aliment) {
     console.log(`  Aucune étude en base pour cet aliment : filtre élargi pour ce run.`);
   }
 
-  const resultats = await chercherEtudesEuropePMC(aliment.terme_recherche, 1, litteratureFaible);
+  const resultats = await chercherEtudesEuropePMC(aliment, 1, litteratureFaible);
   console.log(`  ${resultats.length} études trouvées sur Europe PMC (avant filtrage humain).`);
   await new Promise((resolve) => setTimeout(resolve, 300)); // pause pour éviter de saturer Europe PMC
 
