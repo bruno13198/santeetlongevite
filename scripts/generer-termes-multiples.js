@@ -81,27 +81,44 @@ Réponds UNIQUEMENT avec un objet JSON, rien avant, rien après, au format exact
 
 async function main() {
   const slugsCibles = process.env.SLUGS_CIBLES;
-  if (!slugsCibles) {
-    console.log('SLUGS_CIBLES est vide : aucun aliment ciblé, on arrête.');
-    return;
+  const NB_LOTS = parseInt(process.env.NB_LOTS || '10', 10);
+  const LOT_ACTUEL = parseInt(process.env.LOT_ACTUEL || '0', 10);
+  const FORCER = process.env.FORCER === 'true';
+
+  let requete = supabase
+    .from('aliments')
+    .select('id, nom, slug, terme_recherche, termes_recherche')
+    .eq('actif', true)
+    .order('id', { ascending: true });
+
+  if (slugsCibles) {
+    const listeSlugs = slugsCibles.split(',').map((s) => s.trim()).filter(Boolean);
+    requete = requete.in('slug', listeSlugs);
   }
 
-  const listeSlugs = slugsCibles.split(',').map((s) => s.trim()).filter(Boolean);
-
-  const { data: aliments, error } = await supabase
-    .from('aliments')
-    .select('id, nom, slug, terme_recherche')
-    .in('slug', listeSlugs)
-    .order('slug', { ascending: true });
+  const { data: aliments, error } = await requete;
 
   if (error) {
     console.log('Erreur récupération aliments:', error.message);
     return;
   }
 
-  console.log(`${aliments.length} aliment(s) à traiter.\n`);
+  // Sans FORCER, on saute les aliments qui ont déjà des termes multiples :
+  // permet de relancer sans regénérer (ni repayer) ce qui est déjà fait.
+  const aTraiter = FORCER
+    ? aliments
+    : aliments.filter((a) => !Array.isArray(a.termes_recherche) || a.termes_recherche.length === 0);
 
-  for (const aliment of aliments) {
+  const lot = slugsCibles
+    ? aTraiter
+    : aTraiter.filter((_, index) => index % NB_LOTS === LOT_ACTUEL);
+
+  console.log(
+    `${aliments.length} aliment(s) actif(s) récupéré(s), ${aTraiter.length} sans termes multiples.` +
+    (slugsCibles ? '' : ` Lot ${LOT_ACTUEL}/${NB_LOTS - 1} : ${lot.length} à traiter.`)
+  );
+
+  for (const aliment of lot) {
     try {
       const termes = await genererTermes(aliment.nom);
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -116,9 +133,7 @@ async function main() {
         continue;
       }
 
-      console.log(`  - ${aliment.slug}`);
-      console.log(`      ancien : "${aliment.terme_recherche || '(aucun)'}"`);
-      console.log(`      nouveau : ${JSON.stringify(termes)}`);
+      console.log(`  - ${aliment.slug} : ${JSON.stringify(termes)}`);
     } catch (e) {
       console.log(`  - Erreur traitement ${aliment.slug}:`, e.message);
     }
