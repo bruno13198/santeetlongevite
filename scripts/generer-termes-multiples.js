@@ -1,12 +1,14 @@
-// Génère une LISTE de termes de recherche anglais (2 à 4 variantes) par aliment,
+// Génère une LISTE de termes de recherche anglais (1 à 4 variantes) par aliment,
 // stockée dans aliments.termes_recherche (text[]).
 // Remplace à terme terme_recherche (chaîne unique), dont le découpage en mots
 // reliés par AND dans la requête Europe PMC rendait beaucoup d'aliments
-// invisibles (ex: "red bell pepper" ne trouve pas "Capsicum annuum").
+// invisibles (ex: "red bell pepper" ne trouvait pas "Capsicum annuum").
 //
-// Variable d'environnement :
-//   SLUGS_CIBLES : slugs séparés par des virgules (obligatoire pour l'instant,
-//                  le temps de valider l'approche sur un échantillon)
+// Variables d'environnement :
+//   SLUGS_CIBLES : slugs séparés par des virgules (traite exactement ceux-là)
+//   LOT_ACTUEL   : numéro du lot, 0 à NB_LOTS-1 (ignoré si SLUGS_CIBLES est fourni)
+//   NB_LOTS      : nombre de lots au total (défaut 10)
+//   FORCER       : 'true' pour regénérer même les aliments déjà pourvus
 
 const { createClient } = require('@supabase/supabase-js');
 
@@ -14,6 +16,14 @@ const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
+
+const EXCEPTIONS_NOVA4 = [
+  'isolat-de-soja',
+  'cola-sucre',
+  'lecithine-de-soja',
+  'kimchi',
+  'kombucha',
+];
 
 async function genererTermes(nom, tentative = 1) {
   const prompt = `Tu es un expert en nutrition et en recherche scientifique. Pour l'ALIMENT français suivant, donne la liste des termes de recherche en ANGLAIS à utiliser pour interroger la base de données scientifique Europe PMC (titres et résumés d'études).
@@ -82,12 +92,12 @@ Réponds UNIQUEMENT avec un objet JSON, rien avant, rien après, au format exact
 async function main() {
   const slugsCibles = process.env.SLUGS_CIBLES;
   const NB_LOTS = parseInt(process.env.NB_LOTS, 10) || 10;
-  const LOT_ACTUEL = parseInt(process.env.LOT_ACTUEL || '0', 10);
+  const LOT_ACTUEL = parseInt(process.env.LOT_ACTUEL, 10) || 0;
   const FORCER = process.env.FORCER === 'true';
 
   let requete = supabase
     .from('aliments')
-    .select('id, nom, slug, terme_recherche, termes_recherche')
+    .select('id, nom, slug, niveau_nova, terme_recherche, termes_recherche')
     .eq('actif', true)
     .order('id', { ascending: true });
 
@@ -103,18 +113,24 @@ async function main() {
     return;
   }
 
+  // Même filtre que import-etudes.js : inutile de générer des termes pour des
+  // aliments que le pipeline d'import ne traitera jamais.
+  const eligibles = aliments.filter(
+    (a) => [1, 2, 3].includes(a.niveau_nova) || EXCEPTIONS_NOVA4.includes(a.slug)
+  );
+
   // Sans FORCER, on saute les aliments qui ont déjà des termes multiples :
   // permet de relancer sans regénérer (ni repayer) ce qui est déjà fait.
   const aTraiter = FORCER
-    ? aliments
-    : aliments.filter((a) => !Array.isArray(a.termes_recherche) || a.termes_recherche.length === 0);
+    ? eligibles
+    : eligibles.filter((a) => !Array.isArray(a.termes_recherche) || a.termes_recherche.length === 0);
 
   const lot = slugsCibles
     ? aTraiter
     : aTraiter.filter((_, index) => index % NB_LOTS === LOT_ACTUEL);
 
   console.log(
-    `${aliments.length} aliment(s) actif(s) récupéré(s), ${aTraiter.length} sans termes multiples.` +
+    `${aliments.length} aliment(s) actif(s), ${eligibles.length} éligibles (NOVA 1-3 + exceptions), ${aTraiter.length} sans termes multiples.` +
     (slugsCibles ? '' : ` Lot ${LOT_ACTUEL}/${NB_LOTS - 1} : ${lot.length} à traiter.`)
   );
 
