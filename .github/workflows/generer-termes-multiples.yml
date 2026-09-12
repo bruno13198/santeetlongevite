@@ -4,9 +4,21 @@ on:
   workflow_dispatch:
     inputs:
       slugs_cibles:
-        description: 'Slugs à traiter, séparés par des virgules'
-        required: true
+        description: 'Slugs précis (vide = traiter par lots)'
+        required: false
         default: ''
+      lot_actuel:
+        description: 'Numéro du lot (0 à 9), ignoré si slugs_cibles est rempli'
+        required: false
+        default: '0'
+      nb_lots:
+        description: 'Nombre de lots au total'
+        required: false
+        default: '10'
+      forcer:
+        description: 'true = regénérer même les aliments déjà pourvus'
+        required: false
+        default: 'false'
 
 jobs:
   generer:
@@ -26,4 +38,7 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SLUGS_CIBLES: ${{ github.event.inputs.slugs_cibles }}
+          LOT_ACTUEL: ${{ github.event.inputs.lot_actuel }}
+          NB_LOTS: ${{ github.event.inputs.nb_lots }}
+          FORCER: ${{ github.event.inputs.forcer }}
         run: node scripts/generer-termes-multiples.js
