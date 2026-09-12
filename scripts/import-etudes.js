@@ -178,8 +178,13 @@ Cette étude a été trouvée en recherchant des publications sur : ${nomAliment
 Titre original : ${titreOriginal}
 Résumé original (anglais) : ${abstractOriginal}
 Étape 1 — Vérifie le SUJET :
-L'étude parle-t-elle vraiment et spécifiquement de « ${nomAliment} » (ou d'un synonyme/nom scientifique direct de cet aliment) ? Une simple co-occurrence de mots-clés ou une confusion terminologique (ex : un homonyme, une espèce différente, un aliment qui n'apparaît que dans la bibliographie ou en comparaison lointaine) ne compte pas. Si l'étude porte en réalité sur un autre sujet qui a seulement été mal indexé sous ce terme de recherche, réponds "false".
-Réponds également "false" si l'étude porte sur une catégorie large regroupant plusieurs aliments différents (ex : « les épices », « les légumineuses », « les crucifères »), sans isoler de résultat spécifique et individualisé propre à « ${nomAliment} » — même si « ${nomAliment} » est cité une ou plusieurs fois dans la liste des aliments couverts par l'étude.
+L'étude apporte-t-elle une information utile sur « ${nomAliment} } » ? Réponds "true" dans tous ces cas :
+- l'étude porte sur l'aliment lui-même, consommé tel quel
+- l'étude porte sur un extrait, un composé isolé, une huile ou une préparation ISSUE de cet aliment et INGÉRÉE (ex : curcumine pour le curcuma, huile de foie de morue pour le foie de morue, peptides de chia pour la graine de chia)
+- l'étude porte sur une variante voisine de l'aliment, ou sur la catégorie étroite à laquelle il appartient, lorsque c'est la littérature la plus proche disponible (ex : une étude sur « lait écrémé » pour une fiche « lait écrémé UHT » ; une étude sur les fromages à pâte molle pour un fromage à pâte molle précis)
+- des détails de procédé secondaires (UHT, séché, moulu, cru vs cuit) ne suffisent PAS à rendre une étude non pertinente, sauf si l'étude porte précisément sur ce paramètre et conclut à une différence
+Réponds "false" uniquement si : une simple co-occurrence de mots-clés ou une confusion terminologique (ex : un homonyme, une espèce réellement différente, un aliment qui n'apparaît que dans la bibliographie ou en comparaison lointaine), ou si l'étude porte en réalité sur un autre sujet mal indexé sous ce terme de recherche.
+En cas d'hésitation entre pertinent et non pertinent à cette étape, réponds "true" : mieux vaut une étude un peu large sur une fiche qu'une fiche vide.
 
 Étape 2 — Évalue la pertinence humaine :
 Cette étude mesure-t-elle un EFFET ou un BÉNÉFICE (sur la santé, une maladie, un marqueur biologique...) directement chez des sujets HUMAINS, ou via une méta-analyse/revue qui synthétise de tels résultats humains ?
