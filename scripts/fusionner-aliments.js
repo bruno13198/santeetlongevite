@@ -15,16 +15,10 @@ const supabase = createClient(
 const MODE_SIMULATION = (process.env.MODE_SIMULATION || 'true') !== 'false';
 
 const GROUPES = [
-  { garder: 'lotte-ou-baudroie-crue', absorber: ['baudroie-rousse-ou-lotte-crue'] },
-  { garder: 'raclette-fromage', absorber: ['raclette-de-savoie-fromage'] },
-  { garder: 'cantal', absorber: ['cantal-entre-deux'] },
-  { garder: 'gruyere-sans-precision-origine-france-ou-suisse', absorber: ['gruyere-igp-france'] },
-  { garder: 'hoki-tout-lieu-de-peche-cru', absorber: ['hoki-de-nouvelle-zelande-cru'] },
-  { garder: 'chinchard-gras-cru', absorber: ['chinchard-maigre-cru'] },
-  { garder: 'bar-commun-ou-loup-cru', absorber: ['bar-commun-ou-loup-mediterranee-sauvage-cru'] },
-  { garder: 'courge-butternut-doubeurre-chair-sans-peau-crue', absorber: ['courge-musquee-chair-sans-peau-crue'] },
-  { garder: 'beurre-a-80-mg-sale', absorber: ['beurre-sans-precision-sur-la-teneur-en-matiere-grasse-allege-ou-non-demi-sel-aliment-moyen'] },
-  { garder: 'cresson-de-fontaine-cru', absorber: ['cresson-feuille-cru-preleve-a-la-martinique'] },
+  { garder: 'mimolette-sans-precision', absorber: ['mimolette-demi-vieille-6-mois-d-affinage-minimum', 'mimolette-vieille-12-mois-d-affinage-minimum', 'mimolette-extra-vieille-18-mois-d-affinage-minimum', 'mimolette-jeune-moins-de-6-mois-d-affinage'] },
+  { garder: 'dorade-grise-ou-daurade-grise-ou-griset-rotie-cuite-au-four', absorber: ['dorade-grise-ou-daurade-grise-ou-griset-crue'] },
+  { garder: 'galette-de-cereales-soufflees', absorber: ['galette-de-cereale-s-soufflee-s-aux-graines'] },
+  { garder: 'olive-aliment-moyen', absorber: ['olive-noire-aliment-moyen', 'olive-noire-en-saumure-egouttee', 'olive-verte-en-saumure-egouttee'] },
 ];
 
 async function recupererAliment(slug) {
