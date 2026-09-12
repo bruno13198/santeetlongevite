@@ -133,15 +133,33 @@ async function recupererAlimentsATraiter() {
   return eligibles;
 }
 
-async function chercherEtudesEuropePMC(terme, tentative = 1, elargir = false) {
-  // Retire un nom scientifique latin (Genre espèce) en fin de terme,
-  // ex. "garlic Allium sativum" -> "garlic", "sweet potato Ipomoea batatas" -> "sweet potato"
-  const termeSansNomScientifique = terme.replace(/\s+[A-Z][a-zà-ÿ]+\s+[a-zà-ÿ]+$/, '');
+async function chercherEtudesEuropePMC(aliment, tentative = 1, elargir = false) {
+  // Deux modes de construction de la requête :
+  // - termes_recherche (text[]) : chaque terme cherché comme expression exacte,
+  //   variantes reliées par OR. Mode cible.
+  // - terme_recherche (chaîne, hérité) : mots découpés et reliés par AND, ce qui
+  //   rend invisible toute étude n'employant pas exactement ces mots-là.
+  //   Conservé en repli le temps de peupler termes_recherche partout.
+  const termesMultiples = aliment.termes_recherche;
 
-  const motsClefs = termeSansNomScientifique
-    .split(' ')
-    .map((mot) => `(TITLE:"${mot}" OR ABSTRACT:"${mot}")`)
-    .join(' AND ');
+  let motsClefs;
+
+  if (Array.isArray(termesMultiples) && termesMultiples.length > 0) {
+    motsClefs = termesMultiples
+      .map((t) => `(TITLE:"${t}" OR ABSTRACT:"${t}")`)
+      .join(' OR ');
+  } else {
+    // Retire un nom scientifique latin (Genre espèce) en fin de terme,
+    // ex. "garlic Allium sativum" -> "garlic"
+    const termeSansNomScientifique = aliment.terme_recherche.replace(
+      /\s+[A-Z][a-zà-ÿ]+\s+[a-zà-ÿ]+$/,
+      ''
+    );
+    motsClefs = termeSansNomScientifique
+      .split(' ')
+      .map((mot) => `(TITLE:"${mot}" OR ABSTRACT:"${mot}")`)
+      .join(' AND ');
+  }
 
   const dateDebut = new Date();
   dateDebut.setDate(dateDebut.getDate() - JOURS_VEILLE);
