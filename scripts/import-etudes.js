@@ -178,7 +178,7 @@ Cette étude a été trouvée en recherchant des publications sur : ${nomAliment
 Titre original : ${titreOriginal}
 Résumé original (anglais) : ${abstractOriginal}
 Étape 1 — Vérifie le SUJET :
-L'étude apporte-t-elle une information utile sur « ${nomAliment} } » ? Réponds "true" dans tous ces cas :
+L'étude apporte-t-elle une information utile sur « ${nomAliment} » ? Réponds "true" dans tous ces cas :
 - l'étude porte sur l'aliment lui-même, consommé tel quel
 - l'étude porte sur un extrait, un composé isolé, une huile ou une préparation ISSUE de cet aliment et INGÉRÉE (ex : curcumine pour le curcuma, huile de foie de morue pour le foie de morue, peptides de chia pour la graine de chia)
 - l'étude porte sur une variante voisine de l'aliment, ou sur la catégorie étroite à laquelle il appartient, lorsque c'est la littérature la plus proche disponible (ex : une étude sur « lait écrémé » pour une fiche « lait écrémé UHT » ; une étude sur les fromages à pâte molle pour un fromage à pâte molle précis)
