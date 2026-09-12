@@ -179,7 +179,7 @@ async function chercherEtudesEuropePMC(aliment, tentative = 1, elargir = false) 
     if (ERREURS_TEMPORAIRES.includes(res.status) && tentative < 3) {
       console.log(`  Europe PMC indisponible (${res.status}), nouvelle tentative dans 3s (${tentative + 1}/3)...`);
       await new Promise((resolve) => setTimeout(resolve, 3000));
-      return chercherEtudesEuropePMC(terme, tentative + 1, elargir);
+      return chercherEtudesEuropePMC(aliment, tentative + 1, elargir);
     }
     throw new Error(`Europe PMC erreur ${res.status}`);
   }
