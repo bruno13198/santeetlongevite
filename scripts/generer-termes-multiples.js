@@ -81,7 +81,7 @@ Réponds UNIQUEMENT avec un objet JSON, rien avant, rien après, au format exact
 
 async function main() {
   const slugsCibles = process.env.SLUGS_CIBLES;
-  const NB_LOTS = parseInt(process.env.NB_LOTS || '10', 10);
+  const NB_LOTS = parseInt(process.env.NB_LOTS, 10) || 10;
   const LOT_ACTUEL = parseInt(process.env.LOT_ACTUEL || '0', 10);
   const FORCER = process.env.FORCER === 'true';
 
