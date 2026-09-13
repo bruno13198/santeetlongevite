@@ -15,8 +15,7 @@ const supabase = createClient(
 const MODE_SIMULATION = (process.env.MODE_SIMULATION || 'true') !== 'false';
 
 const GROUPES = [
-  { garder: 'haricot-vert-cru', absorber: ['haricot-beurre-cru','haricot-plat-cru'] },
-  { garder: 'haricot-blanc-sec', absorber: ['haricot-flageolet-vert-sec','haricot-rouge-sec','haricot-coco-bouilli-cuit-a-l-eau','haricot-de-lima-ou-pois-savon-ou-pois-du-cap-ou-pois-souche-cru'] },
+  { garder: 'pomme-de-terre-de-conservation-sans-peau-bouillie-cuite-a-l-eau', absorber: ['pomme-de-terre-vapeur-sous-vide','pomme-de-terre-sans-peau-crue','pomme-de-terre-nouvelle-ou-primeur-crue','puree-de-pomme-de-terre-aliment-moyen','puree-de-pomme-de-terre-avec-lait-et-beurre-salee','pomme-de-terre-poelee-avec-matiere-grasse','pomme-de-terre-sautee-poelee-rissolee-a-la-graisse-de-canard','rostis-ou-galette-de-pomme-de-terre'] },
 ];
 
 async function recupererAliment(slug) {
