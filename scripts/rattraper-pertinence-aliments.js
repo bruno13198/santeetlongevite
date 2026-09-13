@@ -12,7 +12,9 @@
 // Les études ne sont jamais supprimées de la table `etudes`, seulement déliées.
 //
 // Variables d'environnement :
-//   LOT_ACTUEL      : 0 à 9 (défaut 0) — découpe les aliments composites en 10 lots
+//   SLUGS_CIBLES    : slugs séparés par des virgules (prioritaire sur les lots)
+//   LOT_ACTUEL      : 0 à NB_LOTS-1 (défaut 0)
+//   NB_LOTS         : nombre de lots au total (défaut 10)
 //   MODE_SIMULATION : 'true' (défaut) = aucune écriture en base, rapport seul
 //                     'false' = applique réellement les retraits hors_sujet
 
@@ -23,8 +25,8 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-const NB_LOTS = 10;
-const LOT_ACTUEL = parseInt(process.env.LOT_ACTUEL || '0', 10);
+const NB_LOTS = parseInt(process.env.NB_LOTS, 10) || 10;
+const LOT_ACTUEL = parseInt(process.env.LOT_ACTUEL, 10) || 0;
 const MODE_SIMULATION = (process.env.MODE_SIMULATION || 'true') !== 'false';
 
 async function jugerPertinence(nomAliment, titre, resume, tentative = 1) {
@@ -46,6 +48,7 @@ Classe ce rattachement dans UNE de ces trois catégories :
 - l'exposition étudiée est une APPLICATION TOPIQUE, CUTANÉE, COSMÉTIQUE ou externe (crème, gel, lotion, spray nasal, pansement), et non une ingestion
 - l'étude porte sur un aliment, une espèce ou un produit réellement différent, sans lien de parenté utile
 - l'aliment n'apparaît pas du tout dans l'étude, ou seulement par confusion de terminologie
+- l'étude porte sur un micro-organisme, une toxine, un procédé industriel ou un contaminant, sans mesurer d'effet de la consommation de l'aliment chez l'humain
 
 "ambigu" — cas intermédiaire que tu ne peux pas trancher avec certitude. Notamment :
 - « ${nomAliment} » n'est qu'un élément parmi de nombreux autres dans une revue large (ex : une revue sur vingt épices, une revue sur tous les produits laitiers fermentés), sans résultat qui lui soit propre
@@ -98,19 +101,26 @@ Réponds UNIQUEMENT avec un objet JSON, rien avant, rien après, au format exact
 }
 
 async function recupererAlimentsATraiter() {
-  const { data: aliments, error } = await supabase
+  const slugsCibles = process.env.SLUGS_CIBLES;
+
+  let requete = supabase
     .from('aliments')
-    .select('id, slug, nom, terme_recherche')
-    .not('terme_recherche', 'is', null)
+    .select('id, slug, nom, termes_recherche')
+    .eq('actif', true)
     .order('id', { ascending: true });
+
+  if (slugsCibles) {
+    const listeSlugs = slugsCibles.split(',').map((s) => s.trim()).filter(Boolean);
+    requete = requete.in('slug', listeSlugs);
+  }
+
+  const { data: aliments, error } = await requete;
 
   if (error) throw new Error(`Erreur récupération aliments: ${error.message}`);
 
-  const composites = aliments.filter(
-    (a) => a.terme_recherche.trim().split(/\s+/).length >= 2
-  );
+  if (slugsCibles) return aliments;
 
-  return composites.filter((_, index) => index % NB_LOTS === LOT_ACTUEL);
+  return aliments.filter((_, index) => index % NB_LOTS === LOT_ACTUEL);
 }
 
 async function traiterAliment(aliment, rapport) {
@@ -125,7 +135,7 @@ async function traiterAliment(aliment, rapport) {
   }
   if (!liens || liens.length === 0) return;
 
-  console.log(`\n=== ${aliment.slug} (terme_recherche: "${aliment.terme_recherche}", ${liens.length} études) ===`);
+  console.log(`\n=== ${aliment.slug} (${liens.length} études) ===`);
 
   for (const lien of liens) {
     const etude = lien.etudes;
@@ -193,8 +203,9 @@ async function traiterAliment(aliment, rapport) {
 
 async function main() {
   const aliments = await recupererAlimentsATraiter();
+  const cible = process.env.SLUGS_CIBLES ? 'slugs ciblés' : `Lot ${LOT_ACTUEL}/${NB_LOTS - 1}`;
   console.log(
-    `Lot ${LOT_ACTUEL}/${NB_LOTS - 1} — ${aliments.length} aliments à vérifier.` +
+    `${cible} — ${aliments.length} aliments à vérifier.` +
     (MODE_SIMULATION ? ' MODE SIMULATION : aucune écriture en base.' : ' MODE RÉEL : les liens hors sujet seront retirés.')
   );
 
@@ -208,7 +219,7 @@ async function main() {
     }
   }
 
-  console.log(`\n===== RAPPORT LOT ${LOT_ACTUEL} =====`);
+  console.log(`\n===== RAPPORT =====`);
   console.log(`Hors sujet : ${rapport.horsSujet.length}${MODE_SIMULATION ? ' (non retirés, simulation)' : ' (retirés)'}`);
   console.log(`Ambigus à arbitrer : ${rapport.ambigus.length} (tous conservés)`);
 
