@@ -15,10 +15,8 @@ const supabase = createClient(
 const MODE_SIMULATION = (process.env.MODE_SIMULATION || 'true') !== 'false';
 
 const GROUPES = [
-  { garder: 'mimolette-sans-precision', absorber: ['mimolette-demi-vieille-6-mois-d-affinage-minimum', 'mimolette-vieille-12-mois-d-affinage-minimum', 'mimolette-extra-vieille-18-mois-d-affinage-minimum', 'mimolette-jeune-moins-de-6-mois-d-affinage'] },
-  { garder: 'dorade-grise-ou-daurade-grise-ou-griset-rotie-cuite-au-four', absorber: ['dorade-grise-ou-daurade-grise-ou-griset-crue'] },
-  { garder: 'galette-de-cereales-soufflees', absorber: ['galette-de-cereale-s-soufflee-s-aux-graines'] },
-  { garder: 'olive-aliment-moyen', absorber: ['olive-noire-aliment-moyen', 'olive-noire-en-saumure-egouttee', 'olive-verte-en-saumure-egouttee'] },
+  const GROUPES = [
+  { garder: 'fromage-de-chevre-a-pate-pressee-non-cuite-type-tomme-ou-tome-ou-gouda-de-chevre', absorber: ['selles-sur-cher-fromage-de-chevre','chabichou-fromage-de-chevre','fromage-de-chevre-a-pate-molle-et-croute-fleurie-type-camembert-cabecou','pouligny-saint-pierre-fromage-de-chevre','crottin-de-chavignol-fromage-de-chevre','sainte-maure-de-touraine-fromage-de-chevre','picodon-fromage-de-chevre','valencay-fromage-de-chevre','sainte-maure-fromage-de-chevre','fromage-de-chevre-a-pate-molle-non-pressee-non-cuite-et-croute-naturelle','rocamadour-fromage-de-chevre','chevrot-fromage-de-chevre','crottin-de-chevre-au-lait-cru','fromage-de-chevre-demi-sec','fromage-de-chevre-sec','pelardon-fromage-de-chevre'] },
 ];
 
 async function recupererAliment(slug) {
