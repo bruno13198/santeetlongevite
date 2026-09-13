@@ -19,6 +19,7 @@ const GROUPES = [
   { garder: 'pain-blanc-par-ex-baguette-boule', absorber: ['pain-bagel','pain-panini','pain-pita','bretzel-pain-frais'] },
   { garder: 'pain-au-levain', absorber: ['pain-de-campagne'] },
   { garder: 'biscotte-au-germe-de-ble', absorber: ['biscotte-classique','biscotte-sans-sel-ajoute','biscotte-au-ble-complet','biscotte-aux-cereales','petit-pain-grille-suedois-au-ble-complet','petit-pain-grille-suedois-au-froment','petit-pain-grille-suedois-aux-cereales-et-graines','tartine-croustillante-au-seigle-source-ou-riche-en-fibres','tartine-craquante-extrudees-source-ou-riche-en-fibres','tartine-craquante-extrudee-classique'] },
+  { garder: 'pain-au-lait-artisanal', absorber: ['pain-brioche-ou-viennois-artisanal','pain-aux-raisins-viennoiserie-artisanal','pain-au-chocolat-artisanal','pain-perdu','biscotte-briochee','petit-pain-grille-suedois-brioche','petit-pain-grille-suedois-aux-fruits'] },
 ];
 
 async function recupererAliment(slug) {
