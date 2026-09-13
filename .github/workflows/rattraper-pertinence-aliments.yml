@@ -1,14 +1,22 @@
-name: Auditer pertinence des études (terme_recherche vs nom)
+name: Auditer pertinence des études
 
 on:
   workflow_dispatch:
     inputs:
+      slugs_cibles:
+        description: 'Slugs précis (vide = traiter par lots)'
+        required: false
+        default: ''
       lot_actuel:
-        description: 'Numéro du lot à traiter (0 à 9)'
+        description: 'Numéro du lot (0 à nb_lots-1)'
         required: false
         default: '0'
+      nb_lots:
+        description: 'Nombre de lots au total'
+        required: false
+        default: '10'
       mode_simulation:
-        description: 'true = rapport seul, aucune écriture. false = applique les retraits.'
+        description: 'true = rapport seul. false = retire les liens hors sujet.'
         required: false
         default: 'true'
 
@@ -24,11 +32,13 @@ jobs:
           node-version: '20'
       - name: Installer les dépendances
         run: npm install @supabase/supabase-js
-      - name: Lancer le script d'audit
+      - name: Lancer l'audit
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SLUGS_CIBLES: ${{ github.event.inputs.slugs_cibles }}
           LOT_ACTUEL: ${{ github.event.inputs.lot_actuel }}
+          NB_LOTS: ${{ github.event.inputs.nb_lots }}
           MODE_SIMULATION: ${{ github.event.inputs.mode_simulation }}
         run: node scripts/rattraper-pertinence-aliments.js
