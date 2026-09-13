@@ -118,9 +118,13 @@ async function recupererAlimentsATraiter() {
     throw new Error(`Erreur récupération aliments: ${error.message}`);
   }
 
-  const eligibles = aliments.filter(
-    (a) => [1, 2, 3].includes(a.niveau_nova) || EXCEPTIONS_NOVA4.includes(a.slug)
-  );
+  const eligibles = aliments
+    .filter((a) => [1, 2, 3].includes(a.niveau_nova) || EXCEPTIONS_NOVA4.includes(a.slug))
+    .filter(
+      (a) =>
+        (Array.isArray(a.termes_recherche) && a.termes_recherche.length > 0) ||
+        (a.terme_recherche && a.terme_recherche.trim() !== '')
+    );
 
   const slugsCibles = process.env.SLUGS_CIBLES;
   if (slugsCibles) {
