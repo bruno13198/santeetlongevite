@@ -15,7 +15,7 @@ const supabase = createClient(
 const MODE_SIMULATION = (process.env.MODE_SIMULATION || 'true') !== 'false';
 
 const GROUPES = [
-  { garder: 'fromage-de-chevre-a-pate-pressee-non-cuite-type-tomme-ou-tome-ou-gouda-de-chevre', absorber: ['selles-sur-cher-fromage-de-chevre','chabichou-fromage-de-chevre','fromage-de-chevre-a-pate-molle-et-croute-fleurie-type-camembert-cabecou','pouligny-saint-pierre-fromage-de-chevre','crottin-de-chavignol-fromage-de-chevre','sainte-maure-de-touraine-fromage-de-chevre','picodon-fromage-de-chevre','valencay-fromage-de-chevre','sainte-maure-fromage-de-chevre','fromage-de-chevre-a-pate-molle-non-pressee-non-cuite-et-croute-naturelle','rocamadour-fromage-de-chevre','chevrot-fromage-de-chevre','crottin-de-chevre-au-lait-cru','fromage-de-chevre-demi-sec','fromage-de-chevre-sec','pelardon-fromage-de-chevre'] },
+  { garder: 'fromage-bleu-d-auvergne', absorber: ['roquefort-fromage-de-brebis','gorgonzola','bleu-de-gex-ou-fromage-bleu-du-haut-jura-ou-bleu-de-septmoncel','fourme-d-ambert','fromage-bleu-des-causses','fourme-de-montbrison','fromage-bleu-au-lait-de-vache-allege-en-matiere-grasse'] },
 ];
 
 async function recupererAliment(slug) {
