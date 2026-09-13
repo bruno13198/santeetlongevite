@@ -15,7 +15,10 @@ const supabase = createClient(
 const MODE_SIMULATION = (process.env.MODE_SIMULATION || 'true') !== 'false';
 
 const GROUPES = [
-  { garder: 'pomme-de-terre-de-conservation-sans-peau-bouillie-cuite-a-l-eau', absorber: ['pomme-de-terre-vapeur-sous-vide','pomme-de-terre-sans-peau-crue','pomme-de-terre-nouvelle-ou-primeur-crue','puree-de-pomme-de-terre-aliment-moyen','puree-de-pomme-de-terre-avec-lait-et-beurre-salee','pomme-de-terre-poelee-avec-matiere-grasse','pomme-de-terre-sautee-poelee-rissolee-a-la-graisse-de-canard','rostis-ou-galette-de-pomme-de-terre'] },
+  { garder: 'pain-complet-ou-integral-a-la-farine-t150', absorber: ['pain-bis-a-la-farine-t80-ou-t110','pain-aux-cereales-et-ou-graines'] },
+  { garder: 'pain-blanc-par-ex-baguette-boule', absorber: ['pain-bagel','pain-panini','pain-pita','bretzel-pain-frais'] },
+  { garder: 'pain-au-levain', absorber: ['pain-de-campagne'] },
+  { garder: 'biscotte-au-germe-de-ble', absorber: ['biscotte-classique','biscotte-sans-sel-ajoute','biscotte-au-ble-complet','biscotte-aux-cereales','petit-pain-grille-suedois-au-ble-complet','petit-pain-grille-suedois-au-froment','petit-pain-grille-suedois-aux-cereales-et-graines','tartine-croustillante-au-seigle-source-ou-riche-en-fibres','tartine-craquante-extrudees-source-ou-riche-en-fibres','tartine-craquante-extrudee-classique'] },
 ];
 
 async function recupererAliment(slug) {
