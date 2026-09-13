@@ -15,7 +15,8 @@ const supabase = createClient(
 const MODE_SIMULATION = (process.env.MODE_SIMULATION || 'true') !== 'false';
 
 const GROUPES = [
-  { garder: 'fromage-bleu-d-auvergne', absorber: ['roquefort-fromage-de-brebis','gorgonzola','bleu-de-gex-ou-fromage-bleu-du-haut-jura-ou-bleu-de-septmoncel','fourme-d-ambert','fromage-bleu-des-causses','fourme-de-montbrison','fromage-bleu-au-lait-de-vache-allege-en-matiere-grasse'] },
+  { garder: 'haricot-vert-cru', absorber: ['haricot-beurre-cru','haricot-plat-cru'] },
+  { garder: 'haricot-blanc-sec', absorber: ['haricot-flageolet-vert-sec','haricot-rouge-sec','haricot-coco-bouilli-cuit-a-l-eau','haricot-de-lima-ou-pois-savon-ou-pois-du-cap-ou-pois-souche-cru'] },
 ];
 
 async function recupererAliment(slug) {
