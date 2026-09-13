@@ -112,8 +112,6 @@ async function recupererAlimentsATraiter() {
     .from('aliments')
     .select('id, nom, slug, niveau_nova, terme_recherche, termes_recherche')
     .eq('actif', true)
-    .not('terme_recherche', 'is', null)
-    .neq('terme_recherche', '')
     .order('id', { ascending: true });
 
   if (error) {
