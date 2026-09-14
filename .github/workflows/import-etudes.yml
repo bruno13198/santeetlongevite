@@ -4,7 +4,6 @@ on:
     - cron: '17 3 * * 1'   # lundi 3h17 UTC
     - cron: '17 9 * * 1'   # lundi 9h17 UTC, filet de sécurité
   workflow_dispatch:
-  workflow_dispatch:
     inputs:
       offset:
         description: 'Offset de départ (0, 200, 400, ...)'
