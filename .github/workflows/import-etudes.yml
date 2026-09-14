@@ -32,7 +32,7 @@ on:
         default: ''
 concurrency:
   group: import-etudes
-  cancel-in-progress: true
+  cancel-in-progress: false
 jobs:
   import:
     runs-on: ubuntu-latest
