@@ -1,1 +1,24 @@
+name: Sonder des termes sur Europe PMC
 
+on:
+  workflow_dispatch:
+    inputs:
+      termes:
+        description: 'Termes séparés par des points-virgules (ex: kidney bean;navy bean)'
+        required: true
+        default: ''
+
+jobs:
+  sonder:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Lancer le sondage
+        env:
+          TERMES: ${{ github.event.inputs.termes }}
+        run: node scripts/sonder-termes.js
