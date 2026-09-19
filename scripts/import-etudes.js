@@ -415,7 +415,12 @@ async function traiterAliment(aliment) {
 
       if (!analyse.pertinent) {
         console.log(`  - Écartée (${sourceId}) : ${analyse.raison}`);
-        await supabase.from('candidats_rejetes').insert({ aliment_id: aliment.id, source_id: sourceId });
+        await supabase.from('candidats_rejetes').insert({
+          aliment_id: aliment.id,
+          source_id: sourceId,
+          titre_original: etude.title,
+          raison: analyse.raison,
+        });
         continue;
       }
 
