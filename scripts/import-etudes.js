@@ -178,9 +178,10 @@ async function chercherEtudesEuropePMC(aliment, tentative = 1, elargir = false) 
  const ERREURS_TEMPORAIRES = [500, 502, 503, 504];
 
   if (!res.ok) {
-    if (ERREURS_TEMPORAIRES.includes(res.status) && tentative < 3) {
-      console.log(`  Europe PMC indisponible (${res.status}), nouvelle tentative dans 3s (${tentative + 1}/3)...`);
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+    if (ERREURS_TEMPORAIRES.includes(res.status) && tentative < 5) {
+      const delai = 3000 * Math.pow(2, tentative - 1);
+      console.log(`  Europe PMC indisponible (${res.status}), nouvelle tentative dans ${delai / 1000}s (${tentative + 1}/5)...`);
+      await new Promise((resolve) => setTimeout(resolve, delai));
       return chercherEtudesEuropePMC(aliment, tentative + 1, elargir);
     }
     throw new Error(`Europe PMC erreur ${res.status}`);
