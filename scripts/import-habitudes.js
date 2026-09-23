@@ -1,9 +1,13 @@
 // Script d'automatisation : récupère des études sur Europe PMC pour les habitudes
 // alimentaires (régimes, patterns), génère 2 résumés en français via l'API Claude,
 // classe leur fiabilité, et enregistre tout dans Supabase.
-// La plupart des entrées utilisent la syntaxe MeSH (MESH:"...") pour une recherche
-// précise ; les entrées sans descripteur MeSH officiel (ex: Okinawa, Zones bleues)
-// utilisent une recherche par mots-clés en texte libre, comme pour les aliments.
+//
+// Recherche : MeSH (si est_terme_mesh) OU termes en texte libre (termes_texte),
+// cherchés dans le titre et le résumé. Le texte libre est indispensable : les
+// articles récents n'ont pas encore de tag MeSH ni de type de publication
+// (méta-analyse, essai...) au moment où ils entrent dans Europe PMC.
+// Pas de filtre PUB_TYPE : c'est l'analyse Claude qui trie. Pour maîtriser les
+// coûts, le nombre d'analyses Claude par habitude et par run est plafonné.
 
 const { createClient } = require('@supabase/supabase-js');
 
@@ -14,6 +18,7 @@ const supabase = createClient(
 
 const RESULTATS_A_RECUPERER = parseInt(process.env.RESULTATS_A_RECUPERER || '20', 10);
 const MAX_NOUVELLES_ETUDES_PAR_RUN = parseInt(process.env.MAX_NOUVELLES_ETUDES_PAR_RUN || '8', 10);
+const MAX_ANALYSES_PAR_RUN = parseInt(process.env.MAX_ANALYSES_PAR_RUN || '15', 10);
 const OFFSET = parseInt(process.env.OFFSET || '0', 10);
 const LIMITE = parseInt(process.env.LIMITE || '200', 10);
 const JOURS_VEILLE = parseInt(process.env.JOURS_VEILLE || '10', 10);
@@ -80,39 +85,66 @@ function extraireNbParticipants(abstractText) {
   return null;
 }
 
+// Construit la partie « sujet » de la requête Europe PMC :
+// MeSH (ou mots-clés hérités si pas de MeSH) OU chacun des termes en texte libre.
+function construireFiltreSujet(habitude) {
+  const parties = [];
+
+  if (habitude.terme_recherche && habitude.terme_recherche.trim() !== '') {
+    if (habitude.est_terme_mesh) {
+      parties.push(`MESH:"${habitude.terme_recherche}"`);
+    } else {
+      const motsClefs = habitude.terme_recherche
+        .split(' ')
+        .map((mot) => `(TITLE:"${mot}" OR ABSTRACT:"${mot}")`)
+        .join(' AND ');
+      parties.push(`(${motsClefs})`);
+    }
+  }
+
+  if (Array.isArray(habitude.termes_texte)) {
+    for (const terme of habitude.termes_texte) {
+      if (terme && terme.trim() !== '') {
+        parties.push(`(TITLE:"${terme}" OR ABSTRACT:"${terme}")`);
+      }
+    }
+  }
+
+  return parties.join(' OR ');
+}
+
 async function recupererHabitudesATraiter() {
   const { data: habitudes, error } = await supabase
     .from('habitudes_alimentaires')
-    .select('id, slug, nom, terme_recherche, est_terme_mesh')
+    .select('id, slug, nom, terme_recherche, est_terme_mesh, termes_texte')
     .eq('actif', true)
-    .not('terme_recherche', 'is', null)
     .order('id', { ascending: true });
 
   if (error) {
     throw new Error(`Erreur récupération habitudes: ${error.message}`);
   }
 
+  const eligibles = habitudes.filter((h) => construireFiltreSujet(h) !== '');
+
   const slugsCibles = process.env.SLUGS_CIBLES;
   if (slugsCibles) {
     const listeSlugs = slugsCibles.split(',').map((s) => s.trim());
-    return habitudes.filter((h) => listeSlugs.includes(h.slug));
+    return eligibles.filter((h) => listeSlugs.includes(h.slug));
   }
 
-  return habitudes;
+  return eligibles;
 }
 
-async function chercherEtudesEuropePMC(terme, estTermeMesh, tentative = 1) {
+async function chercherEtudesEuropePMC(habitude, tentative = 1) {
   const dateDebut = new Date();
   dateDebut.setDate(dateDebut.getDate() - JOURS_VEILLE);
+  // FIRST_IDATE = date d'entrée dans Europe PMC (et non date de publication) :
+  // capte les articles au moment où ils deviennent visibles.
   const filtreDate = `AND (FIRST_IDATE:[${formaterDate(dateDebut)} TO ${formaterDate(new Date())}])`;
 
-  // Pour les entrées sans descripteur MeSH officiel (ex: Okinawa, Zones bleues),
-  // on retombe sur une recherche par mots-clés en texte libre, comme pour les aliments.
-  const filtreSujet = estTermeMesh
-    ? `MESH:"${terme}"`
-    : terme.split(' ').map((mot) => `(TITLE:"${mot}" OR ABSTRACT:"${mot}")`).join(' AND ');
+  const filtreSujet = construireFiltreSujet(habitude);
 
-  const requete = `(${filtreSujet}) AND (SRC:MED) AND (PUB_TYPE:"review" OR PUB_TYPE:"meta-analysis" OR PUB_TYPE:"systematic review" OR PUB_TYPE:"randomized controlled trial" OR PUB_TYPE:"clinical trial") ${filtreDate}`;
+  const requete = `(${filtreSujet}) AND (SRC:MED) ${filtreDate}`;
   const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(requete)}&format=json&pageSize=${RESULTATS_A_RECUPERER}&resultType=core`;
   const res = await fetch(url);
 
@@ -123,7 +155,7 @@ async function chercherEtudesEuropePMC(terme, estTermeMesh, tentative = 1) {
       const delai = 3000 * Math.pow(2, tentative - 1);
       console.log(`  Europe PMC indisponible (${res.status}), nouvelle tentative dans ${delai / 1000}s (${tentative + 1}/5)...`);
       await new Promise((resolve) => setTimeout(resolve, delai));
-      return chercherEtudesEuropePMC(terme, estTermeMesh, tentative + 1);
+      return chercherEtudesEuropePMC(habitude, tentative + 1);
     }
     throw new Error(`Europe PMC erreur ${res.status}`);
   }
@@ -144,12 +176,13 @@ Résumé original (anglais) : ${abstractOriginal}
 L'étude teste-t-elle vraiment et spécifiquement ce régime/pattern alimentaire (« ${nomHabitude} »), pas juste une mention en passant ou une comparaison lointaine ? Si l'étude porte sur un sujet différent qui a seulement été indexé sous ce terme par erreur ou de façon marginale, réponds "false".
 
 Étape 2 — Évalue la pertinence humaine :
-Cette étude mesure-t-elle un EFFET ou un BÉNÉFICE (sur la santé, une maladie, un marqueur biologique...) directement chez des sujets HUMAINS suivant ce régime, ou via une méta-analyse/revue qui synthétise de tels résultats humains ?
+Cette étude mesure-t-elle un EFFET, un BÉNÉFICE ou une ASSOCIATION (sur la santé, une maladie, un marqueur biologique...) directement chez des sujets HUMAINS suivant ce régime ou y adhérant plus ou moins, ou via une méta-analyse/revue qui synthétise de tels résultats humains ?
+Les études observationnelles (cohortes prospectives, études cas-témoins) mesurant l'adhésion à ce régime et son association avec la santé SONT pertinentes, au même titre que les essais cliniques et les méta-analyses.
 Réponds "false" dans les cas suivants :
 - L'étude porte uniquement sur des animaux ou des cellules en laboratoire, sans effet mesuré chez l'humain.
-- L'étude décrit seulement la théorie ou la composition du régime, sans mesurer d'effet de santé concret chez l'humain.
+- L'étude décrit seulement la théorie ou la composition du régime, sans mesurer d'effet ou d'association de santé concret chez l'humain.
+- Il s'agit d'un éditorial, d'un commentaire, d'une lettre ou d'un protocole d'étude sans résultats.
 - Tout autre sujet hors nutrition/santé humaine.
-Ne réponds "true" que si un effet ou bénéfice a été concrètement évalué chez des sujets humains suivant ce régime.
 
 Étape 3 — Si et seulement si pertinente sur les deux points ci-dessus, rédige les résumés en français.
 
@@ -170,7 +203,7 @@ Si l'étude EST pertinente :
 }
 
 Règles importantes :
-- Ne jamais transformer une corrélation en causalité si l'étude ne le permet pas
+- Ne jamais transformer une corrélation en causalité si l'étude ne le permet pas (en particulier pour les études observationnelles)
 - Rester factuel, ne pas exagérer les conclusions
 - Varier le style et la structure des phrases
 - Rédiger uniquement en français`;
@@ -209,232 +242,6 @@ Règles importantes :
     }
     throw new Error(`JSON invalide reçu de Claude après 3 tentatives : ${e.message} | Début du texte reçu : ${nettoye.slice(0, 200)}`);
   }
-}
-
-async function classerFiabilite(titre, resumeOriginal, tentative = 1) {
-  const prompt = `Tu es un méthodologiste scientifique. Classe le TYPE D'ÉTUDE suivant dans une seule des 3 catégories ci-dessous, en te basant uniquement sur le titre et le résumé.
-Titre : ${titre}
-Résumé : ${resumeOriginal}
-Catégories :
-- "haute" : méta-analyse, revue systématique (synthèse de plusieurs études)
-- "moderee" : essai randomisé contrôlé (RCT), essai clinique interventionnel
-- "preliminaire" : étude observationnelle, étude de cohorte, étude pilote, type incertain
-Réponds UNIQUEMENT avec un objet JSON, rien avant, rien après, au format exact :
-{"niveau": "haute"}
-ou
-{"niveau": "moderee"}
-ou
-{"niveau": "preliminaire"}`;
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': process.env.ANTHROPIC_API_KEY,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-5',
-      max_tokens: 300,
-      messages: [{ role: 'user', content: prompt }],
-    }),
-  });
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`Erreur API Claude ${res.status}: ${errText}`);
-  }
-  const data = await res.json();
-  const texte = data.content.map((b) => b.text || '').join('');
-  const nettoye = texte.replace(/```json|```/g, '').trim();
-  const match = nettoye.match(/\{[\s\S]*\}/);
-  try {
-    const resultat = JSON.parse(match ? match[0] : nettoye);
-    if (!resultat.niveau) throw new Error('Champ niveau manquant');
-    return resultat.niveau;
-  } catch (e) {
-    if (tentative < 3) {
-      console.log(`      Réponse fiabilité incomplète ("${nettoye}"), nouvelle tentative (${tentative + 1}/3)...`);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      return classerFiabilite(titre, resumeOriginal, tentative + 1);
-    }
-    console.log(`      Échec classement fiabilité après 3 tentatives. Dernière réponse reçue : "${nettoye}"`);
-    return null;
-  }
-}
-
-async function traiterHabitude(habitude) {
-  console.log(`\n=== ${habitude.slug} ===`);
-
-  const resultats = await chercherEtudesEuropePMC(habitude.terme_recherche, habitude.est_terme_mesh);
-  console.log(`  ${resultats.length} études trouvées sur Europe PMC (avant filtrage humain).`);
-  await new Promise((resolve) => setTimeout(resolve, 300));
-
-  const dejaVusDansCeLot = new Set();
-  const resultatsUniques = resultats.filter((etude) => {
-    const sourceId = etude.id || etude.pmid;
-    if (!sourceId || dejaVusDansCeLot.has(sourceId)) return false;
-    dejaVusDansCeLot.add(sourceId);
-    return true;
-  });
-
-  let nouvellesEtudesAjoutees = 0;
-
-  for (const etude of resultatsUniques) {
-    const sourceId = etude.id || etude.pmid;
-    if (!sourceId) continue;
-
-    const { data: existant } = await supabase
-      .from('etudes')
-      .select('id')
-      .eq('source', 'Europe PMC')
-      .eq('source_id', sourceId)
-      .maybeSingle();
-
-    if (existant) {
-      // Rattacher une étude déjà en base ne coûte aucun appel API — ça ne doit
-      // jamais être limité par le garde-fou, contrairement à une vraie nouvelle
-      // analyse juste en dessous.
-      const { data: lienExistant } = await supabase
-        .from('habitudes_etudes')
-        .select('habitude_id')
-        .eq('habitude_id', habitude.id)
-        .eq('etude_id', existant.id)
-        .maybeSingle();
-
-      if (!lienExistant) {
-        await supabase.from('habitudes_etudes').insert({
-          habitude_id: habitude.id,
-          etude_id: existant.id,
-        });
-        console.log(`  - Déjà en base (${sourceId}), reliée à cette habitude.`);
-      } else {
-        console.log(`  - Déjà en base et déjà liée (${sourceId}), on passe.`);
-      }
-      continue;
-    }
-
-    // À partir d'ici, on s'apprête à faire un vrai appel Claude (coûteux) :
-    // c'est uniquement ici que le garde-fou doit s'appliquer.
-    if (nouvellesEtudesAjoutees >= MAX_NOUVELLES_ETUDES_PAR_RUN) {
-      console.log(`  - Garde-fou de ${MAX_NOUVELLES_ETUDES_PAR_RUN} nouvelles études atteint pour ce run, on arrête ici.`);
-      break;
-    }
-
-    if (!etude.abstractText) {
-      console.log(`  - Pas de résumé disponible pour ${sourceId}, on passe.`);
-      continue;
-    }
-
-    const { data: dejaRejete } = await supabase
-      .from('candidats_rejetes_habitudes')
-      .select('source_id')
-      .eq('habitude_id', habitude.id)
-      .eq('source_id', sourceId)
-      .maybeSingle();
-
-    if (dejaRejete) {
-      console.log(`  - Déjà rejeté précédemment (${sourceId}), on passe.`);
-      continue;
-    }
-
-    try {
-      const analyse = await analyserEtude(etude.title, etude.abstractText, habitude.nom);
-
-      if (!analyse.pertinent) {
-        console.log(`  - Écartée (${sourceId}) : ${analyse.raison}`);
-        await supabase.from('candidats_rejetes_habitudes').insert({ habitude_id: habitude.id, source_id: sourceId });
-        continue;
-      }
-
-      const niveauFiabilite = await classerFiabilite(etude.title, etude.abstractText);
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      let etudeId;
-      const { data: nouvelleEtude, error: erreurInsert } = await supabase
-        .from('etudes')
-        .insert({
-          titre_original: etude.title,
-          titre_traduit: analyse.titre_traduit,
-          source: 'Europe PMC',
-          source_id: sourceId,
-          url_originale: `https://europepmc.org/article/MED/${sourceId}`,
-          date_publication: etude.firstPublicationDate || null,
-          auteurs: etude.authorString || null,
-          resume_original: etude.abstractText,
-          resume_simplifie: analyse.resume_simplifie,
-          resume_reformule: analyse.resume_reformule,
-          niveau_fiabilite: niveauFiabilite,
-          type_etude: normaliserTypeEtude(etude.pubTypeList?.pubType),
-          nb_participants: extraireNbParticipants(etude.abstractText),
-        })
-        .select('id')
-        .single();
-
-      if (erreurInsert) {
-        if (erreurInsert.code === '23505') {
-          const { data: etudeExistante } = await supabase
-            .from('etudes')
-            .select('id')
-            .eq('source', 'Europe PMC')
-            .eq('source_id', sourceId)
-            .single();
-
-          if (!etudeExistante) {
-            console.log(`  - Conflit d'insertion pour ${sourceId}, mais étude introuvable ensuite :`, erreurInsert.message);
-            continue;
-          }
-          etudeId = etudeExistante.id;
-        } else {
-          console.log(`  - Erreur insertion étude ${sourceId}:`, erreurInsert.message);
-          continue;
-        }
-      } else {
-        etudeId = nouvelleEtude.id;
-      }
-
-      const { data: lienExistant } = await supabase
-        .from('habitudes_etudes')
-        .select('habitude_id')
-        .eq('habitude_id', habitude.id)
-        .eq('etude_id', etudeId)
-        .maybeSingle();
-
-      if (lienExistant) {
-        console.log(`  - Déjà liée à cette habitude (${sourceId}), on passe.`);
-        continue;
-      }
-
-      await supabase.from('habitudes_etudes').insert({
-        habitude_id: habitude.id,
-        etude_id: etudeId,
-      });
-
-      nouvellesEtudesAjoutees++;
-      console.log(`  - Ajoutée (${niveauFiabilite || 'fiabilité inconnue'}) : ${analyse.titre_traduit}`);
-    } catch (e) {
-      console.log(`  - Erreur traitement ${sourceId}:`, e.message);
-    }
-  }
-}
-
-async function main() {
-  console.log(`Paramètres de ce run : OFFSET=${OFFSET}, LIMITE=${LIMITE}, JOURS_VEILLE=${JOURS_VEILLE}`);
-  const toutesLesHabitudes = await recupererHabitudesATraiter();
-  const lot = toutesLesHabitudes.slice(OFFSET, OFFSET + LIMITE);
-  console.log(`${toutesLesHabitudes.length} habitudes éligibles au total. Lot traité : offset ${OFFSET}, ${lot.length} habitudes.`);
-
-  for (const habitude of lot) {
-    try {
-      await traiterHabitude(habitude);
-    } catch (e) {
-      console.log(`Erreur générale sur ${habitude.slug}:`, e.message);
-      await supabase.from('erreurs_import').insert({
-        aliment_slug: habitude.slug,
-        type_erreur: 'echec_recherche',
-        message: e.message,
-      });
-    }
-  }
-  console.log('\nTerminé.');
 }
 
 main();
