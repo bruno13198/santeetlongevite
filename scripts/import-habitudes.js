@@ -104,7 +104,7 @@ async function recupererHabitudesATraiter() {
 async function chercherEtudesEuropePMC(terme, estTermeMesh, tentative = 1) {
   const dateDebut = new Date();
   dateDebut.setDate(dateDebut.getDate() - JOURS_VEILLE);
-  const filtreDate = `AND (FIRST_PDATE:[${formaterDate(dateDebut)} TO ${formaterDate(new Date())}])`;
+  const filtreDate = `AND (FIRST_IDATE:[${formaterDate(dateDebut)} TO ${formaterDate(new Date())}])`;
 
   // Pour les entrées sans descripteur MeSH officiel (ex: Okinawa, Zones bleues),
   // on retombe sur une recherche par mots-clés en texte libre, comme pour les aliments.
