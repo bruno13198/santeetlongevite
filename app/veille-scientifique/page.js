@@ -37,7 +37,7 @@ export default function VeilleScientifique() {
 
   useEffect(() => {
     async function chargerDonnees() {
-      const EXCEPTIONS_NOVA4 = ['isolat-de-soja', 'cola-sucre', 'lecithine-de-soja', 'kimchi', 'kombucha'];
+      const EXCEPTIONS_NOVA4 = ['isolat-de-soja', 'cola-sucre', 'lecithine-de-soja', 'kimchi', 'kombucha', 'substitut-de-repas-hypocalorique-pret-a-boire', 'proteine-de-soja-texturee-rehydratee'];
 
       const [{ data: aliments, error: erreurAliments }, { data: habitudes, error: erreurHabitudes }] = await Promise.all([
         supabase.from('aliments').select('*').eq('actif', true).range(0, 3999),
