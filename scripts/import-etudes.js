@@ -164,7 +164,20 @@ async function chercherEtudesEuropePMC(aliment, tentative = 1) {
   dateDebut.setDate(dateDebut.getDate() - JOURS_VEILLE);
   const filtreDate = `AND (FIRST_IDATE:[${formaterDate(dateDebut)} TO ${formaterDate(new Date())}])`;
  
-  const requete = `(${motsClefs}) AND (SRC:MED) ${filtreDate}`;
+  // Exclut dès la requête les études dont le TITRE signale clairement un sujet
+  // animal, végétal ou informatique. Liste volontairement prudente : pas de
+  // "cows", "sheep", "goats" (lait de vache/brebis/chèvre chez l'humain) ni
+  // "in vitro" (fécondation in vitro).
+  const MOTS_EXCLUS_TITRE = [
+    'mice', 'mouse', 'murine', 'rat', 'rats', 'rodent', 'rodents',
+    'broiler', 'broilers', 'chickens', 'hens', 'poultry',
+    'piglets', 'pigs', 'swine', 'porcine', 'cattle', 'dairy cows', 'calves', 'lambs', 'ruminants',
+    'zebrafish', 'Drosophila', 'larvae', 'nematode', 'nematodes',
+    'Arabidopsis', 'cultivar', 'cultivars', 'rootstock', 'in silico',
+  ];
+  const exclusionTitre = MOTS_EXCLUS_TITRE.map((m) => `TITLE:"${m}"`).join(' OR ');
+
+  const requete = `(${motsClefs}) AND (SRC:MED) NOT (${exclusionTitre}) ${filtreDate}`;
   const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(requete)}&format=json&pageSize=${RESULTATS_A_RECUPERER}&resultType=core`;
  
   const ERREURS_TEMPORAIRES = [500, 502, 503, 504];
