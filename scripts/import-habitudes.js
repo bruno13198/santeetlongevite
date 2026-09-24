@@ -328,22 +328,63 @@ async function traiterHabitude(habitude) {
       .maybeSingle();
  
     if (existant) {
-      // Rattacher une étude déjà en base ne coûte aucun appel API — jamais limité.
       const { data: lienExistant } = await supabase
         .from('habitudes_etudes')
         .select('habitude_id')
         .eq('habitude_id', habitude.id)
         .eq('etude_id', existant.id)
         .maybeSingle();
- 
-      if (!lienExistant) {
+
+      if (lienExistant) {
+        console.log(`  - Déjà en base et déjà liée (${sourceId}), on passe.`);
+        continue;
+      }
+
+      const { data: rejeteExistant } = await supabase
+        .from('candidats_rejetes_habitudes')
+        .select('source_id')
+        .eq('habitude_id', habitude.id)
+        .eq('source_id', sourceId)
+        .maybeSingle();
+
+      if (rejeteExistant) {
+        console.log(`  - Déjà rejeté précédemment pour cette habitude (${sourceId}), on passe.`);
+        continue;
+      }
+
+      // Étude en base pour un autre sujet : on vérifie sa pertinence pour CETTE
+      // habitude avant de la relier (les résumés existants ne sont pas modifiés).
+      if (analysesEffectuees >= MAX_ANALYSES_PAR_RUN) {
+        console.log(`  - Garde-fou de ${MAX_ANALYSES_PAR_RUN} analyses Claude atteint pour ce run, on arrête ici.`);
+        break;
+      }
+      if (!etude.abstractText) {
+        console.log(`  - Pas de résumé disponible pour ${sourceId}, on passe.`);
+        continue;
+      }
+
+      try {
+        analysesEffectuees++;
+        const analyseLien = await analyserEtude(etude.title, etude.abstractText, habitude.nom);
+
+        if (!analyseLien.pertinent) {
+          console.log(`  - Déjà en base mais écartée pour cette habitude (${sourceId}) : ${analyseLien.raison}`);
+          await supabase.from('candidats_rejetes_habitudes').insert({
+            habitude_id: habitude.id,
+            source_id: sourceId,
+            titre_original: etude.title,
+            raison: analyseLien.raison,
+          });
+          continue;
+        }
+
         await supabase.from('habitudes_etudes').insert({
           habitude_id: habitude.id,
           etude_id: existant.id,
         });
-        console.log(`  - Déjà en base (${sourceId}), reliée à cette habitude.`);
-      } else {
-        console.log(`  - Déjà en base et déjà liée (${sourceId}), on passe.`);
+        console.log(`  - Déjà en base (${sourceId}), jugée pertinente et reliée à cette habitude.`);
+      } catch (e) {
+        console.log(`  - Erreur vérification ${sourceId}:`, e.message);
       }
       continue;
     }
