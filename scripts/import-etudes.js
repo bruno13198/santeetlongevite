@@ -206,7 +206,10 @@ async function chercherEtudesEuropePMC(aliment, tentative = 1) {
   }
  
   const data = await res.json();
-  return data.resultList?.result || [];
+  return {
+    resultats: data.resultList?.result || [],
+    total: data.hitCount || 0,
+  };
 }
  
 // Appel générique à l'API Claude, avec délai maximal. Renvoie le texte brut.
@@ -387,8 +390,8 @@ async function enregistrerRejet(alimentId, sourceId, titre, raison) {
 async function traiterAliment(aliment) {
   console.log(`\n=== ${aliment.slug} ===`);
  
-  const resultats = await chercherEtudesEuropePMC(aliment);
-  console.log(`  ${resultats.length} études trouvées sur Europe PMC (avant filtrage).`);
+  const { resultats, total } = await chercherEtudesEuropePMC(aliment);
+  console.log(`  ${total} résultats au total sur Europe PMC, ${resultats.length} examinés${total > resultats.length ? ' ⚠️ DÉBORDEMENT' : ''}.`);
   await new Promise((resolve) => setTimeout(resolve, 300)); // pause pour éviter de saturer Europe PMC
  
   // Déduplication défensive : Europe PMC peut renvoyer le même article deux fois.
