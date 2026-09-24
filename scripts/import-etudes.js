@@ -5,6 +5,8 @@
 // Recherche : termes_recherche cherchés en texte libre dans le titre et le résumé,
 // fenêtre sur FIRST_IDATE (date d'entrée dans Europe PMC). Pas de filtre PUB_TYPE :
 // les articles récents n'ont pas encore de type de publication (méta-analyse, essai...).
+// Les titres signalant clairement un sujet animal/végétal sont exclus dès la requête.
+// Toutes les pages de résultats sont lues (jusqu'à RESULTATS_A_RECUPERER).
 //
 // Tri en deux temps pour maîtriser les coûts :
 //   1. Haiku (rapide, économique) écarte uniquement les cas CLAIREMENT hors sujet ;
@@ -20,7 +22,8 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
  
-const RESULTATS_A_RECUPERER = parseInt(process.env.RESULTATS_A_RECUPERER || '100', 10);
+const RESULTATS_A_RECUPERER = parseInt(process.env.RESULTATS_A_RECUPERER || '500', 10); // maximum total, toutes pages confondues
+const TAILLE_PAGE_EUROPEPMC = 100;
 const MAX_NOUVELLES_ETUDES_PAR_RUN = parseInt(process.env.MAX_NOUVELLES_ETUDES_PAR_RUN || '15', 10);
 const MAX_ANALYSES_PAR_RUN = parseInt(process.env.MAX_ANALYSES_PAR_RUN || '25', 10);
 const OFFSET = parseInt(process.env.OFFSET || '0', 10);
@@ -37,6 +40,17 @@ const EXCEPTIONS_NOVA4 = [
   'lecithine-de-soja',
   'kimchi',
   'kombucha',
+];
+ 
+// Mots de TITRE signalant clairement un sujet animal, végétal ou informatique.
+// Liste volontairement prudente : pas de "cows", "sheep", "goats" (lait de
+// vache/brebis/chèvre chez l'humain) ni "in vitro" (fécondation in vitro).
+const MOTS_EXCLUS_TITRE = [
+  'mice', 'mouse', 'murine', 'rat', 'rats', 'rodent', 'rodents',
+  'broiler', 'broilers', 'chickens', 'hens', 'poultry',
+  'piglets', 'pigs', 'swine', 'porcine', 'cattle', 'dairy cows', 'calves', 'lambs', 'ruminants',
+  'zebrafish', 'Drosophila', 'larvae', 'nematode', 'nematodes',
+  'Arabidopsis', 'cultivar', 'cultivars', 'rootstock', 'in silico',
 ];
  
 function formaterDate(date) {
@@ -135,7 +149,37 @@ async function recupererAlimentsATraiter() {
   return eligibles;
 }
  
-async function chercherEtudesEuropePMC(aliment, tentative = 1) {
+// Appel Europe PMC avec délai maximal et nouvelles tentatives (délai croissant).
+async function appelerEuropePMC(url, tentative = 1) {
+  const ERREURS_TEMPORAIRES = [500, 502, 503, 504];
+ 
+  let res;
+  try {
+    res = await fetch(url, { signal: AbortSignal.timeout(DELAI_MAX_MS) });
+  } catch (e) {
+    if (tentative < 5) {
+      const delai = 3000 * Math.pow(2, tentative - 1);
+      console.log(`  Europe PMC ne répond pas (${e.name}), nouvelle tentative dans ${delai / 1000}s (${tentative + 1}/5)...`);
+      await new Promise((resolve) => setTimeout(resolve, delai));
+      return appelerEuropePMC(url, tentative + 1);
+    }
+    throw new Error(`Europe PMC injoignable : ${e.message}`);
+  }
+ 
+  if (!res.ok) {
+    if (ERREURS_TEMPORAIRES.includes(res.status) && tentative < 5) {
+      const delai = 3000 * Math.pow(2, tentative - 1);
+      console.log(`  Europe PMC indisponible (${res.status}), nouvelle tentative dans ${delai / 1000}s (${tentative + 1}/5)...`);
+      await new Promise((resolve) => setTimeout(resolve, delai));
+      return appelerEuropePMC(url, tentative + 1);
+    }
+    throw new Error(`Europe PMC erreur ${res.status}`);
+  }
+ 
+  return res.json();
+}
+ 
+async function chercherEtudesEuropePMC(aliment) {
   // - termes_recherche (text[]) : chaque terme cherché comme expression exacte,
   //   variantes reliées par OR. Mode cible.
   // - terme_recherche (chaîne, hérité) : mots découpés et reliés par AND.
@@ -164,51 +208,31 @@ async function chercherEtudesEuropePMC(aliment, tentative = 1) {
   dateDebut.setDate(dateDebut.getDate() - JOURS_VEILLE);
   const filtreDate = `AND (FIRST_IDATE:[${formaterDate(dateDebut)} TO ${formaterDate(new Date())}])`;
  
-  // Exclut dès la requête les études dont le TITRE signale clairement un sujet
-  // animal, végétal ou informatique. Liste volontairement prudente : pas de
-  // "cows", "sheep", "goats" (lait de vache/brebis/chèvre chez l'humain) ni
-  // "in vitro" (fécondation in vitro).
-  const MOTS_EXCLUS_TITRE = [
-    'mice', 'mouse', 'murine', 'rat', 'rats', 'rodent', 'rodents',
-    'broiler', 'broilers', 'chickens', 'hens', 'poultry',
-    'piglets', 'pigs', 'swine', 'porcine', 'cattle', 'dairy cows', 'calves', 'lambs', 'ruminants',
-    'zebrafish', 'Drosophila', 'larvae', 'nematode', 'nematodes',
-    'Arabidopsis', 'cultivar', 'cultivars', 'rootstock', 'in silico',
-  ];
   const exclusionTitre = MOTS_EXCLUS_TITRE.map((m) => `TITLE:"${m}"`).join(' OR ');
-
+ 
   const requete = `(${motsClefs}) AND (SRC:MED) NOT (${exclusionTitre}) ${filtreDate}`;
-  const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(requete)}&format=json&pageSize=${RESULTATS_A_RECUPERER}&resultType=core`;
  
-  const ERREURS_TEMPORAIRES = [500, 502, 503, 504];
+  // Lecture de toutes les pages (curseur Europe PMC), jusqu'au maximum fixé.
+  const resultats = [];
+  let total = 0;
+  let cursorMark = '*';
  
-  let res;
-  try {
-    res = await fetch(url, { signal: AbortSignal.timeout(DELAI_MAX_MS) });
-  } catch (e) {
-    if (tentative < 5) {
-      const delai = 3000 * Math.pow(2, tentative - 1);
-      console.log(`  Europe PMC ne répond pas (${e.name}), nouvelle tentative dans ${delai / 1000}s (${tentative + 1}/5)...`);
-      await new Promise((resolve) => setTimeout(resolve, delai));
-      return chercherEtudesEuropePMC(aliment, tentative + 1);
-    }
-    throw new Error(`Europe PMC injoignable : ${e.message}`);
+  while (resultats.length < RESULTATS_A_RECUPERER) {
+    const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(requete)}&format=json&pageSize=${TAILLE_PAGE_EUROPEPMC}&cursorMark=${encodeURIComponent(cursorMark)}&resultType=core`;
+    const data = await appelerEuropePMC(url);
+ 
+    total = data.hitCount || 0;
+    const page = data.resultList?.result || [];
+    resultats.push(...page);
+ 
+    if (page.length === 0 || !data.nextCursorMark || data.nextCursorMark === cursorMark) break;
+    cursorMark = data.nextCursorMark;
+    await new Promise((resolve) => setTimeout(resolve, 300)); // pause entre deux pages
   }
  
-  if (!res.ok) {
-    if (ERREURS_TEMPORAIRES.includes(res.status) && tentative < 5) {
-      const delai = 3000 * Math.pow(2, tentative - 1);
-      console.log(`  Europe PMC indisponible (${res.status}), nouvelle tentative dans ${delai / 1000}s (${tentative + 1}/5)...`);
-      await new Promise((resolve) => setTimeout(resolve, delai));
-      return chercherEtudesEuropePMC(aliment, tentative + 1);
-    }
-    throw new Error(`Europe PMC erreur ${res.status}`);
-  }
- 
-  const data = await res.json();
   return {
-    resultats: data.resultList?.result || [],
-    total: data.hitCount || 0,
+    resultats: resultats.slice(0, RESULTATS_A_RECUPERER),
+    total,
   };
 }
  
