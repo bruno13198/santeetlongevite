@@ -47,22 +47,23 @@ export default async function FicheAliment({ params }) {
     etudes = etudesData || [];
   }
 
-  // Récupère un éventuel article lié à cet aliment via la table de liaison
-  const { data: liaisonArticle } = await supabase
+  // Récupère TOUS les articles publiés liés à cet aliment via la table de liaison
+  const { data: liaisonsArticles } = await supabase
     .from('articles_aliments')
     .select('article_id')
-    .eq('aliment_id', aliment.id)
-    .maybeSingle();
+    .eq('aliment_id', aliment.id);
 
-  let articleLie = null;
-  if (liaisonArticle) {
-    const { data: articleData } = await supabase
+  const articleIds = liaisonsArticles ? liaisonsArticles.map((l) => l.article_id) : [];
+
+  let articlesLies = [];
+  if (articleIds.length > 0) {
+    const { data: articlesData } = await supabase
       .from('articles')
       .select('titre, slug')
-      .eq('id', liaisonArticle.article_id)
+      .in('id', articleIds)
       .eq('publie', true)
-      .maybeSingle();
-    articleLie = articleData;
+      .order('titre', { ascending: true });
+    articlesLies = articlesData || [];
   }
 
   return (
@@ -84,22 +85,26 @@ export default async function FicheAliment({ params }) {
       <p style={{ color: '#6B6E63' }}>{aliment.categorie}</p>
       <p>{aliment.description}</p>
 
-      {articleLie && (
-        <Link
-          href={`/articles/${articleLie.slug}`}
-          style={{
-            display: 'block',
-            marginTop: '16px',
-            marginBottom: '24px',
-            padding: '16px',
-            backgroundColor: '#f5f5f5',
-            borderRadius: '8px',
-            textDecoration: 'none',
-            color: 'inherit',
-          }}
-        >
-          📖 Lire l'article complet : <strong>{articleLie.titre}</strong>
-        </Link>
+      {articlesLies.length > 0 && (
+        <div style={{ marginTop: '16px', marginBottom: '24px' }}>
+          {articlesLies.map((article) => (
+            <Link
+              key={article.slug}
+              href={`/articles/${article.slug}`}
+              style={{
+                display: 'block',
+                marginBottom: '8px',
+                padding: '16px',
+                backgroundColor: '#f5f5f5',
+                borderRadius: '8px',
+                textDecoration: 'none',
+                color: 'inherit',
+              }}
+            >
+              📖 Lire l'article complet : <strong>{article.titre}</strong>
+            </Link>
+          ))}
+        </div>
       )}
 
       {aliment.composition && (
