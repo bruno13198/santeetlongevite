@@ -178,10 +178,14 @@ L'étude teste-t-elle vraiment et spécifiquement ce régime/pattern alimentaire
 Étape 2 — Évalue la pertinence humaine :
 Cette étude mesure-t-elle un EFFET, un BÉNÉFICE ou une ASSOCIATION (sur la santé, une maladie, un marqueur biologique...) directement chez des sujets HUMAINS suivant ce régime ou y adhérant plus ou moins, ou via une méta-analyse/revue qui synthétise de tels résultats humains ?
 Les études observationnelles (cohortes prospectives, études cas-témoins) mesurant l'adhésion à ce régime et son association avec la santé SONT pertinentes, au même titre que les essais cliniques et les méta-analyses.
+Un résultat de santé désigne : une maladie ou son risque, des symptômes, un marqueur biologique, la mortalité, le poids ou la composition corporelle, la fonction cognitive ou la santé mentale.
 Réponds "false" dans les cas suivants :
 - L'étude porte uniquement sur des animaux ou des cellules en laboratoire, sans effet mesuré chez l'humain.
 - L'étude décrit seulement la théorie ou la composition du régime, sans mesurer d'effet ou d'association de santé concret chez l'humain.
-- Il s'agit d'un éditorial, d'un commentaire, d'une lettre ou d'un protocole d'étude sans résultats.
+- Le critère étudié est l'adhésion au régime elle-même (niveau d'adhésion, ses déterminants, préférences, connaissances, ou efficacité d'une intervention pour faire adopter le régime), sans résultat de santé mesuré en lien avec ce régime.
+- L'étude valide un outil de mesure, un questionnaire ou une méthode d'évaluation alimentaire.
+- Le régime n'est qu'une variable d'ajustement, un indice parmi plusieurs autres, ou une composante d'une intervention multiple dont l'effet propre n'est pas isolé.
+- Il s'agit d'un consensus d'experts (Delphi), d'une étude de perceptions ou d'opinions, d'un éditorial, d'un commentaire, d'une lettre ou d'un protocole d'étude sans résultats.
 - Tout autre sujet hors nutrition/santé humaine.
  
 Étape 3 — Si et seulement si pertinente sur les deux points ci-dessus, rédige les résumés en français.
