@@ -16,9 +16,9 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
  
-const RESULTATS_A_RECUPERER = parseInt(process.env.RESULTATS_A_RECUPERER || '20', 10);
-const MAX_NOUVELLES_ETUDES_PAR_RUN = parseInt(process.env.MAX_NOUVELLES_ETUDES_PAR_RUN || '8', 10);
-const MAX_ANALYSES_PAR_RUN = parseInt(process.env.MAX_ANALYSES_PAR_RUN || '15', 10);
+const RESULTATS_A_RECUPERER = parseInt(process.env.RESULTATS_A_RECUPERER || '100', 10);
+const MAX_NOUVELLES_ETUDES_PAR_RUN = parseInt(process.env.MAX_NOUVELLES_ETUDES_PAR_RUN || '25', 10);
+const MAX_ANALYSES_PAR_RUN = parseInt(process.env.MAX_ANALYSES_PAR_RUN || '40', 10);
 const OFFSET = parseInt(process.env.OFFSET || '0', 10);
 const LIMITE = parseInt(process.env.LIMITE || '200', 10);
 const JOURS_VEILLE = parseInt(process.env.JOURS_VEILLE || '10', 10);
@@ -92,7 +92,7 @@ function construireFiltreSujet(habitude) {
  
   if (habitude.terme_recherche && habitude.terme_recherche.trim() !== '') {
     if (habitude.est_terme_mesh) {
-      parties.push(`MESH:"${habitude.terme_recherche}"`);
+      parties.push(`(MESH:"${habitude.terme_recherche}")`);
     } else {
       const motsClefs = habitude.terme_recherche
         .split(' ')
