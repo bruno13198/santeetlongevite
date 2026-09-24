@@ -40,6 +40,8 @@ const EXCEPTIONS_NOVA4 = [
   'lecithine-de-soja',
   'kimchi',
   'kombucha',
+  'substitut-de-repas-hypocalorique-pret-a-boire',
+  'proteine-de-soja-texturee-rehydratee',
 ];
  
 // Mots de TITRE signalant clairement un sujet animal, végétal ou informatique.
