@@ -82,6 +82,8 @@ export default function VeilleScientifique() {
   function normaliser(texte) {
     return texte
       .toLowerCase()
+      .replace(/œ/g, 'oe')
+      .replace(/æ/g, 'ae')
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '');
   }
