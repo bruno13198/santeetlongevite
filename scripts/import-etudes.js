@@ -328,6 +328,8 @@ Réponds "false" dans les cas suivants :
 - L'étude évalue un usage TOPIQUE, CUTANÉ ou COSMÉTIQUE de « ${nomAliment} » (crème, gel, lotion, gant enduit, application sur la peau...), plutôt qu'une CONSOMMATION ALIMENTAIRE (ingestion orale). Un bénéfice observé sur la peau ou via une application externe ne compte pas, même s'il est mesuré chez l'humain.
 - L'étude porte sur un micro-organisme, une toxine, un contaminant ou un procédé industriel lié à l'aliment, sans mesurer d'effet de sa consommation chez l'humain (ex : la biosynthèse d'un champignon d'affinage, la prévalence d'une bactérie, un procédé de fabrication).
 - L'aliment sert uniquement de repas témoin, de comparateur ou de véhicule pour tester autre chose (un médicament, un nutriment ajouté, un autre aliment), sans qu'un effet propre lui soit attribué.
+- L'aliment n'est qu'un facteur parmi de nombreux autres (habitudes de vie, score combiné, questionnaire alimentaire global, liste d'allergènes) sans qu'un effet ou une association propre à cet aliment soit rapporté.
+- Pour les allergies : une étude sur la tolérance, la désensibilisation, l'introduction ou la réintroduction de cet aliment chez des personnes allergiques EST pertinente ; une étude qui recense seulement une sensibilisation parmi de nombreux allergènes, ou qui porte uniquement sur les conséquences de l'éviction de l'aliment, ne l'est pas.
 - Il s'agit d'un éditorial, d'un commentaire, d'une lettre ou d'un protocole d'étude sans résultats.
 - Tout autre sujet hors nutrition/santé humaine.
 Ne réponds "true" que si un effet ou bénéfice a été concrètement évalué chez des sujets humains suite à une consommation alimentaire (essai clinique, cohorte, méta-analyse de données humaines).
