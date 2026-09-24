@@ -18,15 +18,19 @@ on:
         required: false
         default: '10'
       resultats_a_recuperer:
-        description: 'Nombre de résultats Europe PMC à examiner par aliment (20 par défaut)'
+        description: 'Résultats Europe PMC examinés par sujet (vide = valeur du script)'
         required: false
-        default: '20'
+        default: ''
       max_nouvelles_etudes:
-        description: 'Nombre max de nouvelles études ajoutées par aliment (8 par défaut)'
+        description: 'Nouvelles études max par sujet et par run (vide = valeur du script)'
         required: false
-        default: '8'
+        default: ''
+      max_analyses:
+        description: 'Analyses Claude max par sujet et par run (vide = valeur du script)'
+        required: false
+        default: ''
       slugs_cibles:
-        description: 'Slugs ciblés séparés par virgules (vide = tous les aliments)'
+        description: 'Slugs d''aliments ciblés séparés par virgules (vide = tous les aliments)'
         required: false
         default: ''
 concurrency:
@@ -52,8 +56,9 @@ jobs:
           OFFSET: ${{ github.event.inputs.offset || '0' }}
           LIMITE: ${{ github.event.inputs.limite || '2000' }}
           JOURS_VEILLE: ${{ github.event.inputs.jours_veille || '10' }}
-          RESULTATS_A_RECUPERER: ${{ github.event.inputs.resultats_a_recuperer || '20' }}
-          MAX_NOUVELLES_ETUDES_PAR_RUN: ${{ github.event.inputs.max_nouvelles_etudes || '8' }}
+          RESULTATS_A_RECUPERER: ${{ github.event.inputs.resultats_a_recuperer }}
+          MAX_NOUVELLES_ETUDES_PAR_RUN: ${{ github.event.inputs.max_nouvelles_etudes }}
+          MAX_ANALYSES_PAR_RUN: ${{ github.event.inputs.max_analyses }}
           SLUGS_CIBLES: ${{ github.event.inputs.slugs_cibles || '' }}
         run: node scripts/import-etudes.js
       - name: Lancer le script d'import des habitudes alimentaires
@@ -62,8 +67,9 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           JOURS_VEILLE: ${{ github.event.inputs.jours_veille || '10' }}
-          RESULTATS_A_RECUPERER: ${{ github.event.inputs.resultats_a_recuperer || '20' }}
-          MAX_NOUVELLES_ETUDES_PAR_RUN: ${{ github.event.inputs.max_nouvelles_etudes || '8' }}
+          RESULTATS_A_RECUPERER: ${{ github.event.inputs.resultats_a_recuperer }}
+          MAX_NOUVELLES_ETUDES_PAR_RUN: ${{ github.event.inputs.max_nouvelles_etudes }}
+          MAX_ANALYSES_PAR_RUN: ${{ github.event.inputs.max_analyses }}
         run: node scripts/import-habitudes.js
       - name: Envoyer les alertes email
         env:
