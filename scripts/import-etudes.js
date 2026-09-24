@@ -1,24 +1,36 @@
-// Script d'automatisation : récupère des études sur Europe PMC,
-// génère 2 résumés en français via l'API Claude, classe leur fiabilité,
+// Script d'automatisation : récupère des études sur Europe PMC pour les aliments,
+// les trie, génère 2 résumés en français via l'API Claude, classe leur fiabilité,
 // et enregistre tout dans Supabase.
-// Phase actuelle : veille continue, avec recherche limitée aux études publiées
-// récemment (JOURS_VEILLE) et un garde-fou sur le nombre de nouvelles études
-// ajoutées par aliment à chaque run.
-// Traite un lot d'aliments (offset/limite passés en variables d'environnement).
-
+//
+// Recherche : termes_recherche cherchés en texte libre dans le titre et le résumé,
+// fenêtre sur FIRST_IDATE (date d'entrée dans Europe PMC). Pas de filtre PUB_TYPE :
+// les articles récents n'ont pas encore de type de publication (méta-analyse, essai...).
+//
+// Tri en deux temps pour maîtriser les coûts :
+//   1. Haiku (rapide, économique) écarte uniquement les cas CLAIREMENT hors sujet ;
+//      dans le doute, il laisse passer. Ses rejets sont marqués [Haiku].
+//   2. Sonnet juge finement la pertinence et rédige les résumés.
+// Une étude déjà en base (acceptée pour un autre aliment) passe par le même tri
+// avant d'être reliée à cet aliment.
+ 
 const { createClient } = require('@supabase/supabase-js');
-
+ 
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
-
-const RESULTATS_A_RECUPERER = parseInt(process.env.RESULTATS_A_RECUPERER || '20', 10);
-const MAX_NOUVELLES_ETUDES_PAR_RUN = parseInt(process.env.MAX_NOUVELLES_ETUDES_PAR_RUN || '8', 10);
+ 
+const RESULTATS_A_RECUPERER = parseInt(process.env.RESULTATS_A_RECUPERER || '100', 10);
+const MAX_NOUVELLES_ETUDES_PAR_RUN = parseInt(process.env.MAX_NOUVELLES_ETUDES_PAR_RUN || '15', 10);
+const MAX_ANALYSES_PAR_RUN = parseInt(process.env.MAX_ANALYSES_PAR_RUN || '25', 10);
 const OFFSET = parseInt(process.env.OFFSET || '0', 10);
 const LIMITE = parseInt(process.env.LIMITE || '200', 10);
-const JOURS_VEILLE = parseInt(process.env.JOURS_VEILLE || '10', 10); // fenêtre de recherche en jours ; 10 par défaut pour le cron hebdomadaire, ajustable ponctuellement via la variable d'environnement
-
+const JOURS_VEILLE = parseInt(process.env.JOURS_VEILLE || '10', 10);
+ 
+const MODELE_TRI = 'claude-haiku-4-5-20251001';
+const MODELE_ANALYSE = 'claude-sonnet-5';
+const DELAI_MAX_MS = 60000; // délai maximal pour chaque appel réseau
+ 
 const EXCEPTIONS_NOVA4 = [
   'isolat-de-soja',
   'cola-sucre',
@@ -26,28 +38,15 @@ const EXCEPTIONS_NOVA4 = [
   'kimchi',
   'kombucha',
 ];
-
+ 
 function formaterDate(date) {
   return date.toISOString().split('T')[0];
 }
-
-async function compterEtudesExistantes(alimentId) {
-  const { count, error } = await supabase
-    .from('aliments_etudes')
-    .select('*', { count: 'exact', head: true })
-    .eq('aliment_id', alimentId);
-
-  if (error) {
-    console.log(`  Erreur comptage études existantes: ${error.message}`);
-    return null;
-  }
-  return count;
-}
-
+ 
 function normaliserTypeEtude(pubTypeList) {
   if (!pubTypeList || pubTypeList.length === 0) return null;
   const types = pubTypeList.map((t) => t.toLowerCase());
-
+ 
   if (types.includes('meta-analysis')) return 'Méta-analyse';
   if (types.includes('systematic review')) return 'Revue systématique';
   if (types.some((t) => t.includes('scoping review'))) return 'Revue de portée';
@@ -60,20 +59,20 @@ function normaliserTypeEtude(pubTypeList) {
   if (types.some((t) => t.includes('review'))) return 'Revue narrative';
   return null;
 }
-
+ 
 function extraireNbParticipants(abstractText) {
   if (!abstractText) return null;
-
+ 
   // Retire les balises HTML qui peuvent s'intercaler (ex: <i>n</i> = 31)
   const texte = abstractText.replace(/<[^>]+>/g, '');
-
+ 
   const nombresEnLettres = {
     one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10,
     eleven: 11, twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16,
     seventeen: 17, eighteen: 18, nineteen: 19, twenty: 20,
     thirty: 30, forty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90,
   };
-
+ 
   function motEnNombre(mot) {
     const parties = mot.toLowerCase().split('-');
     if (parties.length === 2 && nombresEnLettres[parties[0]] && nombresEnLettres[parties[1]]) {
@@ -81,13 +80,13 @@ function extraireNbParticipants(abstractText) {
     }
     return nombresEnLettres[mot.toLowerCase()] || null;
   }
-
+ 
   // Cas 1 : "n = 31" ou "n=31" — on prend la première occurrence valide
   for (const match of texte.matchAll(/\bn\s*=\s*(\d[\d,\s]{0,6})/gi)) {
     const parsed = parseInt(match[1].replace(/[,\s]/g, ''), 10);
     if (!isNaN(parsed) && parsed > 0 && parsed < 100000) return parsed;
   }
-
+ 
   // Cas 2 : un nombre en chiffres suivi (dans les 3 mots suivants) de participants/patients/...
   for (const match of texte.matchAll(
     /(\d[\d,]{0,6})\s+(?:\w+\s+){0,3}?(participants|patients|subjects|adults|volunteers|individuals|men|women|males|females|children|adolescents)/gi
@@ -95,29 +94,30 @@ function extraireNbParticipants(abstractText) {
     const parsed = parseInt(match[1].replace(/,/g, ''), 10);
     if (!isNaN(parsed) && parsed > 0 && parsed < 100000) return parsed;
   }
-
+ 
   // Cas 3 : nombre écrit en toutes lettres (ex: "Sixty-seven hypercholesterolemic individuals")
-  // On essaie CHAQUE correspondance jusqu'à en trouver une qui donne vraiment un nombre.
   for (const match of texte.matchAll(
     /\b([A-Za-z]+(?:-[A-Za-z]+)?)\s+(?:\w+\s+){0,3}?(participants|patients|subjects|adults|volunteers|individuals|men|women|males|females|children|adolescents)/gi
   )) {
     const nombre = motEnNombre(match[1]);
     if (nombre && nombre > 0) return nombre;
   }
-
+ 
   return null;
 }
+ 
 async function recupererAlimentsATraiter() {
   const { data: aliments, error } = await supabase
     .from('aliments')
     .select('id, nom, slug, niveau_nova, terme_recherche, termes_recherche')
     .eq('actif', true)
-    .order('id', { ascending: true });
-
+    .order('id', { ascending: true })
+    .range(0, 4999); // sans range, Supabase s'arrête à 1000 lignes
+ 
   if (error) {
     throw new Error(`Erreur récupération aliments: ${error.message}`);
   }
-
+ 
   const eligibles = aliments
     .filter((a) => [1, 2, 3].includes(a.niveau_nova) || EXCEPTIONS_NOVA4.includes(a.slug))
     .filter(
@@ -125,27 +125,24 @@ async function recupererAlimentsATraiter() {
         (Array.isArray(a.termes_recherche) && a.termes_recherche.length > 0) ||
         (a.terme_recherche && a.terme_recherche.trim() !== '')
     );
-
+ 
   const slugsCibles = process.env.SLUGS_CIBLES;
   if (slugsCibles) {
     const listeSlugs = slugsCibles.split(',').map((s) => s.trim());
     return eligibles.filter((a) => listeSlugs.includes(a.slug));
   }
-
+ 
   return eligibles;
 }
-
-async function chercherEtudesEuropePMC(aliment, tentative = 1, elargir = false) {
-  // Deux modes de construction de la requête :
+ 
+async function chercherEtudesEuropePMC(aliment, tentative = 1) {
   // - termes_recherche (text[]) : chaque terme cherché comme expression exacte,
   //   variantes reliées par OR. Mode cible.
-  // - terme_recherche (chaîne, hérité) : mots découpés et reliés par AND, ce qui
-  //   rend invisible toute étude n'employant pas exactement ces mots-là.
-  //   Conservé en repli le temps de peupler termes_recherche partout.
+  // - terme_recherche (chaîne, hérité) : mots découpés et reliés par AND.
   const termesMultiples = aliment.termes_recherche;
-
+ 
   let motsClefs;
-
+ 
   if (Array.isArray(termesMultiples) && termesMultiples.length > 0) {
     motsClefs = termesMultiples
       .map((t) => `(TITLE:"${t}" OR ABSTRACT:"${t}")`)
@@ -162,40 +159,116 @@ async function chercherEtudesEuropePMC(aliment, tentative = 1, elargir = false) 
       .map((mot) => `(TITLE:"${mot}" OR ABSTRACT:"${mot}")`)
       .join(' AND ');
   }
-
+ 
   const dateDebut = new Date();
   dateDebut.setDate(dateDebut.getDate() - JOURS_VEILLE);
-  const filtreDate = `AND (FIRST_PDATE:[${formaterDate(dateDebut)} TO ${formaterDate(new Date())}])`;
-
-  const filtrePubType = elargir
-    ? `(PUB_TYPE:"review" OR PUB_TYPE:"meta-analysis" OR PUB_TYPE:"systematic review" OR PUB_TYPE:"randomized controlled trial" OR PUB_TYPE:"clinical trial" OR PUB_TYPE:"observational study" OR PUB_TYPE:"comparative study" OR PUB_TYPE:"case reports")`
-    : `(PUB_TYPE:"review" OR PUB_TYPE:"meta-analysis" OR PUB_TYPE:"systematic review" OR PUB_TYPE:"randomized controlled trial" OR PUB_TYPE:"clinical trial")`;
-
-  const requete = `(${motsClefs}) AND (SRC:MED) AND ${filtrePubType} ${filtreDate}`;
+  const filtreDate = `AND (FIRST_IDATE:[${formaterDate(dateDebut)} TO ${formaterDate(new Date())}])`;
+ 
+  const requete = `(${motsClefs}) AND (SRC:MED) ${filtreDate}`;
   const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(requete)}&format=json&pageSize=${RESULTATS_A_RECUPERER}&resultType=core`;
-  const res = await fetch(url);
-  
- const ERREURS_TEMPORAIRES = [500, 502, 503, 504];
-
+ 
+  const ERREURS_TEMPORAIRES = [500, 502, 503, 504];
+ 
+  let res;
+  try {
+    res = await fetch(url, { signal: AbortSignal.timeout(DELAI_MAX_MS) });
+  } catch (e) {
+    if (tentative < 5) {
+      const delai = 3000 * Math.pow(2, tentative - 1);
+      console.log(`  Europe PMC ne répond pas (${e.name}), nouvelle tentative dans ${delai / 1000}s (${tentative + 1}/5)...`);
+      await new Promise((resolve) => setTimeout(resolve, delai));
+      return chercherEtudesEuropePMC(aliment, tentative + 1);
+    }
+    throw new Error(`Europe PMC injoignable : ${e.message}`);
+  }
+ 
   if (!res.ok) {
     if (ERREURS_TEMPORAIRES.includes(res.status) && tentative < 5) {
       const delai = 3000 * Math.pow(2, tentative - 1);
       console.log(`  Europe PMC indisponible (${res.status}), nouvelle tentative dans ${delai / 1000}s (${tentative + 1}/5)...`);
       await new Promise((resolve) => setTimeout(resolve, delai));
-      return chercherEtudesEuropePMC(aliment, tentative + 1, elargir);
+      return chercherEtudesEuropePMC(aliment, tentative + 1);
     }
     throw new Error(`Europe PMC erreur ${res.status}`);
   }
-
+ 
   const data = await res.json();
   return data.resultList?.result || [];
 }
-
+ 
+// Appel générique à l'API Claude, avec délai maximal. Renvoie le texte brut.
+async function appelerClaude(modele, maxTokens, prompt) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': process.env.ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: modele,
+      max_tokens: maxTokens,
+      messages: [{ role: 'user', content: prompt }],
+    }),
+    signal: AbortSignal.timeout(DELAI_MAX_MS),
+  });
+ 
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Erreur API Claude ${res.status}: ${errText}`);
+  }
+ 
+  const data = await res.json();
+  return data.content.map((b) => b.text || '').join('');
+}
+ 
+function extraireJSON(texte) {
+  const nettoye = texte.replace(/```json|```/g, '').trim();
+  const match = nettoye.match(/\{[\s\S]*\}/);
+  return { nettoye, objet: JSON.parse(match ? match[0] : nettoye) };
+}
+ 
+// Tri rapide par Haiku : n'écarte que les cas CLAIREMENT hors sujet.
+// En cas de doute ou d'erreur, laisse passer (Sonnet tranchera).
+async function trierPertinence(titreOriginal, abstractOriginal, nomAliment) {
+  const prompt = `Tu fais un PREMIER TRI RAPIDE d'études scientifiques pour une fiche sur l'aliment : ${nomAliment}
+ 
+Titre : ${titreOriginal}
+Résumé : ${abstractOriginal}
+ 
+Réponds "false" UNIQUEMENT si l'étude est CLAIREMENT dans l'un de ces cas :
+- elle porte uniquement sur des animaux, des cellules ou des modèles in vitro/in silico, sans aucun sujet humain ;
+- le terme de recherche est un homonyme ou une confusion (autre sens du mot, autre espèce, nom d'un appareil, d'une marque, d'une enzyme, d'une molécule sans rapport...) ;
+- l'aliment n'a aucun rapport réel avec le sujet de l'étude (absent, ou mentionné seulement en passant) ;
+- l'étude porte sur de l'agronomie, de la génétique végétale, de l'élevage, de l'alimentation animale, un procédé industriel ou un matériau, sans consommation humaine ;
+- il s'agit d'un usage uniquement cutané, topique ou cosmétique ;
+- il s'agit d'un protocole sans résultats ou d'une notice de rétractation.
+ 
+Dans TOUS les autres cas, y compris en cas de doute, réponds "true" : une analyse plus fine sera faite ensuite.
+ 
+Réponds UNIQUEMENT avec un objet JSON, rien avant, rien après :
+{"pertinent": true}
+ou
+{"pertinent": false, "raison": "une phrase courte en français"}`;
+ 
+  try {
+    const texte = await appelerClaude(MODELE_TRI, 200, prompt);
+    const { objet } = extraireJSON(texte);
+    if (objet.pertinent === false) {
+      return { pertinent: false, raison: objet.raison || 'hors sujet' };
+    }
+    return { pertinent: true };
+  } catch (e) {
+    console.log(`      Tri Haiku indisponible (${e.message.slice(0, 80)}), on laisse passer à l'analyse.`);
+    return { pertinent: true };
+  }
+}
+ 
 async function analyserEtude(titreOriginal, abstractOriginal, nomAliment, tentative = 1) {
   const prompt = `Tu es un rédacteur scientifique qui vulgarise des études de nutrition/santé pour un site grand public francophone.
-
+ 
 Cette étude a été trouvée en recherchant des publications sur : ${nomAliment}
-
+ 
 Titre original : ${titreOriginal}
 Résumé original (anglais) : ${abstractOriginal}
 Étape 1 — Vérifie le SUJET :
@@ -206,7 +279,7 @@ L'étude apporte-t-elle une information utile sur « ${nomAliment} » ? Réponds
 - des détails de procédé secondaires (UHT, séché, moulu, cru vs cuit) ne suffisent PAS à rendre une étude non pertinente, sauf si l'étude porte précisément sur ce paramètre et conclut à une différence
 Réponds "false" uniquement si : une simple co-occurrence de mots-clés ou une confusion terminologique (ex : un homonyme, une espèce réellement différente, un aliment qui n'apparaît que dans la bibliographie ou en comparaison lointaine), ou si l'étude porte en réalité sur un autre sujet mal indexé sous ce terme de recherche.
 En cas d'hésitation entre pertinent et non pertinent à cette étape, réponds "true" : mieux vaut une étude un peu large sur une fiche qu'une fiche vide.
-
+ 
 Étape 2 — Évalue la pertinence humaine :
 Cette étude mesure-t-elle un EFFET ou un BÉNÉFICE (sur la santé, une maladie, un marqueur biologique...) directement chez des sujets HUMAINS, ou via une méta-analyse/revue qui synthétise de tels résultats humains ?
 Réponds "false" dans les cas suivants :
@@ -215,19 +288,20 @@ Réponds "false" dans les cas suivants :
 - L'étude évalue un usage TOPIQUE, CUTANÉ ou COSMÉTIQUE de « ${nomAliment} » (crème, gel, lotion, gant enduit, application sur la peau...), plutôt qu'une CONSOMMATION ALIMENTAIRE (ingestion orale). Un bénéfice observé sur la peau ou via une application externe ne compte pas, même s'il est mesuré chez l'humain.
 - L'étude porte sur un micro-organisme, une toxine, un contaminant ou un procédé industriel lié à l'aliment, sans mesurer d'effet de sa consommation chez l'humain (ex : la biosynthèse d'un champignon d'affinage, la prévalence d'une bactérie, un procédé de fabrication).
 - L'aliment sert uniquement de repas témoin, de comparateur ou de véhicule pour tester autre chose (un médicament, un nutriment ajouté, un autre aliment), sans qu'un effet propre lui soit attribué.
+- Il s'agit d'un éditorial, d'un commentaire, d'une lettre ou d'un protocole d'étude sans résultats.
 - Tout autre sujet hors nutrition/santé humaine.
 Ne réponds "true" que si un effet ou bénéfice a été concrètement évalué chez des sujets humains suite à une consommation alimentaire (essai clinique, cohorte, méta-analyse de données humaines).
-
+ 
 Étape 3 — Si et seulement si pertinente sur les deux points ci-dessus, rédige les résumés en français.
-
+ 
 Réponds UNIQUEMENT avec un objet JSON valide (rien avant, rien après), au format EXACT suivant. N'utilise JAMAIS de guillemets doubles (") à l'intérieur des textes — utilise des guillemets français « » ou des apostrophes si besoin. N'utilise JAMAIS de retour à la ligne à l'intérieur des valeurs texte — rédige chaque champ comme un seul paragraphe continu, sans saut de ligne.
-
+ 
 Si l'étude N'EST PAS pertinente :
 {
   "pertinent": false,
   "raison": "courte explication en français (une phrase)"
 }
-
+ 
 Si l'étude EST pertinente :
 {
   "pertinent": true,
@@ -235,49 +309,27 @@ Si l'étude EST pertinente :
   "resume_simplifie": "un résumé très simple et accessible en français (80-120 mots), sans jargon, compréhensible par un lecteur non-scientifique",
   "resume_reformule": "une reformulation plus détaillée en français (100-150 mots), qui garde davantage de nuance scientifique et de précision, mais reste lisible"
 }
-
+ 
 Règles importantes :
 - Ne jamais transformer une corrélation en causalité si l'étude ne le permet pas
 - Rester factuel, ne pas exagérer les conclusions
 - Varier le style et la structure des phrases (éviter les formulations répétitives d'un résumé à l'autre)
 - Rédiger uniquement en français`;
-
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': process.env.ANTHROPIC_API_KEY,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-5',
-      max_tokens: 1500,
-      messages: [{ role: 'user', content: prompt }],
-    }),
-  });
-
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`Erreur API Claude ${res.status}: ${errText}`);
-  }
-
-  const data = await res.json();
-  const texte = data.content.map((b) => b.text || '').join('');
-  const nettoye = texte.replace(/```json|```/g, '').trim();
-  const match = nettoye.match(/\{[\s\S]*\}/);
-
+ 
+  const texte = await appelerClaude(MODELE_ANALYSE, 1500, prompt);
+ 
   try {
-    return JSON.parse(match ? match[0] : nettoye);
+    return extraireJSON(texte).objet;
   } catch (e) {
     if (tentative < 3) {
       console.log(`  Réponse d'analyse incomplète, nouvelle tentative (${tentative + 1}/3)...`);
       await new Promise((resolve) => setTimeout(resolve, 1000));
       return analyserEtude(titreOriginal, abstractOriginal, nomAliment, tentative + 1);
     }
-    throw new Error(`JSON invalide reçu de Claude après 3 tentatives : ${e.message} | Début du texte reçu : ${nettoye.slice(0, 200)}`);
+    throw new Error(`JSON invalide reçu de Claude après 3 tentatives : ${e.message} | Début du texte reçu : ${texte.slice(0, 200)}`);
   }
 }
-
+ 
 async function classerFiabilite(titre, resumeOriginal, tentative = 1) {
   const prompt = `Tu es un méthodologiste scientifique. Classe le TYPE D'ÉTUDE suivant dans une seule des 3 catégories ci-dessous, en te basant uniquement sur le titre et le résumé.
 Titre : ${titre}
@@ -292,57 +344,41 @@ ou
 {"niveau": "moderee"}
 ou
 {"niveau": "preliminaire"}`;
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': process.env.ANTHROPIC_API_KEY,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-5',
-      max_tokens: 300,
-      messages: [{ role: 'user', content: prompt }],
-    }),
-  });
-  if (!res.ok) {
-    const errText = await res.text();
-    throw new Error(`Erreur API Claude ${res.status}: ${errText}`);
-  }
-  const data = await res.json();
-  const texte = data.content.map((b) => b.text || '').join('');
-  const nettoye = texte.replace(/```json|```/g, '').trim();
-  const match = nettoye.match(/\{[\s\S]*\}/);
+ 
+  let texte = '';
   try {
-    const resultat = JSON.parse(match ? match[0] : nettoye);
-    if (!resultat.niveau) throw new Error('Champ niveau manquant');
-    return resultat.niveau;
+    texte = await appelerClaude(MODELE_ANALYSE, 300, prompt);
+    const { objet } = extraireJSON(texte);
+    if (!objet.niveau) throw new Error('Champ niveau manquant');
+    return objet.niveau;
   } catch (e) {
     if (tentative < 3) {
-      console.log(`      Réponse fiabilité incomplète ("${nettoye}"), nouvelle tentative (${tentative + 1}/3)...`);
+      console.log(`      Réponse fiabilité incomplète ("${texte}"), nouvelle tentative (${tentative + 1}/3)...`);
       await new Promise((resolve) => setTimeout(resolve, 1000));
       return classerFiabilite(titre, resumeOriginal, tentative + 1);
     }
-    console.log(`      Échec classement fiabilité après 3 tentatives. Dernière réponse reçue : "${nettoye}"`);
+    console.log(`      Échec classement fiabilité après 3 tentatives. Dernière réponse reçue : "${texte}"`);
     return null;
   }
 }
-
+ 
+async function enregistrerRejet(alimentId, sourceId, titre, raison) {
+  await supabase.from('candidats_rejetes').insert({
+    aliment_id: alimentId,
+    source_id: sourceId,
+    titre_original: titre,
+    raison: raison,
+  });
+}
+ 
 async function traiterAliment(aliment) {
   console.log(`\n=== ${aliment.slug} ===`);
-
-  const nbEtudesExistantes = await compterEtudesExistantes(aliment.id);
-  const litteratureFaible = nbEtudesExistantes === 0;
-  if (litteratureFaible) {
-    console.log(`  Aucune étude en base pour cet aliment : filtre élargi pour ce run.`);
-  }
-
-  const resultats = await chercherEtudesEuropePMC(aliment, 1, litteratureFaible);
-  console.log(`  ${resultats.length} études trouvées sur Europe PMC (avant filtrage humain).`);
+ 
+  const resultats = await chercherEtudesEuropePMC(aliment);
+  console.log(`  ${resultats.length} études trouvées sur Europe PMC (avant filtrage).`);
   await new Promise((resolve) => setTimeout(resolve, 300)); // pause pour éviter de saturer Europe PMC
-
-  // Déduplication défensive : Europe PMC peut renvoyer le même article deux fois
-  // dans une même page de résultats.
+ 
+  // Déduplication défensive : Europe PMC peut renvoyer le même article deux fois.
   const dejaVusDansCeLot = new Set();
   const resultatsUniques = resultats.filter((etude) => {
     const sourceId = etude.id || etude.pmid;
@@ -350,84 +386,95 @@ async function traiterAliment(aliment) {
     dejaVusDansCeLot.add(sourceId);
     return true;
   });
-
+ 
   let nouvellesEtudesAjoutees = 0;
-
+  let analysesEffectuees = 0;
+ 
   for (const etude of resultatsUniques) {
     const sourceId = etude.id || etude.pmid;
     if (!sourceId) continue;
-
+ 
     const { data: existant } = await supabase
       .from('etudes')
       .select('id')
       .eq('source', 'Europe PMC')
       .eq('source_id', sourceId)
       .maybeSingle();
-
+ 
     if (existant) {
-      // Rattacher une étude déjà en base ne coûte aucun appel API — ça ne doit
-      // jamais être limité par le garde-fou, contrairement à une vraie nouvelle
-      // analyse juste en dessous.
       const { data: lienExistant } = await supabase
         .from('aliments_etudes')
         .select('aliment_id')
         .eq('aliment_id', aliment.id)
         .eq('etude_id', existant.id)
         .maybeSingle();
-
-      if (!lienExistant) {
-        await supabase.from('aliments_etudes').insert({
-          aliment_id: aliment.id,
-          etude_id: existant.id,
-        });
-        console.log(`  - Déjà en base (${sourceId}), reliée à cet aliment.`);
-      } else {
+ 
+      if (lienExistant) {
         console.log(`  - Déjà en base et déjà liée (${sourceId}), on passe.`);
+        continue;
       }
-      continue;
     }
-
-    // À partir d'ici, on s'apprête à faire un vrai appel Claude (coûteux) :
-    // c'est uniquement ici que le garde-fou doit s'appliquer.
-    if (nouvellesEtudesAjoutees >= MAX_NOUVELLES_ETUDES_PAR_RUN) {
-      console.log(`  - Garde-fou de ${MAX_NOUVELLES_ETUDES_PAR_RUN} nouvelles études atteint pour ce run, on arrête ici.`);
-      break;
-    }
-
-    if (!etude.abstractText) {
-      console.log(`  - Pas de résumé disponible pour ${sourceId}, on passe.`);
-      continue;
-    }
-
+ 
     const { data: dejaRejete } = await supabase
       .from('candidats_rejetes')
       .select('source_id')
       .eq('aliment_id', aliment.id)
       .eq('source_id', sourceId)
       .maybeSingle();
-
+ 
     if (dejaRejete) {
-      console.log(`  - Déjà rejeté précédemment (${sourceId}), on passe.`);
+      console.log(`  - Déjà rejeté précédemment pour cet aliment (${sourceId}), on passe.`);
       continue;
     }
-
+ 
+    // Garde-fous (appels Claude coûteux à partir d'ici)
+    if (!existant && nouvellesEtudesAjoutees >= MAX_NOUVELLES_ETUDES_PAR_RUN) {
+      console.log(`  - Garde-fou de ${MAX_NOUVELLES_ETUDES_PAR_RUN} nouvelles études atteint pour ce run, on arrête ici.`);
+      break;
+    }
+    if (analysesEffectuees >= MAX_ANALYSES_PAR_RUN) {
+      console.log(`  - Garde-fou de ${MAX_ANALYSES_PAR_RUN} analyses Sonnet atteint pour ce run, on arrête ici.`);
+      break;
+    }
+ 
+    if (!etude.abstractText) {
+      console.log(`  - Pas de résumé disponible pour ${sourceId}, on passe.`);
+      continue;
+    }
+ 
     try {
-      const analyse = await analyserEtude(etude.title, etude.abstractText, aliment.nom);
-
-      if (!analyse.pertinent) {
-        console.log(`  - Écartée (${sourceId}) : ${analyse.raison}`);
-        await supabase.from('candidats_rejetes').insert({
-          aliment_id: aliment.id,
-          source_id: sourceId,
-          titre_original: etude.title,
-          raison: analyse.raison,
-        });
+      // 1. Tri rapide Haiku
+      const tri = await trierPertinence(etude.title, etude.abstractText, aliment.nom);
+      if (!tri.pertinent) {
+        console.log(`  - Écartée au tri (${sourceId}) : ${tri.raison}`);
+        await enregistrerRejet(aliment.id, sourceId, etude.title, `[Haiku] ${tri.raison}`);
         continue;
       }
-
+ 
+      // 2. Analyse fine Sonnet
+      analysesEffectuees++;
+      const analyse = await analyserEtude(etude.title, etude.abstractText, aliment.nom);
+ 
+      if (!analyse.pertinent) {
+        console.log(`  - Écartée (${sourceId}) : ${analyse.raison}`);
+        await enregistrerRejet(aliment.id, sourceId, etude.title, analyse.raison);
+        continue;
+      }
+ 
+      // Étude déjà en base pour un autre aliment : on la relie seulement
+      // (les résumés existants ne sont pas modifiés).
+      if (existant) {
+        await supabase.from('aliments_etudes').insert({
+          aliment_id: aliment.id,
+          etude_id: existant.id,
+        });
+        console.log(`  - Déjà en base (${sourceId}), jugée pertinente et reliée à cet aliment.`);
+        continue;
+      }
+ 
       const niveauFiabilite = await classerFiabilite(etude.title, etude.abstractText);
       await new Promise((resolve) => setTimeout(resolve, 500));
-
+ 
       let etudeId;
       const { data: nouvelleEtude, error: erreurInsert } = await supabase
         .from('etudes')
@@ -448,7 +495,7 @@ async function traiterAliment(aliment) {
         })
         .select('id')
         .single();
-
+ 
       if (erreurInsert) {
         if (erreurInsert.code === '23505') {
           const { data: etudeExistante } = await supabase
@@ -457,7 +504,7 @@ async function traiterAliment(aliment) {
             .eq('source', 'Europe PMC')
             .eq('source_id', sourceId)
             .single();
-
+ 
           if (!etudeExistante) {
             console.log(`  - Conflit d'insertion pour ${sourceId}, mais étude introuvable ensuite :`, erreurInsert.message);
             continue;
@@ -470,24 +517,24 @@ async function traiterAliment(aliment) {
       } else {
         etudeId = nouvelleEtude.id;
       }
-
+ 
       const { data: lienExistant } = await supabase
         .from('aliments_etudes')
         .select('aliment_id')
         .eq('aliment_id', aliment.id)
         .eq('etude_id', etudeId)
         .maybeSingle();
-
+ 
       if (lienExistant) {
         console.log(`  - Déjà liée à cet aliment (${sourceId}), on passe.`);
         continue;
       }
-
+ 
       await supabase.from('aliments_etudes').insert({
         aliment_id: aliment.id,
         etude_id: etudeId,
       });
-
+ 
       nouvellesEtudesAjoutees++;
       console.log(`  - Ajoutée (${niveauFiabilite || 'fiabilité inconnue'}) : ${analyse.titre_traduit}`);
     } catch (e) {
@@ -495,13 +542,13 @@ async function traiterAliment(aliment) {
     }
   }
 }
-
+ 
 async function main() {
-  console.log(`Paramètres de ce run : OFFSET=${OFFSET}, LIMITE=${LIMITE}, JOURS_VEILLE=${JOURS_VEILLE}`);
+  console.log(`Paramètres de ce run : OFFSET=${OFFSET}, LIMITE=${LIMITE}, JOURS_VEILLE=${JOURS_VEILLE}, RESULTATS_A_RECUPERER=${RESULTATS_A_RECUPERER}, MAX_NOUVELLES=${MAX_NOUVELLES_ETUDES_PAR_RUN}, MAX_ANALYSES=${MAX_ANALYSES_PAR_RUN}`);
   const tousLesAliments = await recupererAlimentsATraiter();
   const lot = tousLesAliments.slice(OFFSET, OFFSET + LIMITE);
   console.log(`${tousLesAliments.length} aliments éligibles au total. Lot traité : offset ${OFFSET}, ${lot.length} aliments (jusqu'à l'offset ${OFFSET + lot.length}).`);
-
+ 
   for (const aliment of lot) {
     try {
       await traiterAliment(aliment);
@@ -516,8 +563,7 @@ async function main() {
   }
   console.log('\nTerminé.');
 }
-
-main();
  
+main();
 
  
