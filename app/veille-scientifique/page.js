@@ -139,10 +139,10 @@ export default function VeilleScientifique() {
           {itemsFiltres.map((item) => (
             <li key={`${item.type}-${item.slug}`} className={styles.resultItem}>
               <Link href={`/${item.type === 'habitude' ? 'habitudes' : 'aliments'}/${item.slug}`} className={styles.resultLink}>
-                <strong className={styles.resultNom}>{item.nom.split(',')[0]}</strong>
-                {item.nom.includes(',') && (
+                <strong className={styles.resultNom}>{item.nom.split(', ')[0]}</strong>
+                {item.nom.includes(', ') && (
                   <span className={styles.resultDetail}>
-                    {' '}({item.nom.split(',').slice(1).join(',').trim()})
+                    {' '}({item.nom.split(', ').slice(1).join(', ').trim()})
                   </span>
                 )}
                 <span className={styles.resultCategorie}> — {item.categorie}</span>
