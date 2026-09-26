@@ -2,7 +2,7 @@ name: Import études scientifiques
 on:
   schedule:
     - cron: '17 3 * * 1'   # lundi 3h17 UTC
-    - cron: '17 9 * * 1'   # lundi 9h17 UTC, filet de sécurité
+    - cron: '17 9 * * 1'   # lundi 9h17 UTC, filet de sécurité (ne tourne que si le premier n'a pas réussi)
   workflow_dispatch:
     inputs:
       offset:
@@ -36,8 +36,41 @@ on:
 concurrency:
   group: import-etudes
   cancel-in-progress: false
+permissions:
+  contents: read
+  actions: read
 jobs:
+  verifier:
+    runs-on: ubuntu-latest
+    outputs:
+      deja_fait: ${{ steps.check.outputs.deja_fait }}
+    steps:
+      - name: Vérifier si un run planifié a déjà réussi aujourd'hui
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ github.event_name }}" != "schedule" ]; then
+            echo "Lancement manuel : pas de vérification."
+            echo "deja_fait=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          AUJOURDHUI=$(date -u +%Y-%m-%d)
+          NB=$(gh run list --repo "${{ github.repository }}" --workflow "${{ github.workflow }}" \
+                --event schedule --limit 10 --json databaseId,conclusion,createdAt \
+              | jq --arg d "$AUJOURDHUI" --argjson moi ${{ github.run_id }} \
+                '[.[] | select(.databaseId != $moi) | select(.createdAt | startswith($d)) | select(.conclusion == "success")] | length')
+          if [ "$NB" -gt 0 ]; then
+            echo "Un run planifié a déjà réussi aujourd'hui : on s'arrête."
+            echo "deja_fait=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Aucun run réussi aujourd'hui : on lance l'import."
+            echo "deja_fait=false" >> "$GITHUB_OUTPUT"
+          fi
+
   import:
+    needs: verifier
+    if: needs.verifier.outputs.deja_fait != 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Récupérer le code
