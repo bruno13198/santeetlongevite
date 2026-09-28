@@ -309,6 +309,7 @@ Réponds "false" UNIQUEMENT si l'étude est CLAIREMENT dans l'un de ces cas :
 - elle développe ou valide une méthode d'analyse, de dosage, de détection ou d'authentification.
 
 Dans TOUS les autres cas, y compris en cas de doute, réponds "true" : une analyse plus fine sera faite ensuite.
+Une étude chez l'humain qui ne trouve AUCUN effet ou AUCUNE association avec l'aliment est un résultat valable : réponds "true".
 
 Réponds UNIQUEMENT avec un objet JSON, rien avant, rien après :
 {"pertinent": true}
