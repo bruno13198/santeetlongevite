@@ -287,27 +287,34 @@ function extraireJSON(texte) {
  
 // Tri rapide par Haiku : n'écarte que les cas CLAIREMENT hors sujet.
 // En cas de doute ou d'erreur, laisse passer (Sonnet tranchera).
+// 28 sept. 2026 : ajout des catégories que Sonnet rejette systématiquement
+// (contamination, technologie, enquêtes sans issue de santé, méthodes d'analyse),
+// pour ne plus consommer le garde-fou d'analyses Sonnet sur ces études.
 async function trierPertinence(titreOriginal, abstractOriginal, nomAliment) {
   const prompt = `Tu fais un PREMIER TRI RAPIDE d'études scientifiques pour une fiche sur l'aliment : ${nomAliment}
- 
+
 Titre : ${titreOriginal}
 Résumé : ${abstractOriginal}
- 
+
 Réponds "false" UNIQUEMENT si l'étude est CLAIREMENT dans l'un de ces cas :
 - elle porte uniquement sur des animaux, des cellules ou des modèles in vitro/in silico, sans aucun sujet humain ;
 - le terme de recherche est un homonyme ou une confusion (autre sens du mot, autre espèce, nom d'un appareil, d'une marque, d'une enzyme, d'une molécule sans rapport...) ;
 - l'aliment n'a aucun rapport réel avec le sujet de l'étude (absent, ou mentionné seulement en passant) ;
 - l'étude porte sur de l'agronomie, de la génétique végétale, de l'élevage, de l'alimentation animale, un procédé industriel ou un matériau, sans consommation humaine ;
 - il s'agit d'un usage uniquement cutané, topique ou cosmétique ;
-- il s'agit d'un protocole sans résultats ou d'une notice de rétractation.
- 
+- il s'agit d'un protocole sans résultats ou d'une notice de rétractation ;
+- elle mesure seulement une contamination de l'aliment (bactéries, résistance aux antibiotiques, virus, parasites, métaux, pesticides, mycotoxines, microplastiques), éventuellement avec un calcul de risque théorique, sans aucun effet de santé observé chez des personnes ;
+- elle porte sur la formulation, la texture, la conservation, les propriétés physico-chimiques ou l'analyse sensorielle d'un produit, sans effet de santé mesuré chez des personnes ;
+- c'est une enquête sur les achats, les connaissances, les attitudes ou la fréquence de consommation, sans lien mesuré avec un effet de santé ;
+- elle développe ou valide une méthode d'analyse, de dosage, de détection ou d'authentification.
+
 Dans TOUS les autres cas, y compris en cas de doute, réponds "true" : une analyse plus fine sera faite ensuite.
- 
+
 Réponds UNIQUEMENT avec un objet JSON, rien avant, rien après :
 {"pertinent": true}
 ou
 {"pertinent": false, "raison": "une phrase courte en français"}`;
- 
+
   try {
     const texte = await appelerClaude(MODELE_TRI, 200, prompt);
     const { objet } = extraireJSON(texte);
