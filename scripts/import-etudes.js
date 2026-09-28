@@ -48,35 +48,62 @@ const EXCEPTIONS_NOVA4 = [
 // ou matériau. Liste volontairement prudente : pas de "cows", "sheep", "goats"
 // (lait de vache/brebis/chèvre chez l'humain) ni "in vitro" (fécondation in vitro).
 // "poultry" seul retiré le 28 sept. 2026 (bloquait "poultry consumption").
-// Tous les mots ci-dessous ont été vérifiés : aucun titre d'étude acceptée ne les contient.
-// Dernier bloc (28 sept. 2026) extrait des titres rejetés, puis filtré à la main.
+// Tous les mots et expressions ci-dessous sont absents des titres d'études acceptées.
+// Exception (chercherEtudesEuropePMC) : un titre contenant aussi un marqueur humain
+// ("humans", "patients", "trial"...) n'est pas exclu.
 // Écartés volontairement : packaging, post-harvest, postharvest, aquaculture, drought,
 // abiotic stress, wastewater, genome-wide, transcriptomic, sensor, spectroscopy,
 // germination, biofilm, invasive, juvenile, nanoparticles, subtilis, lactiplantibacillus.
 const MOTS_EXCLUS_TITRE = [
+  // Animaux et élevage
   'mice', 'mouse', 'murine', 'rat', 'rats', 'rodent', 'rodents',
   'broiler', 'broilers', 'chickens', 'hens',
   'poultry farm', 'poultry farms', 'poultry production', 'poultry industry', 'poultry feed',
   'poultry diet', 'poultry diets', 'poultry litter', 'poultry house', 'poultry houses',
   'piglets', 'pigs', 'swine', 'porcine', 'cattle', 'dairy cows', 'calves', 'lambs', 'ruminants',
   'zebrafish', 'Drosophila', 'larvae', 'nematode', 'nematodes',
-  'Arabidopsis', 'cultivar', 'cultivars', 'rootstock', 'in silico',
+  'honeybee', 'honeybees', 'Apis mellifera', 'honey bee', 'silage',
+  'breast meat', 'meat quality', 'retail chicken', 'nutrient digestibility', 'rumen fermentation',
+  'soybean meal',
+  // Aquaculture
+  'seabream', 'aurata', 'Sparus', 'gilthead seabream', 'Pagrus major', 'vannamei', 'Penaeus',
+  'Oncorhynchus', 'grass carp', 'common carp', 'Cyprinus carpio', 'Oreochromis niloticus',
+  'Nile tilapia', 'white shrimp', 'Mytilus galloprovincialis',
+  // Agronomie et génétique végétale
+  'Arabidopsis', 'cultivar', 'cultivars', 'rootstock', 'pest', 'biocontrol', 'herbicide',
+  'fertilizer', 'salt stress', 'seedlings', 'seedling', 'gene family', 'genome-wide identification',
+  'genome-wide characterization', 'genome sequence', 'genomic characterization', 'new species',
+  'rhizosphere', 'Fusarium', 'cultivation', 'soils', 'greenhouse', 'Botrytis', 'cinerea',
+  'photosynthetic', 'hydroponic', 'endophytic', 'Alternaria', 'Trichoderma', 'mosaic',
+  'flowering', 'growth-promoting', 'plant growth', 'fruit quality', 'drought tolerance',
+  'drought stress', 'stress tolerance', 'salt tolerance', 'salinity stress', 'mosaic virus',
+  'arbuscular mycorrhizal', 'anthocyanin biosynthesis', 'Brassica juncea', 'soft rot',
+  'lettuce growth', 'use efficiency', 'growth promotion', 'Colocasia esculenta',
+  // Matériaux, procédés et conservation
   'hydrogel', 'hydrogels', 'scaffold', 'scaffolds', 'tissue engineering', 'bioprinting',
-  'microneedle', 'microneedles', 'wound dressing', 'edible film', 'shelf life',
-  'adsorption', 'biochar', 'green synthesis', 'molecular docking',
-  'honeybee', 'honeybees', 'Apis mellifera', 'silage', 'pest', 'biocontrol',
-  'herbicide', 'fertilizer', 'salt stress', 'seedlings',
-  'gene family', 'genome-wide identification',
+  'microneedle', 'microneedles', 'wound dressing', 'edible film', 'shelf life', 'films',
+  'composite films', 'packaging films', 'active packaging', 'adsorption', 'biochar',
+  'green synthesis', 'silver nanoparticles', 'oxide nanoparticles', 'carbon quantum', 'quantum',
+  'Pickering', 'rheological', 'interfacial', 'eutectic', 'deep eutectic', 'porous',
+  'reinforced', 'composites', 'emulsion gels', 'gel properties', 'physicochemical properties',
+  'physicochemical characterization', 'storage stability', 'oxidative stability', 'color stability',
+  'freshness', 'freshness monitoring', 'spoilage', 'refrigerated', 'fresh-cut', 'pulsed',
+  'strawberry preservation', 'fruit preservation', 'food preservation', 'quality deterioration',
+  'microbiological quality', 'flavor compounds', 'pomelo peel', 'vitro digestion',
+  'solid-state fermentation', 'response surface', 'metabolic engineering', 'anaerobic digestion',
+  'wastewater treatment', 'remediation', 'nanoplastics',
+  // Microbiologie non alimentaire et antimicrobiens
+  'Pseudomonas', 'Acinetobacter', 'baumannii', 'Aspergillus', 'antifungal',
+  'antifungal activity', 'antibacterial activity', 'antimicrobial properties',
+  'against multidrug-resistant', 'carbapenem',
+  // Méthodes d'analyse et informatique
+  'in silico', 'molecular docking', 'molecular dynamics', 'electrochemical', 'colorimetric',
+  'hyperspectral', 'rapid detection', 'sensitive detection', 'molecular detection', 'cell line',
+  'mesenchymal stem',
+  // Réglementaire et divers
+  'reasoned opinion', 'existing MRLs', 'active substance', 'pesticide risk',
   'iron sucrose', 'sucrose preference', 'sucrose gradient', 'sucrose gradients',
-  'chemical oxygen demand', 'carbapenem',
-  'films', 'rhizosphere', 'Fusarium', 'seabream', 'cultivation', 'Pseudomonas',
-  'electrochemical', 'Pickering', 'rheological', 'soils', 'interfacial', 'freshness',
-  'aurata', 'Sparus', 'eutectic', 'colorimetric', 'greenhouse', 'vannamei', 'Penaeus',
-  'Oncorhynchus', 'spoilage', 'Botrytis', 'cinerea', 'hyperspectral', 'photosynthetic',
-  'hydroponic', 'endophytic', 'Alternaria', 'nanoplastics', 'Trichoderma', 'porous',
-  'Acinetobacter', 'baumannii', 'refrigerated', 'reinforced', 'quantum',
-  'growth-promoting', 'composites', 'mosaic', 'remediation', 'Aspergillus', 'fresh-cut',
-  'pulsed', 'antifungal', 'flowering', 'seedling',
+  'chemical oxygen demand',
 ];
  
 function formaterDate(date) {
