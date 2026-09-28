@@ -235,8 +235,16 @@ async function chercherEtudesEuropePMC(aliment) {
   const filtreDate = `AND (FIRST_IDATE:[${formaterDate(dateDebut)} TO ${formaterDate(new Date())}])`;
  
   const exclusionTitre = MOTS_EXCLUS_TITRE.map((m) => `TITLE:"${m}"`).join(' OR ');
- 
-  const requete = `(${motsClefs}) AND (SRC:MED) NOT (${exclusionTitre}) ${filtreDate}`;
+  // Exception (28 sept. 2026) : un titre qui contient aussi un marqueur humain explicite
+  // n'est pas exclu (ex. "... in humans and mice", "... in healthy young men and rats").
+  // Haiku et Sonnet trancheront ensuite normalement.
+  const MARQUEURS_HUMAINS = [
+    'human', 'humans', 'men', 'women', 'adult', 'adults', 'older adults', 'elderly',
+    'children', 'adolescents', 'infants', 'patients', 'participants', 'volunteers',
+    'subjects', 'trial', 'randomized', 'randomised',
+  ];
+  const marqueursHumains = MARQUEURS_HUMAINS.map((m) => `TITLE:"${m}"`).join(' OR ');
+  const requete = `(${motsClefs}) AND (SRC:MED) NOT ((${exclusionTitre}) AND NOT (${marqueursHumains})) ${filtreDate}`;
  
   // Lecture de toutes les pages (curseur Europe PMC), jusqu'au maximum fixé.
   const resultats = [];
