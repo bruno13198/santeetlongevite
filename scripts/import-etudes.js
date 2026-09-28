@@ -47,12 +47,16 @@ const EXCEPTIONS_NOVA4 = [
 // Mots de TITRE signalant clairement un sujet animal, végétal, informatique
 // ou matériau. Liste volontairement prudente : pas de "cows", "sheep", "goats"
 // (lait de vache/brebis/chèvre chez l'humain) ni "in vitro" (fécondation in vitro).
+// "poultry" seul retiré le 28 sept. 2026 (bloquait "poultry consumption", utile à la
+// fiche Volaille) et remplacé par des expressions propres à l'élevage.
 // Mots ajoutés le 28 sept. 2026 après vérification : aucune étude pertinente
 // déjà en base ne contient ces mots dans son titre. Écartés volontairement :
 // packaging, post-harvest, postharvest, aquaculture, drought, abiotic stress, wastewater.
 const MOTS_EXCLUS_TITRE = [
   'mice', 'mouse', 'murine', 'rat', 'rats', 'rodent', 'rodents',
-  'broiler', 'broilers', 'chickens', 'hens', 'poultry',
+  'broiler', 'broilers', 'chickens', 'hens',
+  'poultry farm', 'poultry farms', 'poultry production', 'poultry industry', 'poultry feed',
+  'poultry diet', 'poultry diets', 'poultry litter', 'poultry house', 'poultry houses',
   'piglets', 'pigs', 'swine', 'porcine', 'cattle', 'dairy cows', 'calves', 'lambs', 'ruminants',
   'zebrafish', 'Drosophila', 'larvae', 'nematode', 'nematodes',
   'Arabidopsis', 'cultivar', 'cultivars', 'rootstock', 'in silico',
