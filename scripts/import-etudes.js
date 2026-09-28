@@ -47,11 +47,12 @@ const EXCEPTIONS_NOVA4 = [
 // Mots de TITRE signalant clairement un sujet animal, végétal, informatique
 // ou matériau. Liste volontairement prudente : pas de "cows", "sheep", "goats"
 // (lait de vache/brebis/chèvre chez l'humain) ni "in vitro" (fécondation in vitro).
-// "poultry" seul retiré le 28 sept. 2026 (bloquait "poultry consumption", utile à la
-// fiche Volaille) et remplacé par des expressions propres à l'élevage.
-// Mots ajoutés le 28 sept. 2026 après vérification : aucune étude pertinente
-// déjà en base ne contient ces mots dans son titre. Écartés volontairement :
-// packaging, post-harvest, postharvest, aquaculture, drought, abiotic stress, wastewater.
+// "poultry" seul retiré le 28 sept. 2026 (bloquait "poultry consumption").
+// Tous les mots ci-dessous ont été vérifiés : aucun titre d'étude acceptée ne les contient.
+// Dernier bloc (28 sept. 2026) extrait des titres rejetés, puis filtré à la main.
+// Écartés volontairement : packaging, post-harvest, postharvest, aquaculture, drought,
+// abiotic stress, wastewater, genome-wide, transcriptomic, sensor, spectroscopy,
+// germination, biofilm, invasive, juvenile, nanoparticles, subtilis, lactiplantibacillus.
 const MOTS_EXCLUS_TITRE = [
   'mice', 'mouse', 'murine', 'rat', 'rats', 'rodent', 'rodents',
   'broiler', 'broilers', 'chickens', 'hens',
@@ -68,6 +69,14 @@ const MOTS_EXCLUS_TITRE = [
   'gene family', 'genome-wide identification',
   'iron sucrose', 'sucrose preference', 'sucrose gradient', 'sucrose gradients',
   'chemical oxygen demand', 'carbapenem',
+  'films', 'rhizosphere', 'Fusarium', 'seabream', 'cultivation', 'Pseudomonas',
+  'electrochemical', 'Pickering', 'rheological', 'soils', 'interfacial', 'freshness',
+  'aurata', 'Sparus', 'eutectic', 'colorimetric', 'greenhouse', 'vannamei', 'Penaeus',
+  'Oncorhynchus', 'spoilage', 'Botrytis', 'cinerea', 'hyperspectral', 'photosynthetic',
+  'hydroponic', 'endophytic', 'Alternaria', 'nanoplastics', 'Trichoderma', 'porous',
+  'Acinetobacter', 'baumannii', 'refrigerated', 'reinforced', 'quantum',
+  'growth-promoting', 'composites', 'mosaic', 'remediation', 'Aspergillus', 'fresh-cut',
+  'pulsed', 'antifungal', 'flowering', 'seedling',
 ];
  
 function formaterDate(date) {
