@@ -44,15 +44,24 @@ const EXCEPTIONS_NOVA4 = [
   'proteine-de-soja-texturee-rehydratee',
 ];
  
-// Mots de TITRE signalant clairement un sujet animal, végétal ou informatique.
-// Liste volontairement prudente : pas de "cows", "sheep", "goats" (lait de
-// vache/brebis/chèvre chez l'humain) ni "in vitro" (fécondation in vitro).
+// Mots de TITRE signalant clairement un sujet animal, végétal, informatique
+// ou matériau. Liste volontairement prudente : pas de "cows", "sheep", "goats"
+// (lait de vache/brebis/chèvre chez l'humain) ni "in vitro" (fécondation in vitro).
+// Mots ajoutés le 28 sept. 2026 après vérification : aucune étude pertinente
+// déjà en base ne contient ces mots dans son titre. Écartés volontairement :
+// packaging, post-harvest, postharvest, aquaculture, drought, abiotic stress.
 const MOTS_EXCLUS_TITRE = [
   'mice', 'mouse', 'murine', 'rat', 'rats', 'rodent', 'rodents',
   'broiler', 'broilers', 'chickens', 'hens', 'poultry',
   'piglets', 'pigs', 'swine', 'porcine', 'cattle', 'dairy cows', 'calves', 'lambs', 'ruminants',
   'zebrafish', 'Drosophila', 'larvae', 'nematode', 'nematodes',
   'Arabidopsis', 'cultivar', 'cultivars', 'rootstock', 'in silico',
+  'hydrogel', 'hydrogels', 'scaffold', 'scaffolds', 'tissue engineering', 'bioprinting',
+  'microneedle', 'microneedles', 'wound dressing', 'edible film', 'shelf life',
+  'adsorption', 'biochar', 'green synthesis', 'molecular docking',
+  'honeybee', 'honeybees', 'Apis mellifera', 'silage', 'pest', 'biocontrol',
+  'herbicide', 'fertilizer', 'salt stress', 'seedlings',
+  'gene family', 'genome-wide identification',
 ];
  
 function formaterDate(date) {
