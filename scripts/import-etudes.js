@@ -601,18 +601,51 @@ async function main() {
   const tousLesAliments = await recupererAlimentsATraiter();
   const lot = tousLesAliments.slice(OFFSET, OFFSET + LIMITE);
   console.log(`${tousLesAliments.length} aliments éligibles au total. Lot traité : offset ${OFFSET}, ${lot.length} aliments (jusqu'à l'offset ${OFFSET + lot.length}).`);
- 
+
+  // Premier passage : les aliments en échec (ex. Europe PMC indisponible) sont mis de côté.
+  let enEchec = [];
   for (const aliment of lot) {
     try {
       await traiterAliment(aliment);
     } catch (e) {
       console.log(`Erreur générale sur ${aliment.slug}:`, e.message);
-      await supabase.from('erreurs_import').insert({
-        aliment_slug: aliment.slug,
-        type_erreur: 'echec_recherche',
-        message: e.message,
-      });
+      enEchec.push({ aliment, message: e.message });
     }
+  }
+
+  // Reprises en fin de run, après une pause, pour laisser à Europe PMC le temps de revenir.
+  const PAUSES_REPRISE_MIN = [5, 15];
+  for (let passe = 0; passe < PAUSES_REPRISE_MIN.length && enEchec.length > 0; passe++) {
+    const pause = PAUSES_REPRISE_MIN[passe];
+    console.log(`\n${enEchec.length} aliment(s) en échec. Reprise ${passe + 1}/${PAUSES_REPRISE_MIN.length} dans ${pause} min : ${enEchec.map((x) => x.aliment.slug).join(', ')}`);
+    await new Promise((resolve) => setTimeout(resolve, pause * 60 * 1000));
+
+    const encoreEnEchec = [];
+    for (const { aliment } of enEchec) {
+      try {
+        await traiterAliment(aliment);
+      } catch (e) {
+        console.log(`Erreur générale (reprise ${passe + 1}) sur ${aliment.slug}:`, e.message);
+        encoreEnEchec.push({ aliment, message: e.message });
+      }
+    }
+    enEchec = encoreEnEchec;
+  }
+
+  // Seuls les échecs définitifs sont enregistrés.
+  for (const { aliment, message } of enEchec) {
+    await supabase.from('erreurs_import').insert({
+      aliment_slug: aliment.slug,
+      type_erreur: 'echec_recherche',
+      message,
+    });
+  }
+
+  if (enEchec.length > 0) {
+    console.log(`\n⚠️ ${enEchec.length} aliment(s) toujours en échec après les reprises. À relancer via slugs_cibles :`);
+    console.log(enEchec.map((x) => x.aliment.slug).join(','));
+  } else {
+    console.log('\nAucun aliment en échec.');
   }
   console.log('\nTerminé.');
 }
