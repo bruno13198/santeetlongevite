@@ -19,6 +19,18 @@ on:
         description: 'Nombre d''aliments à traiter'
         required: false
         default: '2000'
+      resultats_a_recuperer:
+        description: 'Résultats Europe PMC examinés par aliment (vide = 500)'
+        required: false
+        default: ''
+      max_nouvelles_etudes:
+        description: 'Nouvelles études max par aliment et par run (vide = 15)'
+        required: false
+        default: ''
+      max_analyses:
+        description: 'Analyses Sonnet max par aliment et par run (vide = 25)'
+        required: false
+        default: ''
 
 concurrency:
   group: import-etudes
@@ -45,4 +57,7 @@ jobs:
           JOURS_VEILLE: ${{ github.event.inputs.jours_veille || '10' }}
           OFFSET: ${{ github.event.inputs.offset || '0' }}
           LIMITE: ${{ github.event.inputs.limite || '2000' }}
+          RESULTATS_A_RECUPERER: ${{ github.event.inputs.resultats_a_recuperer }}
+          MAX_NOUVELLES_ETUDES_PAR_RUN: ${{ github.event.inputs.max_nouvelles_etudes }}
+          MAX_ANALYSES_PAR_RUN: ${{ github.event.inputs.max_analyses }}
         run: node scripts/import-etudes.js
