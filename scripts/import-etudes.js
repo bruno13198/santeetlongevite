@@ -49,7 +49,7 @@ const EXCEPTIONS_NOVA4 = [
 // (lait de vache/brebis/chèvre chez l'humain) ni "in vitro" (fécondation in vitro).
 // Mots ajoutés le 28 sept. 2026 après vérification : aucune étude pertinente
 // déjà en base ne contient ces mots dans son titre. Écartés volontairement :
-// packaging, post-harvest, postharvest, aquaculture, drought, abiotic stress.
+// packaging, post-harvest, postharvest, aquaculture, drought, abiotic stress, wastewater.
 const MOTS_EXCLUS_TITRE = [
   'mice', 'mouse', 'murine', 'rat', 'rats', 'rodent', 'rodents',
   'broiler', 'broilers', 'chickens', 'hens', 'poultry',
@@ -62,6 +62,8 @@ const MOTS_EXCLUS_TITRE = [
   'honeybee', 'honeybees', 'Apis mellifera', 'silage', 'pest', 'biocontrol',
   'herbicide', 'fertilizer', 'salt stress', 'seedlings',
   'gene family', 'genome-wide identification',
+  'iron sucrose', 'sucrose preference', 'sucrose gradient', 'sucrose gradients',
+  'chemical oxygen demand', 'carbapenem',
 ];
  
 function formaterDate(date) {
