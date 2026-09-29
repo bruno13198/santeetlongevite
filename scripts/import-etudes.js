@@ -7,6 +7,8 @@
 // les articles récents n'ont pas encore de type de publication (méta-analyse, essai...).
 // Les titres signalant clairement un sujet animal/végétal sont exclus dès la requête.
 // Toutes les pages de résultats sont lues (jusqu'à RESULTATS_A_RECUPERER).
+// La requête est envoyée en POST (searchPOST) : la liste d'exclusions est trop longue
+// pour tenir dans une adresse web (erreurs 400/414 en GET, 29 sept. 2026).
 //
 // Tri en deux temps pour maîtriser les coûts :
 //   1. Haiku (rapide, économique) écarte uniquement les cas CLAIREMENT hors sujet ;
@@ -33,6 +35,7 @@ const JOURS_VEILLE = parseInt(process.env.JOURS_VEILLE || '10', 10);
 const MODELE_TRI = 'claude-haiku-4-5-20251001';
 const MODELE_ANALYSE = 'claude-sonnet-5';
 const DELAI_MAX_MS = 60000; // délai maximal pour chaque appel réseau
+const URL_EUROPEPMC_POST = 'https://www.ebi.ac.uk/europepmc/webservices/rest/searchPOST';
  
 const EXCEPTIONS_NOVA4 = [
   'isolat-de-soja',
@@ -202,21 +205,32 @@ async function recupererAlimentsATraiter() {
   return eligibles;
 }
  
-// Appel Europe PMC avec délai maximal et nouvelles tentatives (délai croissant).
-async function appelerEuropePMC(url, tentative = 1) {
-  const ERREURS_TEMPORAIRES = [500, 502, 503, 504];
+// Appel Europe PMC en POST (searchPOST), avec délai maximal et nouvelles tentatives
+// (délai croissant) pour les erreurs temporaires uniquement.
+// L'erreur renvoyée porte un indicateur "temporaire" : les erreurs définitives
+// (400, 414...) ne sont pas reprises en fin de run.
+async function appelerEuropePMC(parametres, tentative = 1) {
+  const ERREURS_TEMPORAIRES = [429, 500, 502, 503, 504];
+  const corps = new URLSearchParams(parametres).toString();
  
   let res;
   try {
-    res = await fetch(url, { signal: AbortSignal.timeout(DELAI_MAX_MS) });
+    res = await fetch(URL_EUROPEPMC_POST, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: corps,
+      signal: AbortSignal.timeout(DELAI_MAX_MS),
+    });
   } catch (e) {
     if (tentative < 5) {
       const delai = 3000 * Math.pow(2, tentative - 1);
       console.log(`  Europe PMC ne répond pas (${e.name}), nouvelle tentative dans ${delai / 1000}s (${tentative + 1}/5)...`);
       await new Promise((resolve) => setTimeout(resolve, delai));
-      return appelerEuropePMC(url, tentative + 1);
+      return appelerEuropePMC(parametres, tentative + 1);
     }
-    throw new Error(`Europe PMC injoignable : ${e.message}`);
+    const erreur = new Error(`Europe PMC injoignable : ${e.message}`);
+    erreur.temporaire = true;
+    throw erreur;
   }
  
   if (!res.ok) {
@@ -224,9 +238,17 @@ async function appelerEuropePMC(url, tentative = 1) {
       const delai = 3000 * Math.pow(2, tentative - 1);
       console.log(`  Europe PMC indisponible (${res.status}), nouvelle tentative dans ${delai / 1000}s (${tentative + 1}/5)...`);
       await new Promise((resolve) => setTimeout(resolve, delai));
-      return appelerEuropePMC(url, tentative + 1);
+      return appelerEuropePMC(parametres, tentative + 1);
     }
-    throw new Error(`Europe PMC erreur ${res.status}`);
+    let detail = '';
+    try {
+      detail = (await res.text()).replace(/\s+/g, ' ').slice(0, 200);
+    } catch (e) {
+      // corps de réponse illisible : on se contente du code
+    }
+    const erreur = new Error(`Europe PMC erreur ${res.status}${detail ? ` : ${detail}` : ''}`);
+    erreur.temporaire = ERREURS_TEMPORAIRES.includes(res.status);
+    throw erreur;
   }
  
   return res.json();
@@ -279,8 +301,13 @@ async function chercherEtudesEuropePMC(aliment) {
   let cursorMark = '*';
  
   while (resultats.length < RESULTATS_A_RECUPERER) {
-    const url = `https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=${encodeURIComponent(requete)}&format=json&pageSize=${TAILLE_PAGE_EUROPEPMC}&cursorMark=${encodeURIComponent(cursorMark)}&resultType=core`;
-    const data = await appelerEuropePMC(url);
+    const data = await appelerEuropePMC({
+      query: requete,
+      format: 'json',
+      pageSize: String(TAILLE_PAGE_EUROPEPMC),
+      cursorMark,
+      resultType: 'core',
+    });
  
     total = data.hitCount || 0;
     const page = data.resultList?.result || [];
@@ -660,14 +687,20 @@ async function main() {
   const lot = tousLesAliments.slice(OFFSET, OFFSET + LIMITE);
   console.log(`${tousLesAliments.length} aliments éligibles au total. Lot traité : offset ${OFFSET}, ${lot.length} aliments (jusqu'à l'offset ${OFFSET + lot.length}).`);
 
-  // Premier passage : les aliments en échec (ex. Europe PMC indisponible) sont mis de côté.
+  // Premier passage. Les échecs temporaires (Europe PMC indisponible) sont mis de côté
+  // pour être repris ; les échecs définitifs (requête refusée : 400, 414...) ne le sont pas.
   let enEchec = [];
+  const echecsDefinitifs = [];
   for (const aliment of lot) {
     try {
       await traiterAliment(aliment);
     } catch (e) {
       console.log(`Erreur générale sur ${aliment.slug}:`, e.message);
-      enEchec.push({ aliment, message: e.message });
+      if (e.temporaire === false) {
+        echecsDefinitifs.push({ aliment, message: e.message });
+      } else {
+        enEchec.push({ aliment, message: e.message });
+      }
     }
   }
 
@@ -684,14 +717,19 @@ async function main() {
         await traiterAliment(aliment);
       } catch (e) {
         console.log(`Erreur générale (reprise ${passe + 1}) sur ${aliment.slug}:`, e.message);
-        encoreEnEchec.push({ aliment, message: e.message });
+        if (e.temporaire === false) {
+          echecsDefinitifs.push({ aliment, message: e.message });
+        } else {
+          encoreEnEchec.push({ aliment, message: e.message });
+        }
       }
     }
     enEchec = encoreEnEchec;
   }
 
-  // Seuls les échecs définitifs sont enregistrés.
-  for (const { aliment, message } of enEchec) {
+  // Seuls les échecs définitifs (ou persistants après reprises) sont enregistrés.
+  const tousLesEchecs = [...echecsDefinitifs, ...enEchec];
+  for (const { aliment, message } of tousLesEchecs) {
     await supabase.from('erreurs_import').insert({
       aliment_slug: aliment.slug,
       type_erreur: 'echec_recherche',
@@ -699,9 +737,9 @@ async function main() {
     });
   }
 
-  if (enEchec.length > 0) {
-    console.log(`\n⚠️ ${enEchec.length} aliment(s) toujours en échec après les reprises. À relancer via slugs_cibles :`);
-    console.log(enEchec.map((x) => x.aliment.slug).join(','));
+  if (tousLesEchecs.length > 0) {
+    console.log(`\n⚠️ ${tousLesEchecs.length} aliment(s) toujours en échec. À relancer via slugs_cibles :`);
+    console.log(tousLesEchecs.map((x) => x.aliment.slug).join(','));
   } else {
     console.log('\nAucun aliment en échec.');
   }
