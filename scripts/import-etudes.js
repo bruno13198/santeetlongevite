@@ -18,8 +18,11 @@
 // avant d'être reliée à cet aliment.
 //
 // Niveau de preuve (30 sept. 2026) : échelle d'Oxford (CEBM 2011), étude par étude
-// (niveau_preuve, design_etude, ajustement_preuve). L'ancien champ niveau_fiabilite
-// reste rempli par correspondance pendant la transition.
+// (niveau_preuve, design_etude, ajustement_preuve). Le modèle donne le niveau de base,
+// le sens de l'ajustement et l'effectif ; le script calcule le niveau final.
+// L'effectif (nb_participants) vient de ce même appel ; la recherche de motifs
+// (extraireNbParticipants) ne sert plus qu'en secours si le classement échoue.
+// L'ancien champ niveau_fiabilite reste rempli par correspondance pendant la transition.
  
 const { createClient } = require('@supabase/supabase-js');
  
@@ -474,7 +477,7 @@ Règles importantes :
  
 // Niveau de preuve selon l'échelle d'Oxford (CEBM 2011), étude par étude,
 // pour la question « cet aliment a-t-il cet effet ? ». Évalué à partir du titre
-// et du résumé uniquement. Renvoie { niveau (1-5), design, ajustement } ou null.
+// et du résumé uniquement. Renvoie { niveau (1-5), design, ajustement, participants } ou null.
 const DESIGNS_AUTORISES = [
   "Méta-analyse d'essais randomisés",
   "Revue systématique d'essais randomisés",
@@ -520,10 +523,15 @@ Pour une méta-analyse mêlant essais et études observationnelles, choisis selo
 - "releve" seulement pour un effet très important et net, rare dans ce domaine.
 - En cas de doute : "aucun".
 
+4. Donne l'effectif TOTAL de personnes incluses dans l'étude (nombre entier), tel qu'indiqué dans le résumé.
+- Pour une méta-analyse ou une revue systématique : le nombre total de participants des études incluses, s'il est indiqué ; sinon null.
+- Pour une revue narrative ou une étude sans participants : null.
+- Ne confonds pas avec une durée, un âge, un nombre d'études ou un pourcentage. Si l'effectif n'est pas clairement indiqué : null.
+
 Réponds UNIQUEMENT avec un objet JSON, rien avant, rien après, au format exact :
-{"design": "libellé exact de la liste", "niveau_base": 2, "ajustement": "aucun", "motif": ""}
+{"design": "libellé exact de la liste", "niveau_base": 2, "ajustement": "aucun", "motif": "", "participants": 120}
 ou, en cas d'ajustement :
-{"design": "Essai randomisé contrôlé", "niveau_base": 2, "ajustement": "abaisse", "motif": "24 participants"}`;
+{"design": "Essai randomisé contrôlé", "niveau_base": 2, "ajustement": "abaisse", "motif": "24 participants", "participants": 24}`;
 
   let texte = '';
   try {
@@ -538,7 +546,9 @@ ou, en cas d'ajustement :
     const motif = typeof objet.motif === 'string' ? objet.motif.trim() : '';
     const ajustement =
       niveau === base ? null : `${sens === 1 ? 'Abaissé' : 'Relevé'}${motif ? ` : ${motif}` : ''}`;
-    return { niveau, design, ajustement };
+    const n = parseInt(objet.participants, 10);
+    const participants = Number.isInteger(n) && n > 0 && n < 50000000 ? n : null;
+    return { niveau, design, ajustement, participants };
   } catch (e) {
     if (tentative < 3) {
       console.log(`      Réponse niveau de preuve incomplète ("${texte.slice(0, 80)}"), nouvelle tentative (${tentative + 1}/3)...`);
@@ -669,7 +679,7 @@ async function traiterAliment(aliment) {
         continue;
       }
  
-      // 3. Niveau de preuve (Oxford CEBM 2011)
+      // 3. Niveau de preuve (Oxford CEBM 2011) et effectif
       const preuve = await classerNiveauPreuve(etude.title, etude.abstractText);
       const niveauFiabilite = niveauFiabiliteDepuisPreuve(preuve?.niveau);
       await new Promise((resolve) => setTimeout(resolve, 500));
@@ -693,7 +703,8 @@ async function traiterAliment(aliment) {
           design_etude: preuve?.design ?? null,
           ajustement_preuve: preuve?.ajustement ?? null,
           type_etude: normaliserTypeEtude(etude.pubTypeList?.pubType),
-          nb_participants: extraireNbParticipants(etude.abstractText),
+          // Effectif lu par le modèle ; la recherche de motifs ne sert qu'en secours si le classement a échoué.
+          nb_participants: preuve ? preuve.participants : extraireNbParticipants(etude.abstractText),
         })
         .select('id')
         .single();
@@ -739,7 +750,7 @@ async function traiterAliment(aliment) {
  
       nouvellesEtudesAjoutees++;
       const etiquettePreuve = preuve
-        ? `Niveau ${preuve.niveau} — ${preuve.design}${preuve.ajustement ? ` (${preuve.ajustement})` : ''}`
+        ? `Niveau ${preuve.niveau} — ${preuve.design}${preuve.ajustement ? ` (${preuve.ajustement})` : ''}${preuve.participants ? `, n=${preuve.participants}` : ''}`
         : 'niveau inconnu';
       console.log(`  - Ajoutée (${etiquettePreuve}) : ${analyse.titre_traduit}`);
     } catch (e) {
