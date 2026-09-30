@@ -470,35 +470,81 @@ Règles importantes :
  
 async function classerFiabilite(titre, resumeOriginal, tentative = 1) {
   const prompt = `Tu es un méthodologiste scientifique. Classe le TYPE D'ÉTUDE suivant dans une seule des 3 catégories ci-dessous, en te basant uniquement sur le titre et le résumé.
+// Niveau de preuve selon l'échelle d'Oxford (CEBM 2011), étude par étude,
+// pour la question « cet aliment a-t-il cet effet ? ». Évalué à partir du titre
+// et du résumé uniquement. Renvoie { niveau (1-5), design, ajustement } ou null.
+const DESIGNS_AUTORISES = [
+  "Méta-analyse d'essais randomisés",
+  "Revue systématique d'essais randomisés",
+  "Revue parapluie d'essais randomisés",
+  'Essai randomisé contrôlé',
+  'Essai croisé randomisé',
+  'Essai non randomisé',
+  'Étude pilote sans groupe témoin',
+  "Méta-analyse d'études observationnelles",
+  "Revue systématique d'études observationnelles",
+  "Revue parapluie d'études observationnelles",
+  'Étude de cohorte prospective',
+  'Étude de cohorte rétrospective',
+  'Randomisation mendélienne',
+  'Étude cas-témoins',
+  'Étude transversale',
+  'Série de cas',
+  'Cas clinique',
+  'Revue narrative',
+  'Autre',
+];
+
+async function classerNiveauPreuve(titre, resumeOriginal, tentative = 1) {
+  const prompt = `Tu es un méthodologiste en médecine fondée sur les preuves. Classe l'étude ci-dessous selon l'échelle des niveaux de preuve d'Oxford (CEBM 2011), pour la question « cet aliment ou ce composé alimentaire a-t-il cet effet sur la santé ? ». Base-toi uniquement sur le titre et le résumé.
+
 Titre : ${titre}
 Résumé : ${resumeOriginal}
-Catégories :
-- "haute" : méta-analyse, revue systématique (synthèse de plusieurs études)
-- "moderee" : essai randomisé contrôlé (RCT), essai clinique interventionnel
-- "preliminaire" : étude observationnelle, étude de cohorte, étude pilote, étude in vitro/animale mentionnée comme telle, ou type incertain
+
+1. Identifie le type d'étude, en choisissant EXACTEMENT un libellé de cette liste :
+${DESIGNS_AUTORISES.map((d) => `- ${d}`).join('\n')}
+Pour une méta-analyse mêlant essais et études observationnelles, choisis selon le type d'études majoritaire ; si les essais randomisés sont analysés séparément, choisis la version « essais randomisés ».
+
+2. Attribue le niveau de base :
+- Niveau 1 : revue systématique, méta-analyse ou revue parapluie d'ESSAIS RANDOMISÉS.
+- Niveau 2 : essai randomisé contrôlé (y compris croisé).
+- Niveau 3 : essai non randomisé contrôlé, étude de cohorte, randomisation mendélienne, ou revue systématique / méta-analyse / revue parapluie d'études observationnelles.
+- Niveau 4 : étude cas-témoins, étude transversale, étude pilote sans groupe témoin, série de cas, cas clinique.
+- Niveau 5 : revue narrative ou raisonnement mécanistique (mécanismes, études cellulaires ou animales, hypothèses).
+
+3. Ajuste d'UN niveau au maximum, uniquement si le résumé le justifie clairement :
+- Abaisse d'un niveau (chiffre + 1) pour un défaut majeur visible : très petit effectif (moins de 30 participants pour un essai), absence de groupe témoin ou de placebo alors que le type d'étude en supposerait un, résultats très imprécis, ou produit testé éloigné de l'aliment (extrait concentré, mélange de plusieurs ingrédients).
+- Relève d'un niveau (chiffre - 1) seulement pour un effet très important et net, rare dans ce domaine.
+Le niveau final reste entre 1 et 5. En l'absence d'ajustement, laisse "ajustement" vide.
+
 Réponds UNIQUEMENT avec un objet JSON, rien avant, rien après, au format exact :
-{"niveau": "haute"}
-ou
-{"niveau": "moderee"}
-ou
-{"niveau": "preliminaire"}`;
- 
+{"design": "libellé exact de la liste", "niveau": 2, "ajustement": ""}
+ou, en cas d'ajustement :
+{"design": "Essai randomisé contrôlé", "niveau": 3, "ajustement": "Abaissé : 24 participants, sans placebo"}`;
+
   let texte = '';
   try {
-    texte = await appelerClaude(MODELE_ANALYSE, 300, prompt);
+    texte = await appelerClaude(MODELE_ANALYSE, 400, prompt);
     const { objet } = extraireJSON(texte);
-    if (!objet.niveau) throw new Error('Champ niveau manquant');
-    return objet.niveau;
+    const niveau = parseInt(objet.niveau, 10);
+    if (!(niveau >= 1 && niveau <= 5)) throw new Error('Niveau invalide');
+    const design = DESIGNS_AUTORISES.includes(objet.design) ? objet.design : 'Autre';
+    const ajustement =
+      typeof objet.ajustement === 'string' && objet.ajustement.trim() !== '' ? objet.ajustement.trim() : null;
+    return { niveau, design, ajustement };
   } catch (e) {
     if (tentative < 3) {
-      console.log(`      Réponse fiabilité incomplète ("${texte}"), nouvelle tentative (${tentative + 1}/3)...`);
+      console.log(`      Réponse niveau de preuve incomplète ("${texte.slice(0, 80)}"), nouvelle tentative (${tentative + 1}/3)...`);
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      return classerFiabilite(titre, resumeOriginal, tentative + 1);
+      return classerNiveauPreuve(titre, resumeOriginal, tentative + 1);
     }
-    console.log(`      Échec classement fiabilité après 3 tentatives. Dernière réponse reçue : "${texte}"`);
+    console.log(`      Échec classement niveau de preuve après 3 tentatives. Dernière réponse reçue : "${texte.slice(0, 200)}"`);
     return null;
   }
 }
+
+// Correspondance transitoire avec l'ancien champ niveau_fiabilite, encore utilisé
+// par le site tant que les badges Oxford ne sont pas en place.
  
 async function enregistrerRejet(alimentId, sourceId, titre, raison) {
   await supabase.from('candidats_rejetes').insert({
@@ -610,7 +656,8 @@ async function traiterAliment(aliment) {
         continue;
       }
  
-      const niveauFiabilite = await classerFiabilite(etude.title, etude.abstractText);
+      const preuve = await classerNiveauPreuve(etude.title, etude.abstractText);
+      const niveauFiabilite = niveauFiabiliteDepuisPreuve(preuve?.niveau);
       await new Promise((resolve) => setTimeout(resolve, 500));
  
       let etudeId;
@@ -628,6 +675,9 @@ async function traiterAliment(aliment) {
           resume_simplifie: analyse.resume_simplifie,
           resume_reformule: analyse.resume_reformule,
           niveau_fiabilite: niveauFiabilite,
+          niveau_preuve: preuve?.niveau ?? null,
+          design_etude: preuve?.design ?? null,
+          ajustement_preuve: preuve?.ajustement ?? null,
           type_etude: normaliserTypeEtude(etude.pubTypeList?.pubType),
           nb_participants: extraireNbParticipants(etude.abstractText),
         })
@@ -674,7 +724,10 @@ async function traiterAliment(aliment) {
       });
  
       nouvellesEtudesAjoutees++;
-      console.log(`  - Ajoutée (${niveauFiabilite || 'fiabilité inconnue'}) : ${analyse.titre_traduit}`);
+      const etiquettePreuve = preuve
+        ? `Niveau ${preuve.niveau} — ${preuve.design}${preuve.ajustement ? ` (${preuve.ajustement})` : ''}`
+        : 'niveau inconnu';
+      console.log(`  - Ajoutée (${etiquettePreuve}) : ${analyse.titre_traduit}`);
     } catch (e) {
       console.log(`  - Erreur traitement ${sourceId}:`, e.message);
     }
