@@ -2,7 +2,8 @@
 // Traite uniquement les études dont niveau_preuve est vide : peut être relancé
 // sans risque, il reprend là où il s'était arrêté.
 // Même fonction classerNiveauPreuve que dans import-etudes.js (30 sept. 2026) :
-// le modèle donne le niveau de base et le sens de l'ajustement, le script calcule le niveau final.
+// le modèle donne le niveau de base, le sens de l'ajustement et l'effectif ;
+// le script calcule le niveau final. L'effectif (nb_participants) est corrigé au passage.
 
 const { createClient } = require('@supabase/supabase-js');
 
@@ -93,10 +94,15 @@ Pour une méta-analyse mêlant essais et études observationnelles, choisis selo
 - "releve" seulement pour un effet très important et net, rare dans ce domaine.
 - En cas de doute : "aucun".
 
+4. Donne l'effectif TOTAL de personnes incluses dans l'étude (nombre entier), tel qu'indiqué dans le résumé.
+- Pour une méta-analyse ou une revue systématique : le nombre total de participants des études incluses, s'il est indiqué ; sinon null.
+- Pour une revue narrative ou une étude sans participants : null.
+- Ne confonds pas avec une durée, un âge, un nombre d'études ou un pourcentage. Si l'effectif n'est pas clairement indiqué : null.
+
 Réponds UNIQUEMENT avec un objet JSON, rien avant, rien après, au format exact :
-{"design": "libellé exact de la liste", "niveau_base": 2, "ajustement": "aucun", "motif": ""}
+{"design": "libellé exact de la liste", "niveau_base": 2, "ajustement": "aucun", "motif": "", "participants": 120}
 ou, en cas d'ajustement :
-{"design": "Essai randomisé contrôlé", "niveau_base": 2, "ajustement": "abaisse", "motif": "24 participants"}`;
+{"design": "Essai randomisé contrôlé", "niveau_base": 2, "ajustement": "abaisse", "motif": "24 participants", "participants": 24}`;
 
   let texte = '';
   try {
@@ -111,7 +117,9 @@ ou, en cas d'ajustement :
     const motif = typeof objet.motif === 'string' ? objet.motif.trim() : '';
     const ajustement =
       niveau === base ? null : `${sens === 1 ? 'Abaissé' : 'Relevé'}${motif ? ` : ${motif}` : ''}`;
-    return { niveau, design, ajustement };
+    const n = parseInt(objet.participants, 10);
+    const participants = Number.isInteger(n) && n > 0 && n < 50000000 ? n : null;
+    return { niveau, design, ajustement, participants };
   } catch (e) {
     if (tentative < 3) {
       await new Promise((resolve) => setTimeout(resolve, 2000 * tentative));
@@ -181,6 +189,7 @@ async function main() {
           design_etude: preuve.design,
           ajustement_preuve: preuve.ajustement,
           niveau_fiabilite: niveauFiabiliteDepuisPreuve(preuve.niveau),
+          nb_participants: preuve.participants,
         })
         .eq('id', etude.id);
 
@@ -193,7 +202,8 @@ async function main() {
 
       compteurs.traitees++;
       compteurs.niveaux[preuve.niveau]++;
-      console.log(`  [${compteurs.traitees}] Niveau ${preuve.niveau} — ${preuve.design}${preuve.ajustement ? ` (${preuve.ajustement})` : ''} : ${etude.titre_original.slice(0, 90)}`);
+      const effectif = preuve.participants ? ` [n=${preuve.participants}]` : '';
+      console.log(`  [${compteurs.traitees}] Niveau ${preuve.niveau} — ${preuve.design}${preuve.ajustement ? ` (${preuve.ajustement})` : ''}${effectif} : ${etude.titre_original.slice(0, 90)}`);
 
       await new Promise((resolve) => setTimeout(resolve, 300));
     }
