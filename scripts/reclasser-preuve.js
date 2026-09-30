@@ -88,21 +88,24 @@ Pour une méta-analyse mêlant essais et études observationnelles, choisis selo
 - Niveau 4 : étude cas-témoins, étude transversale, étude pilote sans groupe témoin, série de cas, cas clinique.
 - Niveau 5 : revue narrative ou raisonnement mécanistique (mécanismes, études cellulaires ou animales, hypothèses).
 
-3. Indique un éventuel ajustement : "abaisse", "releve" ou "aucun".
-- "abaisse" UNIQUEMENT pour l'un de ces défauts majeurs, visible dans le résumé : effectif STRICTEMENT inférieur à 30 participants au total (30 ou plus : aucun abaissement pour l'effectif) ; absence de groupe témoin ou de placebo alors que le type d'étude en supposerait un ; résultats explicitement très imprécis ou incohérents (par exemple une forte hétérogénéité non expliquée dans une méta-analyse).
-- N'abaisse PAS parce que le produit testé est un extrait, un complément, un composé isolé ou un mélange : cette distinction est traitée ailleurs.
-- "releve" seulement pour un effet très important et net, rare dans ce domaine.
-- En cas de doute : "aucun".
-
-4. Donne l'effectif TOTAL de personnes incluses dans l'étude (nombre entier), tel qu'indiqué dans le résumé.
+3. Donne l'effectif TOTAL de personnes incluses dans l'étude (nombre entier), tel qu'indiqué dans le résumé.
 - Pour une méta-analyse ou une revue systématique : le nombre total de participants des études incluses, s'il est indiqué ; sinon null.
 - Pour une revue narrative ou une étude sans participants : null.
 - Ne confonds pas avec une durée, un âge, un nombre d'études ou un pourcentage. Si l'effectif n'est pas clairement indiqué : null.
 
+4. Signale un éventuel défaut majeur, visible dans le résumé, parmi :
+- "sans_temoin" : un ESSAI qui n'a ni groupe témoin ni placebo alors qu'il en faudrait un ;
+- "imprecision" : résultats explicitement très imprécis ou incohérents (par exemple une forte hétérogénéité non expliquée dans une méta-analyse) ;
+- "aucun" : dans tous les autres cas, et en cas de doute.
+Ne signale PAS la taille de l'effectif ici (elle est traitée à part), ni le fait que le produit soit un extrait, un complément ou un mélange.
+Indique aussi "releve": true UNIQUEMENT pour un effet très important et net, rare dans ce domaine ; sinon false.
+
 Réponds UNIQUEMENT avec un objet JSON, rien avant, rien après, au format exact :
-{"design": "libellé exact de la liste", "niveau_base": 2, "ajustement": "aucun", "motif": "", "participants": 120}
-ou, en cas d'ajustement :
-{"design": "Essai randomisé contrôlé", "niveau_base": 2, "ajustement": "abaisse", "motif": "24 participants", "participants": 24}`;
+{"design": "libellé exact de la liste", "niveau_base": 2, "participants": 120, "defaut": "aucun", "motif": "", "releve": false}
+ou, en cas de défaut :
+{"design": "Méta-analyse d'essais randomisés", "niveau_base": 1, "participants": 850, "defaut": "imprecision", "motif": "forte hétérogénéité entre les essais", "releve": false}`;
+
+  const ESSAIS = ['Essai randomisé contrôlé', 'Essai croisé randomisé', 'Essai non randomisé'];
 
   let texte = '';
   try {
@@ -111,21 +114,37 @@ ou, en cas d'ajustement :
     const base = parseInt(objet.niveau_base, 10);
     if (!(base >= 1 && base <= 5)) throw new Error('Niveau de base invalide');
     const design = DESIGNS_AUTORISES.includes(objet.design) ? objet.design : 'Autre';
-    // Le niveau final est calculé ici, pas par le modèle : un ajustement annoncé est toujours appliqué.
-    const sens = objet.ajustement === 'abaisse' ? 1 : objet.ajustement === 'releve' ? -1 : 0;
-    const niveau = Math.min(5, Math.max(1, base + sens));
-    const motif = typeof objet.motif === 'string' ? objet.motif.trim() : '';
-    const ajustement =
-      niveau === base ? null : `${sens === 1 ? 'Abaissé' : 'Relevé'}${motif ? ` : ${motif}` : ''}`;
     const n = parseInt(objet.participants, 10);
     const participants = Number.isInteger(n) && n > 0 && n < 50000000 ? n : null;
+    const motifModele = typeof objet.motif === 'string' ? objet.motif.trim() : '';
+
+    // Les règles d'ajustement sont appliquées ici, de façon mécanique, et non par le modèle.
+    let sens = 0;
+    let motif = '';
+    if (ESSAIS.includes(design) && participants !== null && participants < 30) {
+      sens = 1;
+      motif = `essai de ${participants} participants`;
+    } else if (objet.defaut === 'sans_temoin' && ESSAIS.includes(design)) {
+      sens = 1;
+      motif = motifModele || 'sans groupe témoin ni placebo';
+    } else if (objet.defaut === 'imprecision') {
+      sens = 1;
+      motif = motifModele || 'résultats imprécis ou incohérents';
+    } else if (objet.releve === true) {
+      sens = -1;
+      motif = motifModele || 'effet très important';
+    }
+
+    const niveau = Math.min(5, Math.max(1, base + sens));
+    const ajustement = niveau === base ? null : `${sens === 1 ? 'Abaissé' : 'Relevé'} : ${motif}`;
     return { niveau, design, ajustement, participants };
   } catch (e) {
     if (tentative < 3) {
+      console.log(`      Réponse niveau de preuve incomplète ("${texte.slice(0, 80)}"), nouvelle tentative (${tentative + 1}/3)...`);
       await new Promise((resolve) => setTimeout(resolve, 2000 * tentative));
       return classerNiveauPreuve(titre, resumeOriginal, tentative + 1);
     }
-    console.log(`  Échec après 3 tentatives (${e.message.slice(0, 100)})`);
+    console.log(`      Échec classement niveau de preuve après 3 tentatives. Dernière réponse reçue : "${texte.slice(0, 200)}"`);
     return null;
   }
 }
