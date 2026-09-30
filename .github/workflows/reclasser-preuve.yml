@@ -1,1 +1,39 @@
+name: Reclassement niveaux de preuve (manuel)
 
+on:
+  workflow_dispatch:
+    inputs:
+      limite:
+        description: "Nombre maximal d'études à reclasser (test : 20)"
+        required: false
+        default: '5000'
+      max_duree_min:
+        description: 'Durée maximale en minutes avant arrêt propre'
+        required: false
+        default: '330'
+
+concurrency:
+  group: import-etudes
+  cancel-in-progress: false
+
+jobs:
+  reclasser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Installer les dépendances
+        run: npm install @supabase/supabase-js
+      - name: Reclasser les études
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          LIMITE: ${{ github.event.inputs.limite || '5000' }}
+          MAX_DUREE_MIN: ${{ github.event.inputs.max_duree_min || '330' }}
+        run: node scripts/reclasser-preuve.js
