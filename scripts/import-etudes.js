@@ -526,8 +526,7 @@ Pour une méta-analyse mêlant essais et études observationnelles, choisis selo
 - "sans_temoin" : un ESSAI qui n'a ni groupe témoin ni placebo alors qu'il en faudrait un ;
 - "imprecision" : résultats explicitement très imprécis ou incohérents (par exemple une forte hétérogénéité non expliquée dans une méta-analyse) ;
 - "aucun" : dans tous les autres cas, et en cas de doute.
-Ne signale PAS la taille de l'effectif ici (elle est traitée à part), ni le fait que le produit soit un extrait, un complément ou un mélange.
-Indique aussi "releve": true UNIQUEMENT pour un effet très important et net, rare dans ce domaine ; sinon false.
+Ne signale PAS la taille de l'effectif ici (elle est traitée à part), ni le fait que le produit soit un extrait, un complément ou un mélange, ni un résultat négatif ou non significatif : l'absence d'effet est un résultat valable, pas un défaut.
 
 Réponds UNIQUEMENT avec un objet JSON, rien avant, rien après, au format exact :
 {"design": "libellé exact de la liste", "niveau_base": 2, "participants": 120, "defaut": "aucun", "motif": "", "releve": false}
