@@ -1,7 +1,8 @@
 // Reclassement ponctuel des études existantes selon l'échelle d'Oxford (CEBM 2011).
 // Traite uniquement les études dont niveau_preuve est vide : peut être relancé
 // sans risque, il reprend là où il s'était arrêté.
-// Même prompt que classerNiveauPreuve dans import-etudes.js (30 sept. 2026).
+// Même fonction classerNiveauPreuve que dans import-etudes.js (30 sept. 2026) :
+// le modèle donne le niveau de base et le sens de l'ajustement, le script calcule le niveau final.
 
 const { createClient } = require('@supabase/supabase-js');
 
@@ -79,32 +80,37 @@ Résumé : ${resumeOriginal}
 ${DESIGNS_AUTORISES.map((d) => `- ${d}`).join('\n')}
 Pour une méta-analyse mêlant essais et études observationnelles, choisis selon le type d'études majoritaire ; si les essais randomisés sont analysés séparément, choisis la version « essais randomisés ».
 
-2. Attribue le niveau de base :
+2. Donne le niveau de BASE correspondant au type d'étude :
 - Niveau 1 : revue systématique, méta-analyse ou revue parapluie d'ESSAIS RANDOMISÉS.
 - Niveau 2 : essai randomisé contrôlé (y compris croisé).
 - Niveau 3 : essai non randomisé contrôlé, étude de cohorte, randomisation mendélienne, ou revue systématique / méta-analyse / revue parapluie d'études observationnelles.
 - Niveau 4 : étude cas-témoins, étude transversale, étude pilote sans groupe témoin, série de cas, cas clinique.
 - Niveau 5 : revue narrative ou raisonnement mécanistique (mécanismes, études cellulaires ou animales, hypothèses).
 
-3. Ajuste d'UN niveau au maximum, uniquement si le résumé le justifie clairement :
-- Abaisse d'un niveau (chiffre + 1) pour un défaut majeur visible : très petit effectif (moins de 30 participants pour un essai), absence de groupe témoin ou de placebo alors que le type d'étude en supposerait un, résultats très imprécis, ou produit testé éloigné de l'aliment (extrait concentré, mélange de plusieurs ingrédients).
-- Relève d'un niveau (chiffre - 1) seulement pour un effet très important et net, rare dans ce domaine.
-Le niveau final reste entre 1 et 5. En l'absence d'ajustement, laisse "ajustement" vide.
+3. Indique un éventuel ajustement : "abaisse", "releve" ou "aucun".
+- "abaisse" UNIQUEMENT pour l'un de ces défauts majeurs, visible dans le résumé : effectif STRICTEMENT inférieur à 30 participants au total (30 ou plus : aucun abaissement pour l'effectif) ; absence de groupe témoin ou de placebo alors que le type d'étude en supposerait un ; résultats explicitement très imprécis ou incohérents (par exemple une forte hétérogénéité non expliquée dans une méta-analyse).
+- N'abaisse PAS parce que le produit testé est un extrait, un complément, un composé isolé ou un mélange : cette distinction est traitée ailleurs.
+- "releve" seulement pour un effet très important et net, rare dans ce domaine.
+- En cas de doute : "aucun".
 
 Réponds UNIQUEMENT avec un objet JSON, rien avant, rien après, au format exact :
-{"design": "libellé exact de la liste", "niveau": 2, "ajustement": ""}
+{"design": "libellé exact de la liste", "niveau_base": 2, "ajustement": "aucun", "motif": ""}
 ou, en cas d'ajustement :
-{"design": "Essai randomisé contrôlé", "niveau": 3, "ajustement": "Abaissé : 24 participants, sans placebo"}`;
+{"design": "Essai randomisé contrôlé", "niveau_base": 2, "ajustement": "abaisse", "motif": "24 participants"}`;
 
   let texte = '';
   try {
-    texte = await appelerClaude(MODELE_ANALYSE, 400, prompt);
+    texte = await appelerClaude(MODELE_ANALYSE, 500, prompt);
     const { objet } = extraireJSON(texte);
-    const niveau = parseInt(objet.niveau, 10);
-    if (!(niveau >= 1 && niveau <= 5)) throw new Error('Niveau invalide');
+    const base = parseInt(objet.niveau_base, 10);
+    if (!(base >= 1 && base <= 5)) throw new Error('Niveau de base invalide');
     const design = DESIGNS_AUTORISES.includes(objet.design) ? objet.design : 'Autre';
+    // Le niveau final est calculé ici, pas par le modèle : un ajustement annoncé est toujours appliqué.
+    const sens = objet.ajustement === 'abaisse' ? 1 : objet.ajustement === 'releve' ? -1 : 0;
+    const niveau = Math.min(5, Math.max(1, base + sens));
+    const motif = typeof objet.motif === 'string' ? objet.motif.trim() : '';
     const ajustement =
-      typeof objet.ajustement === 'string' && objet.ajustement.trim() !== '' ? objet.ajustement.trim() : null;
+      niveau === base ? null : `${sens === 1 ? 'Abaissé' : 'Relevé'}${motif ? ` : ${motif}` : ''}`;
     return { niveau, design, ajustement };
   } catch (e) {
     if (tentative < 3) {
