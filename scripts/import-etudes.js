@@ -1,5 +1,5 @@
 // Script d'automatisation : récupère des études sur Europe PMC pour les aliments,
-// les trie, génère 2 résumés en français via l'API Claude, classe leur fiabilité,
+// les trie, génère 2 résumés en français via l'API Claude, classe leur niveau de preuve,
 // et enregistre tout dans Supabase.
 //
 // Recherche : termes_recherche cherchés en texte libre dans le titre et le résumé,
@@ -16,6 +16,10 @@
 //   2. Sonnet juge finement la pertinence et rédige les résumés.
 // Une étude déjà en base (acceptée pour un autre aliment) passe par le même tri
 // avant d'être reliée à cet aliment.
+//
+// Niveau de preuve (30 sept. 2026) : échelle d'Oxford (CEBM 2011), étude par étude
+// (niveau_preuve, design_etude, ajustement_preuve). L'ancien champ niveau_fiabilite
+// reste rempli par correspondance pendant la transition.
  
 const { createClient } = require('@supabase/supabase-js');
  
@@ -468,8 +472,6 @@ Règles importantes :
   }
 }
  
-async function classerFiabilite(titre, resumeOriginal, tentative = 1) {
-  const prompt = `Tu es un méthodologiste scientifique. Classe le TYPE D'ÉTUDE suivant dans une seule des 3 catégories ci-dessous, en te basant uniquement sur le titre et le résumé.
 // Niveau de preuve selon l'échelle d'Oxford (CEBM 2011), étude par étude,
 // pour la question « cet aliment a-t-il cet effet ? ». Évalué à partir du titre
 // et du résumé uniquement. Renvoie { niveau (1-5), design, ajustement } ou null.
@@ -494,7 +496,7 @@ const DESIGNS_AUTORISES = [
   'Revue narrative',
   'Autre',
 ];
-
+ 
 async function classerNiveauPreuve(titre, resumeOriginal, tentative = 1) {
   const prompt = `Tu es un méthodologiste en médecine fondée sur les preuves. Classe l'étude ci-dessous selon l'échelle des niveaux de preuve d'Oxford (CEBM 2011), pour la question « cet aliment ou ce composé alimentaire a-t-il cet effet sur la santé ? ». Base-toi uniquement sur le titre et le résumé.
 
@@ -542,9 +544,15 @@ ou, en cas d'ajustement :
     return null;
   }
 }
-
+ 
 // Correspondance transitoire avec l'ancien champ niveau_fiabilite, encore utilisé
 // par le site tant que les badges Oxford ne sont pas en place.
+function niveauFiabiliteDepuisPreuve(niveau) {
+  if (niveau === 1) return 'haute';
+  if (niveau === 2) return 'moderee';
+  if (niveau >= 3 && niveau <= 5) return 'preliminaire';
+  return null;
+}
  
 async function enregistrerRejet(alimentId, sourceId, titre, raison) {
   await supabase.from('candidats_rejetes').insert({
@@ -656,6 +664,7 @@ async function traiterAliment(aliment) {
         continue;
       }
  
+      // 3. Niveau de preuve (Oxford CEBM 2011)
       const preuve = await classerNiveauPreuve(etude.title, etude.abstractText);
       const niveauFiabilite = niveauFiabiliteDepuisPreuve(preuve?.niveau);
       await new Promise((resolve) => setTimeout(resolve, 500));
