@@ -1,1 +1,34 @@
+name: Tri des revues narratives (manuel)
 
+on:
+  workflow_dispatch:
+    inputs:
+      limite:
+        description: "Nombre maximal de revues à trier (test : 30)"
+        required: false
+        default: '2000'
+
+concurrency:
+  group: import-etudes
+  cancel-in-progress: false
+
+jobs:
+  trier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Installer les dépendances
+        run: npm install @supabase/supabase-js
+      - name: Trier les revues
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          LIMITE: ${{ github.event.inputs.limite || '2000' }}
+        run: node scripts/trier-revues.js
