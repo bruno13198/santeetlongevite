@@ -43,6 +43,14 @@ export default async function sitemap() {
       url: `${baseUrl}/veille-scientifique`,
       lastModified: new Date(),
     },
+    {
+      url: `${baseUrl}/articles`,
+      lastModified: new Date(),
+    },
+    {
+      url: `${baseUrl}/niveaux-de-preuve`,
+      lastModified: new Date(),
+    },
     ...urlsArticles,
     ...urlsAliments,
   ];
