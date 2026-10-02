@@ -461,7 +461,7 @@ Règles importantes :
 - Varier le style et la structure des phrases (éviter les formulations répétitives d'un résumé à l'autre)
 - Rédiger uniquement en français`;
  
-  const texte = await appelerClaude(MODELE_ANALYSE, 1500, prompt);
+  const texte = await appelerClaude(MODELE_ANALYSE, 3000, prompt);
  
   try {
     return extraireJSON(texte).objet;
@@ -538,7 +538,7 @@ ou, en cas de défaut :
 
   let texte = '';
   try {
-    texte = await appelerClaude(MODELE_ANALYSE, 500, prompt);
+    texte = await appelerClaude(MODELE_ANALYSE, 1500, prompt);
     const { objet } = extraireJSON(texte);
     const base = parseInt(objet.niveau_base, 10);
     if (!(base >= 1 && base <= 5)) throw new Error('Niveau de base invalide');
