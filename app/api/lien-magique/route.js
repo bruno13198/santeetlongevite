@@ -5,9 +5,47 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
+// Protection anti-robots (2 oct. 2026) : champ piège + Cloudflare Turnstile,
+// et envoi du lien uniquement aux adresses réellement abonnées.
+async function verifierTurnstile(token, ip) {
+  if (!token || !process.env.TURNSTILE_SECRET_KEY) return false;
+  try {
+    const parametres = new URLSearchParams({ secret: process.env.TURNSTILE_SECRET_KEY, response: token });
+    if (ip) parametres.append('remoteip', ip);
+    const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: parametres,
+    });
+    const resultat = await res.json();
+    return resultat.success === true;
+  } catch (e) {
+    console.error('Erreur vérification Turnstile:', e.message);
+    return false;
+  }
+}
+
 export async function POST(request) {
   try {
-    const { email } = await request.json();
+    const { email, tokenTurnstile, siteWeb } = await request.json();
+
+    // Toujours répondre le même message, que l'email existe ou non parmi les abonnés,
+    // pour ne pas révéler si une adresse est déjà abonnée à quelque chose (confidentialité).
+    const messageGenerique = 'Si cette adresse est associée à des abonnements, un lien de gestion vient de lui être envoyé.';
+
+    // Champ piège rempli : c'est un robot. Même réponse que d'habitude, sans rien envoyer.
+    if (siteWeb) {
+      return Response.json({ message: messageGenerique });
+    }
+
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || '';
+    const humainVerifie = await verifierTurnstile(tokenTurnstile, ip);
+    if (!humainVerifie) {
+      return Response.json(
+        { erreur: 'La vérification anti-robot a échoué. Rechargez la page et réessayez.' },
+        { status: 400 }
+      );
+    }
 
     if (!email) {
       return Response.json({ erreur: 'Email requis.' }, { status: 400 });
@@ -18,9 +56,16 @@ export async function POST(request) {
       return Response.json({ erreur: 'Adresse email invalide.' }, { status: 400 });
     }
 
-    // Toujours répondre le même message, que l'email existe ou non parmi les abonnés,
-    // pour ne pas révéler si une adresse est déjà abonnée à quelque chose (confidentialité).
-    const messageGenerique = 'Si cette adresse est associée à des abonnements, un lien de gestion vient de lui être envoyé.';
+    // N'envoyer le lien qu'aux adresses qui ont réellement des abonnements actifs.
+    const { count: abonnementsActifs } = await supabase
+      .from('abonnements')
+      .select('*', { count: 'exact', head: true })
+      .eq('email', email)
+      .eq('actif', true);
+
+    if (!abonnementsActifs) {
+      return Response.json({ message: messageGenerique });
+    }
 
     // Rate-limiting : maximum 3 demandes de lien par heure pour une même adresse,
     // pour empêcher qu'on puisse spammer la boîte mail de quelqu'un d'autre.
