@@ -5,9 +5,44 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
+// Protection anti-robots (2 oct. 2026) : champ piège + vérification Cloudflare Turnstile,
+// AVANT toute écriture en base et tout envoi d'e-mail.
+async function verifierTurnstile(token, ip) {
+  if (!token || !process.env.TURNSTILE_SECRET_KEY) return false;
+  try {
+    const parametres = new URLSearchParams({ secret: process.env.TURNSTILE_SECRET_KEY, response: token });
+    if (ip) parametres.append('remoteip', ip);
+    const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: parametres,
+    });
+    const resultat = await res.json();
+    return resultat.success === true;
+  } catch (e) {
+    console.error('Erreur vérification Turnstile:', e.message);
+    return false;
+  }
+}
+
 export async function POST(request) {
   try {
-    const { email, alimentIds, tousLesAliments, habitudeIds, toutesLesHabitudes } = await request.json();
+    const { email, alimentIds, tousLesAliments, habitudeIds, toutesLesHabitudes, tokenTurnstile, siteWeb } =
+      await request.json();
+
+    // Champ piège rempli : c'est un robot. On répond comme si tout allait bien, sans rien faire.
+    if (siteWeb) {
+      return Response.json({ message: 'Vérifiez votre boîte mail pour confirmer vos alertes.' });
+    }
+
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || '';
+    const humainVerifie = await verifierTurnstile(tokenTurnstile, ip);
+    if (!humainVerifie) {
+      return Response.json(
+        { erreur: 'La vérification anti-robot a échoué. Rechargez la page et réessayez.' },
+        { status: 400 }
+      );
+    }
 
     if (!email) {
       return Response.json({ erreur: 'Email requis.' }, { status: 400 });
