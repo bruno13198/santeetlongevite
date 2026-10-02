@@ -96,7 +96,8 @@ export default function ListeEtudes({ etudes }) {
       {/* Résumé chiffré de la répartition par niveau, qui sert aussi de filtre */}
       <div style={{ marginBottom: '20px' }}>
         <p style={{ color: '#6B6E63', fontSize: '14px', margin: '0 0 8px' }}>
-          Répartition par niveau de preuve (cliquez pour filtrer) :
+          Répartition par niveau de preuve (cliquez pour filtrer) ·{' '}
+          <a href="/niveaux-de-preuve" style={{ color: '#555' }}>Comprendre les niveaux</a>
         </p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
           <button
