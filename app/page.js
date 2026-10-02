@@ -97,7 +97,9 @@ export default async function Home() {
             les habitudes alimentaires (régime méditerranéen, jeûne intermittent, régime
             cétogène…). Chaque semaine, nous recensons les nouvelles études menées chez l'humain,
             et chacune reçoit un <Link href="/niveaux-de-preuve">niveau de preuve</Link>, de 1
-            (le plus solide) à 5, pour que vous sachiez d'un coup d'œil ce qu'elle vaut vraiment.
+            (le plus solide) à 5, selon l'échelle internationale du Centre for Evidence-Based
+            Medicine de l'université d'Oxford, pour que vous sachiez d'un coup d'œil ce
+            qu'elle vaut vraiment.
             Nous réfléchissons à l'étendre au sport, avant le sommeil et peut-être les compléments
             alimentaires.
           </p>
