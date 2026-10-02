@@ -497,6 +497,7 @@ const DESIGNS_AUTORISES = [
   'Série de cas',
   'Cas clinique',
   'Revue narrative',
+  'Revue mécanistique',
   'Autre',
 ];
  
@@ -515,7 +516,7 @@ Pour une méta-analyse mêlant essais et études observationnelles, choisis selo
 - Niveau 2 : essai randomisé contrôlé (y compris croisé).
 - Niveau 3 : essai non randomisé contrôlé, étude de cohorte, randomisation mendélienne, ou revue systématique / méta-analyse / revue parapluie d'études observationnelles.
 - Niveau 4 : étude cas-témoins, étude transversale, étude pilote sans groupe témoin, série de cas, cas clinique.
-- Niveau 5 : revue narrative ou raisonnement mécanistique (mécanismes, études cellulaires ou animales, hypothèses).
+- Niveau 5 : revue narrative (synthèse non systématique, centrée sur des résultats obtenus chez l'humain), revue mécanistique (centrée sur des mécanismes biologiques étudiés surtout sur des cellules ou chez l'animal) ou raisonnement mécanistique. Choisis « Revue mécanistique » plutôt que « Revue narrative » quand l'essentiel de la revue porte sur ces mécanismes.
 
 3. Donne l'effectif TOTAL de personnes incluses dans l'étude (nombre entier), tel qu'indiqué dans le résumé.
 - Pour une méta-analyse ou une revue systématique : le nombre total de participants des études incluses, s'il est indiqué ; sinon null.
