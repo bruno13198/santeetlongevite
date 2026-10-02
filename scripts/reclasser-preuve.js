@@ -63,7 +63,11 @@ async function appelerClaude(modele, maxTokens, prompt) {
   }
 
   const data = await res.json();
-  return data.content.map((b) => b.text || '').join('');
+  const texte = (data.content || []).map((b) => b.text || '').join('');
+  if (!texte) {
+    console.log(`  Réponse vide de l'API (stop_reason=${data.stop_reason}, blocs=${(data.content || []).map((b) => b.type).join(',') || 'aucun'})`);
+  }
+  return texte;
 }
 
 function extraireJSON(texte) {
@@ -109,7 +113,7 @@ ou, en cas de défaut :
 
   let texte = '';
   try {
-    texte = await appelerClaude(MODELE_ANALYSE, 500, prompt);
+    texte = await appelerClaude(MODELE_ANALYSE, 1500, prompt);
     const { objet } = extraireJSON(texte);
     const base = parseInt(objet.niveau_base, 10);
     if (!(base >= 1 && base <= 5)) throw new Error('Niveau de base invalide');
