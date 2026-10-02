@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 
+// Protection anti-robots (2 oct. 2026) : Cloudflare Turnstile + champ piège invisible.
+const CLE_SITE_TURNSTILE = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+
 export default function FormulaireAlertes() {
   const [recherche, setRecherche] = useState('');
   const [resultats, setResultats] = useState([]);
@@ -14,10 +17,52 @@ export default function FormulaireAlertes() {
   const [toutesLesHabitudes, setToutesLesHabitudes] = useState(false);
 
   const [email, setEmail] = useState('');
+  const [siteWeb, setSiteWeb] = useState(''); // champ piège : invisible pour les humains
+  const [tokenTurnstile, setTokenTurnstile] = useState('');
   const [statut, setStatut] = useState('repos'); // repos | envoi | succes | erreur
   const [message, setMessage] = useState('');
   const timeoutRef = useRef(null);
   const timeoutHabitudeRef = useRef(null);
+  const conteneurTurnstileRef = useRef(null);
+  const widgetTurnstileRef = useRef(null);
+
+  // Chargement et affichage du contrôle Turnstile
+  useEffect(() => {
+    function afficherWidget() {
+      if (!window.turnstile || !conteneurTurnstileRef.current || widgetTurnstileRef.current !== null) return;
+      widgetTurnstileRef.current = window.turnstile.render(conteneurTurnstileRef.current, {
+        sitekey: CLE_SITE_TURNSTILE,
+        language: 'fr',
+        callback: (token) => setTokenTurnstile(token),
+        'expired-callback': () => setTokenTurnstile(''),
+        'error-callback': () => setTokenTurnstile(''),
+      });
+    }
+
+    if (window.turnstile) {
+      afficherWidget();
+      return;
+    }
+
+    let script = document.querySelector('script[data-turnstile]');
+    if (!script) {
+      script = document.createElement('script');
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      script.async = true;
+      script.defer = true;
+      script.dataset.turnstile = '1';
+      document.head.appendChild(script);
+    }
+    script.addEventListener('load', afficherWidget);
+    return () => script.removeEventListener('load', afficherWidget);
+  }, []);
+
+  function reinitialiserTurnstile() {
+    setTokenTurnstile('');
+    if (window.turnstile && widgetTurnstileRef.current !== null) {
+      window.turnstile.reset(widgetTurnstileRef.current);
+    }
+  }
 
   useEffect(() => {
     if (recherche.trim().length < 2) {
@@ -71,6 +116,13 @@ export default function FormulaireAlertes() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+
+    if (!tokenTurnstile) {
+      setStatut('erreur');
+      setMessage('Merci de patienter quelques secondes pendant la vérification anti-robot, puis réessayez.');
+      return;
+    }
+
     setStatut('envoi');
     setMessage('');
 
@@ -84,6 +136,8 @@ export default function FormulaireAlertes() {
           tousLesAliments,
           habitudeIds: habitudesChoisies.map((h) => h.id),
           toutesLesHabitudes,
+          tokenTurnstile,
+          siteWeb,
         }),
       });
       const data = await res.json();
@@ -91,6 +145,7 @@ export default function FormulaireAlertes() {
       if (!res.ok) {
         setStatut('erreur');
         setMessage(data.erreur || 'Une erreur est survenue.');
+        reinitialiserTurnstile(); // un jeton Turnstile ne sert qu'une fois
         return;
       }
 
@@ -99,6 +154,7 @@ export default function FormulaireAlertes() {
     } catch (err) {
       setStatut('erreur');
       setMessage('Une erreur est survenue. Réessayez plus tard.');
+      reinitialiserTurnstile();
     }
   }
 
@@ -260,6 +316,24 @@ export default function FormulaireAlertes() {
         onChange={(e) => setEmail(e.target.value)}
         style={{ width: '100%', padding: '8px 12px', border: '1px solid #ccc', borderRadius: '6px', marginBottom: '16px' }}
       />
+
+      {/* Champ piège : invisible et inaccessible pour les humains, rempli par les robots */}
+      <div aria-hidden="true" style={{ position: 'absolute', left: '-10000px', top: 'auto', width: '1px', height: '1px', overflow: 'hidden' }}>
+        <label>
+          Ne pas remplir ce champ
+          <input
+            type="text"
+            name="site_web"
+            tabIndex={-1}
+            autoComplete="off"
+            value={siteWeb}
+            onChange={(e) => setSiteWeb(e.target.value)}
+          />
+        </label>
+      </div>
+
+      {/* Vérification anti-robot Cloudflare Turnstile */}
+      <div ref={conteneurTurnstileRef} style={{ marginBottom: '16px' }} />
 
       <button
         type="submit"
