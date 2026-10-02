@@ -29,6 +29,15 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
+// Couleurs des niveaux de preuve Oxford, identiques à celles des fiches aliments.
+const COULEURS_NIVEAUX = {
+  1: { fond: '#C0DD97', texte: '#173404' },
+  2: { fond: '#EAF3DE', texte: '#27500A' },
+  3: { fond: '#FAEEDA', texte: '#633806' },
+  4: { fond: '#FAECE7', texte: '#712B13' },
+  5: { fond: '#E4E9EE', texte: '#34495E' },
+};
+
 export default async function Home() {
   const { data: articles } = await supabase
     .from('articles')
@@ -40,7 +49,7 @@ export default async function Home() {
 
   const { data: etudes } = await supabase
     .from('etudes')
-    .select('id, titre_traduit, created_at')
+    .select('id, titre_traduit, created_at, niveau_preuve, design_etude')
     .order('created_at', { ascending: false, nullsFirst: false })
     .limit(5);
 
@@ -73,29 +82,28 @@ export default async function Home() {
         <h1 className={styles.h1}>Comment fonctionne ce site</h1>
 
         <p className={styles.lede}>
-          Nous voulons faire un site qui tient au courant des plus récentes recherches sur
-          la santé et la longévité. Il est encore en cours de construction, mais vous pouvez
-          déjà voir :
+          ScienceTruths vous tient informé des recherches les plus récentes sur la santé, en
+          commençant par la nutrition, puis le sport et le sommeil. Le site est encore en
+          construction, mais vous pouvez déjà découvrir :
         </p>
 
         <div className={styles.intro}>
           <p className={styles.introItem}>
-            <strong>Les articles</strong> — Des contenus accessibles et documentés sur la
-            nutrition, le sport, le sommeil et la longévité, basés sur les données
-            scientifiques disponibles.
+            <strong>Les articles</strong> — Des synthèses accessibles et documentées sur les
+            aliments, fondées sur l'ensemble des données scientifiques disponibles.
           </p>
           <p className={styles.introItem}>
             <strong>La veille scientifique</strong> — Elle fonctionne déjà pour les aliments et
             les habitudes alimentaires (régime méditerranéen, jeûne intermittent, régime
-            cétogène...) : nous ne l'alimentons qu'avec des études sérieuses (méta-analyses, revues
-            systématiques, essais cliniques randomisés), pour vous offrir une information fiable
-            plutôt qu'un flux de publications au niveau de preuve souvent très bas, voire
-            inexistant. Nous travaillons actuellement à l'étendre au sport, avant de nous attaquer
-            au sommeil et aux compléments alimentaires.
+            cétogène…). Chaque semaine, nous recensons les nouvelles études menées chez l'humain,
+            et chacune reçoit un <Link href="/niveaux-de-preuve">niveau de preuve</Link>, de 1
+            (le plus solide) à 5, pour que vous sachiez d'un coup d'œil ce qu'elle vaut vraiment.
+            Nous réfléchissons à l'étendre au sport, avant le sommeil et peut-être les compléments
+            alimentaires.
           </p>
           <p className={styles.introItem}>
             <strong>Des alertes personnalisées</strong> — Recevez par e-mail les nouvelles
-            recherches importantes sur les sujets que vous avez choisis.
+            recherches sur les sujets que vous avez choisis.
           </p>
         </div>
 
@@ -107,14 +115,10 @@ export default async function Home() {
             de la nutrition, de l'activité physique et de la longévité.
           </p>
           <p className={styles.introItem}>
-            <strong>Une recherche scientifique toujours plus complète</strong> — La base
-            d'études continuera à s'enrichir et à devenir plus facile à explorer. L'objectif :
-            comprendre les connaissances actuelles, suivre leur évolution et pouvoir les
-            utiliser concrètement au quotidien.
-          </p>
-          <p className={styles.introItem}>
-            <strong>La base scientifique</strong> — Une base permettant de retrouver et
-            d'explorer les études scientifiques utilisées pour la veille et les articles.
+            <strong>Une base scientifique toujours plus complète</strong> — Retrouver et
+            explorer facilement toutes les études utilisées par la veille et les articles.
+            L'objectif : comprendre les connaissances actuelles, suivre leur évolution et pouvoir
+            les utiliser concrètement au quotidien.
           </p>
         </div>
 
@@ -152,17 +156,37 @@ export default async function Home() {
               <p className={styles.empty}>Aucune étude pour le moment.</p>
             )}
             <ul className={styles.itemList}>
-              {etudesAvecLien.map((etude) => (
-                <li key={etude.id}>
-                  {etude.aliment ? (
-                    <Link href={`/aliments/${etude.aliment.slug}`} className={styles.itemLink}>
-                      {etude.titre_traduit}
-                    </Link>
-                  ) : (
-                    <span className={styles.itemLink}>{etude.titre_traduit}</span>
-                  )}
-                </li>
-              ))}
+              {etudesAvecLien.map((etude) => {
+                const couleurs = COULEURS_NIVEAUX[etude.niveau_preuve];
+                return (
+                  <li key={etude.id}>
+                    {couleurs && (
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          marginBottom: '4px',
+                          padding: '2px 8px',
+                          borderRadius: '10px',
+                          fontSize: '12px',
+                          fontWeight: 'bold',
+                          backgroundColor: couleurs.fond,
+                          color: couleurs.texte,
+                        }}
+                      >
+                        Niveau {etude.niveau_preuve}
+                        {etude.design_etude ? ` — ${etude.design_etude}` : ''}
+                      </span>
+                    )}
+                    {etude.aliment ? (
+                      <Link href={`/aliments/${etude.aliment.slug}`} className={styles.itemLink}>
+                        {etude.titre_traduit}
+                      </Link>
+                    ) : (
+                      <span className={styles.itemLink}>{etude.titre_traduit}</span>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </section>
         </div>
