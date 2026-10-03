@@ -382,7 +382,7 @@ Réponds "false" UNIQUEMENT si l'étude est CLAIREMENT dans l'un de ces cas :
 - il s'agit d'un usage uniquement cutané, topique ou cosmétique ;
 - il s'agit d'un protocole sans résultats ou d'une notice de rétractation ;
 - elle mesure seulement une contamination de l'aliment (bactéries, résistance aux antibiotiques, virus, parasites, métaux, pesticides, mycotoxines, microplastiques), éventuellement avec un calcul de risque théorique, sans aucun effet de santé observé chez des personnes ;
-- elle porte sur la formulation, la texture, la conservation, les propriétés physico-chimiques ou l'analyse sensorielle d'un produit, sans effet de santé mesuré chez des personnes ;
+- elle porte sur la formulation, la texture, la conservation, les propriétés physico-chimiques ou l'analyse sensorielle d'un produit, sans effet de santé mesuré chez des personnes ; ou c'est une revue consacrée surtout à la composition, la production, la transformation ou la valorisation de coproduits d'un aliment, qui ne cite des bienfaits pour la santé que de façon générale ;
 - c'est une enquête sur les achats, les connaissances, les attitudes ou la fréquence de consommation, sans lien mesuré avec un effet de santé ;
 - elle développe ou valide une méthode d'analyse, de dosage, de détection ou d'authentification.
 
@@ -429,13 +429,15 @@ Réponds "false" dans les cas suivants :
 - L'étude porte uniquement sur des animaux, des cellules en laboratoire (in vitro), ou des plantes (agronomie, botanique), SANS effet mesuré chez l'humain.
 - L'étude décrit seulement l'absorption, le métabolisme ou la biodisponibilité d'un composé chez l'humain, mais SANS mesurer un effet ou bénéfice de santé concret chez l'humain. La simple présence de données pharmacocinétiques humaines ne suffit pas si l'effet biologique testé n'a été observé qu'en laboratoire ou chez l'animal.
 - L'étude évalue un usage TOPIQUE, CUTANÉ ou COSMÉTIQUE de « ${nomAliment} » (crème, gel, lotion, gant enduit, application sur la peau...), plutôt qu'une CONSOMMATION ALIMENTAIRE (ingestion orale). Un bénéfice observé sur la peau ou via une application externe ne compte pas, même s'il est mesuré chez l'humain.
-- L'étude porte sur un micro-organisme, une toxine, un contaminant ou un procédé industriel lié à l'aliment, sans mesurer d'effet de sa consommation chez l'humain (ex : la biosynthèse d'un champignon d'affinage, la prévalence d'une bactérie, un procédé de fabrication).
+- L'étude porte sur un micro-organisme, une toxine, un contaminant ou un procédé industriel lié à l'aliment, sans aucun cas de maladie ni effet de santé observé chez des personnes (ex : la biosynthèse d'un champignon d'affinage, la prévalence d'une bactérie dans l'aliment, un procédé de fabrication).
+- Il s'agit d'une épidémie ou d'une intoxication due à une défaillance ponctuelle de production ou d'hygiène (un lot, une usine, une cantine), qui n'apprend rien sur l'aliment lui-même.
+- Il s'agit d'une revue portant surtout sur la composition, la production, la transformation, la conservation ou la valorisation de coproduits de l'aliment, ou sur un usage cosmétique, même si elle mentionne des « bienfaits pour la santé » sans synthétiser de résultats précis obtenus chez l'humain.
 - L'aliment sert uniquement de repas témoin, de comparateur ou de véhicule pour tester autre chose (un médicament, un nutriment ajouté, un autre aliment), sans qu'un effet propre lui soit attribué.
 - L'aliment n'est qu'un facteur parmi de nombreux autres (habitudes de vie, score combiné, questionnaire alimentaire global, liste d'allergènes) sans qu'un effet ou une association propre à cet aliment soit rapporté.
-- Pour les allergies : une étude sur la tolérance, la désensibilisation, l'introduction ou la réintroduction de cet aliment chez des personnes allergiques EST pertinente ; une étude qui recense seulement une sensibilisation parmi de nombreux allergènes, ou qui porte uniquement sur les conséquences de l'éviction de l'aliment, ne l'est pas.
+- Pour les allergies : une étude sur la tolérance, la désensibilisation, l'introduction ou la réintroduction de cet aliment chez des personnes allergiques EST pertinente, de même qu'une étude qui décrit des réactions allergiques à cet aliment chez des personnes (cas clinique, série de cas, épidémiologie de cette allergie) ; une étude qui recense seulement une sensibilisation parmi de nombreux allergènes, ou qui porte uniquement sur les conséquences de l'éviction de l'aliment, ne l'est pas.
 - Il s'agit d'un éditorial, d'un commentaire, d'une lettre ou d'un protocole d'étude sans résultats.
 - Tout autre sujet hors nutrition/santé humaine.
-Ne réponds "true" que si un effet ou bénéfice a été concrètement évalué chez des sujets humains suite à une consommation alimentaire (essai clinique, cohorte, méta-analyse de données humaines).
+Ne réponds "true" que si un effet ou bénéfice a été concrètement évalué chez des sujets humains suite à une consommation alimentaire (essai clinique, cohorte, méta-analyse de données humaines), OU si l'étude documente chez l'humain un effet néfaste lié à l'aliment : infection ou intoxication liée à la nature de l'aliment ou à son mode de consommation courant (cru, non pasteurisé, préparation traditionnelle, espèce ou population à risque), effet indésirable de l'aliment ou d'un produit qui en est issu (y compris un complément alimentaire), ou réaction allergique à cet aliment.
  
 Étape 3 — Si et seulement si pertinente sur les deux points ci-dessus, rédige les résumés en français.
  
