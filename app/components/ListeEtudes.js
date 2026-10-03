@@ -72,8 +72,42 @@ function BlocPreuve({ etude }) {
   );
 }
 
+function CarteEtude({ etude }) {
+  return (
+    <div
+      style={{
+        marginBottom: '20px',
+        padding: '16px',
+        border: '1px solid #eee',
+        borderRadius: '8px',
+      }}
+    >
+      <BlocPreuve etude={etude} />
+
+      <strong style={{ display: 'block', marginTop: '10px' }}>{etude.titre_traduit || etude.titre_original}</strong>
+      <p style={{ color: '#6B6E63', fontSize: '14px' }}>
+        {etude.source} · {etude.date_publication} · {etude.auteurs}
+      </p>
+
+      <p><strong>Résumé simplifié :</strong></p>
+      <p>{etude.resume_simplifie}</p>
+
+      <p><strong>Résumé reformulé :</strong></p>
+      <p>{etude.resume_reformule}</p>
+
+      {etude.url_originale && (
+        <a href={etude.url_originale} target="_blank" rel="noopener noreferrer" style={{ fontSize: '14px' }}>
+          Voir l'étude originale →
+        </a>
+      )}
+    </div>
+  );
+}
+
 export default function ListeEtudes({ etudes }) {
   const [selection, setSelection] = useState([]);
+  // Les revues de niveau 5 (narratives et mécanistiques) sont en retrait : masquées par défaut.
+  const [afficherRevues, setAfficherRevues] = useState(false);
 
   const comptes = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
   let nonClassees = 0;
@@ -88,8 +122,14 @@ export default function ListeEtudes({ etudes }) {
     );
   }
 
+  // Sans filtre : tout sauf le niveau 5, sauf si le lecteur a demandé à voir les revues.
+  // Avec filtre : exactement les niveaux choisis (y compris le 5 s'il est sélectionné).
   const visibles =
-    selection.length === 0 ? etudes : etudes.filter((e) => selection.includes(e.niveau_preuve));
+    selection.length === 0
+      ? etudes.filter((e) => e.niveau_preuve !== 5 || afficherRevues)
+      : etudes.filter((e) => selection.includes(e.niveau_preuve));
+
+  const boutonRevuesVisible = selection.length === 0 && comptes[5] > 0;
 
   return (
     <div>
@@ -144,39 +184,44 @@ export default function ListeEtudes({ etudes }) {
       </div>
 
       {visibles.length === 0 && (
-        <p style={{ color: '#6B6E63' }}>Aucune étude pour ce niveau.</p>
+        <p style={{ color: '#6B6E63' }}>
+          {selection.length === 0
+            ? 'Aucune étude de niveau 1 à 4 pour le moment.'
+            : 'Aucune étude pour ce niveau.'}
+        </p>
       )}
 
       {visibles.map((etude) => (
-        <div
-          key={etude.id}
-          style={{
-            marginBottom: '20px',
-            padding: '16px',
-            border: '1px solid #eee',
-            borderRadius: '8px',
-          }}
-        >
-          <BlocPreuve etude={etude} />
+        <CarteEtude key={etude.id} etude={etude} />
+      ))}
 
-          <strong style={{ display: 'block', marginTop: '10px' }}>{etude.titre_traduit || etude.titre_original}</strong>
-          <p style={{ color: '#6B6E63', fontSize: '14px' }}>
-            {etude.source} · {etude.date_publication} · {etude.auteurs}
-          </p>
-
-          <p><strong>Résumé simplifié :</strong></p>
-          <p>{etude.resume_simplifie}</p>
-
-          <p><strong>Résumé reformulé :</strong></p>
-          <p>{etude.resume_reformule}</p>
-
-          {etude.url_originale && (
-            <a href={etude.url_originale} target="_blank" rel="noopener noreferrer" style={{ fontSize: '14px' }}>
-              Voir l'étude originale →
-            </a>
+      {boutonRevuesVisible && (
+        <div style={{ marginTop: '8px', marginBottom: '24px' }}>
+          <button
+            type="button"
+            onClick={() => setAfficherRevues(!afficherRevues)}
+            style={{
+              padding: '10px 16px',
+              backgroundColor: COULEURS_NIVEAUX[5].fond,
+              color: COULEURS_NIVEAUX[5].texte,
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: 'bold',
+            }}
+          >
+            {afficherRevues
+              ? `Masquer les ${comptes[5]} revues narratives et mécanistiques`
+              : `Afficher aussi les ${comptes[5]} revues narratives et mécanistiques (niveau 5)`}
+          </button>
+          {!afficherRevues && (
+            <p style={{ color: '#6B6E63', fontSize: '13px', margin: '6px 0 0' }}>
+              Synthèses non systématiques ou centrées sur des mécanismes biologiques : utiles pour comprendre un domaine, mais sans nouvelles données mesurées chez l'humain.
+            </p>
           )}
         </div>
-      ))}
+      )}
     </div>
   );
 }
