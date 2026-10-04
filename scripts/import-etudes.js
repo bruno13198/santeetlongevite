@@ -100,16 +100,6 @@ const URL_BATCHES = 'https://api.anthropic.com/v1/messages/batches';
 const TAILLE_MAX_LOT_CLAUDE = 5000; // requêtes par lot envoyé (la limite de l'API est bien plus haute)
 const INTERVALLE_SONDAGE_MS = 30000; // vérification de l'état d'un lot toutes les 30 s
 
-const EXCEPTIONS_NOVA4 = [
-  'isolat-de-soja',
-  'cola-sucre',
-  'lecithine-de-soja',
-  'kimchi',
-  'kombucha',
-  'substitut-de-repas-hypocalorique-pret-a-boire',
-  'proteine-de-soja-texturee-rehydratee',
-];
-
 // Mots de TITRE signalant clairement un sujet animal, végétal, informatique
 // ou matériau. Liste volontairement prudente : pas de "cows", "sheep", "goats"
 // (lait de vache/brebis/chèvre chez l'humain) ni "in vitro" (fécondation in vitro).
@@ -255,8 +245,9 @@ async function recupererAlimentsATraiter() {
     throw new Error(`Erreur récupération aliments: ${error.message}`);
   }
 
+  // 4 oct. 2026 : plus de filtre NOVA 4 (ni liste d'exceptions) : la colonne actif est le
+  // seul interrupteur. Les fiches NOVA 4 non voulues sont désactivées en base.
   const eligibles = aliments
-    .filter((a) => [1, 2, 3].includes(a.niveau_nova) || EXCEPTIONS_NOVA4.includes(a.slug))
     .filter(
       (a) =>
         (Array.isArray(a.termes_recherche) && a.termes_recherche.length > 0) ||
