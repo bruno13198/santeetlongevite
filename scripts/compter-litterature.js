@@ -15,67 +15,14 @@ const URL_EUROPEPMC_POST = 'https://www.ebi.ac.uk/europepmc/webservices/rest/sea
 
 // [nom en français, catégorie, termes anglais cherchés en expression exacte]
 const CANDIDATS = [
-  // Concepts généraux
-  ['Aliments ultra-transformés', 'Concept', ['ultra-processed food', 'ultra-processed foods', 'ultraprocessed food', 'ultraprocessed foods']],
-  ['Viandes transformées', 'Concept', ['processed meat', 'processed meats']],
-  ['Restauration rapide', 'Concept', ['fast food', 'fast-food']],
-  ['Aliments frits', 'Concept', ['fried food', 'fried foods', 'deep-fried food']],
-  ['Alcool (consommation)', 'Concept', ['alcohol consumption', 'alcohol intake']],
-  ['Plats préparés', 'Concept', ['ready meals', 'ready-to-eat meals', 'convenience food', 'convenience foods']],
-  ['Snacks salés', 'Concept', ['salty snacks', 'snack foods']],
-  ['Substituts de viande végétaux', 'Concept', ['plant-based meat', 'meat substitutes', 'meat analogues', 'meat alternatives', 'meat analogs', 'plant-based burger', 'veggie burger', 'vegetarian burger', 'Beyond Burger', 'Impossible Burger']],
-  ['Boissons végétales', 'Concept', ['plant-based milk', 'soy milk', 'oat milk', 'almond milk', 'plant-based beverages']],
-  ['Édulcorants (général)', 'Concept', ['artificial sweeteners', 'non-nutritive sweeteners', 'low-calorie sweeteners']],
-
-  // Plats et restauration rapide
-  ['Pizza', 'Plat', ['pizza']],
-  ['Hamburger', 'Plat', ['hamburger', 'hamburgers', 'burger', 'burgers', 'cheeseburger', 'beef burger']],
-  ['Hot-dog', 'Plat', ['hot dog', 'hot dogs']],
-  ['Frites', 'Plat', ['French fries', 'french fried potatoes']],
-  ['Poulet frit', 'Plat', ['fried chicken']],
-  ['Nuggets', 'Plat', ['chicken nuggets']],
-  ['Nouilles instantanées', 'Plat', ['instant noodles', 'instant noodle']],
-  ['Sushi', 'Plat', ['sushi']],
-  ['Soupes', 'Plat', ['soup consumption', 'vegetable soup']],
-
-  // Charcuterie
-  ['Saucisson, salami', 'Charcuterie', ['salami']],
-  ['Charcuterie (général)', 'Charcuterie', ['cured meat', 'cured meats', 'charcuterie']],
-
-  // Produits sucrés
-  ['Céréales du petit-déjeuner', 'Produit sucré', ['breakfast cereal', 'breakfast cereals', 'ready-to-eat cereal']],
-  ['Biscuits et gâteaux', 'Produit sucré', ['biscuits', 'sweet bakery products', 'cakes and biscuits']],
-  ['Viennoiseries et pâtisseries', 'Produit sucré', ['pastries', 'pastry consumption', 'croissant']],
-  ['Confiseries', 'Produit sucré', ['confectionery', 'candy consumption', 'sweets consumption']],
-  ['Glaces', 'Produit sucré', ['ice cream']],
-  ['Chocolat au lait', 'Produit sucré', ['milk chocolate']],
-  ['Pâte à tartiner', 'Produit sucré', ['chocolate spread', 'hazelnut spread']],
-  ['Barres céréalières ou protéinées', 'Produit sucré', ['cereal bar', 'cereal bars', 'granola bar', 'protein bar', 'protein bars']],
-  ['Yaourts sucrés ou aromatisés', 'Produit sucré', ['flavored yogurt', 'flavoured yogurt', 'sweetened yogurt']],
-  ['Lait chocolaté', 'Produit sucré', ['chocolate milk']],
-  ['Popcorn', 'Produit salé', ['popcorn']],
-  ['Chips', 'Produit salé', ['potato chips', 'potato crisps']],
-
-  // Boissons
-  ['Sodas light', 'Boisson', ['diet soda', 'diet sodas', 'artificially sweetened beverages', 'diet beverages']],
-  ['Boissons énergisantes', 'Boisson', ['energy drinks', 'energy drink']],
-  ['Bière', 'Boisson', ['beer', 'beer consumption']],
-  ['Spiritueux', 'Boisson', ['spirits consumption', 'distilled spirits', 'liquor consumption']],
-  ['Jus de fruits (général)', 'Boisson', ['fruit juice', 'fruit juices', '100% fruit juice']],
-  ['Eau du robinet', 'Boisson', ['tap water', 'drinking water']],
-  ['Eau de source', 'Boisson', ['spring water']],
-
-  // Édulcorants précis
-  ['Aspartame', 'Additif', ['aspartame']],
-  ['Sucralose', 'Additif', ['sucralose']],
-  ['Stévia', 'Additif', ['stevia', 'steviol glycosides']],
-  ['Érythritol', 'Additif', ['erythritol']],
-
-  // Matières grasses et condiments
-  ['Margarine', 'Matière grasse', ['margarine']],
-  ['Mayonnaise', 'Condiment', ['mayonnaise']],
-  ['Ketchup', 'Condiment', ['ketchup']],
-  ['Sauce soja', 'Condiment', ['soy sauce']],
+  // Recomptage du 4 oct. 2026 : variantes larges et ciblées des sujets douteux
+  ['Eau du robinet (large)', 'Boisson', ['tap water']],
+  ['Eau du robinet (ciblé)', 'Boisson', ['tap water consumption', 'tap water intake', 'drinking tap water', 'tap water drinking']],
+  ['Alcool (large)', 'Concept', ['alcohol intake']],
+  ['Alcool (ciblé)', 'Concept', ['moderate alcohol consumption', 'moderate drinking', 'light drinking', 'light-to-moderate drinking', 'alcohol and mortality']],
+  ['Hamburger (sans burger seul)', 'Plat', ['hamburger', 'hamburgers', 'cheeseburger', 'beef burger', 'burger consumption']],
+  ['Bière (ciblé)', 'Boisson', ['beer consumption', 'beer intake', 'beer drinkers', 'beer drinking', 'non-alcoholic beer']],
+  ['Sauce soja (ciblé)', 'Condiment', ['soy sauce consumption', 'soy sauce intake']],
 ];
 
 function formaterDate(date) {
