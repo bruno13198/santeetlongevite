@@ -37,16 +37,6 @@ const plexMono = IBM_Plex_Mono({
   variable: '--font-mono',
 });
 
-const EXCEPTIONS_NOVA4 = [
-  'isolat-de-soja',
-  'cola-sucre',
-  'lecithine-de-soja',
-  'kimchi',
-  'kombucha',
-  'substitut-de-repas-hypocalorique-pret-a-boire',
-  'proteine-de-soja-texturee-rehydratee',
-];
-
 async function chargerSujets() {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -55,7 +45,7 @@ async function chargerSujets() {
 
   const [{ data: aliments, error: erreurAliments }, { data: habitudes, error: erreurHabitudes }] =
     await Promise.all([
-      supabase.from('aliments').select('id, slug, nom, niveau_nova').eq('actif', true).range(0, 3999),
+      supabase.from('aliments').select('id, slug, nom').eq('actif', true).range(0, 3999),
       supabase.from('habitudes_alimentaires').select('id, slug, nom').eq('actif', true),
     ]);
 
@@ -65,9 +55,8 @@ async function chargerSujets() {
 
   return {
     erreur: null,
-    aliments: (aliments || [])
-      .filter((a) => a.niveau_nova !== 4 || EXCEPTIONS_NOVA4.includes(a.slug))
-      .map((a) => ({ id: a.id, slug: a.slug, nom: a.nom })),
+    // 4 oct. 2026 : plus de filtre NOVA 4, la colonne actif est le seul interrupteur.
+    aliments: (aliments || []).map((a) => ({ id: a.id, slug: a.slug, nom: a.nom })),
     habitudes: (habitudes || []).map((h) => ({ id: h.id, slug: h.slug, nom: h.nom })),
   };
 }
