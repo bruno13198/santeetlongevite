@@ -23,13 +23,13 @@ const CANDIDATS = [
   ['Alcool (consommation)', 'Concept', ['alcohol consumption', 'alcohol intake']],
   ['Plats préparés', 'Concept', ['ready meals', 'ready-to-eat meals', 'convenience food', 'convenience foods']],
   ['Snacks salés', 'Concept', ['salty snacks', 'snack foods']],
-  ['Substituts de viande végétaux', 'Concept', ['plant-based meat', 'meat substitutes', 'meat analogues', 'meat alternatives']],
+  ['Substituts de viande végétaux', 'Concept', ['plant-based meat', 'meat substitutes', 'meat analogues', 'meat alternatives', 'meat analogs', 'plant-based burger', 'veggie burger', 'vegetarian burger', 'Beyond Burger', 'Impossible Burger']],
   ['Boissons végétales', 'Concept', ['plant-based milk', 'soy milk', 'oat milk', 'almond milk', 'plant-based beverages']],
   ['Édulcorants (général)', 'Concept', ['artificial sweeteners', 'non-nutritive sweeteners', 'low-calorie sweeteners']],
 
   // Plats et restauration rapide
   ['Pizza', 'Plat', ['pizza']],
-  ['Hamburger', 'Plat', ['hamburger', 'hamburgers']],
+  ['Hamburger', 'Plat', ['hamburger', 'hamburgers', 'burger', 'burgers', 'cheeseburger', 'beef burger']],
   ['Hot-dog', 'Plat', ['hot dog', 'hot dogs']],
   ['Frites', 'Plat', ['French fries', 'french fried potatoes']],
   ['Poulet frit', 'Plat', ['fried chicken']],
