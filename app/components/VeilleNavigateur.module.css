@@ -1,1 +1,376 @@
+/* Navigateur de la veille scientifique (4 oct. 2026) — palette de la maquette validée */
+.navigateur {
+  --vert: #27500a;
+  --vert-clair: #eef2e8;
+  --encre: #1f2a22;
+  --texte-doux: #6b6e63;
+  --trait: #dcddd5;
+  --fond: #fafaf7;
+  color: var(--encre);
+  font-family: var(--font-body), 'IBM Plex Sans', 'Helvetica Neue', sans-serif;
+  margin-top: 28px;
+}
 
+/* Place réservée sous la liste pour que le bandeau ne masque pas les derniers sujets */
+.avecBandeau {
+  padding-bottom: 260px;
+}
+
+.labelRecherche {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.recherche {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  font-size: 16px;
+  font-family: inherit;
+  border: 1px solid #c9cbc1;
+  border-radius: 6px;
+  background: #fff;
+  color: var(--encre);
+}
+
+.recherche:focus-visible {
+  outline: 2px solid var(--vert);
+  outline-offset: 1px;
+}
+
+/* Onglets */
+.onglets {
+  display: flex;
+  gap: 4px;
+  margin-top: 24px;
+  border-bottom: 1px solid var(--trait);
+}
+
+.onglet {
+  appearance: none;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--texte-doux);
+  padding: 10px 14px;
+  margin-bottom: -1px;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.onglet:hover {
+  color: var(--encre);
+}
+
+.onglet:focus-visible {
+  outline: 2px solid var(--vert);
+  outline-offset: 2px;
+}
+
+.ongletActif {
+  color: var(--vert);
+  border-bottom-color: var(--vert);
+}
+
+.compteur {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--texte-doux);
+  background: var(--vert-clair);
+  border-radius: 10px;
+  padding: 1px 8px;
+}
+
+.panneau {
+  padding-top: 18px;
+}
+
+.vide {
+  margin-top: 18px;
+  color: var(--texte-doux);
+}
+
+.lienBouton {
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: var(--vert);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Case « Tous les… » */
+.tous {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+
+.tous input,
+.case {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--vert);
+  flex: none;
+  cursor: pointer;
+}
+
+/* Sommaire des lettres */
+.sommaire {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 20px;
+}
+
+.lienLettre {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  color: var(--vert);
+  background: var(--vert-clair);
+}
+
+.lienLettre:hover {
+  background: #dfe7d6;
+}
+
+.lettreVide {
+  color: #9a9c93;
+  background: transparent;
+}
+
+.lettreVide:hover {
+  background: transparent;
+}
+
+/* Liste en colonnes */
+.colonnes {
+  column-width: 15rem;
+  column-gap: 2.5rem;
+}
+
+.desactive .item {
+  opacity: 0.55;
+}
+
+.groupe {
+  break-inside: avoid;
+  margin-bottom: 22px;
+}
+
+.lettre {
+  font-family: var(--font-display), 'Fraunces', Georgia, serif;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--vert);
+  margin: 0 0 6px;
+  padding-top: 10px;
+  border-top: 1px solid var(--trait);
+  scroll-margin-top: 80px;
+}
+
+.liste {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 5px 0;
+}
+
+.item .case {
+  margin-top: 2px;
+}
+
+.lien {
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--encre);
+  text-decoration: none;
+}
+
+.lien:hover {
+  color: var(--vert);
+  text-decoration: underline;
+}
+
+.lien:focus-visible {
+  outline: 2px solid var(--vert);
+  outline-offset: 2px;
+}
+
+.detail {
+  color: var(--texte-doux);
+  font-size: 13px;
+}
+
+/* Bandeau d'inscription, fixé en bas de l'écran */
+.bandeau {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  background: #fff;
+  border-top: 2px solid var(--vert);
+  box-shadow: 0 -4px 16px rgba(31, 42, 34, 0.08);
+}
+
+.bandeauInterieur {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+}
+
+.resume {
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  flex: 1 1 220px;
+}
+
+.resumeNoms {
+  color: var(--texte-doux);
+  font-size: 14px;
+}
+
+.labelEmail {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.email {
+  flex: 1 1 220px;
+  padding: 10px 12px;
+  font-size: 15px;
+  font-family: inherit;
+  border: 1px solid #c9cbc1;
+  border-radius: 6px;
+}
+
+.email:focus-visible {
+  outline: 2px solid var(--vert);
+  outline-offset: 1px;
+}
+
+.piege {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.turnstile {
+  flex: none;
+}
+
+.valider {
+  appearance: none;
+  border: none;
+  border-radius: 6px;
+  background: var(--vert);
+  color: #fff;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 11px 20px;
+  cursor: pointer;
+}
+
+.valider:hover {
+  background: #1d3d07;
+}
+
+.valider:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.valider:focus-visible {
+  outline: 2px solid var(--encre);
+  outline-offset: 2px;
+}
+
+.erreur {
+  flex-basis: 100%;
+  margin: 0;
+  color: #a12c1b;
+  font-size: 14px;
+}
+
+.note {
+  flex-basis: 100%;
+  margin: 0;
+  color: var(--texte-doux);
+  font-size: 13px;
+}
+
+.succes {
+  flex: 1;
+  margin: 0;
+  color: var(--vert);
+  font-weight: 500;
+}
+
+.fermer {
+  appearance: none;
+  border: 1px solid var(--trait);
+  background: #fff;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .onglet {
+    font-size: 15px;
+    padding: 10px 8px;
+  }
+
+  .avecBandeau {
+    padding-bottom: 360px;
+  }
+
+  .bandeauInterieur {
+    padding: 12px 16px;
+  }
+
+  .valider {
+    width: 100%;
+  }
+}
