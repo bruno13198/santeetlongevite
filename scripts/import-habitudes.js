@@ -43,6 +43,8 @@ const HABITUDES_GROS_VOLUME = [
   'jeune-intermittent',
   'restriction-calorique',
   'regime-cetogene',
+  'aliments-ultra-transformes',
+  'consommation-alcool',
 ];
 
 function quotasPour(habitude) {
