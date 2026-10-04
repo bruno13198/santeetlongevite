@@ -567,6 +567,7 @@ Réponds "false" dans les cas suivants :
 - Le critère étudié est l'adhésion au régime elle-même (niveau d'adhésion, ses déterminants, préférences, connaissances, ou efficacité d'une intervention pour faire adopter le régime), sans résultat de santé mesuré en lien avec ce régime.
 - L'étude valide un outil de mesure, un questionnaire ou une méthode d'évaluation alimentaire.
 - Le régime n'est qu'une variable d'ajustement, un indice parmi plusieurs autres, ou une composante d'une intervention multiple dont l'effet propre n'est pas isolé.
+- Cette habitude n'est pas l'exposition principale de l'étude : étude sur de nombreux comportements ou facteurs de mode de vie (sommeil, tabac, activité physique, écrans...) ou sur plusieurs habitudes alimentaires à la fois, où celle-ci n'est qu'un élément parmi d'autres, même si une association chiffrée la concernant est rapportée. Elle n'est pertinente que si cette habitude est explicitement au centre de la question de recherche, par exemple nommée dans le titre ou dans l'objectif principal.
 - Il s'agit d'un consensus d'experts (Delphi), d'une étude de perceptions ou d'opinions, d'un éditorial, d'un commentaire, d'une lettre ou d'un protocole d'étude sans résultats.
 - Tout autre sujet hors nutrition/santé humaine.
  
