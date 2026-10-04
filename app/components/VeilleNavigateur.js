@@ -53,8 +53,17 @@ function lettreDe(nom) {
   return /[A-Z]/.test(premiere) ? premiere : '#';
 }
 
+// Tri sur le nom principal (avant la première virgule), puis sur le nom complet :
+// « Ail, cru » passe avant « Ail noir » et « Ail séché ».
+function trier(liste) {
+  const comparer = (x, y) => x.localeCompare(y, 'fr', { sensitivity: 'base' });
+  return [...liste].sort(
+    (a, b) => comparer(a.nom.split(', ')[0], b.nom.split(', ')[0]) || comparer(a.nom, b.nom)
+  );
+}
+
 function grouperParLettre(liste) {
-  const triee = [...liste].sort((a, b) => a.nom.localeCompare(b.nom, 'fr', { sensitivity: 'base' }));
+  const triee = trier(liste);
   const groupes = [];
   for (const sujet of triee) {
     const lettre = lettreDe(sujet.nom);
@@ -114,8 +123,13 @@ export default function VeilleNavigateur({ aliments, habitudes }) {
     return { aliments: filtrer(aliments), habitudes: filtrer(habitudes) };
   }, [aliments, habitudes, motsRecherche]);
 
+  // Aliments : groupés par lettre. Habitudes : une seule liste, répartie à parts égales
+  // entre les colonnes (pas de lettres, trop peu d'entrées par lettre).
   const groupes = useMemo(
-    () => ({ aliments: grouperParLettre(filtres.aliments), habitudes: grouperParLettre(filtres.habitudes) }),
+    () => ({
+      aliments: grouperParLettre(filtres.aliments),
+      habitudes: filtres.habitudes.length > 0 ? [{ lettre: 'tout', sujets: trier(filtres.habitudes) }] : [],
+    }),
     [filtres]
   );
 
@@ -330,7 +344,7 @@ export default function VeilleNavigateur({ aliments, habitudes }) {
 
           <div className={`${styles.colonnes} ${tous[o.cle] ? styles.desactive : ''}`}>
             {groupes[o.cle].map((groupe) => (
-              <div key={groupe.lettre} className={styles.groupe}>
+              <div key={groupe.lettre} className={o.cle === 'aliments' ? styles.groupe : styles.groupeLibre}>
                 {o.cle === 'aliments' && (
                   <h2 id={`${o.cle}-${groupe.lettre}`} className={styles.lettre}>
                     {groupe.lettre}
