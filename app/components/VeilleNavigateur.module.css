@@ -178,6 +178,11 @@
   margin-bottom: 22px;
 }
 
+/* Liste sans lettres (habitudes) : répartie à parts égales entre les colonnes */
+.groupeLibre .item {
+  break-inside: avoid;
+}
+
 .lettre {
   font-family: var(--font-display), 'Fraunces', Georgia, serif;
   font-size: 26px;
