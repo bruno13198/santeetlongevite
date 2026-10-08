@@ -563,7 +563,7 @@ Les études observationnelles (cohortes prospectives, études cas-témoins) mesu
 Un résultat de santé désigne : une maladie ou son risque, des symptômes, un marqueur biologique, la mortalité, le poids ou la composition corporelle, la fonction cognitive ou la santé mentale, les performances cognitives ou scolaires.
 Réponds "false" dans les cas suivants :
 - L'étude porte uniquement sur des animaux ou des cellules en laboratoire, sans effet mesuré chez l'humain.
-- L'étude décrit seulement la théorie ou la composition du régime, sans mesurer d'effet ou d'association de santé concret chez l'humain.
+- L'étude décrit seulement la composition du régime, sans mesurer d'effet ou d'association de santé concret chez l'humain. Exception : une revue narrative ou mécanistique consacrée à cette habitude et à ses effets sur la santé (y compris si elle s'appuie surtout sur des données animales ou cellulaires) EST pertinente ; elle sera classée à part, au niveau de preuve le plus bas.
 - Le critère étudié est l'adhésion au régime elle-même (niveau d'adhésion, ses déterminants, préférences, connaissances, ou efficacité d'une intervention pour faire adopter le régime), sans résultat de santé mesuré en lien avec ce régime.
 - L'étude valide un outil de mesure, un questionnaire ou une méthode d'évaluation alimentaire.
 - Le régime n'est qu'une variable d'ajustement, un indice parmi plusieurs autres, ou une composante d'une intervention multiple dont l'effet propre n'est pas isolé.
