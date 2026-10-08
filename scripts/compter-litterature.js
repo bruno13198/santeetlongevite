@@ -15,14 +15,9 @@ const URL_EUROPEPMC_POST = 'https://www.ebi.ac.uk/europepmc/webservices/rest/sea
 
 // [nom en français, catégorie, termes anglais cherchés en expression exacte]
 const CANDIDATS = [
-  // Recomptage du 4 oct. 2026 : variantes larges et ciblées des sujets douteux
-  ['Eau du robinet (large)', 'Boisson', ['tap water']],
-  ['Eau du robinet (ciblé)', 'Boisson', ['tap water consumption', 'tap water intake', 'drinking tap water', 'tap water drinking']],
-  ['Alcool (large)', 'Concept', ['alcohol intake']],
-  ['Alcool (ciblé)', 'Concept', ['moderate alcohol consumption', 'moderate drinking', 'light drinking', 'light-to-moderate drinking', 'alcohol and mortality']],
-  ['Hamburger (sans burger seul)', 'Plat', ['hamburger', 'hamburgers', 'cheeseburger', 'beef burger', 'burger consumption']],
-  ['Bière (ciblé)', 'Boisson', ['beer consumption', 'beer intake', 'beer drinkers', 'beer drinking', 'non-alcoholic beer']],
-  ['Sauce soja (ciblé)', 'Condiment', ['soy sauce consumption', 'soy sauce intake']],
+  // Comptage du 5 oct. 2026 : volume de littérature sur l'ail (fiche fusionnée)
+  ['Ail (tous termes de la fiche)', 'Aliment', ['garlic', 'raw garlic', 'garlic powder', 'garlic supplementation', 'garlic extract', 'aged garlic extract']],
+  ['Ail noir', 'Aliment', ['black garlic', 'fermented black garlic', 'aged black garlic']],
 ];
 
 function formaterDate(date) {
