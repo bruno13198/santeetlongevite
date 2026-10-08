@@ -527,7 +527,11 @@ Réponds "false" UNIQUEMENT si l'étude est CLAIREMENT dans l'un de ces cas :
 - l'habitude alimentaire n'a aucun rapport réel avec le sujet de l'étude (absente, ou mentionnée seulement en passant) ;
 - l'étude porte sur l'élevage, l'alimentation animale, l'agronomie ou un procédé industriel ;
 - il s'agit d'un protocole sans résultats, d'une notice de rétractation, d'un éditorial, d'un commentaire ou d'une lettre ;
-- elle développe ou valide une méthode d'analyse, un questionnaire ou un outil de mesure.
+- elle développe ou valide une méthode d'analyse, un questionnaire ou un outil de mesure ;
+- cette habitude n'est qu'un facteur parmi d'autres (score de mode de vie, plusieurs régimes ou comportements étudiés ensemble), ou seulement le cadre commun à tous les groupes d'un essai qui teste en réalité autre chose (un complément, un aliment, un médicament) ;
+- Il s'agit d'un article de méthode (mise au point d'instruments génétiques, de modèles statistiques, de questionnaires ou d'outils de mesure) dont l'objet n'est pas l'effet de cette habitude sur la santé.
+- elle porte uniquement sur les déterminants, les connaissances, les perceptions, les obstacles ou l'adhésion à cette habitude, sans mesurer de résultat de santé ;
+- elle porte sur la composition, l'étiquetage ou la contamination des aliments, sans effet de santé mesuré chez des personnes.
 
 Dans TOUS les autres cas, y compris en cas de doute, réponds "true" : une analyse plus fine sera faite ensuite.
 Une étude chez l'humain qui ne trouve AUCUN effet ou AUCUNE association avec cette habitude est un résultat valable : réponds "true".
