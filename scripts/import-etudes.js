@@ -73,6 +73,8 @@ const ALIMENTS_GROS_VOLUME = [
   'lait-sans-precision-sur-la-teneur-en-matiere-grasse-uht-aliment-moyen', // « Lait »
   'legume-cuit-aliment-moyen', // « Légumes »
   'vin-aliment-moyen',
+  'cereales-completes',
+  'produits-laitiers',
 ];
 
 function quotasPour(aliment) {
