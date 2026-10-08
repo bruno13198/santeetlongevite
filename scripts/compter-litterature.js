@@ -15,24 +15,21 @@ const URL_EUROPEPMC_POST = 'https://www.ebi.ac.uk/europepmc/webservices/rest/sea
 
 // [nom en français, catégorie, termes anglais cherchés en expression exacte]
 const CANDIDATS = [
-  // Comptage du 5 oct. 2026 : régimes et habitudes candidats
-  // Régimes
-  ['Régime MIND', 'Régime', ['MIND diet', 'Mediterranean-DASH Intervention for Neurodegenerative Delay']],
-  ['Régime nordique', 'Régime', ['Nordic diet', 'New Nordic Diet', 'healthy Nordic diet', 'Baltic Sea diet']],
-  ['Régime anti-inflammatoire', 'Régime', ['anti-inflammatory diet', 'dietary inflammatory index', 'inflammatory potential of the diet']],
-  ['Régime flexitarien / EAT-Lancet', 'Régime', ['flexitarian', 'planetary health diet', 'EAT-Lancet']],
-  ['Régime pesco-végétarien', 'Régime', ['pescatarian', 'pesco-vegetarian']],
-  ['Régime très basse calorie', 'Régime', ['very-low-calorie diet', 'very low calorie diet', 'total diet replacement']],
-  ['Régime riche en fibres', 'Régime', ['high-fiber diet', 'high-fibre diet', 'high fiber diet']],
-  ['Régime Portfolio', 'Régime', ['portfolio diet', 'dietary portfolio']],
-  ['Régime japonais', 'Régime', ['Japanese diet', 'washoku', 'Japanese dietary pattern']],
-  // Habitudes de prise alimentaire
-  ['Sauter le petit-déjeuner', 'Habitude', ['breakfast skipping', 'skipping breakfast', 'breakfast consumption']],
-  ['Horaires des repas, manger tard', 'Habitude', ['meal timing', 'late eating', 'late-night eating', 'chrononutrition', 'timing of food intake']],
-  ['Grignotage', 'Habitude', ['snacking', 'snack consumption']],
-  ['Vitesse d\'ingestion', 'Habitude', ['eating speed', 'eating rate', 'speed of eating']],
-  ['Alimentation en pleine conscience / intuitive', 'Habitude', ['mindful eating', 'intuitive eating']],
-  ['Hydratation, consommation d\'eau', 'Habitude', ['plain water intake', 'daily water intake', 'hydration status', 'water consumption']],
+  // Comptage du 5 oct. 2026 : familles et aliments manquants
+  ['Céréales complètes', 'Famille', ['whole grain', 'whole grains', 'wholegrain', 'whole-grain intake']],
+  ['Céréales raffinées', 'Famille', ['refined grain', 'refined grains']],
+  ['Produits laitiers', 'Famille', ['dairy products', 'dairy intake', 'dairy consumption', 'dairy foods']],
+  ['Champignons (général)', 'Famille', ['mushroom consumption', 'mushroom intake', 'edible mushrooms']],
+  ['Champignons médicinaux', 'Famille', ['shiitake', 'Ganoderma lucidum', 'reishi', 'Hericium erinaceus', 'lion\'s mane']],
+  ['Aliments fermentés', 'Famille', ['fermented foods', 'fermented food intake']],
+  ['Algues (général)', 'Famille', ['seaweed consumption', 'seaweed intake', 'edible seaweed']],
+  ['Cerise acidulée', 'Aliment', ['tart cherry', 'Montmorency cherry', 'sour cherry']],
+  ['Nigelle', 'Aliment', ['Nigella sativa', 'black seed', 'black cumin']],
+  ['Aronia', 'Aliment', ['aronia', 'chokeberry']],
+  ['Açaï', 'Aliment', ['acai', 'açaí', 'Euterpe oleracea']],
+  ['Argousier', 'Aliment', ['sea buckthorn', 'Hippophae rhamnoides']],
+  ['Huile de krill', 'Aliment', ['krill oil']],
+  ['Sirop d\'érable', 'Aliment', ['maple syrup']],
 ];
 
 function formaterDate(date) {
