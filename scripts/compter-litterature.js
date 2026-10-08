@@ -15,9 +15,24 @@ const URL_EUROPEPMC_POST = 'https://www.ebi.ac.uk/europepmc/webservices/rest/sea
 
 // [nom en français, catégorie, termes anglais cherchés en expression exacte]
 const CANDIDATS = [
-  // Comptage du 5 oct. 2026 : volume de littérature sur l'ail (fiche fusionnée)
-  ['Ail (tous termes de la fiche)', 'Aliment', ['garlic', 'raw garlic', 'garlic powder', 'garlic supplementation', 'garlic extract', 'aged garlic extract']],
-  ['Ail noir', 'Aliment', ['black garlic', 'fermented black garlic', 'aged black garlic']],
+  // Comptage du 5 oct. 2026 : régimes et habitudes candidats
+  // Régimes
+  ['Régime MIND', 'Régime', ['MIND diet', 'Mediterranean-DASH Intervention for Neurodegenerative Delay']],
+  ['Régime nordique', 'Régime', ['Nordic diet', 'New Nordic Diet', 'healthy Nordic diet', 'Baltic Sea diet']],
+  ['Régime anti-inflammatoire', 'Régime', ['anti-inflammatory diet', 'dietary inflammatory index', 'inflammatory potential of the diet']],
+  ['Régime flexitarien / EAT-Lancet', 'Régime', ['flexitarian', 'planetary health diet', 'EAT-Lancet']],
+  ['Régime pesco-végétarien', 'Régime', ['pescatarian', 'pesco-vegetarian']],
+  ['Régime très basse calorie', 'Régime', ['very-low-calorie diet', 'very low calorie diet', 'total diet replacement']],
+  ['Régime riche en fibres', 'Régime', ['high-fiber diet', 'high-fibre diet', 'high fiber diet']],
+  ['Régime Portfolio', 'Régime', ['portfolio diet', 'dietary portfolio']],
+  ['Régime japonais', 'Régime', ['Japanese diet', 'washoku', 'Japanese dietary pattern']],
+  // Habitudes de prise alimentaire
+  ['Sauter le petit-déjeuner', 'Habitude', ['breakfast skipping', 'skipping breakfast', 'breakfast consumption']],
+  ['Horaires des repas, manger tard', 'Habitude', ['meal timing', 'late eating', 'late-night eating', 'chrononutrition', 'timing of food intake']],
+  ['Grignotage', 'Habitude', ['snacking', 'snack consumption']],
+  ['Vitesse d\'ingestion', 'Habitude', ['eating speed', 'eating rate', 'speed of eating']],
+  ['Alimentation en pleine conscience / intuitive', 'Habitude', ['mindful eating', 'intuitive eating']],
+  ['Hydratation, consommation d\'eau', 'Habitude', ['plain water intake', 'daily water intake', 'hydration status', 'water consumption']],
 ];
 
 function formaterDate(date) {
