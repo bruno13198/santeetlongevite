@@ -22,18 +22,20 @@ const plexMono = IBM_Plex_Mono({
   variable: '--font-mono',
 });
 
+export const metadata = {
+  title: 'À propos — ScienceTruths',
+  description:
+    "Qui fait ScienceTruths, d'où viennent les études, comment elles sont évaluées, le rôle de l'intelligence artificielle, les limites du site et son indépendance.",
+  alternates: { canonical: 'https://sciencetruths.com/a-propos' },
+};
+
 export default function APropos() {
   return (
     <main className={`${fraunces.variable} ${plexSans.variable} ${plexMono.variable} ${styles.page}`}>
       <div className={styles.wrap}>
 
         <p className={styles.eyebrow}>ScienceTruths — À propos</p>
-        <h1 className={styles.h1}>Comment fonctionne ce site</h1>
-
-        <p className={styles.lede}>
-          Cette page explique qui fait ScienceTruths, d'où viennent les informations publiées,
-          comment elles sont évaluées et quelles sont leurs limites.
-        </p>
+        <h1 className={styles.h1}>Qui fait ce site, et comment</h1>
 
         {/* --- Qui fait le site --- */}
         <section className={styles.section}>
@@ -45,9 +47,9 @@ export default function APropos() {
           </p>
           <p className={styles.body}>
             Je l'ai créé pour deux raisons. Je voulais rendre accessible en français une veille
-            des études scientifiques, en faire un outil de tri performant et complet. Et je voulais aller à rebours des discours qui vendent des
-            compléments alimentaires ou fabriquent des « super-aliments » à partir de données
-            minces.
+            des études scientifiques, en faire un outil de tri performant et complet. Et je voulais
+            aller à rebours des discours qui vendent des compléments alimentaires ou fabriquent des
+            « super-aliments » à partir de données minces.
           </p>
           <p className={styles.body}>
             Le site traite pour l'instant de nutrition. Le sport et le sommeil sont prévus ensuite.
@@ -124,15 +126,12 @@ export default function APropos() {
           </p>
         </section>
 
-        {/* --- Indépendance et financement --- */}
+        {/* --- Indépendance --- */}
         <section className={styles.section}>
-          <p className={styles.tag} data-tone="mono">Indépendance et financement</p>
+          <p className={styles.tag} data-tone="mono">Indépendance</p>
           <p className={styles.body}>
             Le site n'affiche aucune publicité, ne contient aucun lien d'affiliation et n'a aucun
             lien avec des marques ou des vendeurs, de compléments alimentaires ou d'autre chose.
-          </p>
-          <p className={styles.body}>
-      
           </p>
         </section>
 
