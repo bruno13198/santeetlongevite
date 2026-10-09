@@ -46,13 +46,13 @@ export default function APropos() {
         <section className={styles.section}>
           <p className={styles.tag} data-tone="mono">Qui fait le site</p>
           <p className={styles.body}>
-            ScienceTruths est un projet personnel, mené par une seule personne depuis juillet 2026.
+            ScienceTruths est un projet personnel, commencé en juillet 2026.
             Je suis passionné de science et de nutrition, mais je n'ai pas de formation
             scientifique ou médicale.
           </p>
           <p className={styles.body}>
             Je l'ai créé pour deux raisons. Je voulais rendre accessible en français une veille
-            des études scientifiques. Et je voulais aller à rebours des discours qui vendent des
+            des études scientifiques, en faire un outil de tri performant et complet. Et je voulais aller à rebours des discours qui vendent des
             compléments alimentaires ou fabriquent des « super-aliments » à partir de données
             minces.
           </p>
