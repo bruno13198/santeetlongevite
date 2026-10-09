@@ -1,11 +1,12 @@
-// Comptage de la littérature scientifique sur Europe PMC pour une liste de sujets candidats
-// (aliments transformés, plats, boissons...), afin de décider lesquels ajouter à la veille.
+// Comptage de la littérature scientifique sur Europe PMC pour une liste de sujets candidats,
+// afin de décider lesquels ajouter à la veille.
 // AUCUN appel Claude : uniquement des requêtes Europe PMC (gratuites). Coût : 0 €.
 //
 // Pour chaque sujet, deux comptes (titre ou résumé, articles MEDLINE) :
 //   - sur les 12 derniers mois (date d'entrée dans Europe PMC) ;
 //   - sur 10 ans (année de publication 2016 à 2026).
-// Le compte est brut (avant tout tri) : il inclut aussi les études animales ou hors sujet.
+// Filtre humain : le résumé doit mentionner des humains (participants, patients…) et le titre
+// ne doit pas désigner d'animaux ou l'in vitro. Filtre approximatif, mais il retire l'essentiel.
 // Le résultat est affiché dans le log et enregistré dans comptage-litterature.csv
 // (téléchargeable dans les « Artifacts » du run GitHub).
 
@@ -15,27 +16,27 @@ const URL_EUROPEPMC_POST = 'https://www.ebi.ac.uk/europepmc/webservices/rest/sea
 
 // [nom en français, catégorie, termes anglais cherchés en expression exacte]
 const CANDIDATS = [
-  // Comptage du 9 oct. 2026 : nutriments, compléments, aliments et habitudes manquants
+  // Comptage du 9 oct. 2026 (2e run) : filtre humain + termes resserrés sur l'apport et la supplémentation
   // Repères (déjà en base, pour calibrer le seuil)
   ['Régime méditerranéen', 'Repère', ['Mediterranean diet']],
   ['Ail', 'Repère', ['garlic']],
   ['Curcuma', 'Repère', ['turmeric', 'curcumin']],
   ['Herbes de Provence', 'Repère', ['herbes de Provence', 'Provence herbs']],
 
-  // Vitamines
-  ['Vitamine A et bêta-carotène', 'Nutriment', ['vitamin A', 'retinol', 'beta-carotene']],
-  ['Vitamine B1 (thiamine)', 'Nutriment', ['thiamine', 'thiamin', 'vitamin B1']],
-  ['Vitamine B2 (riboflavine)', 'Nutriment', ['riboflavin', 'vitamin B2']],
-  ['Vitamine B3 (niacine)', 'Nutriment', ['niacin', 'nicotinamide', 'vitamin B3']],
-  ['Vitamine B5 (acide pantothénique)', 'Nutriment', ['pantothenic acid', 'vitamin B5']],
-  ['Vitamine B6', 'Nutriment', ['vitamin B6', 'pyridoxine']],
-  ['Vitamine B8 (biotine)', 'Nutriment', ['biotin']],
-  ['Vitamine B9 (folates)', 'Nutriment', ['folate', 'folic acid']],
-  ['Vitamine B12', 'Nutriment', ['vitamin B12', 'cobalamin']],
-  ['Vitamine C', 'Nutriment', ['vitamin C', 'ascorbic acid']],
-  ['Vitamine D', 'Nutriment', ['vitamin D', 'cholecalciferol']],
-  ['Vitamine E', 'Nutriment', ['vitamin E', 'tocopherol']],
-  ['Vitamine K', 'Nutriment', ['vitamin K', 'phylloquinone', 'menaquinone']],
+  // Vitamines (apport et supplémentation uniquement)
+  ['Vitamine A et bêta-carotène', 'Nutriment', ['vitamin A supplementation', 'vitamin A intake', 'dietary vitamin A', 'beta-carotene supplementation', 'beta-carotene intake', 'dietary beta-carotene']],
+  ['Vitamine B1 (thiamine)', 'Nutriment', ['thiamine supplementation', 'thiamine intake', 'dietary thiamine', 'benfotiamine']],
+  ['Vitamine B2 (riboflavine)', 'Nutriment', ['riboflavin supplementation', 'riboflavin intake', 'dietary riboflavin']],
+  ['Vitamine B3 (niacine)', 'Nutriment', ['niacin supplementation', 'niacin intake', 'nicotinic acid', 'nicotinamide supplementation', 'nicotinamide riboside']],
+  ['Vitamine B5 (acide pantothénique)', 'Nutriment', ['pantothenic acid intake', 'pantothenic acid supplementation', 'dietary pantothenic acid']],
+  ['Vitamine B6', 'Nutriment', ['vitamin B6 supplementation', 'vitamin B6 intake', 'dietary vitamin B6', 'pyridoxine supplementation']],
+  ['Vitamine B8 (biotine)', 'Nutriment', ['biotin supplementation', 'biotin intake', 'high-dose biotin']],
+  ['Vitamine B9 (folates)', 'Nutriment', ['folic acid supplementation', 'folate supplementation', 'folate intake', 'dietary folate', 'folic acid fortification']],
+  ['Vitamine B12', 'Nutriment', ['vitamin B12 supplementation', 'vitamin B12 intake', 'dietary vitamin B12', 'cobalamin supplementation']],
+  ['Vitamine C', 'Nutriment', ['vitamin C supplementation', 'vitamin C intake', 'dietary vitamin C', 'ascorbic acid supplementation']],
+  ['Vitamine D', 'Nutriment', ['vitamin D supplementation', 'vitamin D intake', 'dietary vitamin D', 'vitamin D3 supplementation', 'cholecalciferol supplementation']],
+  ['Vitamine E', 'Nutriment', ['vitamin E supplementation', 'vitamin E intake', 'dietary vitamin E', 'alpha-tocopherol supplementation']],
+  ['Vitamine K', 'Nutriment', ['vitamin K supplementation', 'vitamin K intake', 'dietary vitamin K', 'vitamin K2', 'menaquinone-7', 'phylloquinone intake']],
   ['Choline', 'Nutriment', ['choline intake', 'choline supplementation', 'dietary choline']],
   ['Multivitamines', 'Complément', ['multivitamin']],
 
@@ -57,10 +58,10 @@ const CANDIDATS = [
 
   // Lipides
   ['Oméga-3 ALA', 'Nutriment', ['alpha-linolenic acid']],
-  ['Oméga-3 EPA/DHA', 'Nutriment', ['eicosapentaenoic acid', 'docosahexaenoic acid', 'omega-3 fatty acids', 'n-3 fatty acids']],
+  ['Oméga-3 EPA/DHA', 'Nutriment', ['omega-3 supplementation', 'omega-3 fatty acid supplementation', 'fish oil supplementation', 'omega-3 intake', 'EPA and DHA']],
   ['Oméga-6', 'Nutriment', ['omega-6 fatty acids', 'n-6 fatty acids', 'linoleic acid intake']],
   ['Oméga-7', 'Nutriment', ['palmitoleic acid', 'omega-7']],
-  ['Acides gras saturés', 'Nutriment', ['saturated fat', 'saturated fatty acids']],
+  ['Acides gras saturés', 'Nutriment', ['saturated fat intake', 'dietary saturated fat', 'saturated fatty acid intake']],
   ['Acides gras trans', 'Nutriment', ['trans fat', 'trans fatty acids']],
   ['Acide linoléique conjugué (CLA)', 'Complément', ['conjugated linoleic acid']],
 
@@ -68,11 +69,11 @@ const CANDIDATS = [
   ['Fibres alimentaires', 'Nutriment', ['dietary fiber', 'dietary fibre']],
   ['Sucres ajoutés', 'Nutriment', ['added sugar', 'added sugars', 'free sugars']],
   ['Amidon résistant', 'Nutriment', ['resistant starch']],
-  ['Inuline et FOS', 'Nutriment', ['inulin', 'fructooligosaccharides', 'fructo-oligosaccharides']],
+  ['Inuline et FOS', 'Nutriment', ['inulin supplementation', 'inulin-type fructans', 'fructooligosaccharides', 'fructo-oligosaccharides']],
   ['Bêta-glucanes', 'Nutriment', ['beta-glucan', 'beta-glucans']],
   ['Psyllium', 'Complément', ['psyllium']],
-  ['Glucomannane', 'Complément', ['glucomannan', 'konjac']],
-  ['Gomme de guar', 'Complément', ['guar gum']],
+  ['Glucomannane', 'Complément', ['glucomannan supplementation', 'konjac glucomannan']],
+  ['Gomme de guar', 'Complément', ['partially hydrolyzed guar gum', 'guar gum supplementation']],
 
   // Protéines et acides aminés
   ['Protéines alimentaires', 'Nutriment', ['dietary protein', 'protein intake', 'protein supplementation']],
@@ -82,38 +83,38 @@ const CANDIDATS = [
   ['Collagène', 'Complément', ['collagen peptides', 'collagen hydrolysate', 'hydrolyzed collagen', 'collagen supplementation']],
   ['BCAA et leucine', 'Complément', ['branched-chain amino acids', 'leucine supplementation']],
   ['Glutamine', 'Complément', ['glutamine supplementation']],
-  ['Arginine', 'Complément', ['arginine supplementation', 'L-arginine']],
-  ['Citrulline', 'Complément', ['citrulline']],
+  ['Arginine', 'Complément', ['arginine supplementation', 'L-arginine supplementation', 'oral L-arginine']],
+  ['Citrulline', 'Complément', ['citrulline supplementation', 'L-citrulline']],
   ['Tryptophane et 5-HTP', 'Complément', ['tryptophan supplementation', '5-hydroxytryptophan', '5-HTP']],
   ['Bêta-alanine', 'Complément', ['beta-alanine']],
   ['HMB', 'Complément', ['beta-hydroxy-beta-methylbutyrate', 'HMB supplementation']],
   ['Créatine', 'Complément', ['creatine supplementation', 'creatine monohydrate']],
-  ['Carnitine', 'Complément', ['carnitine supplementation', 'L-carnitine']],
+  ['Carnitine', 'Complément', ['carnitine supplementation', 'L-carnitine supplementation', 'dietary carnitine']],
   ['Bétaïne', 'Complément', ['betaine supplementation']],
   ['Taurine', 'Complément', ['taurine supplementation', 'taurine intake']],
-  ['NAC (N-acétylcystéine)', 'Complément', ['N-acetylcysteine']],
-  ['SAMe', 'Complément', ['S-adenosylmethionine', 'S-adenosyl-L-methionine']],
+  ['NAC (N-acétylcystéine)', 'Complément', ['N-acetylcysteine supplementation', 'oral N-acetylcysteine']],
+  ['SAMe', 'Complément', ['S-adenosylmethionine supplementation', 'SAMe supplementation']],
 
   // Autres composés
-  ['Polyphénols', 'Nutriment', ['polyphenols', 'polyphenol intake']],
-  ['Flavonoïdes', 'Nutriment', ['flavonoids', 'flavonoid intake']],
-  ['Quercétine', 'Nutriment', ['quercetin']],
-  ['Resvératrol', 'Nutriment', ['resveratrol']],
-  ['Lycopène', 'Nutriment', ['lycopene']],
-  ['Lutéine et zéaxanthine', 'Nutriment', ['lutein', 'zeaxanthin']],
+  ['Polyphénols', 'Nutriment', ['polyphenol intake', 'dietary polyphenols', 'polyphenol supplementation']],
+  ['Flavonoïdes', 'Nutriment', ['flavonoid intake', 'dietary flavonoids', 'flavonoid supplementation']],
+  ['Quercétine', 'Nutriment', ['quercetin supplementation', 'quercetin intake', 'dietary quercetin']],
+  ['Resvératrol', 'Nutriment', ['resveratrol supplementation', 'resveratrol intake']],
+  ['Lycopène', 'Nutriment', ['lycopene intake', 'lycopene supplementation', 'dietary lycopene']],
+  ['Lutéine et zéaxanthine', 'Nutriment', ['lutein supplementation', 'lutein intake', 'dietary lutein', 'zeaxanthin supplementation']],
   ['Sulforaphane', 'Nutriment', ['sulforaphane']],
-  ['Caféine', 'Nutriment', ['caffeine']],
+  ['Caféine', 'Nutriment', ['caffeine intake', 'caffeine consumption', 'caffeine supplementation', 'caffeine ingestion']],
   ['Nitrates alimentaires', 'Nutriment', ['dietary nitrate', 'nitrate supplementation']],
-  ['Capsaïcine', 'Complément', ['capsaicin', 'capsinoids']],
+  ['Capsaïcine', 'Complément', ['capsaicin intake', 'dietary capsaicin', 'capsaicin supplementation', 'capsinoids']],
   ['Cétones exogènes', 'Complément', ['exogenous ketones', 'ketone ester', 'ketone supplement']],
   ['Bicarbonate de sodium', 'Complément', ['sodium bicarbonate supplementation', 'bicarbonate ingestion']],
-  ['Coenzyme Q10', 'Complément', ['coenzyme Q10', 'ubiquinol']],
+  ['Coenzyme Q10', 'Complément', ['coenzyme Q10 supplementation', 'CoQ10 supplementation', 'ubiquinol']],
   ['Mélatonine', 'Complément', ['melatonin supplementation', 'exogenous melatonin', 'melatonin administration']],
-  ['Probiotiques', 'Complément', ['probiotic', 'probiotics']],
+  ['Probiotiques', 'Complément', ['probiotic supplementation', 'probiotic supplement', 'probiotic intake', 'probiotic consumption', 'probiotic administration']],
   ['Saccharomyces boulardii', 'Complément', ['Saccharomyces boulardii']],
   ['Berbérine', 'Complément', ['berberine']],
-  ['Glucosamine', 'Complément', ['glucosamine']],
-  ['Chondroïtine', 'Complément', ['chondroitin']],
+  ['Glucosamine', 'Complément', ['glucosamine supplementation', 'glucosamine sulfate', 'oral glucosamine']],
+  ['Chondroïtine', 'Complément', ['chondroitin sulfate supplementation', 'oral chondroitin', 'glucosamine and chondroitin']],
   ['MSM', 'Complément', ['methylsulfonylmethane']],
 
   // Plantes en complément
@@ -179,7 +180,7 @@ const CANDIDATS = [
   // Aliments manquants
   ['Sirop de glucose-fructose', 'Aliment', ['high-fructose corn syrup', 'high fructose corn syrup']],
   ['Xylitol', 'Aliment', ['xylitol']],
-  ['Sorbitol', 'Aliment', ['sorbitol']],
+  ['Sorbitol', 'Aliment', ['sorbitol intake', 'sorbitol ingestion', 'dietary sorbitol']],
   ['Maltitol', 'Aliment', ['maltitol']],
   ['Saccharine', 'Aliment', ['saccharin']],
   ['Huile TCM', 'Aliment', ['medium-chain triglycerides', 'MCT oil']],
@@ -196,6 +197,12 @@ const CANDIDATS = [
   ['Régime carnivore', 'Habitude', ['carnivore diet']],
   ['Crudivorisme', 'Habitude', ['raw food diet', 'raw vegan diet']],
 ];
+
+// Filtre humain : le résumé doit mentionner des humains ; titres animaux ou in vitro exclus
+const FILTRE_HUMAIN =
+  '(ABSTRACT:(participants OR patients OR subjects OR adults OR children OR women OR men OR volunteers OR humans))';
+const EXCLUSIONS_ANIMAL =
+  'NOT TITLE:(rat OR rats OR mice OR mouse OR murine OR "in vitro" OR zebrafish OR broiler OR broilers OR piglets OR cattle OR cows OR sheep OR poultry OR dogs OR cats)';
 
 function formaterDate(date) {
   return date.toISOString().split('T')[0];
@@ -238,7 +245,7 @@ async function main() {
 
   for (const [nom, categorie, termes] of CANDIDATS) {
     const sujet = termes.map((t) => `(TITLE:"${t}" OR ABSTRACT:"${t}")`).join(' OR ');
-    const base = `(${sujet}) AND (SRC:MED)`;
+    const base = `(${sujet}) AND (SRC:MED) AND ${FILTRE_HUMAIN} ${EXCLUSIONS_ANIMAL}`;
     const surUnAn = await compter(`${base} AND ${filtreAn}`);
     await pause(300);
     const surDixAns = await compter(`${base} AND ${filtreDixAns}`);
