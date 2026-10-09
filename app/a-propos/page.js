@@ -139,8 +139,7 @@ export default function APropos() {
             lien avec des marques ou des vendeurs, de compléments alimentaires ou d'autre chose.
           </p>
           <p className={styles.body}>
-            À terme, la veille scientifique deviendra payante pour financer le site. Les articles
-            resteront gratuits.
+      
           </p>
         </section>
 
