@@ -1,1 +1,59 @@
+name: Import nutriments, compléments et plantes
 
+on:
+  workflow_dispatch:
+    inputs:
+      estimation_seule:
+        description: 'Estimation seule (aucun appel Claude, gratuit) : true ou false'
+        required: true
+        default: 'true'
+      slugs_cibles:
+        description: 'Slugs ciblés séparés par virgules (vide = tous)'
+        required: false
+        default: ''
+      jours_veille:
+        description: 'Fenêtre de recherche en jours (10 par défaut, 3650 = 10 ans)'
+        required: false
+        default: '10'
+      resultats_a_recuperer:
+        description: 'Résultats Europe PMC lus par fiche (vide = 200)'
+        required: false
+        default: ''
+      max_analyses:
+        description: 'Analyses Sonnet maximum par fiche (vide = 80)'
+        required: false
+        default: ''
+      max_nouvelles:
+        description: 'Nouvelles études maximum par fiche (vide = 50)'
+        required: false
+        default: ''
+
+concurrency:
+  group: import-nutriments
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Installer les dépendances
+        run: npm install @supabase/supabase-js
+      - name: Lancer le script d'import des nutriments
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ESTIMATION_SEULE: ${{ github.event.inputs.estimation_seule || 'true' }}
+          SLUGS_CIBLES: ${{ github.event.inputs.slugs_cibles || '' }}
+          JOURS_VEILLE: ${{ github.event.inputs.jours_veille || '10' }}
+          RESULTATS_A_RECUPERER: ${{ github.event.inputs.resultats_a_recuperer || '' }}
+          MAX_ANALYSES_PAR_RUN: ${{ github.event.inputs.max_analyses || '' }}
+          MAX_NOUVELLES_ETUDES_PAR_RUN: ${{ github.event.inputs.max_nouvelles || '' }}
+        run: node scripts/import-nutriments.js
