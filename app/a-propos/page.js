@@ -22,13 +22,6 @@ const plexMono = IBM_Plex_Mono({
   variable: '--font-mono',
 });
 
-export const metadata = {
-  title: 'À propos — ScienceTruths',
-  description:
-    "Qui fait ScienceTruths, d'où viennent les études, comment elles sont évaluées, le rôle de l'intelligence artificielle, les limites du site et son financement.",
-  alternates: { canonical: 'https://sciencetruths.com/a-propos' },
-};
-
 export default function APropos() {
   return (
     <main className={`${fraunces.variable} ${plexSans.variable} ${plexMono.variable} ${styles.page}`}>
