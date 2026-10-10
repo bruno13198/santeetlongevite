@@ -1,6 +1,6 @@
 'use client';
 
-// Navigateur de la veille scientifique (4 oct. 2026) : onglets Aliments / Habitudes,
+// Navigateur de la veille scientifique (4 oct. 2026) : onglets Aliments / Habitudes / Nutriments (10 oct.),
 // recherche qui filtre l'onglet affiché, liste alphabétique avec sommaire des lettres,
 // case d'alerte devant chaque sujet, et bandeau d'inscription qui n'apparaît que
 // lorsqu'au moins un sujet est coché.
@@ -16,6 +16,15 @@ const CLE_SITE_TURNSTILE = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 const ONGLETS = [
   { cle: 'aliments', libelle: 'Aliments', prefixe: '/aliments', tous: 'Tous les aliments' },
   { cle: 'habitudes', libelle: 'Régimes et habitudes', prefixe: '/habitudes', tous: 'Tous les régimes et habitudes' },
+  // Nutriments (10 oct. 2026) : pas encore d'alertes, donc ni cases à cocher ni « tous ».
+  { cle: 'nutriments', libelle: 'Nutriments et compléments', prefixe: '/nutriments', tous: null },
+];
+
+// Sections de l'onglet Nutriments, dans l'ordre d'affichage (colonne categorie de la table nutriments).
+const SECTIONS_NUTRIMENTS = [
+  { cle: 'nutriment', libelle: 'Nutriments' },
+  { cle: 'complement', libelle: 'Compléments' },
+  { cle: 'plante', libelle: 'Plantes' },
 ];
 
 function normaliser(texte) {
@@ -76,7 +85,7 @@ function grouperParLettre(liste) {
 
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
-export default function VeilleNavigateur({ aliments, habitudes }) {
+export default function VeilleNavigateur({ aliments, habitudes, nutriments = [] }) {
   const [onglet, setOnglet] = useState('aliments');
   const [recherche, setRecherche] = useState('');
 
@@ -93,10 +102,10 @@ export default function VeilleNavigateur({ aliments, habitudes }) {
   const conteneurTurnstileRef = useRef(null);
   const widgetTurnstileRef = useRef(null);
 
-  // Onglet indiqué dans l'adresse (?onglet=habitudes), pour pouvoir partager un lien direct.
+  // Onglet indiqué dans l'adresse (?onglet=habitudes ou ?onglet=nutriments), pour pouvoir partager un lien direct.
   useEffect(() => {
     const parametre = new URLSearchParams(window.location.search).get('onglet');
-    if (parametre === 'habitudes') setOnglet('habitudes');
+    if (parametre === 'habitudes' || parametre === 'nutriments') setOnglet(parametre);
   }, []);
 
   function changerOnglet(cle) {
@@ -120,8 +129,8 @@ export default function VeilleNavigateur({ aliments, habitudes }) {
 
   const filtres = useMemo(() => {
     const filtrer = (liste) => (motsRecherche.length === 0 ? liste : liste.filter((s) => correspond(s.nom, motsRecherche)));
-    return { aliments: filtrer(aliments), habitudes: filtrer(habitudes) };
-  }, [aliments, habitudes, motsRecherche]);
+    return { aliments: filtrer(aliments), habitudes: filtrer(habitudes), nutriments: filtrer(nutriments) };
+  }, [aliments, habitudes, nutriments, motsRecherche]);
 
   // Aliments : groupés par lettre. Habitudes : une seule liste, répartie à parts égales
   // entre les colonnes (pas de lettres, trop peu d'entrées par lettre).
@@ -129,6 +138,12 @@ export default function VeilleNavigateur({ aliments, habitudes }) {
     () => ({
       aliments: grouperParLettre(filtres.aliments),
       habitudes: filtres.habitudes.length > 0 ? [{ lettre: 'tout', sujets: trier(filtres.habitudes) }] : [],
+      // Nutriments : une section par catégorie (nutriments, compléments, plantes).
+      nutriments: SECTIONS_NUTRIMENTS.map((section) => ({
+        lettre: section.cle,
+        titre: section.libelle,
+        sujets: trier(filtres.nutriments.filter((n) => n.categorie === section.cle)),
+      })).filter((section) => section.sujets.length > 0),
     }),
     [filtres]
   );
@@ -253,18 +268,19 @@ export default function VeilleNavigateur({ aliments, habitudes }) {
   }
 
   const ongletActif = ONGLETS.find((o) => o.cle === onglet);
-  const autreOnglet = ONGLETS.find((o) => o.cle !== onglet);
+  // Premier autre onglet qui a des résultats pour la recherche en cours.
+  const autreOnglet = ONGLETS.find((o) => o.cle !== onglet && filtres[o.cle].length > 0) || ONGLETS.find((o) => o.cle !== onglet);
   const lettresPresentes = new Set(groupes[onglet].map((g) => g.lettre));
 
   return (
     <div className={`${styles.navigateur} ${bandeauVisible ? styles.avecBandeau : ''}`}>
       <label htmlFor="recherche-veille" className={styles.labelRecherche}>
-        Rechercher un aliment ou un régime
+        Rechercher un aliment, un régime ou un nutriment
       </label>
       <input
         id="recherche-veille"
         type="search"
-        placeholder="ex : curcuma, jeûne, lentilles"
+        placeholder="ex : curcuma, jeûne, magnésium"
         value={recherche}
         onChange={(e) => setRecherche(e.target.value)}
         className={styles.recherche}
@@ -312,7 +328,7 @@ export default function VeilleNavigateur({ aliments, habitudes }) {
           hidden={onglet !== o.cle}
           className={styles.panneau}
         >
-          {motsRecherche.length === 0 && (
+          {motsRecherche.length === 0 && o.tous && (
             <label className={styles.tous}>
               <input
                 type="checkbox"
@@ -342,6 +358,24 @@ export default function VeilleNavigateur({ aliments, habitudes }) {
             </nav>
           )}
 
+          {o.cle === 'nutriments' ? (
+            groupes.nutriments.map((section) => (
+              <div key={section.lettre}>
+                <h2 className={styles.lettre}>
+                  {section.titre} ({section.sujets.length})
+                </h2>
+                <ul className={`${styles.liste} ${styles.colonnes} ${styles.groupeLibre}`}>
+                  {section.sujets.map((sujet) => (
+                    <li key={sujet.id} className={styles.item}>
+                      <Link href={`${o.prefixe}/${sujet.slug}`} prefetch={false} className={styles.lien}>
+                        {sujet.nom}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          ) : (
           <div className={`${styles.colonnes} ${tous[o.cle] ? styles.desactive : ''}`}>
             {groupes[o.cle].map((groupe) => (
               <div key={groupe.lettre} className={o.cle === 'aliments' ? styles.groupe : styles.groupeLibre}>
@@ -374,6 +408,7 @@ export default function VeilleNavigateur({ aliments, habitudes }) {
               </div>
             ))}
           </div>
+          )}
         </section>
       ))}
 
