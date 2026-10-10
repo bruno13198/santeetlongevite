@@ -13,9 +13,9 @@ import styles from './page.module.css';
 export const revalidate = 3600;
 
 export const metadata = {
-  title: 'Veille scientifique : aliments et régimes | ScienceTruths',
+  title: 'Veille scientifique : aliments, régimes et nutriments | ScienceTruths',
   description:
-    "Tous les aliments et régimes suivis par ScienceTruths, avec les études scientifiques associées. Recevez par e-mail les nouvelles études sur les sujets qui vous intéressent.",
+    "Tous les aliments, régimes, nutriments et compléments suivis par ScienceTruths, avec les études scientifiques associées. Recevez par e-mail les nouvelles études sur les sujets qui vous intéressent.",
 };
 
 const fraunces = Fraunces({
@@ -43,14 +43,19 @@ async function chargerSujets() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   );
 
-  const [{ data: aliments, error: erreurAliments }, { data: habitudes, error: erreurHabitudes }] =
-    await Promise.all([
-      supabase.from('aliments').select('id, slug, nom').eq('actif', true).range(0, 3999),
-      supabase.from('habitudes_alimentaires').select('id, slug, nom').eq('actif', true),
-    ]);
+  const [
+    { data: aliments, error: erreurAliments },
+    { data: habitudes, error: erreurHabitudes },
+    { data: nutriments },
+  ] = await Promise.all([
+    supabase.from('aliments').select('id, slug, nom').eq('actif', true).range(0, 3999),
+    supabase.from('habitudes_alimentaires').select('id, slug, nom').eq('actif', true),
+    // Nutriments (10 oct. 2026) : en cas d'erreur, l'onglet reste simplement vide.
+    supabase.from('nutriments').select('id, slug, nom, categorie').eq('actif', true).range(0, 1999),
+  ]);
 
   if (erreurAliments || erreurHabitudes) {
-    return { erreur: (erreurAliments || erreurHabitudes).message, aliments: [], habitudes: [] };
+    return { erreur: (erreurAliments || erreurHabitudes).message, aliments: [], habitudes: [], nutriments: [] };
   }
 
   return {
@@ -58,11 +63,12 @@ async function chargerSujets() {
     // 4 oct. 2026 : plus de filtre NOVA 4, la colonne actif est le seul interrupteur.
     aliments: (aliments || []).map((a) => ({ id: a.id, slug: a.slug, nom: a.nom })),
     habitudes: (habitudes || []).map((h) => ({ id: h.id, slug: h.slug, nom: h.nom })),
+    nutriments: (nutriments || []).map((n) => ({ id: n.id, slug: n.slug, nom: n.nom, categorie: n.categorie })),
   };
 }
 
 export default async function VeilleScientifique() {
-  const { erreur, aliments, habitudes } = await chargerSujets();
+  const { erreur, aliments, habitudes, nutriments } = await chargerSujets();
 
   return (
     <main className={`${fraunces.variable} ${plexSans.variable} ${plexMono.variable} ${styles.page}`}>
@@ -70,17 +76,18 @@ export default async function VeilleScientifique() {
         <p className={styles.eyebrow}>sciencetruths.com</p>
         <h1 className={styles.h1}>Veille scientifique</h1>
         <p className={styles.lede}>
-          Tous les aliments et régimes que nous suivons. Cliquez sur un nom pour voir les études
-          associées. Cochez ceux qui vous intéressent pour recevoir les nouvelles études par e-mail,
-          une fois par semaine.
+          Tous les aliments, régimes et nutriments que nous suivons. Cliquez sur un nom pour voir les
+          études associées. Cochez ceux qui vous intéressent pour recevoir les nouvelles études par
+          e-mail, une fois par semaine.
         </p>
 
         {erreur ? (
           <p className={styles.error}>La liste n'a pas pu être chargée. Rechargez la page dans quelques instants.</p>
         ) : (
-          <VeilleNavigateur aliments={aliments} habitudes={habitudes} />
+          <VeilleNavigateur aliments={aliments} habitudes={habitudes} nutriments={nutriments} />
         )}
       </div>
     </main>
   );
 }
+
