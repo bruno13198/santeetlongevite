@@ -7,6 +7,7 @@ const supabase = createClient(
 
 // Protection anti-robots (2 oct. 2026) : champ piège + vérification Cloudflare Turnstile,
 // AVANT toute écriture en base et tout envoi d'e-mail.
+// 11 oct. 2026 : troisième type de sujet, « nutriment » (nutriments, compléments, plantes).
 async function verifierTurnstile(token, ip) {
   if (!token || !process.env.TURNSTILE_SECRET_KEY) return false;
   try {
@@ -25,10 +26,26 @@ async function verifierTurnstile(token, ip) {
   }
 }
 
+// Construit les lignes d'abonnement d'un type : une seule ligne « tous » (sujet_id null)
+// ou une ligne par sujet choisi.
+function lignesPourType(email, typeSujet, tous, ids) {
+  if (tous) return [{ email, type_sujet: typeSujet, sujet_id: null }];
+  return ids.map((id) => ({ email, type_sujet: typeSujet, sujet_id: id }));
+}
+
 export async function POST(request) {
   try {
-    const { email, alimentIds, tousLesAliments, habitudeIds, toutesLesHabitudes, tokenTurnstile, siteWeb } =
-      await request.json();
+    const {
+      email,
+      alimentIds,
+      tousLesAliments,
+      habitudeIds,
+      toutesLesHabitudes,
+      nutrimentIds,
+      tousLesNutriments,
+      tokenTurnstile,
+      siteWeb,
+    } = await request.json();
 
     // Champ piège rempli : c'est un robot. On répond comme si tout allait bien, sans rien faire.
     if (siteWeb) {
@@ -55,20 +72,20 @@ export async function POST(request) {
 
     const listeAliments = Array.isArray(alimentIds) ? alimentIds : [];
     const listeHabitudes = Array.isArray(habitudeIds) ? habitudeIds : [];
+    const listeNutriments = Array.isArray(nutrimentIds) ? nutrimentIds : [];
 
-    if (!tousLesAliments && listeAliments.length === 0 && !toutesLesHabitudes && listeHabitudes.length === 0) {
-      return Response.json({ erreur: 'Sélectionnez au moins un aliment ou une habitude alimentaire.' }, { status: 400 });
+    const lignesAInserer = [
+      ...lignesPourType(email, 'aliment', tousLesAliments, listeAliments),
+      ...lignesPourType(email, 'habitude_alimentaire', toutesLesHabitudes, listeHabitudes),
+      ...lignesPourType(email, 'nutriment', tousLesNutriments, listeNutriments),
+    ];
+
+    if (lignesAInserer.length === 0) {
+      return Response.json(
+        { erreur: 'Sélectionnez au moins un aliment, un régime ou un nutriment.' },
+        { status: 400 }
+      );
     }
-
-    const lignesAliments = tousLesAliments
-      ? [{ email, type_sujet: 'aliment', sujet_id: null }]
-      : listeAliments.map((id) => ({ email, type_sujet: 'aliment', sujet_id: id }));
-
-    const lignesHabitudes = toutesLesHabitudes
-      ? [{ email, type_sujet: 'habitude_alimentaire', sujet_id: null }]
-      : listeHabitudes.map((id) => ({ email, type_sujet: 'habitude_alimentaire', sujet_id: id }));
-
-    const lignesAInserer = [...lignesAliments, ...lignesHabitudes];
 
     let nombreCrees = 0;
     let nombreReactives = 0;
