@@ -3,6 +3,15 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
+// Page de gestion des alertes (lien reçu par e-mail).
+// 11 oct. 2026 : affiche les trois types de sujets (aliments, régimes et habitudes,
+// nutriments), regroupés par type, avec un lien vers chaque fiche.
+const LIBELLES_TYPES = {
+  aliment: 'Aliments',
+  habitude_alimentaire: 'Régimes et habitudes',
+  nutriment: 'Nutriments et compléments',
+};
+
 export default function GererAlertesContenu() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
@@ -25,7 +34,7 @@ export default function GererAlertesContenu() {
           return;
         }
         setEmail(data.email);
-        setAbonnements(data.abonnements);
+        setAbonnements(data.abonnements || []);
         setStatut('valide');
       })
       .catch(() => setStatut('invalide'));
@@ -57,6 +66,10 @@ export default function GererAlertesContenu() {
     );
   }
 
+  const groupes = Object.keys(LIBELLES_TYPES)
+    .map((type) => ({ type, liste: abonnements.filter((a) => a.type_sujet === type) }))
+    .filter((g) => g.liste.length > 0);
+
   return (
     <main style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '700px', margin: '0 auto' }}>
       <h1>Gérer mes alertes</h1>
@@ -64,31 +77,41 @@ export default function GererAlertesContenu() {
 
       {abonnements.length === 0 && <p>Aucun abonnement actif.</p>}
 
-      {abonnements.map((a) => (
-        <div
-          key={a.id}
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '12px 16px',
-            border: '1px solid #eee',
-            borderRadius: '8px',
-            marginBottom: '10px',
-          }}
-        >
-          <span>{a.tous ? 'Tous les aliments' : a.aliment?.nom || 'Aliment supprimé'}</span>
-          <button
-            onClick={() => neplusSuivre(a.id)}
-            style={{ padding: '6px 12px', backgroundColor: '#eee', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px' }}
-          >
-            Ne plus suivre
-          </button>
-        </div>
+      {groupes.map((groupe) => (
+        <section key={groupe.type} style={{ marginBottom: '20px' }}>
+          <h2 style={{ fontSize: '17px', margin: '20px 0 10px' }}>{LIBELLES_TYPES[groupe.type]}</h2>
+          {groupe.liste.map((a) => (
+            <div
+              key={a.id}
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '12px 16px',
+                border: '1px solid #eee',
+                borderRadius: '8px',
+                marginBottom: '10px',
+              }}
+            >
+              {a.url ? (
+                <a href={a.url} style={{ color: 'inherit' }}>{a.nom}</a>
+              ) : (
+                <span style={{ fontWeight: a.tous ? 'bold' : 'normal' }}>{a.nom}</span>
+              )}
+              <button
+                onClick={() => neplusSuivre(a.id)}
+                style={{ padding: '6px 12px', backgroundColor: '#eee', border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', flex: 'none' }}
+              >
+                Ne plus suivre
+              </button>
+            </div>
+          ))}
+        </section>
       ))}
 
       <p style={{ marginTop: '24px' }}>
-        <a href="/mes-alertes">← Suivre un aliment supplémentaire</a>
+        <a href="/veille-scientifique">← Suivre d'autres sujets</a>
       </p>
     </main>
   );
