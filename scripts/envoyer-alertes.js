@@ -28,6 +28,13 @@ const CONFIG_PAR_TYPE = {
     prefixeUrl: 'habitudes',
     labelTous: 'Toutes les habitudes alimentaires',
   },
+  nutriment: {
+    tableLiaison: 'nutriments_etudes',
+    colonneLiaison: 'nutriment_id',
+    tableSujets: 'nutriments',
+    prefixeUrl: 'nutriments',
+    labelTous: 'Tous les nutriments et compléments',
+  },
 };
 
 async function recupererEtudesPourAbonnement(abonnement) {
