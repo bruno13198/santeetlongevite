@@ -81,6 +81,9 @@ export default async function VeilleScientifique() {
           études associées. Cochez ceux qui vous intéressent pour recevoir les nouvelles études par
           e-mail, une fois par semaine.
         </p>
+        <p style={{ fontSize: '14px', marginTop: '-8px', marginBottom: '24px' }}>
+          Déjà abonné ? <a href="#gerer-alertes">Gérer mes alertes ↓</a>
+        </p>
 
         {erreur ? (
           <p className={styles.error}>La liste n'a pas pu être chargée. Rechargez la page dans quelques instants.</p>
