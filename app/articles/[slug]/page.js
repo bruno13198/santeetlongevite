@@ -147,6 +147,23 @@ export default async function FicheArticle({ params }) {
       />
       <Link href="/articles" style={{ color: '#555' }}>← Retour aux articles</Link>
       <h1 style={{ marginTop: '16px' }}>{article.titre}</h1>
+      {slug !== 'Pourquoi-ce-site' && (
+        <p
+          style={{
+            margin: '-4px 0 24px',
+            padding: '10px 14px',
+            border: '1px solid #c9d8bf',
+            borderRadius: '8px',
+            backgroundColor: '#f4f8ef',
+            fontSize: '14px',
+          }}
+        >
+          Recevez chaque semaine les nouvelles études sur ce sujet, avec leur niveau de preuve.{' '}
+          <Link href="/veille-scientifique" style={{ fontWeight: 600 }}>
+            Choisir mes sujets →
+          </Link>
+        </p>
+      )}
       <div className={`${styles.contenu} article-body`}>
         <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
           {preparerContenu(article.contenu)}
