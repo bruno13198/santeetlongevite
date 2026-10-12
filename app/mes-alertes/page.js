@@ -1,20 +1,8 @@
-import FormulaireAlertes from '../components/FormulaireAlertes';
-import DemandeLienGestion from '../components/DemandeLienGestion';
+import { redirect } from 'next/navigation';
 
+// 12 oct. 2026 : l'inscription aux alertes et la demande du lien de gestion se font
+// désormais sur /veille-scientifique. Cette ancienne adresse (liens des e-mails déjà
+// envoyés) y renvoie. La page /mes-alertes/gerer, elle, reste en place.
 export default function MesAlertes() {
-  return (
-    <main style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '700px', margin: '0 auto' }}>
-      <h1>Recevoir des alertes par email</h1>
-      <p style={{ color: '#555', marginBottom: '32px' }}>
-        Soyez prévenu(e) par email dès qu'une nouvelle étude scientifique est ajoutée
-        sur les aliments qui vous intéressent.
-      </p>
-
-      <FormulaireAlertes />
-
-      <hr style={{ margin: '40px 0', border: 'none', borderTop: '1px solid #eee' }} />
-
-      <DemandeLienGestion />
-    </main>
-  );
+  redirect('/veille-scientifique#gerer-alertes');
 }
