@@ -20,8 +20,7 @@ export default function Nav() {
             <li><Link href="/" className={styles.link}>Accueil</Link></li>
             <li><Link href="/articles" className={styles.link}>Articles</Link></li>
             <li><Link href="/veille-scientifique" className={styles.link}>Veille scientifique</Link></li>
-            
-          </ul>
+       </ul>
         </div>
         <ul className={styles.right}>
           <li><Link href="/a-propos" className={styles.link}>À propos</Link></li>
