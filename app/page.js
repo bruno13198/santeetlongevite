@@ -93,15 +93,14 @@ export default async function Home() {
             aliments, fondées sur l'ensemble des données scientifiques disponibles.
           </p>
           <p className={styles.introItem}>
-            <strong>La veille scientifique</strong> — Elle fonctionne déjà pour les aliments et
-            les habitudes alimentaires (régime méditerranéen, jeûne intermittent, régime
-            cétogène…). Chaque semaine, nous recensons les nouvelles études menées chez l'humain,
-            et chacune reçoit un <Link href="/niveaux-de-preuve">niveau de preuve</Link>, de 1
-            (le plus solide) à 5, selon l'échelle internationale du Centre for Evidence-Based
-            Medicine de l'université d'Oxford, pour que vous sachiez d'un coup d'œil ce
-            qu'elle vaut vraiment.
-            Nous réfléchissons à l'étendre au sport, avant le sommeil et peut-être les compléments
-            alimentaires.
+            <strong>La veille scientifique</strong> — Elle couvre les aliments, les régimes et
+            habitudes alimentaires (régime méditerranéen, jeûne intermittent, régime cétogène…),
+            ainsi que les nutriments, compléments alimentaires et plantes (vitamine D, magnésium,
+            créatine, curcuma, ashwagandha…). Chaque semaine, nous recensons les nouvelles études
+            menées chez l'homme, et chacune reçoit un <Link href="/niveaux-de-preuve">niveau de
+            preuve</Link>, de 1 (le plus solide) à 5, selon l'échelle internationale du Centre for
+            Evidence-Based Medicine de l'université d'Oxford, pour que vous sachiez d'un coup d'œil
+            ce qu'elle vaut vraiment. Nous l'étendrons ensuite au sport, puis au sommeil.
           </p>
           <p className={styles.introItem}>
             <strong>Des alertes personnalisées</strong> — Recevez par e-mail les nouvelles
