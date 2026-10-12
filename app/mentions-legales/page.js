@@ -1,7 +1,7 @@
 import Link from 'next/link';
  
 export const metadata = {
-  title: 'Mentions légales — Super Aliments Santé',
+  title: 'Mentions légales | ScienceTruths',
 };
  
 export default function MentionsLegales() {
