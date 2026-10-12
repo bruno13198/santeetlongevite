@@ -87,6 +87,14 @@ export default async function VeilleScientifique() {
         ) : (
           <VeilleNavigateur aliments={aliments} habitudes={habitudes} nutriments={nutriments} />
         )}
+
+        {/* 12 oct. 2026 : demande du lien de gestion, déplacée depuis l'ancienne page /mes-alertes */}
+        <section
+          id="gerer-alertes"
+          style={{ marginTop: '56px', paddingTop: '32px', borderTop: '1px solid #e5e2da', paddingBottom: '120px' }}
+        >
+          <DemandeLienGestion />
+        </section>
       </div>
     </main>
   );
