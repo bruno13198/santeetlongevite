@@ -166,7 +166,9 @@ async function construireEmailPourPersonne(email, abonnementsDeCettePersonne) {
       <p>Voici les nouvelles études ajoutées cette semaine sur les sujets que vous suivez :</p>
       <ul>${listeLiens}</ul>
       <p style="font-size: 12px; color: #888; margin-top: 24px;">
-        <a href="https://sciencetruths.com/mes-alertes">Gérer mes alertes</a>
+        <a href="https://sciencetruths.com/veille-scientifique#gerer-alertes">Gérer mes alertes</a>
+        &nbsp;·&nbsp;
+        <a href="https://sciencetruths.com/se-desabonner?token=${abonnementsDeCettePersonne[0].token_desabonnement}">Se désabonner de toutes les alertes</a>
       </p>
     `,
     pairesAEnregistrer,
