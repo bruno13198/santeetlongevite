@@ -4,6 +4,7 @@
 // L'interaction (onglets, recherche, cases d'alerte, bandeau d'inscription) est gérée
 // par le composant client VeilleNavigateur.
 
+import { Suspense } from 'react';
 import { createClient } from '@supabase/supabase-js';
 import { Fraunces, IBM_Plex_Sans, IBM_Plex_Mono } from 'next/font/google';
 import VeilleNavigateur from '../components/VeilleNavigateur';
@@ -96,7 +97,9 @@ export default async function VeilleScientifique() {
           id="gerer-alertes"
           style={{ marginTop: '56px', paddingTop: '32px', borderTop: '1px solid #e5e2da', paddingBottom: '120px' }}
         >
-          <DemandeLienGestion />
+          <Suspense fallback={null}>
+            <DemandeLienGestion />
+          </Suspense>
         </section>
       </div>
     </main>
