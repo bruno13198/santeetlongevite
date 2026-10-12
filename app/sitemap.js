@@ -5,47 +5,42 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
-// 10 oct. 2026 : ajout des fiches habitudes (absentes jusqu'ici) et des fiches nutriments.
+// 10 oct. 2026 : ajout des habitudes et des nutriments.
+// 12 oct. 2026 : vraie date de mise à jour pour chaque fiche (date de sa dernière étude,
+// vue Supabase dates_mise_a_jour_sujets). Sans étude, ou pour les pages fixes et les
+// articles, pas de date plutôt qu'une date inventée.
 export default async function sitemap() {
   const baseUrl = 'https://sciencetruths.com';
 
-  const [{ data: aliments }, { data: habitudes }, { data: nutriments }, { data: articles }] = await Promise.all([
-    supabase.from('aliments').select('slug').eq('actif', true).range(0, 3999),
-    supabase.from('habitudes_alimentaires').select('slug').eq('actif', true).range(0, 999),
-    supabase.from('nutriments').select('slug').eq('actif', true).range(0, 1999),
-    supabase.from('articles').select('slug').eq('publie', true).range(0, 999),
-  ]);
+  const [{ data: aliments }, { data: habitudes }, { data: nutriments }, { data: articles }, { data: dates }] =
+    await Promise.all([
+      supabase.from('aliments').select('id, slug').eq('actif', true).range(0, 3999),
+      supabase.from('habitudes_alimentaires').select('id, slug').eq('actif', true).range(0, 999),
+      supabase.from('nutriments').select('id, slug').eq('actif', true).range(0, 1999),
+      supabase.from('articles').select('slug').eq('publie', true).range(0, 999),
+      supabase.from('dates_mise_a_jour_sujets').select('type, sujet_id, derniere').range(0, 4999),
+    ]);
 
-  const versUrls = (lignes, prefixe) =>
-    (lignes || []).map((ligne) => ({
-      url: `${baseUrl}/${prefixe}/${ligne.slug}`,
-      lastModified: new Date(),
-    }));
+  const dateParSujet = new Map((dates || []).map((d) => [`${d.type}:${d.sujet_id}`, d.derniere]));
+
+  const versUrls = (lignes, type, prefixe) =>
+    (lignes || []).map((ligne) => {
+      const derniere = dateParSujet.get(`${type}:${ligne.id}`);
+      return {
+        url: `${baseUrl}/${prefixe}/${ligne.slug}`,
+        ...(derniere ? { lastModified: new Date(derniere) } : {}),
+      };
+    });
 
   return [
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-    },
-    {
-      url: `${baseUrl}/a-propos`,
-      lastModified: new Date(),
-    },
-    {
-      url: `${baseUrl}/veille-scientifique`,
-      lastModified: new Date(),
-    },
-    {
-      url: `${baseUrl}/articles`,
-      lastModified: new Date(),
-    },
-    {
-      url: `${baseUrl}/niveaux-de-preuve`,
-      lastModified: new Date(),
-    },
-    ...versUrls(articles, 'articles'),
-    ...versUrls(aliments, 'aliments'),
-    ...versUrls(habitudes, 'habitudes'),
-    ...versUrls(nutriments, 'nutriments'),
+    { url: baseUrl },
+    { url: `${baseUrl}/a-propos` },
+    { url: `${baseUrl}/veille-scientifique` },
+    { url: `${baseUrl}/articles` },
+    { url: `${baseUrl}/niveaux-de-preuve` },
+    ...(articles || []).map((article) => ({ url: `${baseUrl}/articles/${article.slug}` })),
+    ...versUrls(aliments, 'aliment', 'aliments'),
+    ...versUrls(habitudes, 'habitude', 'habitudes'),
+    ...versUrls(nutriments, 'nutriment', 'nutriments'),
   ];
 }
