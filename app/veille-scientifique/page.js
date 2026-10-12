@@ -7,6 +7,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { Fraunces, IBM_Plex_Sans, IBM_Plex_Mono } from 'next/font/google';
 import VeilleNavigateur from '../components/VeilleNavigateur';
+import DemandeLienGestion from '../components/DemandeLienGestion';
 import styles from './page.module.css';
 
 // La liste est régénérée au plus toutes les heures.
