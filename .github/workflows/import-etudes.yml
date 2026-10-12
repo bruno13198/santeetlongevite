@@ -1,9 +1,11 @@
 name: Import études scientifiques
 on:
   schedule:
-    - cron: '17 3 * * 1'   # lundi 3h17 UTC
-    - cron: '47 5 * * 1'   # lundi 5h47 UTC, second essai (GitHub saute parfois un créneau)
-    - cron: '17 9 * * 1'   # lundi 9h17 UTC, filet de sécurité (ne tourne que si aucun run planifié n'a réussi)
+    - cron: '43 2 * * 1'   # lundi 2h43 UTC, avant la saturation du matin européen
+    - cron: '13 6 * * 1'   # lundi 6h13 UTC, second essai (GitHub saute parfois un créneau)
+    - cron: '37 10 * * 1'  # lundi 10h37 UTC, troisième essai
+    - cron: '21 15 * * 1'  # lundi 15h21 UTC, filet de sécurité de l'après-midi
+    # Chaque essai ne tourne que si aucun run planifié n'a déjà réussi dans la journée.
   workflow_dispatch:
     inputs:
       offset:
