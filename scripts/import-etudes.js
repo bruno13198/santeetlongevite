@@ -733,10 +733,7 @@ function interpreterClassement(texte) {
   } else if (objet.defaut === 'imprecision') {
     sens = 1;
     motif = motifModele || 'résultats imprécis ou incohérents';
-  } else if (objet.releve === true) {
-    sens = -1;
-    motif = motifModele || 'effet très important';
-  }
+  interpreterClassement
 
   const niveau = Math.min(5, Math.max(1, base + sens));
   const ajustement = niveau === base ? null : `${sens === 1 ? 'Abaissé' : 'Relevé'} : ${motif}`;
