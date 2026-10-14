@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Disclaimer from '../../components/Disclaimer';
 import Breadcrumbs from '../../components/Breadcrumbs';
 import ListeEtudes from '../../components/ListeEtudes';
+import SuivreSujet from '../../components/SuivreSujet';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -91,6 +92,7 @@ export default async function FicheNutriment({ params }) {
       </Link>
 
       <h1 style={{ marginTop: '16px' }}>{nutriment.nom}</h1>
+      <SuivreSujet type="nutriment" sujetId={nutriment.id} nom={nutriment.nom} />
       {LIBELLES_CATEGORIES[nutriment.categorie] && (
         <p style={{ color: '#6B6E63' }}>{LIBELLES_CATEGORIES[nutriment.categorie]}</p>
       )}
