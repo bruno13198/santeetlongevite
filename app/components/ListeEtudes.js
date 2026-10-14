@@ -2,6 +2,11 @@
 
 import { useEffect, useRef, useState } from 'react';
 
+// Refonte du 14 oct. 2026 : cartes compactes (résumés affichés au clic) et affichage
+// par blocs de 20. Le filtre par niveau s'applique d'abord, l'affichage par 20 ensuite ;
+// les compteurs restent calculés sur la liste complète.
+const TAILLE_BLOC = 20;
+
 // Couleurs des niveaux de preuve Oxford (CEBM 2011) : fond clair + texte foncé de la même famille.
 const COULEURS_NIVEAUX = {
   1: { fond: '#C0DD97', texte: '#173404' },
@@ -46,8 +51,24 @@ const styleChamp = {
   fontFamily: 'inherit',
 };
 
+const styleLienBouton = {
+  background: 'none',
+  border: 'none',
+  padding: 0,
+  cursor: 'pointer',
+  fontSize: '14px',
+  fontFamily: 'inherit',
+};
+
 function formaterEffectif(n) {
   return Number(n).toLocaleString('fr-FR');
+}
+
+// Année seule, pour la ligne compacte (la date complète reste dans le détail).
+function annee(date) {
+  if (!date) return null;
+  const m = String(date).match(/^(\d{4})/);
+  return m ? m[1] : null;
 }
 
 // Charge une seule fois le script Cloudflare Turnstile, puis appelle rappel().
@@ -75,9 +96,8 @@ function BlocPreuve({ etude }) {
     const couleurs = COULEURS_NIVEAUX[etude.niveau_preuve];
     const ajustement = etude.ajustement_preuve || '';
     const abaisse = ajustement.startsWith('Abaissé');
-    const releve = ajustement.startsWith('Relevé');
-    // Le niveau de départ se déduit du sens de l'ajustement (un seul cran).
-    const niveauInitial = abaisse ? etude.niveau_preuve - 1 : releve ? etude.niveau_preuve + 1 : null;
+    // Le niveau de départ se déduit de l'abaissement (un seul cran). Le relèvement est désactivé.
+    const niveauInitial = abaisse ? etude.niveau_preuve - 1 : null;
     const motif = ajustement.replace(/^(Abaissé|Relevé)\s*:\s*/, '');
 
     return (
@@ -317,49 +337,73 @@ function FormulaireSignalement({ etude, onFermer }) {
   );
 }
 
+// Carte compacte : niveau, titre, année. Les résumés et le détail s'ouvrent au clic.
 function CarteEtude({ etude }) {
+  const [ouverte, setOuverte] = useState(false);
   const [signalementOuvert, setSignalementOuvert] = useState(false);
+  const an = annee(etude.date_publication);
 
   return (
     <div
       style={{
-        marginBottom: '20px',
-        padding: '16px',
+        marginBottom: '12px',
+        padding: '14px 16px',
         border: '1px solid #eee',
         borderRadius: '8px',
       }}
     >
       <BlocPreuve etude={etude} />
 
-      <strong style={{ display: 'block', marginTop: '10px' }}>{etude.titre_traduit || etude.titre_original}</strong>
-      <p style={{ color: '#6B6E63', fontSize: '14px' }}>
-        {etude.source} · {etude.date_publication} · {etude.auteurs}
-      </p>
+      <button
+        type="button"
+        onClick={() => setOuverte(!ouverte)}
+        aria-expanded={ouverte}
+        style={{ ...styleLienBouton, display: 'block', marginTop: '10px', textAlign: 'left', color: 'inherit' }}
+      >
+        <strong style={{ fontSize: '15px' }}>{etude.titre_traduit || etude.titre_original}</strong>
+        {an && <span style={{ color: '#6B6E63', fontSize: '13px' }}> · {an}</span>}
+      </button>
 
-      <p><strong>Résumé simplifié :</strong></p>
-      <p>{etude.resume_simplifie}</p>
+      <button
+        type="button"
+        onClick={() => setOuverte(!ouverte)}
+        style={{ ...styleLienBouton, marginTop: '6px', color: '#27500A', fontSize: '13px', fontWeight: 600 }}
+      >
+        {ouverte ? 'Masquer les résumés ▴' : 'Lire les résumés ▾'}
+      </button>
 
-      <p><strong>Résumé reformulé :</strong></p>
-      <p>{etude.resume_reformule}</p>
+      {ouverte && (
+        <div style={{ marginTop: '10px' }}>
+          <p style={{ color: '#6B6E63', fontSize: '14px', margin: '0 0 10px' }}>
+            {[etude.source, etude.date_publication, etude.auteurs].filter(Boolean).join(' · ')}
+          </p>
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'center', fontSize: '14px' }}>
-        {etude.url_originale && (
-          <a href={etude.url_originale} target="_blank" rel="noopener noreferrer">
-            Voir l'étude originale →
-          </a>
-        )}
-        {!signalementOuvert && (
-          <button
-            type="button"
-            onClick={() => setSignalementOuvert(true)}
-            style={{ background: 'none', border: 'none', padding: 0, color: '#6B6E63', textDecoration: 'underline', cursor: 'pointer', fontSize: '13px' }}
-          >
-            Signaler une erreur
-          </button>
-        )}
-      </div>
+          <p style={{ margin: '0 0 4px' }}><strong>Résumé simplifié :</strong></p>
+          <p style={{ marginTop: 0 }}>{etude.resume_simplifie}</p>
 
-      {signalementOuvert && <FormulaireSignalement etude={etude} onFermer={() => setSignalementOuvert(false)} />}
+          <p style={{ margin: '0 0 4px' }}><strong>Résumé reformulé :</strong></p>
+          <p style={{ marginTop: 0 }}>{etude.resume_reformule}</p>
+
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '16px', alignItems: 'center', fontSize: '14px' }}>
+            {etude.url_originale && (
+              <a href={etude.url_originale} target="_blank" rel="noopener noreferrer">
+                Voir l'étude originale →
+              </a>
+            )}
+            {!signalementOuvert && (
+              <button
+                type="button"
+                onClick={() => setSignalementOuvert(true)}
+                style={{ ...styleLienBouton, color: '#6B6E63', textDecoration: 'underline', fontSize: '13px' }}
+              >
+                Signaler une erreur
+              </button>
+            )}
+          </div>
+
+          {signalementOuvert && <FormulaireSignalement etude={etude} onFermer={() => setSignalementOuvert(false)} />}
+        </div>
+      )}
     </div>
   );
 }
@@ -368,6 +412,12 @@ export default function ListeEtudes({ etudes }) {
   const [selection, setSelection] = useState([]);
   // Les revues de niveau 5 (narratives et mécanistiques) sont en retrait : masquées par défaut.
   const [afficherRevues, setAfficherRevues] = useState(false);
+  const [nbAffichees, setNbAffichees] = useState(TAILLE_BLOC);
+
+  // Chaque changement de filtre repart des 20 premières études.
+  useEffect(() => {
+    setNbAffichees(TAILLE_BLOC);
+  }, [selection, afficherRevues]);
 
   const comptes = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
   let nonClassees = 0;
@@ -389,6 +439,8 @@ export default function ListeEtudes({ etudes }) {
       ? etudes.filter((e) => e.niveau_preuve !== 5 || afficherRevues)
       : etudes.filter((e) => selection.includes(e.niveau_preuve));
 
+  const affichees = visibles.slice(0, nbAffichees);
+  const restantes = visibles.length - affichees.length;
   const boutonRevuesVisible = selection.length === 0 && comptes[5] > 0;
 
   return (
@@ -467,9 +519,30 @@ export default function ListeEtudes({ etudes }) {
         </p>
       )}
 
-      {visibles.map((etude) => (
+      {affichees.map((etude) => (
         <CarteEtude key={etude.id} etude={etude} />
       ))}
+
+      {restantes > 0 && (
+        <div style={{ margin: '8px 0 24px', textAlign: 'center' }}>
+          <button
+            type="button"
+            onClick={() => setNbAffichees(nbAffichees + TAILLE_BLOC)}
+            style={{
+              padding: '10px 18px',
+              backgroundColor: '#f5f5f5',
+              color: '#333',
+              border: '1px solid #ddd',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: 600,
+            }}
+          >
+            Afficher {Math.min(TAILLE_BLOC, restantes)} de plus (il en reste {restantes})
+          </button>
+        </div>
+      )}
 
       {boutonRevuesVisible && (
         <div style={{ marginTop: '8px', marginBottom: '24px' }}>
@@ -493,11 +566,12 @@ export default function ListeEtudes({ etudes }) {
           </button>
           {!afficherRevues && (
             <p style={{ color: '#6B6E63', fontSize: '13px', margin: '6px 0 0' }}>
-              Synthèses non systématiques ou centrées sur des mécanismes biologiques : utiles pour comprendre un domaine, mais sans nouvelles données mesurées chez l'humain.
+              Synthèses non systématiques ou centrées sur des mécanismes biologiques : utiles pour comprendre un domaine, mais sans nouvelles données mesurées chez l'homme.
             </p>
           )}
         </div>
       )}
+
       {/* Appel aux professionnels */}
       <div
         style={{
