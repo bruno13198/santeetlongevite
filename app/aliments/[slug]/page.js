@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Disclaimer from '../../components/Disclaimer';
 import Breadcrumbs from '../../components/Breadcrumbs';
 import ListeEtudes from '../../components/ListeEtudes';
+import SuivreSujet from '../../components/SuivreSujet';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -80,6 +81,7 @@ export default async function FicheAliment({ params }) {
       <Link href="/veille-scientifique" style={{ color: '#555' }}>← Retour à la recherche</Link>
 
       <h1 style={{ marginTop: '16px' }}>{aliment.nom}</h1>
+      <SuivreSujet type="aliment" sujetId={aliment.id} nom={aliment.nom} />
       {aliment.nom_scientifique && (
         <p style={{ fontStyle: 'italic', color: '#6B6E63' }}>{aliment.nom_scientifique}</p>
       )}
