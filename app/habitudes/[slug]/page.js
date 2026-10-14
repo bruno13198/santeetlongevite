@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Disclaimer from '../../components/Disclaimer';
 import Breadcrumbs from '../../components/Breadcrumbs';
 import ListeEtudes from '../../components/ListeEtudes';
+import SuivreSujet from '../../components/SuivreSujet';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -63,6 +64,7 @@ export default async function FicheHabitude({ params }) {
       <Link href="/veille-scientifique?onglet=habitudes" style={{ color: '#555' }}>← Retour à la veille scientifique</Link>
 
       <h1 style={{ marginTop: '16px' }}>{habitude.nom}</h1>
+      <SuivreSujet type="habitude" sujetId={habitude.id} nom={habitude.nom} />
       {habitude.description && <p>{habitude.description}</p>}
 
       <h2>Études scientifiques ({etudes.length})</h2>
