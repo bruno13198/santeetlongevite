@@ -70,8 +70,8 @@ export default async function FicheNutriment({ params }) {
   let etudes = [];
   if (etudeIds.length > 0) {
     const { data: etudesData } = await supabase
-      .from('etudes')
-      .select('*')
+            .from('etudes')
+      .select('id, titre_traduit, titre_original, source, date_publication, auteurs, resume_simplifie, resume_reformule, url_originale, niveau_preuve, design_etude, ajustement_preuve, nb_participants, niveau_fiabilite, type_etude')
       .in('id', etudeIds)
       .order('date_publication', { ascending: false, nullsFirst: false });
     etudes = etudesData || [];
