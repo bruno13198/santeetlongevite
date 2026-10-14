@@ -733,7 +733,9 @@ function interpreterClassement(texte) {
   } else if (objet.defaut === 'imprecision') {
     sens = 1;
     motif = motifModele || 'résultats imprécis ou incohérents';
-  interpreterClassement
+  }
+  // 14 oct. 2026 : le relèvement de niveau est désactivé. Les 6 cas observés étaient
+  // tous des erreurs du modèle (il cochait « relevé » pour des motifs d'abaissement).
 
   const niveau = Math.min(5, Math.max(1, base + sens));
   const ajustement = niveau === base ? null : `${sens === 1 ? 'Abaissé' : 'Relevé'} : ${motif}`;
