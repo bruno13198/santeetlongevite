@@ -107,6 +107,19 @@ jobs:
           MAX_NOUVELLES_ETUDES_PAR_RUN: ${{ github.event.inputs.max_nouvelles_etudes }}
           MAX_ANALYSES_PAR_RUN: ${{ github.event.inputs.max_analyses }}
         run: node scripts/import-habitudes.js
+      - name: Lancer le script d'import des nutriments, compléments et plantes
+        # Ajouté le 14 oct. 2026. Si cette étape échoue, les alertes partent quand même.
+        continue-on-error: true
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          JOURS_VEILLE: ${{ github.event.inputs.jours_veille || '10' }}
+          RESULTATS_A_RECUPERER: ${{ github.event.inputs.resultats_a_recuperer }}
+          MAX_NOUVELLES_ETUDES_PAR_RUN: ${{ github.event.inputs.max_nouvelles_etudes }}
+          MAX_ANALYSES_PAR_RUN: ${{ github.event.inputs.max_analyses }}
+          ESTIMATION_SEULE: 'false'
+        run: node scripts/import-nutriments.js
       - name: Envoyer les alertes email
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
