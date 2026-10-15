@@ -339,7 +339,7 @@ function FormulaireSignalement({ etude, onFermer }) {
 
 // Carte compacte : niveau, titre, année. Les résumés et le détail s'ouvrent au clic.
 function CarteEtude({ etude }) {
-  const [ouverte, setOuverte] = useState(false);
+    const [ouverte, setOuverte] = useState(true);
   const [signalementOuvert, setSignalementOuvert] = useState(false);
   const an = annee(etude.date_publication);
 
