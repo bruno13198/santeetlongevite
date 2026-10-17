@@ -16,14 +16,26 @@ const URL_EUROPEPMC_POST = 'https://www.ebi.ac.uk/europepmc/webservices/rest/sea
 
 // [nom en français, catégorie, termes anglais cherchés en expression exacte]
 const CANDIDATS = [
-  // Comptage du 17 oct. 2026 : régimes et stratégies nutritionnelles du sport
-  ['Périodisation des glucides', 'Habitude', ['carbohydrate periodization', 'periodised carbohydrate', 'train low', 'sleep low']],
-  ['Entraînement à jeun', 'Habitude', ['fasted exercise', 'fasted training', 'fasted state exercise']],
-  ['Timing des nutriments', 'Habitude', ['nutrient timing', 'protein timing', 'post-exercise nutrition', 'pre-exercise meal', 'protein distribution']],
-  ['Régime LCHF chez l\'athlète', 'Habitude', ['low-carbohydrate high-fat athletes', 'LCHF diet', 'keto-adaptation']],
-  ['Perte de poids rapide (weight cutting)', 'Habitude', ['rapid weight loss', 'weight cutting', 'weight making']],
-  ['Faible disponibilité énergétique (RED-S)', 'Habitude', ['low energy availability', 'relative energy deficiency in sport', 'RED-S']],
-  ['Nutrition pendant l\'effort', 'Habitude', ['carbohydrate ingestion during exercise', 'sports drinks', 'in-race nutrition']],
+  // Comptage du 17 oct. 2026 : contaminants et derniers sujets manquants
+  // Contaminants et substances formées à la cuisson
+  ['Résidus de pesticides', 'Contaminant', ['pesticide residues', 'dietary pesticide exposure']],
+  ['Glyphosate', 'Contaminant', ['glyphosate exposure', 'glyphosate']],
+  ['Mercure (poisson)', 'Contaminant', ['methylmercury', 'mercury exposure fish consumption', 'dietary mercury']],
+  ['Arsenic (riz)', 'Contaminant', ['arsenic rice', 'dietary arsenic', 'inorganic arsenic exposure']],
+  ['Cadmium et plomb alimentaires', 'Contaminant', ['dietary cadmium', 'dietary lead exposure']],
+  ['Bisphénol A', 'Contaminant', ['bisphenol A exposure', 'BPA exposure']],
+  ['Phtalates', 'Contaminant', ['phthalate exposure', 'dietary phthalates']],
+  ['Microplastiques', 'Contaminant', ['microplastics human', 'microplastic ingestion', 'nanoplastics']],
+  ['PFAS', 'Contaminant', ['PFAS exposure', 'perfluoroalkyl substances', 'PFOA PFOS']],
+  ['Acrylamide', 'Contaminant', ['dietary acrylamide', 'acrylamide intake']],
+  ['Mycotoxines', 'Contaminant', ['mycotoxins', 'aflatoxin exposure', 'ochratoxin']],
+  ['HAP et amines hétérocycliques', 'Contaminant', ['polycyclic aromatic hydrocarbons dietary', 'heterocyclic amines', 'grilled meat carcinogens']],
+  // Autres sujets
+  ['Alimentation bio', 'Habitude', ['organic food consumption', 'organic diet', 'organic food intake']],
+  ['Modes de cuisson', 'Habitude', ['cooking methods', 'high-temperature cooking', 'raw versus cooked']],
+  ['Aliments enrichis', 'Habitude', ['food fortification', 'fortified foods']],
+  ['Alimentation des personnes âgées', 'Habitude', ['malnutrition older adults', 'nutrition in older adults', 'elderly undernutrition']],
+  ['Postbiotiques et symbiotiques', 'Complément', ['postbiotics', 'synbiotics', 'synbiotic supplementation']],
 ];
 
 // Filtre humain : le résumé doit mentionner des humains ; titres animaux ou in vitro exclus
