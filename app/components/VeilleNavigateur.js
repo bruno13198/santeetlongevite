@@ -1,6 +1,7 @@
 'use client';
 
-// Navigateur de la veille scientifique (4 oct. 2026) : onglets Aliments / Habitudes / Nutriments (10 oct.),
+// Navigateur de la veille scientifique (4 oct. 2026) : onglets Aliments / Habitudes / Nutriments (10 oct.)
+// / Additifs (17 oct. : fiches de la table aliments dont la catégorie est « Additifs alimentaires »),
 // recherche qui filtre l'onglet affiché, liste alphabétique avec sommaire des lettres,
 // case d'alerte devant chaque sujet, et bandeau d'inscription qui n'apparaît que
 // lorsqu'au moins un sujet est coché.
@@ -18,7 +19,13 @@ const ONGLETS = [
   { cle: 'habitudes', libelle: 'Régimes et habitudes', prefixe: '/habitudes', tous: 'Tous les régimes et habitudes' },
   // Nutriments (10 oct. 2026), alertes ajoutées le 11 oct.
   { cle: 'nutriments', libelle: 'Nutriments et compléments', prefixe: '/nutriments', tous: 'Tous les nutriments et compléments' },
+  // Additifs (17 oct. 2026) : ce sont des fiches de la table aliments (même pipeline, mêmes alertes),
+  // simplement affichées dans un onglet à part. Pas de case « Tous » : « Tous les aliments » les inclut déjà.
+  { cle: 'additifs', libelle: 'Additifs', prefixe: '/aliments', tous: null },
 ];
+
+// Catégorie de la table aliments qui part dans l'onglet Additifs.
+const CATEGORIE_ADDITIFS = 'Additifs alimentaires';
 
 // Sections de l'onglet Nutriments, dans l'ordre d'affichage (colonne categorie de la table nutriments).
 const SECTIONS_NUTRIMENTS = [
@@ -107,7 +114,7 @@ export default function VeilleNavigateur({ aliments, habitudes, nutriments = [] 
   // Onglet indiqué dans l'adresse (?onglet=habitudes ou ?onglet=nutriments), pour pouvoir partager un lien direct.
   useEffect(() => {
     const parametre = new URLSearchParams(window.location.search).get('onglet');
-    if (parametre === 'habitudes' || parametre === 'nutriments') setOnglet(parametre);
+    if (parametre === 'habitudes' || parametre === 'nutriments' || parametre === 'additifs') setOnglet(parametre);
   }, []);
 
   function changerOnglet(cle) {
@@ -118,11 +125,14 @@ export default function VeilleNavigateur({ aliments, habitudes, nutriments = [] 
     window.history.replaceState(null, '', url.toString());
   }
 
-  const listes = { aliments, habitudes };
-  const choix = { aliments: choixAliments, habitudes: choixHabitudes, nutriments: choixNutriments };
-  const setChoix = { aliments: setChoixAliments, habitudes: setChoixHabitudes, nutriments: setChoixNutriments };
-  const tous = { aliments: tousLesAliments, habitudes: toutesLesHabitudes, nutriments: tousLesNutriments };
-  const setTous = { aliments: setTousLesAliments, habitudes: setToutesLesHabitudes, nutriments: setTousLesNutriments };
+  // Les additifs sont des aliments en base : ils partagent la sélection et la case « Tous les aliments ».
+  const alimentsSeuls = useMemo(() => aliments.filter((a) => a.categorie !== CATEGORIE_ADDITIFS), [aliments]);
+  const additifs = useMemo(() => aliments.filter((a) => a.categorie === CATEGORIE_ADDITIFS), [aliments]);
+
+  const choix = { aliments: choixAliments, habitudes: choixHabitudes, nutriments: choixNutriments, additifs: choixAliments };
+  const setChoix = { aliments: setChoixAliments, habitudes: setChoixHabitudes, nutriments: setChoixNutriments, additifs: setChoixAliments };
+  const tous = { aliments: tousLesAliments, habitudes: toutesLesHabitudes, nutriments: tousLesNutriments, additifs: tousLesAliments };
+  const setTous = { aliments: setTousLesAliments, habitudes: setToutesLesHabitudes, nutriments: setTousLesNutriments, additifs: setTousLesAliments };
 
   const motsRecherche = useMemo(
     () => normaliser(recherche).split(/[^a-z0-9]+/).filter((m) => m !== ''),
@@ -131,8 +141,13 @@ export default function VeilleNavigateur({ aliments, habitudes, nutriments = [] 
 
   const filtres = useMemo(() => {
     const filtrer = (liste) => (motsRecherche.length === 0 ? liste : liste.filter((s) => correspond(s.nom, motsRecherche)));
-    return { aliments: filtrer(aliments), habitudes: filtrer(habitudes), nutriments: filtrer(nutriments) };
-  }, [aliments, habitudes, nutriments, motsRecherche]);
+    return {
+      aliments: filtrer(alimentsSeuls),
+      habitudes: filtrer(habitudes),
+      nutriments: filtrer(nutriments),
+      additifs: filtrer(additifs),
+    };
+  }, [alimentsSeuls, habitudes, nutriments, additifs, motsRecherche]);
 
   // Aliments : groupés par lettre. Habitudes : une seule liste, répartie à parts égales
   // entre les colonnes (pas de lettres, trop peu d'entrées par lettre).
@@ -146,6 +161,8 @@ export default function VeilleNavigateur({ aliments, habitudes, nutriments = [] 
         titre: section.libelle,
         sujets: trier(filtres.nutriments.filter((n) => n.categorie === section.cle)),
       })).filter((section) => section.sujets.length > 0),
+      // Additifs : une seule liste, comme les habitudes.
+      additifs: filtres.additifs.length > 0 ? [{ lettre: 'tout', sujets: trier(filtres.additifs) }] : [],
     }),
     [filtres]
   );
@@ -283,7 +300,7 @@ export default function VeilleNavigateur({ aliments, habitudes, nutriments = [] 
   return (
     <div className={`${styles.navigateur} ${bandeauVisible ? styles.avecBandeau : ''}`}>
       <label htmlFor="recherche-veille" className={styles.labelRecherche}>
-        Rechercher un aliment, un régime ou un nutriment
+        Rechercher un aliment, un régime, un nutriment ou un additif
       </label>
       <input
         id="recherche-veille"
