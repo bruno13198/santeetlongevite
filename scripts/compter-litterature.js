@@ -16,43 +16,14 @@ const URL_EUROPEPMC_POST = 'https://www.ebi.ac.uk/europepmc/webservices/rest/sea
 
 // [nom en français, catégorie, termes anglais cherchés en expression exacte]
 const CANDIDATS = [
-  // Comptage du 15 oct. 2026 : derniers sujets manquants
-  // Compléments
-  ['Levure de riz rouge', 'Complément', ['red yeast rice', 'monacolin K']],
-  ['D-mannose', 'Complément', ['D-mannose']],
-  ['Shilajit', 'Complément', ['shilajit']],
-  ['Chitosane', 'Complément', ['chitosan supplementation', 'oral chitosan']],
-  ['Extrait de bergamote', 'Complément', ['bergamot extract', 'bergamot polyphenolic fraction', 'Citrus bergamia']],
-  // Plantes
-  ['Ortie', 'Plante', ['Urtica dioica', 'stinging nettle']],
-  ['Vigne rouge', 'Plante', ['red vine leaf', 'Vitis vinifera leaf']],
-  ['Desmodium', 'Plante', ['Desmodium adscendens']],
-  ['Catéchines du thé vert (EGCG)', 'Plante', ['green tea extract', 'epigallocatechin gallate', 'EGCG']],
-  // Additifs
-  ['Carraghénanes', 'Additif', ['carrageenan']],
-  ['Dioxyde de titane (E171)', 'Additif', ['titanium dioxide E171', 'food-grade titanium dioxide', 'dietary titanium dioxide']],
-  ['Phosphates (additifs)', 'Additif', ['phosphate additives', 'dietary phosphate additives', 'inorganic phosphate intake']],
-  ['Sulfites', 'Additif', ['sulfites', 'sulphites', 'sulfite sensitivity']],
-  ['Benzoates et sorbates', 'Additif', ['sodium benzoate', 'potassium sorbate']],
-  ['Acésulfame K', 'Additif', ['acesulfame']],
-  ['Saccharine', 'Additif', ['saccharin intake', 'saccharin consumption']],
-  // Aliments
-  ['Sirop de glucose-fructose', 'Aliment', ['high-fructose corn syrup', 'high fructose corn syrup']],
-  ['Nouilles instantanées', 'Aliment', ['instant noodles', 'ramen consumption']],
-  ['Chips et snacks salés', 'Aliment', ['potato chips', 'salty snacks', 'savory snacks']],
-  ['Margarine', 'Aliment', ['margarine']],
-  ['Thé vert', 'Aliment', ['green tea consumption', 'green tea intake']],
-  ['Jus de betterave', 'Aliment', ['beetroot juice', 'beet juice']],
-  // Nutriments
-  ['Glucides (apport total)', 'Nutriment', ['carbohydrate intake', 'dietary carbohydrate']],
-  ['Acides gras mono-insaturés', 'Nutriment', ['monounsaturated fatty acids', 'monounsaturated fat intake', 'MUFA intake']],
-  ['Oxalates', 'Nutriment', ['dietary oxalate', 'oxalate intake']],
-  // Régimes et habitudes
-  ['Allaitement maternel', 'Habitude', ['breastfeeding', 'breast-feeding']],
-  ['Repas en famille ou seul', 'Habitude', ['family meals', 'eating alone', 'family mealtimes']],
-  ['Cuisine maison', 'Habitude', ['home cooking', 'home-cooked meals', 'cooking frequency']],
-  ['Régime sans sucre', 'Habitude', ['sugar-free diet', 'no added sugar diet', 'sugar restriction']],
-  ['Régime hypotoxique (Seignalet)', 'Habitude', ['Seignalet', 'hypotoxic diet', 'ancestral diet']],
+  // Comptage du 17 oct. 2026 : régimes et stratégies nutritionnelles du sport
+  ['Périodisation des glucides', 'Habitude', ['carbohydrate periodization', 'periodised carbohydrate', 'train low', 'sleep low']],
+  ['Entraînement à jeun', 'Habitude', ['fasted exercise', 'fasted training', 'fasted state exercise']],
+  ['Timing des nutriments', 'Habitude', ['nutrient timing', 'protein timing', 'post-exercise nutrition', 'pre-exercise meal', 'protein distribution']],
+  ['Régime LCHF chez l\'athlète', 'Habitude', ['low-carbohydrate high-fat athletes', 'LCHF diet', 'keto-adaptation']],
+  ['Perte de poids rapide (weight cutting)', 'Habitude', ['rapid weight loss', 'weight cutting', 'weight making']],
+  ['Faible disponibilité énergétique (RED-S)', 'Habitude', ['low energy availability', 'relative energy deficiency in sport', 'RED-S']],
+  ['Nutrition pendant l\'effort', 'Habitude', ['carbohydrate ingestion during exercise', 'sports drinks', 'in-race nutrition']],
 ];
 
 // Filtre humain : le résumé doit mentionner des humains ; titres animaux ou in vitro exclus
