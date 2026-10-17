@@ -1,7 +1,7 @@
 'use client';
 
 // Navigateur de la veille scientifique (4 oct. 2026) : onglets Aliments / Habitudes / Nutriments (10 oct.)
-// / Additifs (17 oct. : fiches de la table aliments dont la catégorie est « Additifs alimentaires »),
+// / Additifs et contaminants (17 oct. : fiches de la table aliments de ces deux catégories),
 // recherche qui filtre l'onglet affiché, liste alphabétique avec sommaire des lettres,
 // case d'alerte devant chaque sujet, et bandeau d'inscription qui n'apparaît que
 // lorsqu'au moins un sujet est coché.
@@ -19,13 +19,18 @@ const ONGLETS = [
   { cle: 'habitudes', libelle: 'Régimes et habitudes', prefixe: '/habitudes', tous: 'Tous les régimes et habitudes' },
   // Nutriments (10 oct. 2026), alertes ajoutées le 11 oct.
   { cle: 'nutriments', libelle: 'Nutriments et compléments', prefixe: '/nutriments', tous: 'Tous les nutriments et compléments' },
-  // Additifs (17 oct. 2026) : ce sont des fiches de la table aliments (même pipeline, mêmes alertes),
-  // simplement affichées dans un onglet à part. Pas de case « Tous » : « Tous les aliments » les inclut déjà.
-  { cle: 'additifs', libelle: 'Additifs', prefixe: '/aliments', tous: null },
+  // Additifs et contaminants (17 oct. 2026) : ce sont des fiches de la table aliments (même pipeline,
+  // mêmes alertes), simplement affichées dans un onglet à part. Pas de case « Tous » :
+  // « Tous les aliments » les inclut déjà.
+  { cle: 'additifs', libelle: 'Additifs et contaminants', prefixe: '/aliments', tous: null },
 ];
 
-// Catégorie de la table aliments qui part dans l'onglet Additifs.
-const CATEGORIE_ADDITIFS = 'Additifs alimentaires';
+// Sections de l'onglet Additifs et contaminants (colonne categorie de la table aliments).
+const SECTIONS_SUBSTANCES = [
+  { cle: 'Additifs alimentaires', libelle: 'Additifs' },
+  { cle: 'Contaminants alimentaires', libelle: 'Contaminants' },
+];
+const CATEGORIES_SUBSTANCES = new Set(SECTIONS_SUBSTANCES.map((s) => s.cle));
 
 // Sections de l'onglet Nutriments, dans l'ordre d'affichage (colonne categorie de la table nutriments).
 const SECTIONS_NUTRIMENTS = [
@@ -126,8 +131,8 @@ export default function VeilleNavigateur({ aliments, habitudes, nutriments = [] 
   }
 
   // Les additifs sont des aliments en base : ils partagent la sélection et la case « Tous les aliments ».
-  const alimentsSeuls = useMemo(() => aliments.filter((a) => a.categorie !== CATEGORIE_ADDITIFS), [aliments]);
-  const additifs = useMemo(() => aliments.filter((a) => a.categorie === CATEGORIE_ADDITIFS), [aliments]);
+  const alimentsSeuls = useMemo(() => aliments.filter((a) => !CATEGORIES_SUBSTANCES.has(a.categorie)), [aliments]);
+  const additifs = useMemo(() => aliments.filter((a) => CATEGORIES_SUBSTANCES.has(a.categorie)), [aliments]);
 
   const choix = { aliments: choixAliments, habitudes: choixHabitudes, nutriments: choixNutriments, additifs: choixAliments };
   const setChoix = { aliments: setChoixAliments, habitudes: setChoixHabitudes, nutriments: setChoixNutriments, additifs: setChoixAliments };
@@ -161,8 +166,12 @@ export default function VeilleNavigateur({ aliments, habitudes, nutriments = [] 
         titre: section.libelle,
         sujets: trier(filtres.nutriments.filter((n) => n.categorie === section.cle)),
       })).filter((section) => section.sujets.length > 0),
-      // Additifs : une seule liste, comme les habitudes.
-      additifs: filtres.additifs.length > 0 ? [{ lettre: 'tout', sujets: trier(filtres.additifs) }] : [],
+      // Additifs et contaminants : une section par catégorie, comme les nutriments.
+      additifs: SECTIONS_SUBSTANCES.map((section) => ({
+        lettre: section.cle,
+        titre: section.libelle,
+        sujets: trier(filtres.additifs.filter((a) => a.categorie === section.cle)),
+      })).filter((section) => section.sujets.length > 0),
     }),
     [filtres]
   );
@@ -300,7 +309,7 @@ export default function VeilleNavigateur({ aliments, habitudes, nutriments = [] 
   return (
     <div className={`${styles.navigateur} ${bandeauVisible ? styles.avecBandeau : ''}`}>
       <label htmlFor="recherche-veille" className={styles.labelRecherche}>
-        Rechercher un aliment, un régime, un nutriment ou un additif
+        Rechercher un aliment, un régime, un nutriment, un additif ou un contaminant
       </label>
       <input
         id="recherche-veille"
@@ -383,21 +392,21 @@ export default function VeilleNavigateur({ aliments, habitudes, nutriments = [] 
             </nav>
           )}
 
-          {o.cle === 'nutriments' ? (
-            groupes.nutriments.map((section) => (
+          {o.cle === 'nutriments' || o.cle === 'additifs' ? (
+            groupes[o.cle].map((section) => (
               <div key={section.lettre}>
                 <h2 className={styles.lettre}>
                   {section.titre} ({section.sujets.length})
                 </h2>
-                <ul className={`${styles.liste} ${styles.colonnes} ${styles.groupeLibre} ${tous.nutriments ? styles.desactive : ''}`}>
+                <ul className={`${styles.liste} ${styles.colonnes} ${styles.groupeLibre} ${tous[o.cle] ? styles.desactive : ''}`}>
                   {section.sujets.map((sujet) => (
                     <li key={sujet.id} className={styles.item}>
                       <input
                         type="checkbox"
                         className={styles.case}
-                        checked={tous.nutriments || choix.nutriments.has(sujet.id)}
-                        disabled={tous.nutriments}
-                        onChange={() => basculer('nutriments', sujet.id)}
+                        checked={tous[o.cle] || choix[o.cle].has(sujet.id)}
+                        disabled={tous[o.cle]}
+                        onChange={() => basculer(o.cle, sujet.id)}
                         aria-label={`Recevoir les alertes pour ${sujet.nom}`}
                       />
                       <Link href={`${o.prefixe}/${sujet.slug}`} prefetch={false} className={styles.lien}>
