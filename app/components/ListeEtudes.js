@@ -458,7 +458,12 @@ export default function ListeEtudes({ etudes }) {
         }}
       >
         Ces fiches sont générées par IA à partir des abstracts : elles aident à repérer et trier les
-        études, l'étude originale reste la référence.
+        études, l'étude originale reste la référence. Seules les études menées chez l'homme sont
+        retenues : les résultats obtenus sur des cellules ou des animaux ne se confirment le plus
+        souvent pas chez l'homme.{' '}
+        <a href="/niveaux-de-preuve#ce-que-nous-retenons" style={{ color: '#4A4D45' }}>
+          Notre méthode →
+        </a>
       </p>
 
       {/* Résumé chiffré de la répartition par niveau, qui sert aussi de filtre */}
