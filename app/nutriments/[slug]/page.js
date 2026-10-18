@@ -6,6 +6,7 @@ import Disclaimer from '../../components/Disclaimer';
 import Breadcrumbs from '../../components/Breadcrumbs';
 import ListeEtudes from '../../components/ListeEtudes';
 import SuivreSujet from '../../components/SuivreSujet';
+import ArticlesLies from '../../components/ArticlesLies';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
