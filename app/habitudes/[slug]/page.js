@@ -6,6 +6,7 @@ import Disclaimer from '../../components/Disclaimer';
 import Breadcrumbs from '../../components/Breadcrumbs';
 import ListeEtudes from '../../components/ListeEtudes';
 import SuivreSujet from '../../components/SuivreSujet';
+import ArticlesLies from '../../components/ArticlesLies';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -65,6 +66,7 @@ export default async function FicheHabitude({ params }) {
 
       <h1 style={{ marginTop: '16px' }}>{habitude.nom}</h1>
       <SuivreSujet type="habitude" sujetId={habitude.id} nom={habitude.nom} />
+      <ArticlesLies type="habitude" sujetId={habitude.id} />
       {habitude.description && <p>{habitude.description}</p>}
 
       <h2>Études scientifiques ({etudes.length})</h2>
