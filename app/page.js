@@ -38,6 +38,41 @@ const COULEURS_NIVEAUX = {
   5: { fond: '#E4E9EE', texte: '#34495E' },
 };
 
+// Pour chaque étude, cherche une fiche à laquelle elle est reliée et renvoie son lien.
+// 18 oct. 2026 : aliments, puis régimes et habitudes, puis nutriments (avant : aliments seulement).
+async function chercherLiens(etudeIds) {
+  const sources = [
+    { liaison: 'aliments_etudes', cle: 'aliment_id', table: 'aliments', prefixe: '/aliments' },
+    { liaison: 'habitudes_etudes', cle: 'habitude_id', table: 'habitudes_alimentaires', prefixe: '/habitudes' },
+    { liaison: 'nutriments_etudes', cle: 'nutriment_id', table: 'nutriments', prefixe: '/nutriments' },
+  ];
+  const liens = {};
+
+  for (const source of sources) {
+    const restantes = etudeIds.filter((id) => !liens[id]);
+    if (restantes.length === 0) break;
+
+    const { data: liaisons } = await supabase
+      .from(source.liaison)
+      .select(`etude_id, ${source.cle}`)
+      .in('etude_id', restantes);
+    if (!liaisons || liaisons.length === 0) continue;
+
+    const sujetIds = [...new Set(liaisons.map((l) => l[source.cle]))];
+    const { data: sujets } = await supabase
+      .from(source.table)
+      .select('id, slug, actif')
+      .in('id', sujetIds);
+
+    for (const l of liaisons) {
+      if (liens[l.etude_id]) continue;
+      const sujet = sujets?.find((s) => s.id === l[source.cle] && s.actif);
+      if (sujet) liens[l.etude_id] = `${source.prefixe}/${sujet.slug}`;
+    }
+  }
+  return liens;
+}
+
 export default async function Home() {
   const { data: articles } = await supabase
     .from('articles')
@@ -55,23 +90,8 @@ export default async function Home() {
 
   let etudesAvecLien = [];
   if (etudes && etudes.length > 0) {
-    const etudeIds = etudes.map((e) => e.id);
-    const { data: liaisons } = await supabase
-      .from('aliments_etudes')
-      .select('etude_id, aliment_id')
-      .in('etude_id', etudeIds);
-
-    const alimentIds = liaisons ? liaisons.map((l) => l.aliment_id) : [];
-    const { data: alimentsData } = await supabase
-      .from('aliments')
-      .select('id, nom, slug')
-      .in('id', alimentIds.length > 0 ? alimentIds : [0]);
-
-    etudesAvecLien = etudes.map((etude) => {
-      const liaison = liaisons?.find((l) => l.etude_id === etude.id);
-      const aliment = liaison ? alimentsData?.find((a) => a.id === liaison.aliment_id) : null;
-      return { ...etude, aliment };
-    });
+    const liens = await chercherLiens(etudes.map((e) => e.id));
+    etudesAvecLien = etudes.map((etude) => ({ ...etude, lien: liens[etude.id] || null }));
   }
 
   return (
@@ -82,29 +102,34 @@ export default async function Home() {
         <h1 className={styles.h1}>Comment fonctionne ce site</h1>
 
         <p className={styles.lede}>
-          ScienceTruths vous tient informé des recherches les plus récentes sur la santé, en
-          commençant par la nutrition, puis le sport et le sommeil. Le site est encore en
-          construction, mais vous pouvez déjà découvrir :
+          ScienceTruths vous tient informé des recherches les plus récentes sur la santé. Le volet
+          nutrition est aujourd'hui presque complet ; le sport et le sommeil viendront ensuite. Vous
+          y trouverez :
         </p>
 
         <div className={styles.intro}>
           <p className={styles.introItem}>
             <strong>Les articles</strong> — Des synthèses accessibles et documentées sur les
-            aliments, fondées sur l'ensemble des données scientifiques disponibles.
+            aliments, les régimes et les compléments, fondées sur l'ensemble des données
+            scientifiques disponibles.
           </p>
           <p className={styles.introItem}>
             <strong>La veille scientifique</strong> — Elle couvre les aliments, les régimes et
             habitudes alimentaires (régime méditerranéen, jeûne intermittent, régime cétogène…),
-            ainsi que les nutriments, compléments alimentaires et plantes (vitamine D, magnésium,
-            créatine, curcuma, ashwagandha…). Chaque semaine, nous recensons les nouvelles études
-            menées chez l'homme, et chacune reçoit un <Link href="/niveaux-de-preuve">niveau de
-            preuve</Link>, de 1 (le plus solide) à 5, selon l'échelle internationale du Centre for
-            Evidence-Based Medicine de l'université d'Oxford, pour que vous sachiez d'un coup d'œil
-            ce qu'elle vaut vraiment. Nous l'étendrons ensuite au sport, puis au sommeil.
+            les nutriments, compléments alimentaires et plantes (vitamine D, magnésium, créatine,
+            curcuma, ashwagandha…), ainsi que les additifs et contaminants alimentaires
+            (édulcorants, nitrites, émulsifiants, mercure, acrylamide…). Chaque lundi, nous
+            ajoutons les nouvelles études menées chez l'homme. Chacune reçoit un{' '}
+            <Link href="/niveaux-de-preuve">niveau de preuve</Link>, de 1 (le plus solide) à 5,
+            selon l'échelle internationale du Centre for Evidence-Based Medicine de l'université
+            d'Oxford, pour que vous sachiez d'un coup d'œil ce qu'elle vaut vraiment.
           </p>
           <p className={styles.introItem}>
-            <strong>Des alertes personnalisées</strong> — Recevez par e-mail les nouvelles
-            recherches sur les sujets que vous avez choisis.
+            <strong>Des alertes personnalisées</strong> — Recevez chaque lundi par e-mail les
+            nouvelles études sur les sujets que vous avez choisis. Sans compte ni mot de passe :
+            votre adresse ne sert qu'à vous envoyer ces alertes, elle n'est jamais revendue ni
+            utilisée à d'autres fins, et chaque e-mail contient un lien pour vous désabonner en un
+            clic.
           </p>
         </div>
 
@@ -112,14 +137,14 @@ export default async function Home() {
 
         <div className={styles.intro}>
           <p className={styles.introItem}>
-            <strong>Des outils pratiques</strong> — Calculateurs, évaluations et outils autour
-            de la nutrition, de l'activité physique et de la longévité.
+            <strong>Le sport, puis le sommeil</strong> — La veille scientifique s'étendra à ces
+            deux domaines, avec la même méthode.
           </p>
           <p className={styles.introItem}>
             <strong>Une base scientifique toujours plus complète</strong> — Retrouver et
             explorer facilement toutes les études utilisées par la veille et les articles.
-            L'objectif : comprendre les connaissances actuelles, suivre leur évolution et pouvoir
-            les utiliser concrètement au quotidien.
+            L'objectif : comprendre l'état actuel des connaissances, suivre leur évolution et
+            pouvoir s'en servir au quotidien.
           </p>
         </div>
 
@@ -178,8 +203,8 @@ export default async function Home() {
                         {etude.design_etude ? ` — ${etude.design_etude}` : ''}
                       </span>
                     )}
-                    {etude.aliment ? (
-                      <Link href={`/aliments/${etude.aliment.slug}`} className={styles.itemLink}>
+                    {etude.lien ? (
+                      <Link href={etude.lien} className={styles.itemLink}>
                         {etude.titre_traduit}
                       </Link>
                     ) : (
