@@ -85,6 +85,38 @@ export default function NiveauxDePreuve() {
         (version 2011), une référence internationale pour classer une étude isolée.
       </p>
 
+      <h2 id="ce-que-nous-retenons">Ce que la veille retient, et pourquoi</h2>
+      <p>
+        Avant d'être classée, chaque étude passe un tri. Ces règles expliquent pourquoi une étude dont
+        vous avez entendu parler peut ne pas figurer sur une fiche :
+      </p>
+      <ul>
+        <li>
+          <strong>Uniquement des études menées chez l'homme.</strong> Les résultats obtenus sur des
+          cellules ou des animaux sont une étape de la recherche, pas une preuve d'effet chez l'homme :
+          le plus souvent, ils ne se confirment pas. Ils restent présents indirectement à travers les
+          revues mécanistiques, classées au niveau 5.
+        </li>
+        <li>
+          <strong>Le sujet de la fiche doit être au cœur de l'étude.</strong> Une étude sur le régime
+          méditerranéen ne figure pas sur la fiche de chacun des aliments qui le composent : elle est
+          rangée sur la fiche du régime.
+        </li>
+        <li>
+          <strong>Pour les nutriments, compléments et plantes, seule la prise par voie orale
+          compte.</strong> Les injections, perfusions ou applications sur la peau posent d'autres questions.
+        </li>
+        <li>
+          <strong>Une prise de sang seule ne suffit pas.</strong> Une étude qui associe un taux sanguin
+          bas de vitamine D à une maladie ne dit pas si en prendre aide : nous retenons les études qui
+          portent sur un apport ou une supplémentation.
+        </li>
+        <li>
+          <strong>Pas d'articles de méthode.</strong> La validation d'un questionnaire ou d'une technique
+          de dosage ne mesure aucun effet sur la santé.
+        </li>
+      </ul>
+
       <h2>Les cinq niveaux</h2>
 
       {NIVEAUX.map((n) => (
