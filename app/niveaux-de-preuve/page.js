@@ -141,8 +141,10 @@ export default function NiveauxDePreuve() {
         <li>des résultats explicitement très imprécis ou incohérents, par exemple une forte hétérogénéité entre les études d'une méta-analyse.</li>
       </ul>
       <p>
-        Plus rarement, il peut être <strong>relevé d'un cran</strong> (↑) pour un effet très important et net.
-        Le motif de chaque ajustement est indiqué sous l'étude.
+        Le motif de chaque ajustement est indiqué sous l'étude. L'échelle d'Oxford permet aussi de
+        relever d'un cran une étude dont l'effet est très important : nous ne le faisons pas, car en
+        nutrition ces effets spectaculaires sont presque inexistants, et ce relèvement automatique
+        produisait surtout des erreurs.
       </p>
       <p>
         Une étude qui ne trouve aucun effet n'est jamais pénalisée : l'absence d'effet est un résultat
