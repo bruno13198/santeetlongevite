@@ -51,14 +51,8 @@ export default async function FicheNutriment({ params }) {
     .eq('actif', true)
     .maybeSingle();
 
-  if (erreurNutriment || !nutriment) {
-    return (
-      <main style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '700px', margin: '0 auto' }}>
-        <p>Nutriment introuvable.</p>
-        <Link href="/veille-scientifique?onglet=nutriments">← Retour à la veille scientifique</Link>
-      </main>
-    );
-  }
+  // Fiche inexistante ou désactivée : vraie page 404, pour que Google l'oublie.
+  if (erreurNutriment || !nutriment) notFound();
 
   // Études liées à ce nutriment via la table de liaison
   const { data: liaisons } = await supabase
