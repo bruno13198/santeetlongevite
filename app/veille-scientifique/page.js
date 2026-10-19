@@ -17,7 +17,9 @@ export const revalidate = 3600;
 export const metadata = {
   title: 'Veille scientifique : aliments, régimes, nutriments et additifs | ScienceTruths',
   description:
-    "Tous les aliments, régimes, nutriments, compléments et additifs suivis par ScienceTruths, avec les études scientifiques associées. Recevez par e-mail les nouvelles études sur les sujets qui vous intéressent.",
+              Tous les aliments, régimes, nutriments, additifs et contaminants que nous suivons. Cliquez sur
+          un nom pour voir les études associées. Les nouvelles études sont ajoutées chaque lundi : cochez
+          les sujets qui vous intéressent pour les recevoir par e-mail le jour même.
 };
 
 const fraunces = Fraunces({
