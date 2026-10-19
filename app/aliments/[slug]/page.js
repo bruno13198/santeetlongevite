@@ -2,6 +2,7 @@ export const revalidate = 60;
 
 import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import Disclaimer from '../../components/Disclaimer';
 import Breadcrumbs from '../../components/Breadcrumbs';
 import ListeEtudes from '../../components/ListeEtudes';
@@ -22,14 +23,8 @@ export default async function FicheAliment({ params }) {
     .eq('slug', slug)
     .single();
 
-  if (erreurAliment || !aliment) {
-    return (
-      <main style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '700px', margin: '0 auto' }}>
-        <p>Aliment introuvable.</p>
-        <Link href="/">← Retour à la recherche</Link>
-      </main>
-    );
-  }
+  // Fiche inexistante ou désactivée : vraie page 404, pour que Google l'oublie.
+  if (erreurAliment || !aliment || !aliment.actif) notFound();
 
   // Récupère les études liées à cet aliment via la table de liaison
   const { data: liaisons } = await supabase
