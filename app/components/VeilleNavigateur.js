@@ -511,7 +511,9 @@ export default function VeilleNavigateur({ aliments, habitudes, nutriments = [] 
 
               {statut === 'erreur' && <p className={styles.erreur}>{message}</p>}
               <p className={styles.note}>
-                Un e-mail de confirmation vous sera envoyé. Pensez à vérifier vos courriers indésirables.
+                               Un e-mail le lundi, sans compte. Votre adresse n'est jamais revendue, et vous pouvez vous
+                désabonner en un clic. Un e-mail de confirmation vous sera envoyé : pensez à vérifier vos
+                courriers indésirables.
               </p>
             </form>
           )}
