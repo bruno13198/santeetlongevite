@@ -742,6 +742,10 @@ async function collecterCandidats(habitude) {
     const sourceId = etude.id || etude.pmid;
     if (!sourceId) continue;
 
+    // 19 oct. 2026 : les études sur le Ramadan vont sur la fiche « Jeûne du Ramadan »,
+    // jamais sur la fiche générale « Jeûne » (dont les termes les attrapent aussi).
+    if (habitude.slug === 'jeune' && /ramadan/i.test(etude.title || '')) continue;
+
     const { data: existant } = await supabase
       .from('etudes')
       .select('id')
