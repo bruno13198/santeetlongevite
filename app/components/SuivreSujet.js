@@ -148,7 +148,7 @@ export default function SuivreSujet({ type, sujetId, nom }) {
         >
           🔔 Suivre ce sujet
         </button>
-        <span style={{ color: '#555' }}> — recevez par e-mail les nouvelles études sur {nom}, une fois par semaine.</span>
+                <span style={{ color: '#555' }}> — recevez chaque lundi par e-mail les nouvelles études sur {nom}.</span>
       </div>
     );
   }
