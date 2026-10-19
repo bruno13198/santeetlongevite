@@ -17,9 +17,7 @@ export const revalidate = 3600;
 export const metadata = {
   title: 'Veille scientifique : aliments, régimes, nutriments et additifs | ScienceTruths',
   description:
-              Tous les aliments, régimes, nutriments, additifs et contaminants que nous suivons. Cliquez sur
-          un nom pour voir les études associées. Les nouvelles études sont ajoutées chaque lundi : cochez
-          les sujets qui vous intéressent pour les recevoir par e-mail le jour même.
+    "Tous les aliments, régimes, nutriments, compléments et additifs suivis par ScienceTruths, avec les études scientifiques associées. Recevez par e-mail les nouvelles études sur les sujets qui vous intéressent.",
 };
 
 const fraunces = Fraunces({
@@ -81,9 +79,9 @@ export default async function VeilleScientifique() {
         <p className={styles.eyebrow}>sciencetruths.com</p>
         <h1 className={styles.h1}>Veille scientifique</h1>
         <p className={styles.lede}>
-          Tous les aliments, régimes, nutriments et additifs que nous suivons. Cliquez sur un nom pour
-          voir les études associées. Cochez ceux qui vous intéressent pour recevoir les nouvelles études
-          par e-mail, une fois par semaine.
+          Tous les aliments, régimes, nutriments, additifs et contaminants que nous suivons. Cliquez sur
+          un nom pour voir les études associées. Les nouvelles études sont ajoutées chaque lundi : cochez
+          les sujets qui vous intéressent pour les recevoir par e-mail le jour même.
         </p>
         <p style={{ fontSize: '14px', marginTop: '-8px', marginBottom: '24px' }}>
           Déjà abonné ? <a href="#gerer-alertes">Gérer mes alertes ↓</a>
