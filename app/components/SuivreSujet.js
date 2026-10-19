@@ -164,8 +164,8 @@ export default function SuivreSujet({ type, sujetId, nom }) {
   return (
     <form onSubmit={valider} style={cadre}>
       <p style={{ margin: '0 0 8px' }}>
-        Recevez une fois par semaine les nouvelles études sur <strong>{nom}</strong>, avec leur niveau de preuve.
-        Gratuit, sans compte, désabonnement en un clic.
+                Recevez chaque lundi les nouvelles études sur <strong>{nom}</strong>, avec leur niveau de preuve.
+        Gratuit et sans compte. Votre adresse n'est jamais revendue, et vous pouvez vous désabonner en un clic.
       </p>
       <label style={{ display: 'block', marginBottom: '8px' }}>
         <span style={{ display: 'block', marginBottom: '4px' }}>Votre adresse e-mail</span>
@@ -212,7 +212,7 @@ export default function SuivreSujet({ type, sujetId, nom }) {
 
       {statut === 'erreur' && <p style={{ color: '#a33', margin: '8px 0 0' }}>{message}</p>}
       <p style={{ margin: '8px 0 0', fontSize: '12px', color: '#666' }}>
-        Un e-mail de confirmation vous sera envoyé. Pensez à vérifier vos courriers indésirables.
+        Un e-mail de confirmation vous sera envoyé : pensez à vérifier vos courriers indésirables.
       </p>
     </form>
   );
