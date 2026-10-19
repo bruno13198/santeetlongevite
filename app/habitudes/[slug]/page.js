@@ -25,14 +25,8 @@ export default async function FicheHabitude({ params }) {
     .eq('slug', slug)
     .single();
 
-  if (erreurHabitude || !habitude) {
-    return (
-      <main style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '700px', margin: '0 auto' }}>
-        <p>Habitude alimentaire introuvable.</p>
-        <Link href="/veille-scientifique">← Retour à la veille scientifique</Link>
-      </main>
-    );
-  }
+  // Fiche inexistante ou désactivée : vraie page 404, pour que Google l'oublie.
+  if (erreurHabitude || !habitude || !habitude.actif) notFound();
 
   // Études liées à cette habitude via la table de liaison
   const { data: liaisons } = await supabase
