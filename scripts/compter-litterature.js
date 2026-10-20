@@ -16,10 +16,16 @@ const URL_EUROPEPMC_POST = 'https://www.ebi.ac.uk/europepmc/webservices/rest/sea
 
 // [nom en français, catégorie, termes anglais cherchés en expression exacte]
 const CANDIDATS = [
-  // Comptage du 19 oct. 2026 : alimentation du jeune enfant
-  ['Fromages au lait cru', 'Aliment', ['raw milk cheese', 'unpasteurized cheese', 'raw-milk cheese']],
-  ['Alimentation de l\'enfant de 1 à 5 ans', 'Habitude', ['toddler nutrition', 'toddler diet', 'preschool children diet', 'young child feeding']],
-  ['Laits de croissance', 'Aliment', ['growing-up milk', 'toddler milk', 'young child formula']],
+  // Test des termes de la fiche « Alimentation de l'enfant de 1 à 5 ans » (19 oct. 2026)
+  ...[
+    'dietary intake of preschool children', 'diet quality of preschool children', 'dietary patterns of preschool children',
+    'nutrition of preschool children', 'dietary intakes of toddlers', 'toddlers diet', 'preschoolers diet',
+    'diet of young children', 'early childhood nutrition', 'early childhood diet',
+    'picky eating', 'picky eaters', 'fussy eating', 'food fussiness', 'selective eating', 'food neophobia',
+    'eating behaviour in preschool children', 'eating behavior in preschool children',
+    'toddler feeding', 'responsive feeding', 'feeding practices preschool', 'childcare nutrition',
+    'nutrition in early care and education',
+  ].map((terme) => [`Terme : ${terme}`, 'Test', [terme]]),
 ];
 
 // Filtre humain : le résumé doit mentionner des humains ; titres animaux ou in vitro exclus
