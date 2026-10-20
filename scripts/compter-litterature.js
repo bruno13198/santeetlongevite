@@ -16,15 +16,12 @@ const URL_EUROPEPMC_POST = 'https://www.ebi.ac.uk/europepmc/webservices/rest/sea
 
 // [nom en français, catégorie, termes anglais cherchés en expression exacte]
 const CANDIDATS = [
-  // Test des termes de la fiche « Alimentation de l'enfant de 1 à 5 ans » (19 oct. 2026)
+  // Audit des termes (20 oct. 2026) : les trois fiches les plus incomplètes
   ...[
-    'dietary intake of preschool children', 'diet quality of preschool children', 'dietary patterns of preschool children',
-    'nutrition of preschool children', 'dietary intakes of toddlers', 'toddlers diet', 'preschoolers diet',
-    'diet of young children', 'early childhood nutrition', 'early childhood diet',
-    'picky eating', 'picky eaters', 'fussy eating', 'food fussiness', 'selective eating', 'food neophobia',
-    'eating behaviour in preschool children', 'eating behavior in preschool children',
-    'toddler feeding', 'responsive feeding', 'feeding practices preschool', 'childcare nutrition',
-    'nutrition in early care and education',
+    'weaning', 'baby-led weaning', 'complementary foods', 'introduction of solid foods', 'infant feeding practices',
+    'maternal diet', 'maternal dietary intake', 'diet in pregnancy', 'dietary patterns during pregnancy', 'prenatal dietary',
+    'nutritional status of older adults', 'dietary intake of older adults', 'geriatric nutrition', 'elderly nutrition',
+    'alcohol consumption',
   ].map((terme) => [`Terme : ${terme}`, 'Test', [terme]]),
 ];
 
