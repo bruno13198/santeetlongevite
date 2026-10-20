@@ -157,6 +157,7 @@ Règles :
 - Choisis uniquement les problèmes de santé qui sont le SUJET PRINCIPAL de l'étude : son critère de santé principal (par exemple la glycémie pour le diabète, la tension pour l'hypertension), ou la maladie de la population étudiée (par exemple des patients atteints de maladie rénale).
 - N'ajoute PAS un problème pour un critère secondaire, un marqueur de sécurité ou de tolérance mesuré en complément, un facteur de risque évoqué, une complication possible ou une perspective de recherche.
 - Dans la plupart des cas, un seul problème suffit ; deux ou trois seulement si l'étude porte réellement sur chacun d'eux à égalité.
+- Le problème doit être nommé explicitement dans le titre ou le résumé comme objet de l'étude : ne le déduis jamais d'un mécanisme ou d'un sujet voisin.
 - 0 à ${MAX_PROBLEMES_PAR_ETUDE} problèmes au maximum, du plus central au moins central.
 - Utilise UNIQUEMENT des slugs de la liste, recopiés exactement.
 - Si aucun problème de la liste ne correspond (étude sur la composition d'un aliment, les apports, les habitudes ou les connaissances, sans critère de santé), renvoie une liste vide.
