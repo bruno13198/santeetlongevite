@@ -21,7 +21,7 @@ const TAILLE_MAX_LOT_CLAUDE = 5000;
 const ATTENTE_MAX_LOT_MIN = 300;
 const INTERVALLE_SONDAGE_MS = 30000;
 const DELAI_MAX_MS = 60000;
-const MAX_PROBLEMES_PAR_ETUDE = 4;
+const MAX_PROBLEMES_PAR_ETUDE = 3;
 
 // Tarif de l'API Batch pour Claude Haiku 4.5 (moitié du tarif normal), en dollars par million de jetons.
 const PRIX_ENTREE_PAR_MILLION = 0.5;
@@ -154,8 +154,9 @@ Titre : ${titre}
 Résumé : ${resume}
 
 Règles :
-- Choisis les problèmes de santé sur lesquels l'étude apporte une information : son critère de santé mesuré (par exemple la glycémie pour le diabète, la tension pour l'hypertension), ou la population malade étudiée (par exemple des patients atteints de maladie rénale).
-- Ne choisis pas un problème seulement cité en passant ou évoqué comme perspective.
+- Choisis uniquement les problèmes de santé qui sont le SUJET PRINCIPAL de l'étude : son critère de santé principal (par exemple la glycémie pour le diabète, la tension pour l'hypertension), ou la maladie de la population étudiée (par exemple des patients atteints de maladie rénale).
+- N'ajoute PAS un problème pour un critère secondaire, un marqueur de sécurité ou de tolérance mesuré en complément, un facteur de risque évoqué, une complication possible ou une perspective de recherche.
+- Dans la plupart des cas, un seul problème suffit ; deux ou trois seulement si l'étude porte réellement sur chacun d'eux à égalité.
 - 0 à ${MAX_PROBLEMES_PAR_ETUDE} problèmes au maximum, du plus central au moins central.
 - Utilise UNIQUEMENT des slugs de la liste, recopiés exactement.
 - Si aucun problème de la liste ne correspond (étude sur la composition d'un aliment, les apports, les habitudes ou les connaissances, sans critère de santé), renvoie une liste vide.
