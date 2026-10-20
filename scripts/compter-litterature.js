@@ -16,13 +16,19 @@ const URL_EUROPEPMC_POST = 'https://www.ebi.ac.uk/europepmc/webservices/rest/sea
 
 // [nom en français, catégorie, termes anglais cherchés en expression exacte]
 const CANDIDATS = [
-  // Audit des termes (20 oct. 2026) : les trois fiches les plus incomplètes
-  ...[
-    'weaning', 'baby-led weaning', 'complementary foods', 'introduction of solid foods', 'infant feeding practices',
-    'maternal diet', 'maternal dietary intake', 'diet in pregnancy', 'dietary patterns during pregnancy', 'prenatal dietary',
-    'nutritional status of older adults', 'dietary intake of older adults', 'geriatric nutrition', 'elderly nutrition',
-    'alcohol consumption',
-  ].map((terme) => [`Terme : ${terme}`, 'Test', [terme]]),
+  // Comptage du 20 oct. 2026 : derniers manques
+  ['Nutri-Score et étiquetage nutritionnel', 'Habitude', ['Nutri-Score', 'front-of-pack nutrition label', 'front-of-package labeling', 'nutrition labelling']],
+  ['Alimentation des adolescents', 'Habitude', ['adolescent diet', 'diet quality of adolescents', 'dietary intake of adolescents', 'adolescent nutrition']],
+  ['Alimentation et ménopause', 'Habitude', ['menopause diet', 'diet during menopause', 'postmenopausal women diet', 'menopausal women dietary']],
+  ['Alimentation émotionnelle', 'Habitude', ['emotional eating', 'stress eating']],
+  ['Taille des portions', 'Habitude', ['portion size', 'portion sizes']],
+  ['Insécurité alimentaire', 'Habitude', ['food insecurity']],
+  ['Régime sans lactose', 'Habitude', ['lactose-free diet', 'low-lactose diet', 'lactose intolerance diet']],
+  ['Schisandra', 'Plante', ['Schisandra chinensis', 'schisandra']],
+  ['Mucuna', 'Plante', ['Mucuna pruriens']],
+  ['Kudzu', 'Plante', ['Pueraria lobata', 'kudzu']],
+  ['Bardane', 'Plante', ['Arctium lappa', 'burdock']],
+  ['Griffonia', 'Plante', ['Griffonia simplicifolia']],
 ];
 
 // Filtre humain : le résumé doit mentionner des humains ; titres animaux ou in vitro exclus
