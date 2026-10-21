@@ -21,7 +21,7 @@ export default function Nav() {
             <li><Link href="/articles" className={styles.link}>Articles</Link></li>
             <li><Link href="/veille-scientifique" className={styles.link}>Veille scientifique</Link></li>
             {/* 21 oct. 2026 : entrée par problème de santé */}
-                        <li><Link href="/sante" className={styles.link}>Santé</Link></li>
+                        <li><Link href="/sante" className={styles.link}>Problèmes de santé</Link></li>
           </ul>
         </div>
         <ul className={styles.right}>
