@@ -2,9 +2,10 @@ export const revalidate = 60;
 
 import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import Disclaimer from '../../components/Disclaimer';
 import Breadcrumbs from '../../components/Breadcrumbs';
-import ListeEtudes from '../../components/ListeEtudes';
+import SectionEtudes from '../../components/SectionEtudes';
 import SuivreSujet from '../../components/SuivreSujet';
 import ArticlesLies from '../../components/ArticlesLies';
 
@@ -14,8 +15,6 @@ const supabase = createClient(
 );
 
 // Fiche d'une habitude alimentaire (régime, pratique).
-// 5 oct. 2026 : affichage des études aligné sur la fiche aliment (composant ListeEtudes,
-// niveaux de preuve Oxford) au lieu de l'ancien badge de fiabilité.
 // Titre et description pour Google (20 oct. 2026).
 export async function generateMetadata({ params }) {
   const { slug } = await params;
@@ -36,8 +35,9 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default async function FicheHabitude({ params }) {
+export default async function FicheHabitude({ params, searchParams }) {
   const { slug } = await params;
+  const sp = await searchParams;
 
   const { data: habitude, error: erreurHabitude } = await supabase
     .from('habitudes_alimentaires')
@@ -47,24 +47,6 @@ export default async function FicheHabitude({ params }) {
 
   // Fiche inexistante ou désactivée : vraie page 404, pour que Google l'oublie.
   if (erreurHabitude || !habitude || !habitude.actif) notFound();
-
-  // Études liées à cette habitude via la table de liaison
-  const { data: liaisons } = await supabase
-    .from('habitudes_etudes')
-    .select('etude_id')
-    .eq('habitude_id', habitude.id);
-
-  const etudeIds = liaisons ? liaisons.map((l) => l.etude_id) : [];
-
-  let etudes = [];
-  if (etudeIds.length > 0) {
-    const { data: etudesData } = await supabase
-            .from('etudes')
-      .select('id, titre_traduit, titre_original, source, date_publication, auteurs, resume_simplifie, resume_reformule, url_originale, niveau_preuve, design_etude, ajustement_preuve, nb_participants, niveau_fiabilite, type_etude')
-      .in('id', etudeIds)
-      .order('date_publication', { ascending: false, nullsFirst: false });
-    etudes = etudesData || [];
-  }
 
   return (
     <main style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '700px', margin: '0 auto' }}>
@@ -83,13 +65,8 @@ export default async function FicheHabitude({ params }) {
       <ArticlesLies type="habitude" sujetId={habitude.id} />
       {habitude.description && <p>{habitude.description}</p>}
 
-      <h2>Études scientifiques ({etudes.length})</h2>
-
-      {etudes.length === 0 ? (
-        <p style={{ color: '#6B6E63' }}>Aucune étude pour le moment.</p>
-      ) : (
-        <ListeEtudes etudes={etudes} />
-      )}
+      {/* 21 oct. 2026 : études chargées page par page par la base de données */}
+      <SectionEtudes type="habitude" sujetId={habitude.id} chemin={`/habitudes/${slug}`} searchParams={sp} />
 
       <Disclaimer />
     </main>
