@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Disclaimer from '../../components/Disclaimer';
 import Breadcrumbs from '../../components/Breadcrumbs';
-import ListeEtudes from '../../components/ListeEtudes';
+import SectionEtudes from '../../components/SectionEtudes';
 import SuivreSujet from '../../components/SuivreSujet';
 
 const supabase = createClient(
@@ -13,8 +13,7 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
-// Titre et description pour Google (20 oct. 2026). Le nom CIQUAL est raccourci à sa première partie
-// (« Pomelo dit pamplemousse, chair sans peau… » devient « Pomelo dit pamplemousse »).
+// Titre et description pour Google (20 oct. 2026). Le nom est raccourci à sa première partie.
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const { data: aliment } = await supabase
@@ -35,8 +34,9 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default async function FicheAliment({ params }) {
+export default async function FicheAliment({ params, searchParams }) {
   const { slug } = await params;
+  const sp = await searchParams;
 
   // Récupère l'aliment correspondant au slug
   const { data: aliment, error: erreurAliment } = await supabase
@@ -47,24 +47,6 @@ export default async function FicheAliment({ params }) {
 
   // Fiche inexistante ou désactivée : vraie page 404, pour que Google l'oublie.
   if (erreurAliment || !aliment || !aliment.actif) notFound();
-
-  // Récupère les études liées à cet aliment via la table de liaison
-  const { data: liaisons } = await supabase
-    .from('aliments_etudes')
-    .select('etude_id')
-    .eq('aliment_id', aliment.id);
-
-  const etudeIds = liaisons ? liaisons.map((l) => l.etude_id) : [];
-
-  let etudes = [];
-  if (etudeIds.length > 0) {
-    const { data: etudesData } = await supabase
-            .from('etudes')
-      .select('id, titre_traduit, titre_original, source, date_publication, auteurs, resume_simplifie, resume_reformule, url_originale, niveau_preuve, design_etude, ajustement_preuve, nb_participants, niveau_fiabilite, type_etude')
-      .in('id', etudeIds)
-      .order('date_publication', { ascending: false, nullsFirst: false });
-    etudes = etudesData || [];
-  }
 
   // Récupère TOUS les articles publiés liés à cet aliment via la table de liaison
   const { data: liaisonsArticles } = await supabase
@@ -138,13 +120,8 @@ export default async function FicheAliment({ params }) {
         </div>
       )}
 
-      <h2>Études scientifiques ({etudes.length})</h2>
-
-      {etudes.length === 0 ? (
-        <p style={{ color: '#6B6E63' }}>Aucune étude pour le moment.</p>
-      ) : (
-        <ListeEtudes etudes={etudes} />
-      )}
+      {/* 21 oct. 2026 : études chargées page par page par la base de données */}
+      <SectionEtudes type="aliment" sujetId={aliment.id} chemin={`/aliments/${slug}`} searchParams={sp} />
 
       <Disclaimer />
     </main>
