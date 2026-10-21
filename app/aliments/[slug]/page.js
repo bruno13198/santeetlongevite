@@ -13,6 +13,28 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
+// Titre et description pour Google (20 oct. 2026). Le nom CIQUAL est raccourci à sa première partie
+// (« Pomelo dit pamplemousse, chair sans peau… » devient « Pomelo dit pamplemousse »).
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  const { data: aliment } = await supabase
+    .from('aliments')
+    .select('nom, description, actif')
+    .eq('slug', slug)
+    .maybeSingle();
+
+  if (!aliment || !aliment.actif) return { title: 'Aliment introuvable | ScienceTruths' };
+
+  const nomCourt = aliment.nom.split(', ')[0];
+  return {
+    title: `${nomCourt} : bienfaits, risques et ce que disent les études | ScienceTruths`,
+    description:
+      aliment.description ||
+      `Les études scientifiques sur ${nomCourt}, résumées en français et classées par niveau de preuve.`,
+    alternates: { canonical: `https://sciencetruths.com/aliments/${slug}` },
+  };
+}
+
 export default async function FicheAliment({ params }) {
   const { slug } = await params;
 
