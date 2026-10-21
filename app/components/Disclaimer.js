@@ -11,9 +11,7 @@ export default function Disclaimer() {
         lineHeight: '1.6',
       }}
     >
-      Cet article est fourni à titre informatif et éducatif uniquement. Il ne constitue pas un
-      avis médical, un diagnostic ou une recommandation de traitement, et ne remplace pas la
-      consultation d'un professionnel de santé qualifié.
+      Les informations de cette page sont fournies à titre informatif et éducatif uniquement. Elles ne constituent pas un avis médical, un diagnostic ou une recommandation de traitement, et ne remplacent pas la consultation d'un professionnel de santé qualifié.
     </p>
   );
 }
