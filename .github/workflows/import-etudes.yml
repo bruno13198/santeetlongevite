@@ -120,6 +120,16 @@ jobs:
           MAX_ANALYSES_PAR_RUN: ${{ github.event.inputs.max_analyses }}
           ESTIMATION_SEULE: 'false'
         run: node scripts/import-nutriments.js
+            - name: Classer les nouvelles études par problème de santé
+        # Ajouté le 21 oct. 2026 : ne traite que les études pas encore classées.
+        continue-on-error: true
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          LIMITE: '3000'
+          AFFICHER_DETAIL: 'false'
+        run: node scripts/classer-problemes.js
       - name: Envoyer les alertes email
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
