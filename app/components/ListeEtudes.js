@@ -1,11 +1,13 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 
-// Refonte du 14 oct. 2026 : cartes compactes (résumés affichés au clic) et affichage
-// par blocs de 20. Le filtre par niveau s'applique d'abord, l'affichage par 20 ensuite ;
-// les compteurs restent calculés sur la liste complète.
-const TAILLE_BLOC = 20;
+// Liste des études d'une fiche (21 oct. 2026 : pagination côté serveur).
+// Ce composant n'affiche qu'une page de 20 études, déjà filtrée et triée par la base de données
+// (fonctions SQL liste_etudes et comptes_etudes, appelées par SectionEtudes). Les filtres, le tri,
+// la recherche et les numéros de page sont des liens : chaque page de résultats a sa propre adresse.
+const TAILLE_PAGE = 20;
 
 // Couleurs des niveaux de preuve Oxford (CEBM 2011) : fond clair + texte foncé de la même famille.
 const COULEURS_NIVEAUX = {
@@ -339,7 +341,7 @@ function FormulaireSignalement({ etude, onFermer }) {
 
 // Carte compacte : niveau, titre, année. Les résumés et le détail s'ouvrent au clic.
 function CarteEtude({ etude }) {
-    const [ouverte, setOuverte] = useState(true);
+  const [ouverte, setOuverte] = useState(true);
   const [signalementOuvert, setSignalementOuvert] = useState(false);
   const an = annee(etude.date_publication);
 
@@ -408,43 +410,53 @@ function CarteEtude({ etude }) {
   );
 }
 
-export default function ListeEtudes({ etudes }) {
-  const [selection, setSelection] = useState([]);
-  // Les revues de niveau 5 (narratives et mécanistiques) sont en retrait : masquées par défaut.
-  const [afficherRevues, setAfficherRevues] = useState(false);
-  const [nbAffichees, setNbAffichees] = useState(TAILLE_BLOC);
+// Construit l'adresse d'une page de résultats à partir des paramètres actuels et de modifications.
+function construireLien(chemin, parametres, modifications) {
+  const p = { ...parametres, ...modifications };
+  const recherche = new URLSearchParams();
+  if (p.niveau) recherche.set('niveau', String(p.niveau));
+  if (p.revues) recherche.set('revues', '1');
+  if (p.tri === 'ancien') recherche.set('tri', 'ancien');
+  if (p.q) recherche.set('q', p.q);
+  if (p.page && p.page > 1) recherche.set('page', String(p.page));
+  const chaine = recherche.toString();
+  return `${chemin}${chaine ? `?${chaine}` : ''}#etudes`;
+}
 
-  // Chaque changement de filtre repart des 20 premières études.
-  useEffect(() => {
-    setNbAffichees(TAILLE_BLOC);
-  }, [selection, afficherRevues]);
-
-  const comptes = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-  let nonClassees = 0;
-  for (const e of etudes) {
-    if (e.niveau_preuve && comptes[e.niveau_preuve] !== undefined) comptes[e.niveau_preuve]++;
-    else nonClassees++;
+// Numéros de page à afficher : 1 … 4 5 [6] 7 8 … 50
+function numerosDePage(pageActuelle, nbPages) {
+  const numeros = new Set([1, nbPages, pageActuelle - 2, pageActuelle - 1, pageActuelle, pageActuelle + 1, pageActuelle + 2]);
+  const liste = [...numeros].filter((n) => n >= 1 && n <= nbPages).sort((a, b) => a - b);
+  const resultat = [];
+  for (let i = 0; i < liste.length; i++) {
+    if (i > 0 && liste[i] - liste[i - 1] > 1) resultat.push('…');
+    resultat.push(liste[i]);
   }
+  return resultat;
+}
 
-  function basculer(niveau) {
-    setSelection((actuelle) =>
-      actuelle.includes(niveau) ? actuelle.filter((n) => n !== niveau) : [...actuelle, niveau]
-    );
-  }
+const styleLienPage = {
+  display: 'inline-block',
+  minWidth: '34px',
+  padding: '6px 10px',
+  margin: '0 4px 6px 0',
+  textAlign: 'center',
+  border: '1px solid #ddd',
+  borderRadius: '6px',
+  textDecoration: 'none',
+  color: '#333',
+  fontSize: '14px',
+};
 
-  // Sans filtre : tout sauf le niveau 5, sauf si le lecteur a demandé à voir les revues.
-  // Avec filtre : exactement les niveaux choisis (y compris le 5 s'il est sélectionné).
-  const visibles =
-    selection.length === 0
-      ? etudes.filter((e) => e.niveau_preuve !== 5 || afficherRevues)
-      : etudes.filter((e) => selection.includes(e.niveau_preuve));
-
-  const affichees = visibles.slice(0, nbAffichees);
-  const restantes = visibles.length - affichees.length;
-  const boutonRevuesVisible = selection.length === 0 && comptes[5] > 0;
+export default function ListeEtudes({ etudes, comptes, totalSelection, parametres, chemin }) {
+  const { niveau, revues, tri, q, page } = parametres;
+  const nbPages = Math.max(1, Math.ceil(totalSelection / TAILLE_PAGE));
+  const nonClassees = comptes[0] || 0;
+  const totalSansFiltre = [0, 1, 2, 3, 4, 5].reduce((s, n) => s + (comptes[n] || 0), 0);
+  const boutonRevuesVisible = !niveau && (comptes[5] || 0) > 0;
 
   return (
-    <div>
+    <div id="etudes">
       {/* Avertissement méthodologique : origine des résumés et des niveaux */}
       <p
         style={{
@@ -466,46 +478,68 @@ export default function ListeEtudes({ etudes }) {
         </a>
       </p>
 
-      {/* Résumé chiffré de la répartition par niveau, qui sert aussi de filtre */}
-      <div style={{ marginBottom: '20px' }}>
+      {/* Recherche dans les études de la fiche */}
+      <form method="get" action={chemin} style={{ display: 'flex', gap: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
+        {niveau ? <input type="hidden" name="niveau" value={niveau} /> : null}
+        {tri === 'ancien' ? <input type="hidden" name="tri" value="ancien" /> : null}
+        <input
+          type="search"
+          name="q"
+          defaultValue={q || ''}
+          placeholder="Rechercher dans ces études (ex : grossesse, cancer)"
+          aria-label="Rechercher dans les études de cette fiche"
+          style={{ ...styleChamp, flex: '1 1 240px' }}
+        />
+        <button
+          type="submit"
+          style={{ padding: '8px 14px', border: 'none', borderRadius: '6px', backgroundColor: '#27500A', color: '#fff', cursor: 'pointer', fontSize: '14px' }}
+        >
+          Rechercher
+        </button>
+        {q ? (
+          <Link href={construireLien(chemin, parametres, { q: '', page: 1 })} style={{ alignSelf: 'center', fontSize: '13px', color: '#555' }}>
+            Effacer la recherche
+          </Link>
+        ) : null}
+      </form>
+
+      {/* Répartition par niveau de preuve, qui sert aussi de filtre */}
+      <div style={{ marginBottom: '16px' }}>
         <p style={{ color: '#6B6E63', fontSize: '14px', margin: '0 0 8px' }}>
+          {q ? <>Résultats pour « {q} » · </> : null}
           Répartition par niveau de preuve (cliquez pour filtrer) ·{' '}
           <a href="/niveaux-de-preuve" style={{ color: '#555' }}>Comprendre les niveaux</a>
         </p>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-          <button
-            type="button"
-            onClick={() => setSelection([])}
-            aria-pressed={selection.length === 0}
+          <Link
+            href={construireLien(chemin, parametres, { niveau: null, page: 1 })}
+            aria-current={!niveau ? 'true' : undefined}
             style={{
               ...styleBadge,
-              cursor: 'pointer',
+              textDecoration: 'none',
               backgroundColor: '#f5f5f5',
               color: '#333',
-              border: selection.length === 0 ? '2px solid #333' : '2px solid transparent',
+              border: !niveau ? '2px solid #333' : '2px solid transparent',
             }}
           >
-            Toutes ({etudes.length})
-          </button>
-          {[1, 2, 3, 4, 5].map((niveau) =>
-            comptes[niveau] > 0 ? (
-              <button
-                key={niveau}
-                type="button"
-                onClick={() => basculer(niveau)}
-                aria-pressed={selection.includes(niveau)}
+            Toutes ({totalSansFiltre})
+          </Link>
+          {[1, 2, 3, 4, 5].map((n) =>
+            (comptes[n] || 0) > 0 ? (
+              <Link
+                key={n}
+                href={construireLien(chemin, parametres, { niveau: niveau === n ? null : n, page: 1 })}
+                aria-current={niveau === n ? 'true' : undefined}
                 style={{
                   ...styleBadge,
-                  cursor: 'pointer',
-                  backgroundColor: COULEURS_NIVEAUX[niveau].fond,
-                  color: COULEURS_NIVEAUX[niveau].texte,
-                  border: selection.includes(niveau)
-                    ? `2px solid ${COULEURS_NIVEAUX[niveau].texte}`
-                    : '2px solid transparent',
+                  textDecoration: 'none',
+                  backgroundColor: COULEURS_NIVEAUX[n].fond,
+                  color: COULEURS_NIVEAUX[n].texte,
+                  border: niveau === n ? `2px solid ${COULEURS_NIVEAUX[n].texte}` : '2px solid transparent',
                 }}
               >
-                Niveau {niveau} : {comptes[niveau]}
-              </button>
+                Niveau {n} : {comptes[n]}
+              </Link>
             ) : null
           )}
         </div>
@@ -516,60 +550,76 @@ export default function ListeEtudes({ etudes }) {
         )}
       </div>
 
-      {visibles.length === 0 && (
+      {/* Tri */}
+      <p style={{ fontSize: '13px', color: '#555', margin: '0 0 14px' }}>
+        Trier :{' '}
+        {tri === 'ancien' ? (
+          <>
+            <Link href={construireLien(chemin, parametres, { tri: 'recent', page: 1 })} style={{ color: '#555' }}>plus récentes d'abord</Link>
+            {' · '}<strong>plus anciennes d'abord</strong>
+          </>
+        ) : (
+          <>
+            <strong>plus récentes d'abord</strong>
+            {' · '}<Link href={construireLien(chemin, parametres, { tri: 'ancien', page: 1 })} style={{ color: '#555' }}>plus anciennes d'abord</Link>
+          </>
+        )}
+      </p>
+
+      {etudes.length === 0 && (
         <p style={{ color: '#6B6E63' }}>
-          {selection.length === 0
-            ? 'Aucune étude de niveau 1 à 4 pour le moment.'
-            : 'Aucune étude pour ce niveau.'}
+          {q ? `Aucune étude ne correspond à « ${q} » avec ce filtre.` : niveau ? 'Aucune étude pour ce niveau.' : 'Aucune étude de niveau 1 à 4 pour le moment.'}
         </p>
       )}
 
-      {affichees.map((etude) => (
+      {etudes.map((etude) => (
         <CarteEtude key={etude.id} etude={etude} />
       ))}
 
-      {restantes > 0 && (
-        <div style={{ margin: '8px 0 24px', textAlign: 'center' }}>
-          <button
-            type="button"
-            onClick={() => setNbAffichees(nbAffichees + TAILLE_BLOC)}
-            style={{
-              padding: '10px 18px',
-              backgroundColor: '#f5f5f5',
-              color: '#333',
-              border: '1px solid #ddd',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: 600,
-            }}
-          >
-            Afficher {Math.min(TAILLE_BLOC, restantes)} de plus (il en reste {restantes})
-          </button>
-        </div>
+      {/* Pagination numérotée */}
+      {nbPages > 1 && (
+        <nav aria-label="Pages de résultats" style={{ margin: '8px 0 24px' }}>
+          {page > 1 && (
+            <Link href={construireLien(chemin, parametres, { page: page - 1 })} style={styleLienPage} aria-label="Page précédente">‹</Link>
+          )}
+          {numerosDePage(page, nbPages).map((n, i) =>
+            n === '…' ? (
+              <span key={`e${i}`} style={{ ...styleLienPage, border: 'none' }}>…</span>
+            ) : n === page ? (
+              <span key={n} aria-current="page" style={{ ...styleLienPage, backgroundColor: '#27500A', color: '#fff', borderColor: '#27500A' }}>{n}</span>
+            ) : (
+              <Link key={n} href={construireLien(chemin, parametres, { page: n })} style={styleLienPage}>{n}</Link>
+            )
+          )}
+          {page < nbPages && (
+            <Link href={construireLien(chemin, parametres, { page: page + 1 })} style={styleLienPage} aria-label="Page suivante">›</Link>
+          )}
+          <p style={{ fontSize: '13px', color: '#6B6E63', margin: '4px 0 0' }}>
+            Page {page} sur {nbPages} · {totalSelection} étude{totalSelection > 1 ? 's' : ''}
+          </p>
+        </nav>
       )}
 
       {boutonRevuesVisible && (
         <div style={{ marginTop: '8px', marginBottom: '24px' }}>
-          <button
-            type="button"
-            onClick={() => setAfficherRevues(!afficherRevues)}
+          <Link
+            href={construireLien(chemin, parametres, { revues: !revues, page: 1 })}
             style={{
+              display: 'inline-block',
               padding: '10px 16px',
               backgroundColor: COULEURS_NIVEAUX[5].fond,
               color: COULEURS_NIVEAUX[5].texte,
-              border: 'none',
               borderRadius: '8px',
-              cursor: 'pointer',
+              textDecoration: 'none',
               fontSize: '14px',
               fontWeight: 'bold',
             }}
           >
-            {afficherRevues
+            {revues
               ? `Masquer les ${comptes[5]} revues narratives et mécanistiques`
               : `Afficher aussi les ${comptes[5]} revues narratives et mécanistiques (niveau 5)`}
-          </button>
-          {!afficherRevues && (
+          </Link>
+          {!revues && (
             <p style={{ color: '#6B6E63', fontSize: '13px', margin: '6px 0 0' }}>
               Synthèses non systématiques ou centrées sur des mécanismes biologiques : utiles pour comprendre un domaine, mais sans nouvelles données mesurées chez l'homme.
             </p>
