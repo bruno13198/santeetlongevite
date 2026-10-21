@@ -34,7 +34,7 @@ export async function generateMetadata({ params }) {
   if (!nutriment) return { title: 'Nutriment introuvable | ScienceTruths' };
 
   return {
-    title: `${nutriment.nom} : ce que disent les études | ScienceTruths`,
+    title: `${nutriment.nom} : efficacité, risques et ce que disent les études | ScienceTruths`,
     description:
       nutriment.description ||
       `Les études scientifiques sur ${nutriment.nom}, résumées en français et classées par niveau de preuve.`,
