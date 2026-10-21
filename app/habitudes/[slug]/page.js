@@ -16,6 +16,26 @@ const supabase = createClient(
 // Fiche d'une habitude alimentaire (régime, pratique).
 // 5 oct. 2026 : affichage des études aligné sur la fiche aliment (composant ListeEtudes,
 // niveaux de preuve Oxford) au lieu de l'ancien badge de fiabilité.
+// Titre et description pour Google (20 oct. 2026).
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  const { data: habitude } = await supabase
+    .from('habitudes_alimentaires')
+    .select('nom, description, actif')
+    .eq('slug', slug)
+    .maybeSingle();
+
+  if (!habitude || !habitude.actif) return { title: 'Régime introuvable | ScienceTruths' };
+
+  return {
+    title: `${habitude.nom} : efficacité, risques et ce que disent les études | ScienceTruths`,
+    description:
+      habitude.description ||
+      `Les études scientifiques sur ${habitude.nom}, résumées en français et classées par niveau de preuve.`,
+    alternates: { canonical: `https://sciencetruths.com/habitudes/${slug}` },
+  };
+}
+
 export default async function FicheHabitude({ params }) {
   const { slug } = await params;
 
