@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
@@ -77,6 +78,40 @@ function preparerContenu(texte) {
   return t;
 }
  
+// Description pour Google (22 oct. 2026) : les ~155 premiers caractères du texte de l'article,
+// débarrassés de la mise en forme (titres, gras, liens, badges de grade).
+function extraireDescription(contenu) {
+  const texte = (contenu || '')
+    .replace(/\{\{[^}]*\}\}/g, '')
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+    .replace(/https?:\/\/\S+/g, '')
+    .replace(/[#*_>`|]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (texte.length <= 155) return texte;
+  return texte.slice(0, 155).replace(/\s+\S*$/, '') + '…';
+}
+
+// Titre, description et adresse canonique de chaque article (22 oct. 2026)
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  const { data: articles } = await supabase
+    .from('articles')
+    .select('titre, contenu')
+    .eq('slug', slug)
+    .eq('publie', true)
+    .limit(1);
+  const article = articles?.[0];
+  if (!article) return { title: 'Article introuvable | ScienceTruths' };
+
+  return {
+    title: `${article.titre} | ScienceTruths`,
+    description: extraireDescription(article.contenu),
+    alternates: { canonical: `https://sciencetruths.com/articles/${slug}` },
+  };
+}
+
 export default async function FicheArticle({ params }) {
   const { slug } = await params;
   const { data: articles, error } = await supabase
@@ -87,14 +122,8 @@ export default async function FicheArticle({ params }) {
     .limit(1);
   const article = articles?.[0];
  
-  if (error || !article) {
-    return (
-      <main style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '700px', margin: '0 auto' }}>
-        <p>Article introuvable.</p>
-        <Link href="/articles">← Retour aux articles</Link>
-      </main>
-    );
-  }
+  // Article inexistant ou non publié : vraie page 404.
+  if (error || !article) notFound();
 
 // Cherche les articles enfants (si cet article est une famille) ou l'article parent (si c'est un enfant)
   const { data: articlesEnfants } = await supabase
