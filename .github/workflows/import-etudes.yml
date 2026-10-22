@@ -120,7 +120,7 @@ jobs:
           MAX_ANALYSES_PAR_RUN: ${{ github.event.inputs.max_analyses }}
           ESTIMATION_SEULE: 'false'
         run: node scripts/import-nutriments.js
-            - name: Classer les nouvelles études par problème de santé
+      - name: Classer les nouvelles études par problème de santé
         # Ajouté le 21 oct. 2026 : ne traite que les études pas encore classées.
         continue-on-error: true
         env:
