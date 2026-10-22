@@ -25,8 +25,10 @@ const plexMono = IBM_Plex_Mono({
 export const dynamic = 'force-dynamic';
 
 // 22 oct. 2026 : adresse canonique de la page d'accueil (le titre reste celui du layout).
+const ADRESSE_SITE = 'https:' + '//sciencetruths.com';
 export const metadata = {
-  alternates: { canonical: 'https://sciencetruths.com' },
+  alternates: { canonical: ADRESSE_SITE },
+};
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
