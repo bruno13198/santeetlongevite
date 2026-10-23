@@ -8,6 +8,7 @@ import { createClient } from '@supabase/supabase-js';
 import Breadcrumbs from '../../components/Breadcrumbs';
 import Disclaimer from '../../components/Disclaimer';
 import SectionEtudes from '../../components/SectionEtudes';
+import SuivreSujet from '../../components/SuivreSujet';
 
 export const revalidate = 60;
 
@@ -79,6 +80,8 @@ export default async function PageProbleme({ params, searchParams }) {
 
       <h1 style={{ marginTop: '16px' }}>{probleme.nom}</h1>
       <p style={{ color: '#6B6E63', marginTop: '-8px' }}>{probleme.famille}</p>
+      {/* 22 oct. 2026 : alertes par problème de santé */}
+      <SuivreSujet type="probleme" sujetId={probleme.id} nom={probleme.nom} />
 
       {MESSAGES_SENSIBLES[slug] && (
         <p style={{ padding: '12px 16px', backgroundColor: '#EEF2E8', borderRadius: '8px', fontSize: '14px' }}>
