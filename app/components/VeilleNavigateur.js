@@ -19,10 +19,10 @@ const ONGLETS = [
   { cle: 'habitudes', libelle: 'Régimes et habitudes', prefixe: '/habitudes', tous: 'Tous les régimes et habitudes' },
   // Nutriments (10 oct. 2026), alertes ajoutées le 11 oct.
   { cle: 'nutriments', libelle: 'Nutriments et compléments', prefixe: '/nutriments', tous: 'Tous les nutriments et compléments' },
-  // Additifs et contaminants (17 oct. 2026) : ce sont des fiches de la table aliments (même pipeline,
-  // mêmes alertes), simplement affichées dans un onglet à part. Pas de case « Tous » :
-  // « Tous les aliments » les inclut déjà.
-  { cle: 'additifs', libelle: 'Additifs et contaminants', prefixe: '/aliments', tous: null },
+  // Additifs et contaminants (17 oct. 2026) : ce sont des fiches de la table aliments (même pipeline),
+  // affichées dans un onglet à part. 22 oct. 2026 : case « Tous » indépendante (abonnement de type
+  // « substance ») ; « Tous les aliments » ne les inclut plus.
+  { cle: 'additifs', libelle: 'Additifs et contaminants', prefixe: '/aliments', tous: 'Tous les additifs et contaminants' },
 ];
 
 // Sections de l'onglet Additifs et contaminants (colonne categorie de la table aliments).
@@ -107,6 +107,7 @@ export default function VeilleNavigateur({ aliments, habitudes, nutriments = [] 
   const [toutesLesHabitudes, setToutesLesHabitudes] = useState(false);
   const [choixNutriments, setChoixNutriments] = useState(() => new Set());
   const [tousLesNutriments, setTousLesNutriments] = useState(false);
+  const [tousLesSubstances, setTousLesSubstances] = useState(false);
 
   const [email, setEmail] = useState('');
   const [siteWeb, setSiteWeb] = useState(''); // champ piège : invisible pour les humains
@@ -136,8 +137,9 @@ export default function VeilleNavigateur({ aliments, habitudes, nutriments = [] 
 
   const choix = { aliments: choixAliments, habitudes: choixHabitudes, nutriments: choixNutriments, additifs: choixAliments };
   const setChoix = { aliments: setChoixAliments, habitudes: setChoixHabitudes, nutriments: setChoixNutriments, additifs: setChoixAliments };
-  const tous = { aliments: tousLesAliments, habitudes: toutesLesHabitudes, nutriments: tousLesNutriments, additifs: tousLesAliments };
-  const setTous = { aliments: setTousLesAliments, habitudes: setToutesLesHabitudes, nutriments: setTousLesNutriments, additifs: setTousLesAliments };
+  const tous = { aliments: tousLesAliments, habitudes: toutesLesHabitudes, nutriments: tousLesNutriments, additifs: tousLesSubstances };
+  const setTous = { aliments: setTousLesAliments, habitudes: setToutesLesHabitudes, nutriments: setTousLesNutriments, additifs: setTousLesSubstances };
+  const idsSubstances = useMemo(() => new Set(additifs.map((a) => a.id)), [additifs]);
 
   const motsRecherche = useMemo(
     () => normaliser(recherche).split(/[^a-z0-9]+/).filter((m) => m !== ''),
@@ -190,13 +192,15 @@ export default function VeilleNavigateur({ aliments, habitudes, nutriments = [] 
   const nomsChoisis = useMemo(() => {
     const noms = [];
     if (tousLesAliments) noms.push('tous les aliments');
-    else for (const a of aliments) if (choixAliments.has(a.id)) noms.push(a.nom.split(', ')[0]);
+    else for (const a of alimentsSeuls) if (choixAliments.has(a.id)) noms.push(a.nom.split(', ')[0]);
+    if (tousLesSubstances) noms.push('tous les additifs et contaminants');
+    else for (const a of additifs) if (choixAliments.has(a.id)) noms.push(a.nom.split(', ')[0]);
     if (toutesLesHabitudes) noms.push('tous les régimes et habitudes');
     else for (const h of habitudes) if (choixHabitudes.has(h.id)) noms.push(h.nom);
     if (tousLesNutriments) noms.push('tous les nutriments et compléments');
     else for (const n of nutriments) if (choixNutriments.has(n.id)) noms.push(n.nom);
     return noms;
-  }, [aliments, habitudes, nutriments, choixAliments, choixHabitudes, choixNutriments, tousLesAliments, toutesLesHabitudes, tousLesNutriments]);
+  }, [alimentsSeuls, additifs, habitudes, nutriments, choixAliments, choixHabitudes, choixNutriments, tousLesAliments, toutesLesHabitudes, tousLesNutriments, tousLesSubstances]);
 
   const bandeauVisible = nomsChoisis.length > 0 || statut === 'succes';
   const afficherTurnstile = bandeauVisible && statut !== 'succes';
@@ -267,8 +271,12 @@ export default function VeilleNavigateur({ aliments, habitudes, nutriments = [] 
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email,
-          alimentIds: tousLesAliments ? [] : [...choixAliments],
+          // Fiches choisies une à une, sauf celles déjà couvertes par une case « Tous »
+          alimentIds: [...choixAliments].filter((id) =>
+            idsSubstances.has(id) ? !tousLesSubstances : !tousLesAliments
+          ),
           tousLesAliments,
+          toutesLesSubstances: tousLesSubstances,
           habitudeIds: toutesLesHabitudes ? [] : [...choixHabitudes],
           toutesLesHabitudes,
           nutrimentIds: tousLesNutriments ? [] : [...choixNutriments],
@@ -294,6 +302,7 @@ export default function VeilleNavigateur({ aliments, habitudes, nutriments = [] 
       setToutesLesHabitudes(false);
       setChoixNutriments(new Set());
       setTousLesNutriments(false);
+      setTousLesSubstances(false);
     } catch (err) {
       setStatut('erreur');
       setMessage("L'inscription n'a pas abouti. Vérifiez votre connexion et réessayez.");
@@ -511,7 +520,7 @@ export default function VeilleNavigateur({ aliments, habitudes, nutriments = [] 
 
               {statut === 'erreur' && <p className={styles.erreur}>{message}</p>}
               <p className={styles.note}>
-                               Un e-mail le lundi, sans compte. Votre adresse n'est jamais revendue, et vous pouvez vous
+                Un e-mail le lundi, sans compte. Votre adresse n'est jamais revendue, et vous pouvez vous
                 désabonner en un clic. Un e-mail de confirmation vous sera envoyé : pensez à vérifier vos
                 courriers indésirables.
               </p>
