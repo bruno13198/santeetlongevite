@@ -1,8 +1,9 @@
 // Script hebdomadaire : envoie un email récapitulatif à chaque personne
 // abonnée aux alertes, avec les nouvelles études ajoutées depuis son inscription.
-// Gère deux types de sujets : aliments et habitudes alimentaires (régimes).
+// Types de sujets : aliments, additifs et contaminants (« substance »), habitudes alimentaires,
+// nutriments, problèmes de santé (22 oct. 2026 pour les deux derniers ajouts).
 // Un seul email par personne, même si elle suit plusieurs sujets de types différents.
-// À lancer après les scripts d'import (les nouvelles études doivent déjà être en base).
+// À lancer après les scripts d'import et le classement par problème de santé.
 
 const { createClient } = require('@supabase/supabase-js');
 
@@ -11,8 +12,12 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
+// Catégories de la table aliments qui forment l'onglet « Additifs et contaminants ».
+const CATEGORIES_SUBSTANCES = ['Additifs alimentaires', 'Contaminants alimentaires'];
+
 // Configuration par type de sujet : quelle table de liaison, quelle table de noms,
-// quel préfixe d'URL sur le site.
+// quel préfixe d'URL sur le site. filtreCategorie (abonnements « Tous » seulement) :
+// 'sans_substances' = aliments hors additifs et contaminants ; 'substances' = l'inverse.
 const CONFIG_PAR_TYPE = {
   aliment: {
     tableLiaison: 'aliments_etudes',
@@ -20,6 +25,15 @@ const CONFIG_PAR_TYPE = {
     tableSujets: 'aliments',
     prefixeUrl: 'aliments',
     labelTous: 'Tous les aliments',
+    filtreCategorie: 'sans_substances',
+  },
+  substance: {
+    tableLiaison: 'aliments_etudes',
+    colonneLiaison: 'aliment_id',
+    tableSujets: 'aliments',
+    prefixeUrl: 'aliments',
+    labelTous: 'Tous les additifs et contaminants',
+    filtreCategorie: 'substances',
   },
   habitude_alimentaire: {
     tableLiaison: 'habitudes_etudes',
@@ -35,7 +49,21 @@ const CONFIG_PAR_TYPE = {
     prefixeUrl: 'nutriments',
     labelTous: 'Tous les nutriments et compléments',
   },
+  probleme: {
+    tableLiaison: 'etudes_problemes',
+    colonneLiaison: 'probleme_id',
+    tableSujets: 'problemes_sante',
+    prefixeUrl: 'sante',
+    labelTous: 'Tous les problèmes de santé',
+  },
 };
+
+function sujetPasseLeFiltre(config, sujet) {
+  if (!config.filtreCategorie) return true;
+  if (!sujet) return false;
+  const estSubstance = CATEGORIES_SUBSTANCES.includes(sujet.categorie);
+  return config.filtreCategorie === 'substances' ? estSubstance : !estSubstance;
+}
 
 async function recupererEtudesPourAbonnement(abonnement) {
   const config = CONFIG_PAR_TYPE[abonnement.type_sujet];
@@ -66,18 +94,24 @@ async function recupererEtudesPourAbonnement(abonnement) {
       if (lot.length < tailleLot) break;
       debut += tailleLot;
     }
-    etudeIds = [...new Set(toutesLesLiaisons.map((l) => l.etude_id))];
 
     const idsSujetsConcernes = [...new Set(toutesLesLiaisons.map((l) => l[config.colonneLiaison]))];
+    const colonnes = config.filtreCategorie ? 'id, nom, slug, categorie' : 'id, nom, slug';
     let infosParSujet = {};
     for (let i = 0; i < idsSujetsConcernes.length; i += 200) {
       const lotIds = idsSujetsConcernes.slice(i, i + 200);
-      const { data: lotSujets } = await supabase.from(config.tableSujets).select('id, nom, slug').in('id', lotIds);
+      const { data: lotSujets } = await supabase.from(config.tableSujets).select(colonnes).in('id', lotIds);
       (lotSujets || []).forEach((s) => {
-        infosParSujet[s.id] = { nom: s.nom, slug: s.slug };
+        infosParSujet[s.id] = { nom: s.nom, slug: s.slug, categorie: s.categorie };
       });
     }
-    toutesLesLiaisons.forEach((l) => {
+
+    // Aliments sans les additifs et contaminants, ou l'inverse (selon le type d'abonnement)
+    const liaisonsRetenues = toutesLesLiaisons.filter((l) =>
+      sujetPasseLeFiltre(config, infosParSujet[l[config.colonneLiaison]])
+    );
+    etudeIds = [...new Set(liaisonsRetenues.map((l) => l.etude_id))];
+    liaisonsRetenues.forEach((l) => {
       if (!sujetParEtude[l.etude_id]) sujetParEtude[l.etude_id] = infosParSujet[l[config.colonneLiaison]];
     });
   } else {
@@ -118,7 +152,8 @@ async function recupererEtudesPourAbonnement(abonnement) {
 
 async function construireEmailPourPersonne(email, abonnementsDeCettePersonne) {
   const pairesAEnregistrer = [];
-  const etudesParSujet = {}; // "prefixeUrl/slug" -> { nom, prefixeUrl, count }
+  const etudesParSujet = {}; // "prefixeUrl/slug" -> { nom, prefixeUrl, titres }
+  const dejaComptees = new Set(); // "prefixeUrl/slug|etude_id" : une étude n'apparaît qu'une fois par sujet
 
   for (const abonnement of abonnementsDeCettePersonne) {
     const etudes = await recupererEtudesPourAbonnement(abonnement);
@@ -129,6 +164,8 @@ async function construireEmailPourPersonne(email, abonnementsDeCettePersonne) {
     etudes.forEach((e) => {
       if (!e.sujet || !e.sujet.slug) return;
       const cle = `${e.prefixeUrl}/${e.sujet.slug}`;
+      if (dejaComptees.has(`${cle}|${e.id}`)) return;
+      dejaComptees.add(`${cle}|${e.id}`);
       if (!etudesParSujet[cle]) {
         etudesParSujet[cle] = { nom: e.sujet.nom, prefixeUrl: e.prefixeUrl, titres: [] };
       }
