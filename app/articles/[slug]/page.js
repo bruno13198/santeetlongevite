@@ -22,7 +22,8 @@ function insererBadges(texte) {
     .replaceAll('{{B}}', '<span class="badge badge-b">Grade B</span>')
     .replaceAll('{{C}}', '<span class="badge badge-c">Grade C</span>')
     .replaceAll('{{D}}', '<span class="badge badge-d">Grade D</span>')
-    .replaceAll('{{B–C}}', '<span class="badge badge-b">Grade B</span>–<span class="badge badge-c">Grade C</span>');
+    .replaceAll('{{B–C}}', '<span class="badge badge-b">Grade B</span>–<span class="badge badge-c">Grade C</span>')
+    .replaceAll('{{-}}', '<span class="badge">Non évaluable</span>');
 }
  
 function corrigerImages(texte) {
