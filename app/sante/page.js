@@ -1,9 +1,11 @@
 // Page « Problèmes de santé » (21 oct. 2026) : les problèmes de santé de la table problemes_sante,
 // rangés par famille, avec le nombre d'études de chacun. Chaque nom mène à sa page /sante/[slug].
+// 22 oct. 2026 : cases à cocher pour s'abonner aux alertes (composant ListeProblemes).
 import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';
 import Breadcrumbs from '../components/Breadcrumbs';
 import Disclaimer from '../components/Disclaimer';
+import ListeProblemes from '../components/ListeProblemes';
 
 export const revalidate = 3600;
 
@@ -54,21 +56,8 @@ export default async function PageSante() {
         niveau de preuve. Les nouvelles études sont ajoutées chaque lundi.
       </p>
 
-      {familles.map((famille) => (
-        <section key={famille.nom} style={{ marginTop: '28px' }}>
-          <h2 style={{ fontSize: '18px', marginBottom: '8px' }}>{famille.nom}</h2>
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0, columns: '2 260px', columnGap: '24px' }}>
-            {famille.problemes.map((p) => (
-              <li key={p.slug} style={{ breakInside: 'avoid', marginBottom: '6px' }}>
-                <Link href={`/sante/${p.slug}`} style={{ color: '#27500A' }}>
-                  {p.nom}
-                </Link>
-                <span style={{ color: '#6B6E63', fontSize: '13px' }}> ({p.nb})</span>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
+      {/* 22 oct. 2026 : cases à cocher pour s'abonner aux alertes */}
+      <ListeProblemes familles={familles} />
 
       <Disclaimer />
     </main>
