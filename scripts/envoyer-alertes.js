@@ -152,10 +152,15 @@ async function recupererEtudesPourAbonnement(abonnement) {
 
 async function construireEmailPourPersonne(email, abonnementsDeCettePersonne) {
   const pairesAEnregistrer = [];
-  const etudesParSujet = {}; // "prefixeUrl/slug" -> { nom, prefixeUrl, titres }
+  const etudesParSujet = {}; // "prefixeUrl/slug" -> { nom, prefixeUrl, titres, doublons }
   const dejaComptees = new Set(); // "prefixeUrl/slug|etude_id" : une étude n'apparaît qu'une fois par sujet
+  // 22 oct. 2026 : chaque étude n'est détaillée qu'une fois par e-mail. Les fiches passent d'abord,
+  // les problèmes de santé ensuite ; une étude déjà citée est seulement comptée (« déjà présentée plus haut »).
+  const etudesDejaDetaillees = new Set();
+  const ordreTypes = (t) => (t === 'probleme' ? 1 : 0);
+  const abonnementsTries = [...abonnementsDeCettePersonne].sort((a, b) => ordreTypes(a.type_sujet) - ordreTypes(b.type_sujet));
 
-  for (const abonnement of abonnementsDeCettePersonne) {
+  for (const abonnement of abonnementsTries) {
     const etudes = await recupererEtudesPourAbonnement(abonnement);
     if (etudes.length === 0) continue;
 
@@ -167,9 +172,14 @@ async function construireEmailPourPersonne(email, abonnementsDeCettePersonne) {
       if (dejaComptees.has(`${cle}|${e.id}`)) return;
       dejaComptees.add(`${cle}|${e.id}`);
       if (!etudesParSujet[cle]) {
-        etudesParSujet[cle] = { nom: e.sujet.nom, prefixeUrl: e.prefixeUrl, titres: [] };
+        etudesParSujet[cle] = { nom: e.sujet.nom, prefixeUrl: e.prefixeUrl, titres: [], doublons: 0 };
       }
-      etudesParSujet[cle].titres.push(e.titre_traduit || e.titre_original);
+      if (etudesDejaDetaillees.has(e.id)) {
+        etudesParSujet[cle].doublons++;
+      } else {
+        etudesDejaDetaillees.add(e.id);
+        etudesParSujet[cle].titres.push(e.titre_traduit || e.titre_original);
+      }
     });
   }
 
@@ -179,14 +189,19 @@ async function construireEmailPourPersonne(email, abonnementsDeCettePersonne) {
   const MAX_TITRES_AFFICHES = 3;
   const listeLiens = sujetsAvecNouveautes
     .map(([cle, info]) => {
-      const count = info.titres.length;
-      const suffixe = count > 1 ? ` (${count} nouvelles études)` : '';
+      const count = info.titres.length + info.doublons;
+      const precisionDoublons = info.doublons > 0
+        ? `, dont ${info.doublons} déjà présentée${info.doublons > 1 ? 's' : ''} plus haut`
+        : '';
+      const suffixe = count > 1
+        ? ` (${count} nouvelles études${precisionDoublons})`
+        : info.doublons > 0 ? ' (étude déjà présentée plus haut)' : '';
       const titresAffiches = info.titres.slice(0, MAX_TITRES_AFFICHES);
       const titresHtml = titresAffiches
         .map((t) => `<li style="font-size: 13px; color: #555; margin-bottom: 4px;">${t}</li>`)
         .join('');
-      const resteHtml = count > MAX_TITRES_AFFICHES
-        ? `<li style="font-size: 13px; color: #888;">et ${count - MAX_TITRES_AFFICHES} autre(s)...</li>`
+      const resteHtml = info.titres.length > MAX_TITRES_AFFICHES
+        ? `<li style="font-size: 13px; color: #888;">et ${info.titres.length - MAX_TITRES_AFFICHES} autre(s)...</li>`
         : '';
       return `
         <li style="margin-bottom: 16px;">
