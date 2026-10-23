@@ -15,6 +15,7 @@ const CHAMP_PAR_TYPE = {
   aliment: 'alimentIds',
   habitude: 'habitudeIds',
   nutriment: 'nutrimentIds',
+  probleme: 'problemeIds', // 22 oct. 2026 : pages par problème de santé
 };
 
 export default function SuivreSujet({ type, sujetId, nom }) {
@@ -148,7 +149,7 @@ export default function SuivreSujet({ type, sujetId, nom }) {
         >
           🔔 Suivre ce sujet
         </button>
-                <span style={{ color: '#555' }}> — recevez chaque lundi par e-mail les nouvelles études sur {nom}.</span>
+        <span style={{ color: '#555' }}> — recevez chaque lundi par e-mail les nouvelles études sur {nom}.</span>
       </div>
     );
   }
@@ -164,7 +165,7 @@ export default function SuivreSujet({ type, sujetId, nom }) {
   return (
     <form onSubmit={valider} style={cadre}>
       <p style={{ margin: '0 0 8px' }}>
-                Recevez chaque lundi les nouvelles études sur <strong>{nom}</strong>, avec leur niveau de preuve.
+        Recevez chaque lundi les nouvelles études sur <strong>{nom}</strong>, avec leur niveau de preuve.
         Gratuit et sans compte. Votre adresse n'est jamais revendue, et vous pouvez vous désabonner en un clic.
       </p>
       <label style={{ display: 'block', marginBottom: '8px' }}>
