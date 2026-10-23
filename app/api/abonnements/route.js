@@ -8,6 +8,8 @@ const supabase = createClient(
 // Protection anti-robots (2 oct. 2026) : champ piège + vérification Cloudflare Turnstile,
 // AVANT toute écriture en base et tout envoi d'e-mail.
 // 11 oct. 2026 : troisième type de sujet, « nutriment » (nutriments, compléments, plantes).
+// 22 oct. 2026 : deux nouveaux types. « substance » (case « Tous les additifs et contaminants »,
+// séparée de « Tous les aliments ») et « probleme » (problèmes de santé).
 async function verifierTurnstile(token, ip) {
   if (!token || !process.env.TURNSTILE_SECRET_KEY) return false;
   try {
@@ -39,10 +41,13 @@ export async function POST(request) {
       email,
       alimentIds,
       tousLesAliments,
+      toutesLesSubstances,
       habitudeIds,
       toutesLesHabitudes,
       nutrimentIds,
       tousLesNutriments,
+      problemeIds,
+      tousLesProblemes,
       tokenTurnstile,
       siteWeb,
     } = await request.json();
@@ -73,16 +78,27 @@ export async function POST(request) {
     const listeAliments = Array.isArray(alimentIds) ? alimentIds : [];
     const listeHabitudes = Array.isArray(habitudeIds) ? habitudeIds : [];
     const listeNutriments = Array.isArray(nutrimentIds) ? nutrimentIds : [];
+    const listeProblemes = Array.isArray(problemeIds) ? problemeIds : [];
 
+    // Les additifs et contaminants choisis un à un restent des abonnements « aliment » (ce sont des
+    // fiches de la table aliments) ; seule la case « Tous » a son propre type, « substance ».
     const lignesAInserer = [
       ...lignesPourType(email, 'aliment', tousLesAliments, listeAliments),
+      ...(toutesLesSubstances ? [{ email, type_sujet: 'substance', sujet_id: null }] : []),
       ...lignesPourType(email, 'habitude_alimentaire', toutesLesHabitudes, listeHabitudes),
       ...lignesPourType(email, 'nutriment', tousLesNutriments, listeNutriments),
+      ...lignesPourType(email, 'probleme', tousLesProblemes, listeProblemes),
     ];
+
+    // Avec « Tous les aliments » coché, les additifs choisis un à un arrivent aussi dans alimentIds :
+    // on les garde, puisque « Tous les aliments » ne couvre plus les additifs.
+    if (tousLesAliments && listeAliments.length > 0) {
+      lignesAInserer.push(...listeAliments.map((id) => ({ email, type_sujet: 'aliment', sujet_id: id })));
+    }
 
     if (lignesAInserer.length === 0) {
       return Response.json(
-        { erreur: 'Sélectionnez au moins un aliment, un régime ou un nutriment.' },
+        { erreur: 'Sélectionnez au moins un sujet à suivre.' },
         { status: 400 }
       );
     }
