@@ -16,21 +16,14 @@ const URL_EUROPEPMC_POST = 'https://www.ebi.ac.uk/europepmc/webservices/rest/sea
 
 // [nom en français, catégorie, termes anglais cherchés en expression exacte]
 const CANDIDATS = [
-  // Comptage du 20 oct. 2026 : contaminants manquants
-  ['Dioxines et PCB', 'Contaminant', ['dioxins', 'dioxin-like PCBs', 'polychlorinated biphenyls dietary', 'dietary dioxin']],
-  ['3-MCPD et esters glycidyliques', 'Contaminant', ['3-MCPD', 'glycidyl esters', '3-monochloropropane-1,2-diol']],
-  ['Listériose', 'Contaminant', ['listeriosis', 'Listeria monocytogenes infection']],
-  ['Toxoplasmose', 'Contaminant', ['toxoplasmosis pregnancy', 'Toxoplasma gondii infection food', 'foodborne toxoplasmosis']],
-  ['Nitrosamines', 'Contaminant', ['dietary nitrosamines', 'N-nitroso compounds', 'nitrosamine intake']],
-  ['Aluminium alimentaire', 'Contaminant', ['dietary aluminium', 'dietary aluminum', 'aluminium exposure food']],
-  ['Alcaloïdes pyrrolizidiniques', 'Contaminant', ['pyrrolizidine alkaloids']],
-  ['Substituts de sel', 'Additif', ['salt substitute', 'salt substitutes', 'potassium-enriched salt']],
-  ['Maltodextrine', 'Additif', ['maltodextrin']],
-  ['Allulose', 'Additif', ['allulose', 'D-psicose']],
-  ['Fruit du moine (mogrosides)', 'Additif', ['monk fruit', 'mogroside', 'Siraitia grosvenorii']],
-  ['Propionate (conservateur)', 'Additif', ['calcium propionate', 'propionate supplementation', 'dietary propionate']],
-  ['BHA, BHT et TBHQ', 'Additif', ['butylated hydroxyanisole', 'butylated hydroxytoluene', 'tert-butylhydroquinone']],
-  ['Cyclamate', 'Additif', ['cyclamate']],
+  // Comptage du 22 oct. 2026 : nutrition clinique et derniers manques
+  ['Compléments nutritionnels oraux', 'Habitude', ['oral nutritional supplements', 'oral nutritional supplementation']],
+  ['Nutrition entérale', 'Habitude', ['enteral nutrition', 'tube feeding']],
+  ['Textures modifiées et dysphagie', 'Habitude', ['texture-modified diet', 'texture modified food', 'thickened liquids', 'dysphagia diet']],
+  ['Régime sans résidus', 'Habitude', ['low-residue diet', 'low residue diet', 'low-fiber diet colonoscopy']],
+  ['Boissons sucrées', 'Aliment', ['sugar-sweetened beverages', 'sugary drinks', 'sugar-sweetened beverage']],
+  ['Régime pauvre en purines', 'Habitude', ['low-purine diet', 'purine-rich foods', 'dietary purine']],
+  ['Alimentation et travail de nuit', 'Habitude', ['shift work diet', 'night shift eating', 'shift workers dietary']],
 ];
 
 // Filtre humain : le résumé doit mentionner des humains ; titres animaux ou in vitro exclus
