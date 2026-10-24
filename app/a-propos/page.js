@@ -149,18 +149,20 @@ export default function APropos() {
             sous chacune d'elles. Pour un article, écrivez à{' '}
             <a href="mailto:contact@sciencetruths.com">contact@sciencetruths.com</a>.
           </p>
-          {/* 24 oct. 2026 : appel à relecteurs reformulé (pluriel, bonnes volontés). */}
+          {/* 24 oct. 2026 : appel à relecteurs centré sur les résumés d'études de la veille. */}
           <p className={styles.body}>
-            Je cherche aussi de bonnes volontés pour relire ponctuellement les articles : médecins,
-            pharmaciens, diététiciens, chercheurs en nutrition, physiologie, sport ou médecine
-            préventive. Il s'agirait de signaler les erreurs, les formulations excessives, les
-            interprétations discutables ou les références manquantes.
+            Je cherche aussi de bonnes volontés pour relire ponctuellement les résumés d'études de
+            la veille, et à l'occasion les articles : médecins, pharmaciens, diététiciens,
+            chercheurs ou doctorants en nutrition, physiologie, sport ou médecine préventive. Il
+            s'agirait de signaler les contresens, les chiffres mal repris, les niveaux de preuve
+            mal attribués ou les formulations excessives.
           </p>
           <p className={styles.body}>
             La relecture se ferait à votre rythme, quelques heures de temps en temps, bénévolement
-            dans un premier temps. Je reste responsable des choix éditoriaux du site. Pour préserver
-            son indépendance, je ne peux accueillir que des relecteurs sans lien avec une marque de
-            compléments alimentaires.
+            dans un premier temps. Les relecteurs qui le souhaitent sont nommés sur le site. Je
+            reste responsable des choix éditoriaux du site. Pour préserver son indépendance, je ne
+            peux accueillir que des relecteurs sans lien avec une marque de compléments
+            alimentaires.
           </p>
 
           <div style={{ marginTop: '32px' }}>
