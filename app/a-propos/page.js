@@ -62,7 +62,13 @@ export default function APropos() {
           <p className={styles.body}>
             Les études sont collectées chaque semaine dans Europe PMC, une base publique qui
             référence la littérature biomédicale, y compris PubMed. Seules les études menées chez
-            l'Homme sont retenues dans la veille.
+            l'homme sont retenues dans la veille.
+          </p>
+          {/* 24 oct. 2026 : couverture de la recherche précisée. */}
+          <p className={styles.body}>
+            Pour chaque sujet, une recherche par mots-clés couvre surtout les études publiées ces
+            dernières années ; l'historique plus ancien sera complété progressivement. La veille
+            vise l'exhaustivité sur les études menées chez l'homme, sans pouvoir la garantir.
           </p>
           <p className={styles.body}>
             Chaque étude affichée renvoie vers sa publication d'origine.
@@ -143,16 +149,18 @@ export default function APropos() {
             sous chacune d'elles. Pour un article, écrivez à{' '}
             <a href="mailto:contact@sciencetruths.com">contact@sciencetruths.com</a>.
           </p>
+          {/* 24 oct. 2026 : appel à relecteurs reformulé (pluriel, bonnes volontés). */}
           <p className={styles.body}>
-            Je cherche aussi un professionnel de santé ou un chercheur pour relire ponctuellement
-            les articles. Médecin, pharmacien, diététicien ou chercheur en nutrition, physiologie,
-            sport ou médecine préventive : il s'agirait de signaler les erreurs, les formulations
-            excessives, les interprétations discutables ou les références manquantes.
+            Je cherche aussi de bonnes volontés pour relire ponctuellement les articles : médecins,
+            pharmaciens, diététiciens, chercheurs en nutrition, physiologie, sport ou médecine
+            préventive. Il s'agirait de signaler les erreurs, les formulations excessives, les
+            interprétations discutables ou les références manquantes.
           </p>
           <p className={styles.body}>
-            Ce serait quelques heures de temps en temps, bénévolement pour commencer, et la
-            décision éditoriale finale resterait la mienne. Le relecteur ne doit avoir aucun lien
-            avec une marque de compléments alimentaires.
+            La relecture se ferait à votre rythme, quelques heures de temps en temps, bénévolement
+            dans un premier temps. Je reste responsable des choix éditoriaux du site. Pour préserver
+            son indépendance, je ne peux accueillir que des relecteurs sans lien avec une marque de
+            compléments alimentaires.
           </p>
 
           <div style={{ marginTop: '32px' }}>
