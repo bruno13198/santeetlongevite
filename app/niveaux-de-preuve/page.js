@@ -84,6 +84,12 @@ export default function NiveauxDePreuve() {
         </a>{' '}
         (version 2011), une référence internationale pour classer une étude isolée.
       </p>
+      {/* 24 oct. 2026 : classement des types d'études absents de l'échelle, rendu explicite. */}
+      <p>
+        Deux types d'études absents de l'échelle d'Oxford 2011 ont été classés selon leur nature : la
+        randomisation mendélienne au niveau 3, avec les autres études observationnelles, et les revues
+        narratives au niveau 5, comme les avis d'experts dans les versions précédentes de l'échelle.
+      </p>
 
       <h2 id="ce-que-nous-retenons">Ce que la veille retient, et pourquoi</h2>
       <p>
