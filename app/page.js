@@ -70,7 +70,29 @@ async function chercherLiens(etudeIds) {
       .select('id, slug, actif')
       .in('id', sujetIds);
 
-    for (const l of liaisons) {
+    // 25 oct. 2026 : chiffres clés affichés sous le titre, calculés à partir de la base et arrondis
+// vers le bas (« plus de 7 800 » plutôt que « 7 853 »), pour être lisibles et toujours vrais.
+function arrondirVersLeBas(nombre, pas) {
+  return Math.floor((nombre || 0) / pas) * pas;
+}
+
+async function compter(table, filtreActif = true) {
+  let requete = supabase.from(table).select('id', { count: 'exact', head: true });
+  if (filtreActif) requete = requete.eq('actif', true);
+  const { count } = await requete;
+  return count || 0;
+}
+
+export default async function Home() {
+  const [nbEtudes, nbAliments, nbHabitudes, nbNutriments, nbProblemes] = await Promise.all([
+    compter('etudes', false),
+    compter('aliments'),
+    compter('habitudes_alimentaires'),
+    compter('nutriments'),
+    compter('problemes_sante'),
+  ]);
+  const nbSujets = nbAliments + nbHabitudes + nbNutriments;
+  const formater = (n) => n.toLocaleString('fr-FR');
       if (liens[l.etude_id]) continue;
       const sujet = sujets?.find((s) => s.id === l[source.cle] && s.actif);
       if (sujet) liens[l.etude_id] = `${source.prefixe}/${sujet.slug}`;
@@ -107,6 +129,13 @@ export default async function Home() {
         <p className={styles.eyebrow}>sciencetruths.com</p>
         <h1 className={styles.h1}>Comment fonctionne ce site</h1>
 
+        <p style={{ fontFamily: 'var(--font-mono)', fontSize: '14px', color: '#27500A', margin: '-4px 0 20px', lineHeight: 1.6 }}>
+          Plus de {formater(arrondirVersLeBas(nbEtudes, 100))} études
+          {' · '}plus de {formater(arrondirVersLeBas(nbSujets, 50))} sujets suivis
+          {' · '}{nbProblemes} problèmes de santé
+          {' · '}mise à jour chaque lundi
+        </p>
+
         <p className={styles.lede}>
           ScienceTruths vous tient informé des recherches les plus récentes sur la santé. Le volet
           nutrition est aujourd'hui presque complet ; le sport et le sommeil viendront ensuite. Vous
@@ -115,7 +144,13 @@ export default async function Home() {
 
         <div className={styles.intro}>
           <p className={styles.introItem}>
-            <strong>Les articles</strong> — Des synthèses accessibles et documentées sur les
+            <strong>Les problèmes de santé</strong> — Diabète, hypertension, dépression,
+            grossesse… Pour chacun, retrouvez{' '}
+            <Link href="/sante">toutes les études qui le concernent</Link>, et les aliments,
+            régimes et compléments les plus étudiés.
+          </p>
+          <p className={styles.introItem}>
+            <strong>Des alertes personnalisées</strong> — Des synthèses accessibles et documentées sur les
             aliments, les régimes et les compléments, fondées sur l'ensemble des données
             scientifiques disponibles.
           </p>
