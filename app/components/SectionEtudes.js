@@ -2,6 +2,7 @@
 // Composant serveur : lit les paramètres de l'adresse (niveau, revues, tri, q, page), demande à la base
 // les compteurs par niveau et la seule page de 20 études à afficher, puis confie l'affichage à ListeEtudes.
 // Ainsi, une fiche reste légère quel que soit son nombre d'études.
+// 27 oct. 2026 : filtre par problème de santé (paramètre « probleme », slug de problemes_sante).
 import { createClient } from '@supabase/supabase-js';
 import ListeEtudes from './ListeEtudes';
 
@@ -22,14 +23,16 @@ function lireParametres(sp) {
     tri: sp?.tri === 'ancien' ? 'ancien' : 'recent',
     q,
     page: page >= 1 ? page : 1,
+    probleme: typeof sp?.probleme === 'string' ? sp.probleme.slice(0, 80) : '',
   };
 }
 
-async function chargerComptes(type, sujetId, recherche) {
+async function chargerComptes(type, sujetId, recherche, probleme) {
   const { data } = await supabase.rpc('comptes_etudes', {
     p_type: type,
     p_sujet: sujetId,
     p_recherche: recherche || null,
+    p_probleme: probleme || null,
   });
   const comptes = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
   for (const ligne of data || []) comptes[ligne.niveau] = Number(ligne.nb);
@@ -40,9 +43,18 @@ async function chargerComptes(type, sujetId, recherche) {
 export default async function SectionEtudes({ type, sujetId, chemin, searchParams }) {
   const parametres = lireParametres(searchParams);
 
-  // Compteurs avec la recherche éventuelle, et total de la fiche sans recherche (pour le titre).
-  const comptes = await chargerComptes(type, sujetId, parametres.q);
-  const comptesTotal = parametres.q ? await chargerComptes(type, sujetId, null) : comptes;
+  // Problèmes de santé présents dans la fiche (menu de filtre), sauf sur les pages de problème elles-mêmes
+  let problemes = [];
+  if (type !== 'probleme') {
+    const { data } = await supabase.rpc('problemes_du_sujet', { p_type: type, p_sujet: sujetId });
+    problemes = data || [];
+  }
+  if (parametres.probleme && !problemes.some((p) => p.slug === parametres.probleme)) parametres.probleme = '';
+
+  // Compteurs avec la recherche et le problème éventuels, et total de la fiche sans filtre (pour le titre).
+  const comptes = await chargerComptes(type, sujetId, parametres.q, parametres.probleme);
+  const comptesTotal =
+    parametres.q || parametres.probleme ? await chargerComptes(type, sujetId, null, null) : comptes;
   const totalFiche = Object.values(comptesTotal).reduce((s, n) => s + n, 0);
 
   // Nombre d'études correspondant à la sélection affichée
@@ -64,6 +76,7 @@ export default async function SectionEtudes({ type, sujetId, chemin, searchParam
       p_ordre: parametres.tri,
       p_limite: TAILLE_PAGE,
       p_decalage: (parametres.page - 1) * TAILLE_PAGE,
+      p_probleme: parametres.probleme || null,
     });
     etudes = data || [];
   }
@@ -80,6 +93,7 @@ export default async function SectionEtudes({ type, sujetId, chemin, searchParam
           totalSelection={totalSelection}
           parametres={parametres}
           chemin={chemin}
+          problemes={problemes}
         />
       )}
     </>
