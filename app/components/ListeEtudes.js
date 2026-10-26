@@ -418,6 +418,7 @@ function construireLien(chemin, parametres, modifications) {
   if (p.revues) recherche.set('revues', '1');
   if (p.tri === 'ancien') recherche.set('tri', 'ancien');
   if (p.q) recherche.set('q', p.q);
+  if (p.probleme) recherche.set('probleme', p.probleme);
   if (p.page && p.page > 1) recherche.set('page', String(p.page));
   const chaine = recherche.toString();
   return `${chemin}${chaine ? `?${chaine}` : ''}#etudes`;
@@ -448,8 +449,9 @@ const styleLienPage = {
   fontSize: '14px',
 };
 
-export default function ListeEtudes({ etudes, comptes, totalSelection, parametres, chemin }) {
-  const { niveau, revues, tri, q, page } = parametres;
+export default function ListeEtudes({ etudes, comptes, totalSelection, parametres, chemin, problemes = [] }) {
+  const { niveau, revues, tri, q, page, probleme } = parametres;
+  const nomProbleme = problemes.find((p) => p.slug === probleme)?.nom || '';
   const nbPages = Math.max(1, Math.ceil(totalSelection / TAILLE_PAGE));
   const nonClassees = comptes[0] || 0;
   const totalSansFiltre = [0, 1, 2, 3, 4, 5].reduce((s, n) => s + (comptes[n] || 0), 0);
@@ -482,6 +484,7 @@ export default function ListeEtudes({ etudes, comptes, totalSelection, parametre
       <form method="get" action={chemin} style={{ display: 'flex', gap: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
         {niveau ? <input type="hidden" name="niveau" value={niveau} /> : null}
         {tri === 'ancien' ? <input type="hidden" name="tri" value="ancien" /> : null}
+        {probleme ? <input type="hidden" name="probleme" value={probleme} /> : null}
         <input
           type="search"
           name="q"
@@ -503,10 +506,39 @@ export default function ListeEtudes({ etudes, comptes, totalSelection, parametre
         ) : null}
       </form>
 
+      {/* 27 oct. 2026 : filtre par problème de santé (menu qui change l'adresse de la page) */}
+      {problemes.length > 0 && (
+        <form method="get" action={chemin} style={{ marginBottom: '14px', fontSize: '14px' }}>
+          {niveau ? <input type="hidden" name="niveau" value={niveau} /> : null}
+          {tri === 'ancien' ? <input type="hidden" name="tri" value="ancien" /> : null}
+          {q ? <input type="hidden" name="q" value={q} /> : null}
+          <label style={{ color: '#4A4D45' }}>
+            Problème de santé :{' '}
+            <select
+              name="probleme"
+              defaultValue={probleme || ''}
+              onChange={(e) => e.target.form.requestSubmit()}
+              style={{ ...styleChamp, display: 'inline-block', width: 'auto', maxWidth: '100%' }}
+            >
+              <option value="">Tous les problèmes de santé</option>
+              {problemes.map((p) => (
+                <option key={p.slug} value={p.slug}>
+                  {p.nom} ({p.nb})
+                </option>
+              ))}
+            </select>
+          </label>
+          <noscript>
+            <button type="submit" style={{ marginLeft: '8px' }}>Filtrer</button>
+          </noscript>
+        </form>
+      )}
+
       {/* Répartition par niveau de preuve, qui sert aussi de filtre */}
       <div style={{ marginBottom: '16px' }}>
         <p style={{ color: '#6B6E63', fontSize: '14px', margin: '0 0 8px' }}>
           {q ? <>Résultats pour « {q} » · </> : null}
+          {nomProbleme ? <>{nomProbleme} · </> : null}
           Répartition par niveau de preuve (cliquez pour filtrer) ·{' '}
           <a href="/niveaux-de-preuve" style={{ color: '#555' }}>Comprendre les niveaux</a>
         </p>
@@ -568,7 +600,7 @@ export default function ListeEtudes({ etudes, comptes, totalSelection, parametre
 
       {etudes.length === 0 && (
         <p style={{ color: '#6B6E63' }}>
-          {q ? `Aucune étude ne correspond à « ${q} » avec ce filtre.` : niveau ? 'Aucune étude pour ce niveau.' : 'Aucune étude de niveau 1 à 4 pour le moment.'}
+          {q || probleme ? 'Aucune étude ne correspond à ces filtres.' : niveau ? 'Aucune étude pour ce niveau.' : 'Aucune étude de niveau 1 à 4 pour le moment.'}
         </p>
       )}
 
