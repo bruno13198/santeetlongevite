@@ -1,1 +1,35 @@
-
+name: Rédaction des descriptions
+on:
+  workflow_dispatch:
+    inputs:
+      limite:
+        description: "Nombre maximal de sujets (20 = échantillon de test)"
+        required: false
+        default: '20'
+      ecrire:
+        description: "Enregistrer en base (true) ou seulement afficher dans le log (false)"
+        required: false
+        default: 'false'
+permissions:
+  contents: read
+jobs:
+  rediger:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Installer les dépendances
+        run: npm install @supabase/supabase-js
+      - name: Rédiger les descriptions
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          LIMITE: ${{ github.event.inputs.limite || '20' }}
+          ECRIRE: ${{ github.event.inputs.ecrire || 'false' }}
+        run: node scripts/generer-descriptions.js
