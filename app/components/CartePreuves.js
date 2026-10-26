@@ -27,7 +27,7 @@ const LIBELLES = {
   2: 'Niveau 2 · essais randomisés',
   3: 'Niveau 3 · cohortes, petits essais',
   4: 'Niveau 4 · études transversales, cas',
-  5: 'Niveau 5 · revues narratives',
+    5: 'Niveau 5 · revues narratives et mécanistiques',
 };
 const SEUIL_TABLEAU = 10; // études classées par problème de santé, au minimum
 const LIGNES_VISIBLES = 10;
