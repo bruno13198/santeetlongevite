@@ -137,3 +137,175 @@ async function executerLotClaude(requetes, libelle) {
       } else {
         resultats.set(objet.custom_id, { ok: false, erreur: r.error?.error?.message || r.type || 'inconnu' });
       }
+    }
+  }
+  return resultats;
+}
+
+// Retire les éventuelles balises de code Markdown (trois accents graves, écrits \x60 ici) autour du JSON.
+function extraireJSON(texte) {
+  const nettoye = texte.replace(/\x60{3}(json)?/g, '').trim();
+  const match = nettoye.match(/\{[\s\S]*\}/);
+  return JSON.parse(match ? match[0] : nettoye);
+}
+
+// ---------------------------------------------------------------------------
+// Prompt
+// ---------------------------------------------------------------------------
+
+function promptDescription(source, sujet, famillesProblemes) {
+  let voisins = '';
+  if (source.type === 'probleme' && sujet.famille && famillesProblemes.has(sujet.famille)) {
+    const autres = famillesProblemes.get(sujet.famille).filter((n) => n !== sujet.nom);
+    if (autres.length) voisins = `Autres problèmes de cette famille qui ont leur propre page sur le site : ${autres.join(', ')}`;
+  }
+
+  const precisions = [
+    sujet.categorie ? `Catégorie sur le site : ${sujet.categorie}` : '',
+    sujet.famille ? `Famille : ${sujet.famille}` : '',
+    voisins,
+    Array.isArray(sujet.termes_recherche) && sujet.termes_recherche.length ? `Termes anglais utilisés pour la recherche d'études : ${sujet.termes_recherche.join(', ')}` : '',
+    Array.isArray(sujet.termes_texte) && sujet.termes_texte.length ? `Termes anglais utilisés pour la recherche d'études : ${sujet.termes_texte.join(', ')}` : '',
+    sujet.terme_recherche ? `Autre terme de recherche : ${sujet.terme_recherche}` : '',
+  ].filter(Boolean).join('\n');
+
+  return `Tu rédiges la description courte d'une page d'un site français de veille scientifique en nutrition, destiné aux professionnels de santé et au grand public.
+
+Sujet de la page (${source.libelle}) : ${sujet.nom}
+${precisions}
+
+Rédige 2 ou 3 phrases, en français, au total ${LONGUEUR_MAX} caractères au maximum, qui disent uniquement CE QU'EST le sujet :
+- pour un aliment : sa nature, son origine, comment il se présente ou se consomme ;
+- pour un additif ou un contaminant : ce que c'est, son rôle ou sa provenance, et où on le trouve dans l'alimentation ;
+- pour un régime ou une habitude : son principe, ce qu'il privilégie ou limite, son origine si elle est connue ;
+- pour un nutriment, un complément ou une plante : ce que c'est, ses sources alimentaires ou sa forme de vente, son nom scientifique s'il s'agit d'une plante ;
+- pour un problème de santé : sa définition médicale, de façon simple.
+
+Règles strictes :
+- Uniquement des faits établis et stables, qui ne changeront pas avec les nouvelles études.
+- AUCUN effet sur la santé, bénéfique ou nocif, AUCUNE allégation (« bon pour », « aide à », « protège », « réduit le risque »), AUCUN conseil, AUCUNE dose recommandée.
+- Pour un complément ou une plante, tu peux dire pour quels usages il est vendu ou traditionnellement employé, en le présentant comme un usage revendiqué (« vendu pour… », « traditionnellement utilisé pour… »), jamais comme un effet prouvé.
+- Pas de chiffres susceptibles de changer (prévalence, nombre d'études, prix).
+- Vocabulaire accessible au grand public : pas de jargon chimique ou médical pointu (stéréochimie, nomenclature, mécanismes moléculaires). Si un terme technique est indispensable, explique-le en quelques mots.
+- Commence directement par la définition (par exemple « Fruit à noyau… », « Maladie chronique… », « Lipides comportant… ») : jamais « X correspond à », « Ce sont », « Il s'agit de », et ne répète pas le nom du sujet.
+- Chaque phrase apporte une information nouvelle : pas de reformulation de la phrase précédente.
+- Aucun terme anglais dans la description : les termes anglais fournis servent seulement à identifier le sujet.
+- Pour un problème de santé, suis les définitions médicales actuelles, sans image vulgarisée dépassée.
+- Pour un regroupement (« Autres… »), décris ce qu'il recouvre de façon cohérente avec la liste des autres pages de la même famille : ne cite pas comme inclus un sujet qui a sa propre page, et ne présente pas comme exclu un sujet qui n'en a pas.
+- Ton neutre et précis, sans formule d'introduction.
+- Si le nom du sujet est ambigu, appuie-toi sur les termes anglais fournis.
+
+Réponds UNIQUEMENT avec un objet JSON, rien avant ni après : {"description": "..."}`;
+}
+
+// ---------------------------------------------------------------------------
+// Programme principal
+// ---------------------------------------------------------------------------
+
+async function chargerSujetsSansDescription(source, limite) {
+  const sujets = [];
+  for (let debut = 0; sujets.length < limite; debut += 1000) {
+    const { data, error } = await supabase
+      .from(source.table)
+      .select(`${source.colonnes}, description`)
+      .eq('actif', true)
+      .order('nom')
+      .range(debut, debut + 999);
+    if (error) throw new Error(`Lecture de ${source.table} impossible : ${error.message}`);
+    if (!data || data.length === 0) break;
+    for (const s of data) {
+      if (!s.description || s.description.trim() === '') sujets.push(s);
+      if (sujets.length >= limite) break;
+    }
+    if (data.length < 1000) break;
+  }
+  return sujets;
+}
+
+// Famille -> noms des problèmes de santé actifs (pour situer les regroupements « Autres… »).
+async function chargerFamillesProblemes() {
+  const { data, error } = await supabase.from('problemes_sante').select('nom, famille').eq('actif', true);
+  if (error) throw new Error(`Lecture de problemes_sante impossible : ${error.message}`);
+  const familles = new Map();
+  for (const p of data || []) {
+    if (!p.famille) continue;
+    if (!familles.has(p.famille)) familles.set(p.famille, []);
+    familles.get(p.famille).push(p.nom);
+  }
+  return familles;
+}
+
+async function main() {
+  console.log(`Descriptions : jusqu'à ${LIMITE} sujet(s), ${ECRIRE ? 'ENREGISTREMENT en base' : 'test sans enregistrement'}.`);
+
+  const famillesProblemes = await chargerFamillesProblemes();
+
+  // Répartit la limite entre les types, dans l'ordre (problèmes de santé et régimes d'abord en test)
+  const ordre = ECRIRE ? SOURCES : [SOURCES[3], SOURCES[1], SOURCES[2], SOURCES[0]];
+  const aTraiter = [];
+  const parType = Math.max(1, Math.ceil(LIMITE / ordre.length));
+  for (const source of ordre) {
+    const reste = LIMITE - aTraiter.length;
+    if (reste <= 0) break;
+    const sujets = await chargerSujetsSansDescription(source, ECRIRE ? reste : Math.min(parType, reste));
+    for (const s of sujets) aTraiter.push({ source, sujet: s });
+  }
+  console.log(`${aTraiter.length} sujet(s) sans description à rédiger.`);
+  if (aTraiter.length === 0) return;
+
+  const requetes = aTraiter.map((x, i) => ({ id: `desc-${i}`, prompt: promptDescription(x.source, x.sujet, famillesProblemes) }));
+  const resultats = await executerLotClaude(requetes, 'Descriptions');
+
+  let jetonsEntree = 0;
+  let jetonsSortie = 0;
+  let nbEcrites = 0;
+  let nbEchecs = 0;
+
+  for (let i = 0; i < aTraiter.length; i++) {
+    const { source, sujet } = aTraiter[i];
+    const r = resultats.get(`desc-${i}`);
+    if (!r || !r.ok) {
+      nbEchecs++;
+      continue;
+    }
+    jetonsEntree += r.usage.input_tokens || 0;
+    jetonsSortie += r.usage.output_tokens || 0;
+
+    let description;
+    try {
+      description = String(extraireJSON(r.texte).description || '').trim();
+    } catch (e) {
+      nbEchecs++;
+      continue;
+    }
+    if (!description || description.length > LONGUEUR_MAX + 80) {
+      console.log(`  ! ${sujet.nom} : description vide ou trop longue, ignorée.`);
+      nbEchecs++;
+      continue;
+    }
+
+    console.log(`\n[${source.type}] ${sujet.nom}\n  ${description}`);
+
+    if (ECRIRE) {
+      const { error } = await supabase.from(source.table).update({ description }).eq('id', sujet.id);
+      if (error) {
+        console.log(`  ! Enregistrement impossible : ${error.message}`);
+        nbEchecs++;
+        continue;
+      }
+      nbEcrites++;
+    }
+  }
+
+  const cout = (jetonsEntree * PRIX_ENTREE_PAR_MILLION + jetonsSortie * PRIX_SORTIE_PAR_MILLION) / 1e6;
+  const coutParSujet = aTraiter.length ? cout / aTraiter.length : 0;
+  console.log('\n##### Bilan #####');
+  console.log(`Sujets traités : ${aTraiter.length} | enregistrées : ${nbEcrites} | échecs : ${nbEchecs}`);
+  console.log(`Coût réel de ce run : ${cout.toFixed(3)} $ (${(coutParSujet * 100).toFixed(3)} centime de dollar par sujet)`);
+  console.log(`Estimation pour 820 sujets : ${(coutParSujet * 820).toFixed(2)} $`);
+}
+
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});
