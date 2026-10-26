@@ -1,1 +1,26 @@
+name: Vérification des descriptions
 
+on:
+  workflow_dispatch:
+    inputs:
+      limite:
+        description: 'Nombre maximal de descriptions vérifiées (vide = toutes)'
+        required: false
+        default: ''
+
+jobs:
+  verifier:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install @supabase/supabase-js
+      - run: node scripts/verifier-descriptions.js
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          LIMITE: ${{ github.event.inputs.limite || '100000' }}
