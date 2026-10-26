@@ -5,6 +5,7 @@
 // 27 oct. 2026 : filtre par problème de santé (paramètre « probleme », slug de problemes_sante).
 import { createClient } from '@supabase/supabase-js';
 import ListeEtudes from './ListeEtudes';
+import CartePreuves from './CartePreuves';
 
 const TAILLE_PAGE = 20;
 
@@ -84,6 +85,10 @@ export default async function SectionEtudes({ type, sujetId, chemin, searchParam
   return (
     <>
       <h2>Études scientifiques ({totalFiche})</h2>
+      {totalFiche > 0 && (
+        // 27 oct. 2026 : carte des preuves (camembert des niveaux et tableau problèmes × niveaux)
+        <CartePreuves type={type} sujetId={sujetId} chemin={chemin} comptes={comptesTotal} />
+      )}
       {totalFiche === 0 ? (
         <p style={{ color: '#6B6E63' }}>Aucune étude pour le moment.</p>
       ) : (
