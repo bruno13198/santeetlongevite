@@ -1,7 +1,9 @@
 // Carte des preuves d'une fiche (27 oct. 2026), composant serveur sans JavaScript côté lecteur.
 // 1. Un camembert (anneau) : la répartition des études de la fiche par niveau de preuve.
 // 2. Un tableau : une ligne par problème de santé, une colonne par niveau de preuve ; chaque case
-//    renvoie vers la liste filtrée (problème + niveau). Le tableau n'apparaît pas sur les pages de
+//    renvoie vers la liste filtrée (problème + niveau). 27 oct. 2026 : le nom du problème renvoie vers
+//    sa page /sante/[slug] (liens internes utiles au référencement), et une colonne « Total » filtre la
+//    liste sur ce problème. Le tableau n'apparaît pas sur les pages de
 //    problème de santé, ni quand la fiche a trop peu d'études classées.
 import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';
@@ -82,8 +84,17 @@ function LigneProbleme({ ligne, chemin }) {
   return (
     <tr>
       <th scope="row" style={{ textAlign: 'left', fontWeight: 'normal', padding: '6px 8px', borderBottom: '1px solid #f0f0f0' }}>
-        <Link href={`${chemin}?probleme=${ligne.slug}#etudes`} style={{ color: '#27500A' }}>{ligne.nom}</Link>
+        <Link href={`/sante/${ligne.slug}`} title={`Toutes les études sur ${ligne.nom.toLowerCase()}`} style={{ color: '#27500A' }}>{ligne.nom}</Link>
       </th>
+      <td style={{ textAlign: 'center', padding: '6px 4px', borderBottom: '1px solid #f0f0f0' }}>
+        <Link
+          href={`${chemin}?probleme=${ligne.slug}#etudes`}
+          title={`Afficher les ${ligne.total} études de cette fiche sur ${ligne.nom.toLowerCase()}`}
+          style={{ display: 'inline-block', minWidth: '28px', padding: '2px 6px', borderRadius: '10px', border: '1px solid #ccc', color: '#333', fontWeight: 'bold', fontSize: '13px', textDecoration: 'none' }}
+        >
+          {ligne.total}
+        </Link>
+      </td>
       {[1, 2, 3, 4, 5].map((n) => {
         const nb = ligne.niveaux[n] || 0;
         return (
@@ -136,6 +147,7 @@ export default async function CartePreuves({ type, sujetId, chemin, comptes }) {
     <thead>
       <tr>
         <th style={{ textAlign: 'left', padding: '6px 8px', fontSize: '13px', color: '#6B6E63', fontWeight: 'normal' }}>Problème de santé</th>
+        <th style={{ padding: '6px 4px', fontSize: '13px', color: '#333' }}>Total</th>
         {[1, 2, 3, 4, 5].map((n) => (
           <th key={n} style={{ padding: '6px 4px', fontSize: '13px', color: COULEURS_NIVEAUX[n].texte }}>Niv. {n}</th>
         ))}
@@ -152,7 +164,8 @@ export default async function CartePreuves({ type, sujetId, chemin, comptes }) {
         <>
           <p style={{ fontSize: '13px', color: '#6B6E63', margin: '0 0 8px' }}>
             Nombre d'études par problème de santé et par niveau de preuve. Cliquez sur un nombre pour afficher
-            ces études. Une même étude peut concerner plusieurs problèmes de santé.
+            ces études dans la liste ci-dessous, ou sur le nom d'un problème pour voir toutes les études qui le
+            concernent sur le site. Une même étude peut concerner plusieurs problèmes de santé.
           </p>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: '14px', minWidth: '460px' }}>
