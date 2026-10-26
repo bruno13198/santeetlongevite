@@ -25,6 +25,31 @@ const DOMAINES = [
 ];
 
 const PREFIXES = { aliment: '/aliments', habitude: '/habitudes', nutriment: '/nutriments' };
+
+// 27 oct. 2026 : barre de répartition des niveaux de preuve pour chaque sujet (mêmes couleurs que l'anneau des fiches).
+const COULEURS_GRAPHIQUE = { 1: '#2E7D32', 2: '#8BC34A', 3: '#F2B33D', 4: '#E07A45', 5: '#90A4AE' };
+
+function BarreNiveaux({ sujet }) {
+  const valeurs = [1, 2, 3, 4, 5].map((n) => Number(sujet[`n${n}`]) || 0);
+  const total = valeurs.reduce((a, b) => a + b, 0);
+  if (total === 0) return null;
+  const description = valeurs
+    .map((v, i) => (v > 0 ? `niveau ${i + 1} : ${v}` : null))
+    .filter(Boolean)
+    .join(', ');
+  return (
+    <span
+      role="img"
+      aria-label={`Répartition par niveau de preuve : ${description}`}
+      title={description}
+      style={{ display: 'flex', height: '8px', borderRadius: '4px', overflow: 'hidden', marginTop: '4px', maxWidth: '320px', backgroundColor: '#f0f0f0' }}
+    >
+      {valeurs.map((v, i) =>
+        v > 0 ? <span key={i} style={{ width: `${(v / total) * 100}%`, backgroundColor: COULEURS_GRAPHIQUE[i + 1] }} /> : null
+      )}
+    </span>
+  );
+}
 const LIBELLES_TYPES = {
   aliment: 'Aliment',
   habitude: 'Régime ou habitude',
@@ -63,7 +88,7 @@ export default async function PageProbleme({ params, searchParams }) {
   const probleme = await chargerProbleme(slug);
   if (!probleme) notFound();
 
-  const { data: sujets } = await supabase.rpc('sujets_par_probleme', { p_probleme: probleme.id, p_limite: 15 });
+  const { data: sujets } = await supabase.rpc('sujets_par_probleme_niveaux', { p_probleme: probleme.id, p_limite: 15 });
   const domainesActifs = DOMAINES.filter((d) => d.actif);
 
   return (
@@ -112,7 +137,8 @@ export default async function PageProbleme({ params, searchParams }) {
         <section style={{ marginBottom: '28px' }}>
           <h2 style={{ fontSize: '18px' }}>Les sujets les plus étudiés</h2>
           <p style={{ color: '#6B6E63', fontSize: '14px', marginTop: '-6px' }}>
-            Aliments, régimes et compléments qui comptent le plus d'études sur ce problème de santé.
+            Aliments, régimes et compléments qui comptent le plus d'études sur ce problème de santé. La barre
+            montre la part de chaque niveau de preuve, du plus solide (vert foncé) au plus faible (gris).
           </p>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {sujets.map((s) => (
@@ -123,6 +149,7 @@ export default async function PageProbleme({ params, searchParams }) {
                 <span style={{ color: '#6B6E63', fontSize: '13px' }}>
                   {' '}· {LIBELLES_TYPES[s.type]} · {s.nb} étude{Number(s.nb) > 1 ? 's' : ''}
                 </span>
+                <BarreNiveaux sujet={s} />
               </li>
             ))}
           </ul>
