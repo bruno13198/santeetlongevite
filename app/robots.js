@@ -16,6 +16,7 @@ export default function robots() {
         '/*?*tri=',
         '/*?*q=',
         '/*?*revues=',
+        '/*?*probleme=',
       ],
     },
     sitemap: `${ADRESSE_SITE}/sitemap.xml`,
