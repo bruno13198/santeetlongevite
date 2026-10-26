@@ -424,6 +424,19 @@ function construireLien(chemin, parametres, modifications) {
   return `${chemin}${chaine ? `?${chaine}` : ''}#etudes`;
 }
 
+// 27 oct. 2026 : lien d'export de la liste filtrée (route /api/export), en CSV ou en RIS.
+const TYPE_PAR_PREFIXE = { aliments: 'aliment', habitudes: 'habitude', nutriments: 'nutriment', sante: 'probleme' };
+function lienExport(chemin, parametres, format) {
+  const [, prefixe, slug] = chemin.split('/');
+  const recherche = new URLSearchParams({ type: TYPE_PAR_PREFIXE[prefixe] || '', slug: slug || '', format });
+  if (parametres.niveau) recherche.set('niveau', String(parametres.niveau));
+  if (parametres.revues) recherche.set('revues', '1');
+  if (parametres.tri === 'ancien') recherche.set('tri', 'ancien');
+  if (parametres.q) recherche.set('q', parametres.q);
+  if (parametres.probleme) recherche.set('probleme', parametres.probleme);
+  return `/api/export?${recherche.toString()}`;
+}
+
 // Numéros de page à afficher : 1 … 4 5 [6] 7 8 … 50
 function numerosDePage(pageActuelle, nbPages) {
   const numeros = new Set([1, nbPages, pageActuelle - 2, pageActuelle - 1, pageActuelle, pageActuelle + 1, pageActuelle + 2]);
@@ -582,7 +595,7 @@ export default function ListeEtudes({ etudes, comptes, totalSelection, parametre
         )}
       </div>
 
-      {/* Tri */}
+      {/* Tri et export */}
       <p style={{ fontSize: '13px', color: '#555', margin: '0 0 14px' }}>
         Trier :{' '}
         {tri === 'ancien' ? (
@@ -595,6 +608,14 @@ export default function ListeEtudes({ etudes, comptes, totalSelection, parametre
             <strong>plus récentes d'abord</strong>
             {' · '}<Link href={construireLien(chemin, parametres, { tri: 'ancien', page: 1 })} style={{ color: '#555' }}>plus anciennes d'abord</Link>
           </>
+        )}
+        {totalSelection > 0 && (
+          <span style={{ display: 'inline-block', marginLeft: '12px' }}>
+            Exporter ces {totalSelection > 2000 ? '2 000 premières ' : ''}études :{' '}
+            <a href={lienExport(chemin, parametres, 'csv')} style={{ color: '#555' }} rel="nofollow">tableau (Excel)</a>
+            {' · '}
+            <a href={lienExport(chemin, parametres, 'ris')} style={{ color: '#555' }} rel="nofollow">références (Zotero, EndNote)</a>
+          </span>
         )}
       </p>
 
