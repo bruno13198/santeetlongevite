@@ -167,15 +167,43 @@ export async function POST(request) {
       body: JSON.stringify({
         sender: { name: 'ScienceTruths', email: 'alertes@sciencetruths.com' },
         to: [{ email }],
-        subject: 'Confirmez vos alertes ScienceTruths',
+        // 27 oct. 2026 : e-mail plus complet et version texte, pour mieux passer les filtres anti-spam.
+        subject: 'Confirmez votre inscription aux alertes ScienceTruths',
         htmlContent: `
-          <p>Bonjour,</p>
-          <p>Vous avez demandé à recevoir des alertes par email sur ScienceTruths.</p>
-          <p>Pour confirmer votre inscription, cliquez sur ce lien :</p>
-          <p><a href="${lienConfirmation}">Confirmer mes alertes</a></p>
-          <p>Si vous n'êtes pas à l'origine de cette demande, ignorez simplement cet email.</p>
-          <p style="font-size: 13px; color: #888;">Si vous ne trouvez pas cet email la prochaine fois, pensez à vérifier vos spams / courriers indésirables.</p>
+          <div style="font-family: Arial, sans-serif; font-size: 15px; line-height: 1.6; color: #222; max-width: 560px;">
+            <p>Bonjour,</p>
+            <p>Vous venez de demander à recevoir les alertes de <strong>ScienceTruths</strong>, la veille scientifique
+            indépendante et gratuite sur la nutrition, en français.</p>
+            <p>Une fois votre inscription confirmée, vous recevrez <strong>chaque lundi</strong> un e-mail avec les
+            nouvelles études publiées sur les sujets que vous avez choisis, résumées en français et classées par
+            niveau de preuve. Si aucune nouvelle étude n'est parue sur vos sujets, vous ne recevrez rien.</p>
+            <p style="margin: 24px 0;">
+              <a href="${lienConfirmation}" style="background-color: #27500A; color: #ffffff; padding: 12px 20px; border-radius: 6px; text-decoration: none; font-weight: bold;">Confirmer mon inscription</a>
+            </p>
+            <p>Votre adresse ne sert qu'à vous envoyer ces alertes : elle n'est jamais revendue ni utilisée à
+            d'autres fins. Chaque e-mail contient un lien pour vous désabonner en un clic.</p>
+            <p>Si vous n'êtes pas à l'origine de cette demande, ignorez simplement ce message : vous ne recevrez
+            aucune alerte.</p>
+            <p>Bonne lecture,<br />L'équipe ScienceTruths<br /><a href="https://sciencetruths.com">sciencetruths.com</a></p>
+          </div>
         `,
+        textContent: [
+          'Bonjour,',
+          '',
+          "Vous venez de demander à recevoir les alertes de ScienceTruths, la veille scientifique indépendante et gratuite sur la nutrition, en français.",
+          '',
+          "Une fois votre inscription confirmée, vous recevrez chaque lundi un e-mail avec les nouvelles études publiées sur les sujets que vous avez choisis, résumées en français et classées par niveau de preuve.",
+          '',
+          'Pour confirmer votre inscription, ouvrez ce lien :',
+          lienConfirmation,
+          '',
+          "Votre adresse ne sert qu'à vous envoyer ces alertes : elle n'est jamais revendue ni utilisée à d'autres fins. Chaque e-mail contient un lien pour vous désabonner en un clic.",
+          '',
+          "Si vous n'êtes pas à l'origine de cette demande, ignorez simplement ce message.",
+          '',
+          "L'équipe ScienceTruths",
+          'https://sciencetruths.com',
+        ].join('\n'),
       }),
     });
 
