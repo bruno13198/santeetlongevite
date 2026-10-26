@@ -1,13 +1,20 @@
-// Vérification des descriptions courtes (27 oct. 2026).
+// Vérification des descriptions courtes (version 2, 27 oct. 2026).
 //
-// Relit toutes les descriptions existantes (aliments, habitudes, nutriments, problèmes de santé) et signale
+// Relit les descriptions existantes (aliments, habitudes, nutriments, problèmes de santé) et signale
 // celles qui contiennent une erreur de fait, une incohérence, une allégation santé ou une faute de langue,
-// avec une correction proposée. N'écrit RIEN en base : le log se termine par un bloc SQL à relire,
-// puis à coller dans le SQL Editor de Supabase (supprimer les lignes refusées avant d'exécuter).
+// avec une correction proposée. N'écrit RIEN en base : le log se termine par un bloc SQL à relire.
+//
+// Si le fichier scripts/descriptions-a-reverifier.txt existe (un nom de sujet par ligne), seuls ces
+// sujets sont vérifiés ; sinon, toutes les descriptions le sont.
+//
+// Réponse de Claude en lignes simples (STATUT / PROBLEME / CORRECTION) plutôt qu'en JSON :
+// plus d'échec de lecture à cause des guillemets.
 //
 // Variable d'environnement :
 //   LIMITE   nombre maximal de descriptions vérifiées (toutes par défaut)
 
+const fs = require('fs');
+const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
@@ -19,6 +26,7 @@ const ATTENTE_MAX_LOT_MIN = 300;
 const INTERVALLE_SONDAGE_MS = 30000;
 const DELAI_MAX_MS = 60000;
 const LONGUEUR_MAX = 420; // caractères
+const FICHIER_NOMS = path.join(__dirname, 'descriptions-a-reverifier.txt');
 
 // Tarif de l'API Batch pour Claude Sonnet (moitié du tarif normal), en dollars par million de jetons.
 const PRIX_ENTREE_PAR_MILLION = 1.5;
@@ -135,11 +143,23 @@ async function executerLotClaude(requetes, libelle) {
   return resultats;
 }
 
-// Retire les éventuelles balises de code Markdown (trois accents graves, écrits \x60 ici) autour du JSON.
-function extraireJSON(texte) {
-  const nettoye = texte.replace(/\x60{3}(json)?/g, '').trim();
-  const match = nettoye.match(/\{[\s\S]*\}/);
-  return JSON.parse(match ? match[0] : nettoye);
+// Lit la réponse en lignes simples. Renvoie null si aucune ligne STATUT n'est trouvée.
+function lireVerdict(texte) {
+  let statut = null;
+  const problemes = [];
+  let correction = '';
+  for (const brute of texte.split('\n')) {
+    const ligne = brute.trim();
+    const m = ligne.match(/^(STATUT|PROBLEME|PROBLÈME|CORRECTION)\s*:\s*(.*)$/i);
+    if (!m) continue;
+    const cle = m[1].toUpperCase();
+    const valeur = m[2].trim();
+    if (cle === 'STATUT') statut = valeur.toLowerCase().includes('revoir') ? 'a_revoir' : 'ok';
+    else if (cle === 'CORRECTION') correction = valeur;
+    else if (valeur) problemes.push(valeur);
+  }
+  if (!statut) return null;
+  return { statut, problemes, correction };
 }
 
 // ---------------------------------------------------------------------------
@@ -171,16 +191,26 @@ Vérifie point par point :
 
 Ne signale PAS : les choix de style, les simplifications acceptables pour le grand public, les informations absentes.
 
-Réponds UNIQUEMENT avec un objet JSON, rien avant ni après :
-- si tout est correct : {"statut": "ok"}
-- sinon : {"statut": "a_revoir", "problemes": ["problème 1 en une phrase", "..."], "correction": "description complète corrigée"}
+Réponds UNIQUEMENT dans ce format, sans rien d'autre, chaque élément sur une seule ligne :
+- si tout est correct :
+STATUT: ok
+- sinon :
+STATUT: a_revoir
+PROBLEME: le problème en une phrase courte
+CORRECTION: la description complète corrigée
 
-La correction reprend la description en changeant le moins possible : 2 ou 3 phrases, ${LONGUEUR_MAX} caractères au maximum, uniquement des faits établis, sans allégation, sans conseil, sans terme anglais, sans répéter le nom du sujet en premier mot.`;
+Une ligne PROBLEME par problème, deux au maximum. La correction reprend la description en changeant le moins possible : 2 ou 3 phrases, ${LONGUEUR_MAX} caractères au maximum, uniquement des faits établis, sans allégation, sans conseil, sans terme anglais, sans répéter le nom du sujet en premier mot.`;
 }
 
 // ---------------------------------------------------------------------------
 // Programme principal
 // ---------------------------------------------------------------------------
+
+function chargerNomsCibles() {
+  if (!fs.existsSync(FICHIER_NOMS)) return null;
+  const noms = fs.readFileSync(FICHIER_NOMS, 'utf8').split('\n').map((l) => l.trim()).filter(Boolean);
+  return new Set(noms);
+}
 
 async function chargerDescriptions(source) {
   const sujets = [];
@@ -206,13 +236,24 @@ function sqlTexte(texte) {
 }
 
 async function main() {
+  const nomsCibles = chargerNomsCibles();
+  const nomsTrouves = new Set();
+
   const aTraiter = [];
   for (const source of SOURCES) {
     const sujets = await chargerDescriptions(source);
     for (const s of sujets) {
       if (aTraiter.length >= LIMITE) break;
+      if (nomsCibles && !nomsCibles.has(s.nom)) continue;
+      if (nomsCibles) nomsTrouves.add(s.nom);
       aTraiter.push({ source, sujet: s });
     }
+  }
+
+  if (nomsCibles) {
+    console.log(`Liste ciblée : ${nomsCibles.size} nom(s) dans ${path.basename(FICHIER_NOMS)}.`);
+    const absents = [...nomsCibles].filter((n) => !nomsTrouves.has(n));
+    if (absents.length) console.log(`  ! Introuvables en base (ignorés) : ${absents.join(' | ')}`);
   }
   console.log(`Vérification : ${aTraiter.length} description(s), aucune écriture en base.`);
   if (aTraiter.length === 0) return;
@@ -230,25 +271,22 @@ async function main() {
     const { source, sujet } = aTraiter[i];
     const r = resultats.get(`verif-${i}`);
     if (!r || !r.ok) {
-      echecs.push(sujet.nom);
+      echecs.push({ nom: sujet.nom, raison: r ? r.erreur : 'résultat absent' });
       continue;
     }
     jetonsEntree += r.usage.input_tokens || 0;
     jetonsSortie += r.usage.output_tokens || 0;
 
-    let verdict;
-    try {
-      verdict = extraireJSON(r.texte);
-    } catch (e) {
-      echecs.push(sujet.nom);
+    const verdict = lireVerdict(r.texte);
+    if (!verdict) {
+      echecs.push({ nom: sujet.nom, raison: `réponse illisible : ${r.texte.slice(0, 200).replace(/\n/g, ' / ')}` });
       continue;
     }
     if (verdict.statut !== 'a_revoir') {
       nbOk++;
       continue;
     }
-    const correction = String(verdict.correction || '').trim();
-    aRevoir.push({ source, sujet, problemes: Array.isArray(verdict.problemes) ? verdict.problemes : [], correction });
+    aRevoir.push({ source, sujet, problemes: verdict.problemes, correction: verdict.correction });
   }
 
   for (const x of aRevoir) {
@@ -270,7 +308,7 @@ async function main() {
   const cout = (jetonsEntree * PRIX_ENTREE_PAR_MILLION + jetonsSortie * PRIX_SORTIE_PAR_MILLION) / 1e6;
   console.log('\n##### Bilan #####');
   console.log(`Vérifiées : ${aTraiter.length} | correctes : ${nbOk} | à revoir : ${aRevoir.length} | échecs : ${echecs.length}`);
-  if (echecs.length) console.log(`Échecs : ${echecs.join(', ')}`);
+  for (const e of echecs) console.log(`  Échec : ${e.nom} (${e.raison})`);
   console.log(`Coût réel de ce run : ${cout.toFixed(3)} $`);
 }
 
