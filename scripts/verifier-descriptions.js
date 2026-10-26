@@ -1,4 +1,4 @@
-// Vérification des descriptions courtes (version 2, 27 oct. 2026).
+// Vérification des descriptions courtes (version 3, 27 oct. 2026).
 //
 // Relit les descriptions existantes (aliments, habitudes, nutriments, problèmes de santé) et signale
 // celles qui contiennent une erreur de fait, une incohérence, une allégation santé ou une faute de langue,
@@ -7,8 +7,9 @@
 // Si le fichier scripts/descriptions-a-reverifier.txt existe (un nom de sujet par ligne), seuls ces
 // sujets sont vérifiés ; sinon, toutes les descriptions le sont.
 //
-// Réponse de Claude en lignes simples (STATUT / PROBLEME / CORRECTION) plutôt qu'en JSON :
-// plus d'échec de lecture à cause des guillemets.
+// Version 3 : limite de réponse relevée (2000 jetons) ; toute réponse coupée par la limite, ou toute
+// correction qui ne se termine pas par une ponctuation finale, est comptée comme un échec et n'entre
+// jamais dans le SQL. Les guillemets entourant une correction sont retirés.
 //
 // Variable d'environnement :
 //   LIMITE   nombre maximal de descriptions vérifiées (toutes par défaut)
@@ -25,6 +26,7 @@ const TAILLE_MAX_LOT_CLAUDE = 5000;
 const ATTENTE_MAX_LOT_MIN = 300;
 const INTERVALLE_SONDAGE_MS = 30000;
 const DELAI_MAX_MS = 60000;
+const MAX_JETONS_REPONSE = 2000;
 const LONGUEUR_MAX = 420; // caractères
 const FICHIER_NOMS = path.join(__dirname, 'descriptions-a-reverifier.txt');
 
@@ -92,7 +94,7 @@ async function executerLotClaude(requetes, libelle) {
       body: JSON.stringify({
         requests: tranche.map((r) => ({
           custom_id: r.id,
-          params: { model: MODELE, max_tokens: 800, messages: [{ role: 'user', content: r.prompt }] },
+          params: { model: MODELE, max_tokens: MAX_JETONS_REPONSE, messages: [{ role: 'user', content: r.prompt }] },
         })),
       }),
     });
@@ -134,13 +136,26 @@ async function executerLotClaude(requetes, libelle) {
       const r = objet.result || {};
       if (r.type === 'succeeded') {
         const contenu = (r.message?.content || []).map((b) => b.text || '').join('');
-        resultats.set(objet.custom_id, { ok: true, texte: contenu, usage: r.message?.usage || {} });
+        resultats.set(objet.custom_id, {
+          ok: true,
+          texte: contenu,
+          usage: r.message?.usage || {},
+          arret: r.message?.stop_reason || '',
+        });
       } else {
         resultats.set(objet.custom_id, { ok: false, erreur: r.error?.error?.message || r.type || 'inconnu' });
       }
     }
   }
   return resultats;
+}
+
+// Retire les guillemets éventuels autour d'un texte (« ... » ou "...").
+function sansGuillemets(texte) {
+  let t = texte.trim();
+  if (t.startsWith('«') && t.endsWith('»')) t = t.slice(1, -1).trim();
+  if (t.startsWith('"') && t.endsWith('"')) t = t.slice(1, -1).trim();
+  return t;
 }
 
 // Lit la réponse en lignes simples. Renvoie null si aucune ligne STATUT n'est trouvée.
@@ -155,11 +170,16 @@ function lireVerdict(texte) {
     const cle = m[1].toUpperCase();
     const valeur = m[2].trim();
     if (cle === 'STATUT') statut = valeur.toLowerCase().includes('revoir') ? 'a_revoir' : 'ok';
-    else if (cle === 'CORRECTION') correction = valeur;
+    else if (cle === 'CORRECTION') correction = sansGuillemets(valeur);
     else if (valeur) problemes.push(valeur);
   }
   if (!statut) return null;
   return { statut, problemes, correction };
+}
+
+// Une correction complète se termine par une ponctuation finale.
+function correctionComplete(texte) {
+  return /[.!?)]$/.test(texte.trim());
 }
 
 // ---------------------------------------------------------------------------
@@ -199,7 +219,7 @@ STATUT: a_revoir
 PROBLEME: le problème en une phrase courte
 CORRECTION: la description complète corrigée
 
-Une ligne PROBLEME par problème, deux au maximum. La correction reprend la description en changeant le moins possible : 2 ou 3 phrases, ${LONGUEUR_MAX} caractères au maximum, uniquement des faits établis, sans allégation, sans conseil, sans terme anglais, sans répéter le nom du sujet en premier mot.`;
+Une ligne PROBLEME par problème, deux au maximum. La correction reprend la description en changeant le moins possible : 2 ou 3 phrases, ${LONGUEUR_MAX} caractères au maximum, sans guillemets autour, uniquement des faits établis, sans allégation, sans conseil, sans terme anglais, sans répéter le nom du sujet en premier mot.`;
 }
 
 // ---------------------------------------------------------------------------
@@ -277,13 +297,22 @@ async function main() {
     jetonsEntree += r.usage.input_tokens || 0;
     jetonsSortie += r.usage.output_tokens || 0;
 
+    if (r.arret === 'max_tokens') {
+      echecs.push({ nom: sujet.nom, raison: `réponse coupée par la limite de ${MAX_JETONS_REPONSE} jetons` });
+      continue;
+    }
+
     const verdict = lireVerdict(r.texte);
     if (!verdict) {
-      echecs.push({ nom: sujet.nom, raison: `réponse illisible : ${r.texte.slice(0, 200).replace(/\n/g, ' / ')}` });
+      echecs.push({ nom: sujet.nom, raison: `réponse illisible (arrêt : ${r.arret || 'inconnu'}) : ${r.texte.slice(0, 200).replace(/\n/g, ' / ')}` });
       continue;
     }
     if (verdict.statut !== 'a_revoir') {
       nbOk++;
+      continue;
+    }
+    if (verdict.correction && !correctionComplete(verdict.correction)) {
+      echecs.push({ nom: sujet.nom, raison: `correction incomplète : ${verdict.correction.slice(-80)}` });
       continue;
     }
     aRevoir.push({ source, sujet, problemes: verdict.problemes, correction: verdict.correction });
