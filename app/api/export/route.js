@@ -1,8 +1,10 @@
 // Export de la bibliographie d'une fiche (27 oct. 2026).
-// GET /api/export?type=aliment&slug=curcuma-poudre&format=csv (ou ris)
+// GET /api/export?type=aliment&slug=curcuma-poudre&format=csv (ou ris, ou txt)
 // + les mêmes filtres que la liste affichée : niveau, revues, tri, q, probleme.
-// Renvoie un fichier à télécharger : un tableau CSV (pour Excel, séparateur « ; ») ou un fichier
-// de références RIS (pour Zotero, EndNote, Mendeley). Au plus 2 000 études par export.
+// Renvoie un fichier à télécharger : un tableau CSV (pour Excel, séparateur « ; »), un fichier
+// de références RIS (pour Zotero, EndNote, Mendeley) ou une liste de références au format
+// Vancouver simplifié (txt). Au plus 2 000 études par export.
+// 28 oct. 2026 : format txt (Vancouver simplifié) ; titres débarrassés des balises HTML dans tous les formats.
 import { createClient } from '@supabase/supabase-js';
 
 export const dynamic = 'force-dynamic';
@@ -19,6 +21,22 @@ const TABLES = {
   nutriment: 'nutriments',
   probleme: 'problemes_sante',
 };
+const FORMATS = {
+  csv: { extension: 'csv', type: 'text/csv; charset=utf-8' },
+  ris: { extension: 'ris', type: 'application/x-research-info-systems; charset=utf-8' },
+  txt: { extension: 'txt', type: 'text/plain; charset=utf-8' },
+};
+
+// Retire les balises HTML (ex. <i>Allium</i>), y compris quand elles sont encodées (&lt;i&gt;).
+function sansBalises(texte) {
+  return String(texte || '')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    .replace(/<[^>]*>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
 function nettoyerCsv(valeur) {
   const texte = valeur === null || valeur === undefined ? '' : String(valeur);
@@ -37,7 +55,7 @@ function versCsv(etudes) {
   ];
   const lignes = etudes.map((e) =>
     [
-      e.titre_traduit, e.titre_original, e.auteurs, annee(e.date_publication), e.date_publication,
+      sansBalises(e.titre_traduit), sansBalises(e.titre_original), e.auteurs, annee(e.date_publication), e.date_publication,
       e.niveau_preuve, e.design_etude || e.type_etude, e.nb_participants, e.url_originale, e.pmid,
     ].map(nettoyerCsv).join(';')
   );
@@ -49,8 +67,8 @@ function versRis(etudes) {
   return etudes
     .map((e) => {
       const lignes = ['TY  - JOUR'];
-      if (e.titre_original) lignes.push(`TI  - ${e.titre_original}`);
-      if (e.titre_traduit) lignes.push(`T2  - ${e.titre_traduit}`);
+      if (e.titre_original) lignes.push(`TI  - ${sansBalises(e.titre_original)}`);
+      if (e.titre_traduit) lignes.push(`T2  - ${sansBalises(e.titre_traduit)}`);
       for (const auteur of String(e.auteurs || '').split(/,\s*/).filter(Boolean)) {
         lignes.push(`AU  - ${auteur.replace(/\.$/, '')}`);
       }
@@ -70,11 +88,34 @@ function versRis(etudes) {
     .join('\r\n\r\n');
 }
 
+// Vancouver simplifié : auteurs (6 au plus, puis « et al. »), titre original, année, PMID.
+// La revue, le volume et les pages ne sont pas encore en base.
+function versVancouver(etudes) {
+  const lignes = etudes.map((e, i) => {
+    const auteurs = String(e.auteurs || '')
+      .replace(/\.$/, '')
+      .split(/,\s*/)
+      .filter(Boolean);
+    const partieAuteurs = auteurs.length > 6
+      ? `${auteurs.slice(0, 6).join(', ')}, et al.`
+      : auteurs.length ? `${auteurs.join(', ')}.` : '';
+
+    let titre = sansBalises(e.titre_original || e.titre_traduit);
+    if (titre && !/[.?!]$/.test(titre)) titre += '.';
+
+    const morceaux = [partieAuteurs, titre];
+    if (annee(e.date_publication)) morceaux.push(`${annee(e.date_publication)}.`);
+    if (e.pmid) morceaux.push(`PMID: ${e.pmid}.`);
+    return `${i + 1}. ${morceaux.filter(Boolean).join(' ')}`;
+  });
+  return '\uFEFF' + lignes.join('\r\n');
+}
+
 export async function GET(request) {
   const params = new URL(request.url).searchParams;
   const type = params.get('type');
   const slug = params.get('slug');
-  const format = params.get('format') === 'ris' ? 'ris' : 'csv';
+  const format = FORMATS[params.get('format')] ? params.get('format') : 'csv';
 
   if (!TABLES[type] || !slug) {
     return new Response('Paramètres manquants.', { status: 400 });
@@ -116,12 +157,15 @@ export async function GET(request) {
   const etudesCompletes = liste.map((e) => ({ ...e, pmid: pmidParId.get(e.id) || '' }));
 
   const dateDuJour = new Date().toISOString().slice(0, 10);
-  const nomFichier = `sciencetruths-${slug}-${dateDuJour}.${format}`;
-  const contenu = format === 'ris' ? versRis(etudesCompletes) : versCsv(etudesCompletes);
+  const nomFichier = `sciencetruths-${slug}-${dateDuJour}.${FORMATS[format].extension}`;
+  const contenu =
+    format === 'ris' ? versRis(etudesCompletes)
+    : format === 'txt' ? versVancouver(etudesCompletes)
+    : versCsv(etudesCompletes);
 
   return new Response(contenu, {
     headers: {
-      'Content-Type': format === 'ris' ? 'application/x-research-info-systems; charset=utf-8' : 'text/csv; charset=utf-8',
+      'Content-Type': FORMATS[format].type,
       'Content-Disposition': `attachment; filename="${nomFichier}"`,
       'Cache-Control': 'no-store',
     },
