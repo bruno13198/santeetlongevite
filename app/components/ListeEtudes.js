@@ -612,11 +612,11 @@ export default function ListeEtudes({ etudes, comptes, totalSelection, parametre
         {totalSelection > 0 && (
           <span style={{ display: 'inline-block', marginLeft: '12px' }}>
             Exporter ces {totalSelection > 2000 ? '2 000 premières ' : ''}études :{' '}
-                        <a href={lienExport(chemin, parametres, 'ris')} style={{ color: '#555' }} rel="nofollow">références (Zotero, EndNote)</a>
+            <a href={lienExport(chemin, parametres, 'csv')} style={{ color: '#555' }} rel="nofollow">tableau (Excel)</a>
+            {' · '}
+            <a href={lienExport(chemin, parametres, 'ris')} style={{ color: '#555' }} rel="nofollow">références (Zotero, EndNote)</a>
             {' · '}
             <a href={lienExport(chemin, parametres, 'txt')} style={{ color: '#555' }} rel="nofollow">liste de références (Vancouver)</a>
-          </span>
-            <a href={lienExport(chemin, parametres, 'ris')} style={{ color: '#555' }} rel="nofollow">références (Zotero, EndNote)</a>
           </span>
         )}
       </p>
