@@ -1,29 +1,45 @@
 name: Export sauvegarde Supabase
+
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '23 2 * * 0'   # chaque dimanche à 2h23 UTC
+
 jobs:
   export:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
     steps:
       - name: Récupérer le code
         uses: actions/checkout@v4
+
       - name: Installer Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+
       - name: Installer les dépendances
         run: npm install @supabase/supabase-js
-      - name: Lancer le script d'export
+
+      - name: Exporter toutes les tables
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: node scripts/export-backup.js
-      - name: Enregistrer la sauvegarde dans le repo
+
+      - name: Chiffrer la sauvegarde (7z, AES-256, noms de fichiers masqués)
+        env:
+          MOT_DE_PASSE: ${{ secrets.BACKUP_MOT_DE_PASSE }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add backups/
-          git commit -m "Sauvegarde automatique $(date +%Y-%m-%d)" || echo "Rien à sauvegarder"
-          git push
+          if [ -z "$MOT_DE_PASSE" ]; then echo "Secret BACKUP_MOT_DE_PASSE manquant"; exit 1; fi
+          7z a -t7z -mhe=on -mx=9 -p"$MOT_DE_PASSE" "sauvegarde-$(date +%Y-%m-%d).7z" sauvegarde/
+          rm -rf sauvegarde/
+
+      - name: Conserver l'archive chiffrée (90 jours)
+        uses: actions/upload-artifact@v4
+        with:
+          name: sauvegarde-supabase-${{ github.run_number }}
+          path: sauvegarde-*.7z
+          retention-days: 90
+          if-no-files-found: error
