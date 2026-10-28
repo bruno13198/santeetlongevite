@@ -168,16 +168,26 @@ export default async function FicheArticle({ params }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
       />
+            {/* 28 oct. 2026 : une page du site (page_site) n'a ni lien « Articles », ni bandeau d'alertes */}
       <Breadcrumbs
-        items={[
-          { nom: 'Accueil', url: 'https://sciencetruths.com' },
-          { nom: 'Articles', url: 'https://sciencetruths.com/articles' },
-          { nom: article.titre, url: `https://sciencetruths.com/articles/${slug}` },
-        ]}
+        items={
+          article.page_site
+            ? [
+                { nom: 'Accueil', url: 'https://sciencetruths.com' },
+                { nom: article.titre, url: `https://sciencetruths.com/articles/${slug}` },
+              ]
+            : [
+                { nom: 'Accueil', url: 'https://sciencetruths.com' },
+                { nom: 'Articles', url: 'https://sciencetruths.com/articles' },
+                { nom: article.titre, url: `https://sciencetruths.com/articles/${slug}` },
+              ]
+        }
       />
-      <Link href="/articles" style={{ color: '#555' }}>← Retour aux articles</Link>
+      {!article.page_site && (
+        <Link href="/articles" style={{ color: '#555' }}>← Retour aux articles</Link>
+      )}
       <h1 style={{ marginTop: '16px' }}>{article.titre}</h1>
-      {slug !== 'Pourquoi-ce-site' && (
+      {!article.page_site && (
         <p
           style={{
             margin: '-4px 0 24px',
