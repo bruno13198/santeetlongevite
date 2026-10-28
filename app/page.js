@@ -107,7 +107,7 @@ export default async function Home() {
     .from('articles')
     .select('titre, slug, created_at')
     .eq('publie', true)
-    .neq('slug', 'Pourquoi-ce-site')
+    .eq('page_site', false)
     .order('created_at', { ascending: false })
     .limit(5);
 
