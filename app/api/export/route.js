@@ -1,6 +1,7 @@
 // Export de la bibliographie d'une fiche (27 oct. 2026).
 // GET /api/export?type=aliment&slug=curcuma-poudre&format=csv (ou ris, ou txt)
 // + les mêmes filtres que la liste affichée : niveau, revues, tri, q, probleme.
+// 28 oct. 2026 : GET /api/export?etude=<id>&format=ris exporte une seule étude.
 // Renvoie un fichier à télécharger : un tableau CSV (pour Excel, séparateur « ; »), un fichier
 // de références RIS (pour Zotero, EndNote, Mendeley) ou une liste de références au format
 // Vancouver simplifié (txt). Au plus 2 000 études par export.
@@ -111,24 +112,33 @@ function versVancouver(etudes) {
   return '\uFEFF' + lignes.join('\r\n');
 }
 
-export async function GET(request) {
-  const params = new URL(request.url).searchParams;
+// Une seule étude, lue directement dans la table etudes.
+async function chargerUneEtude(etudeId) {
+  if (!/^[0-9a-f-]{36}$/i.test(etudeId)) return { erreur: 400 };
+  const { data: etude } = await supabase
+    .from('etudes')
+    .select('id, titre_original, titre_traduit, auteurs, date_publication, url_originale, source_id, niveau_preuve, design_etude, type_etude, nb_participants')
+    .eq('id', etudeId)
+    .maybeSingle();
+  if (!etude) return { erreur: 404 };
+  return {
+    etudes: [{ ...etude, pmid: etude.source_id || '' }],
+    nomBase: `etude-${etude.source_id || etude.id.slice(0, 8)}`,
+  };
+}
+
+// Toutes les études de la sélection affichée sur une fiche.
+async function chargerSelection(params) {
   const type = params.get('type');
   const slug = params.get('slug');
-  const format = FORMATS[params.get('format')] ? params.get('format') : 'csv';
-
-  if (!TABLES[type] || !slug) {
-    return new Response('Paramètres manquants.', { status: 400 });
-  }
+  if (!TABLES[type] || !slug) return { erreur: 400 };
 
   const { data: sujet } = await supabase
     .from(TABLES[type])
     .select('id, actif')
     .eq('slug', slug)
     .maybeSingle();
-  if (!sujet || sujet.actif === false) {
-    return new Response('Fiche introuvable.', { status: 404 });
-  }
+  if (!sujet || sujet.actif === false) return { erreur: 404 };
 
   const niveau = parseInt(params.get('niveau'), 10);
   const { data: etudes, error } = await supabase.rpc('liste_etudes', {
@@ -142,9 +152,7 @@ export async function GET(request) {
     p_decalage: 0,
     p_probleme: (params.get('probleme') || '').slice(0, 80) || null,
   });
-  if (error) {
-    return new Response("L'export n'a pas abouti. Réessayez dans un instant.", { status: 500 });
-  }
+  if (error) return { erreur: 500 };
 
   // Identifiant PubMed de chaque étude (colonne source_id), récupéré par lots
   const liste = etudes || [];
@@ -154,14 +162,34 @@ export async function GET(request) {
     const { data } = await supabase.from('etudes').select('id, source_id').in('id', ids);
     for (const ligne of data || []) pmidParId.set(ligne.id, ligne.source_id);
   }
-  const etudesCompletes = liste.map((e) => ({ ...e, pmid: pmidParId.get(e.id) || '' }));
+  return {
+    etudes: liste.map((e) => ({ ...e, pmid: pmidParId.get(e.id) || '' })),
+    nomBase: slug,
+  };
+}
+
+const MESSAGES = {
+  400: 'Paramètres manquants.',
+  404: 'Fiche ou étude introuvable.',
+  500: "L'export n'a pas abouti. Réessayez dans un instant.",
+};
+
+export async function GET(request) {
+  const params = new URL(request.url).searchParams;
+  const format = FORMATS[params.get('format')] ? params.get('format') : 'csv';
+  const etudeId = params.get('etude');
+
+  const resultat = etudeId ? await chargerUneEtude(etudeId) : await chargerSelection(params);
+  if (resultat.erreur) {
+    return new Response(MESSAGES[resultat.erreur], { status: resultat.erreur });
+  }
 
   const dateDuJour = new Date().toISOString().slice(0, 10);
-  const nomFichier = `sciencetruths-${slug}-${dateDuJour}.${FORMATS[format].extension}`;
+  const nomFichier = `sciencetruths-${resultat.nomBase}-${dateDuJour}.${FORMATS[format].extension}`;
   const contenu =
-    format === 'ris' ? versRis(etudesCompletes)
-    : format === 'txt' ? versVancouver(etudesCompletes)
-    : versCsv(etudesCompletes);
+    format === 'ris' ? versRis(resultat.etudes)
+    : format === 'txt' ? versVancouver(resultat.etudes)
+    : versCsv(resultat.etudes);
 
   return new Response(contenu, {
     headers: {
