@@ -339,11 +339,50 @@ function FormulaireSignalement({ etude, onFermer }) {
   );
 }
 
+// 28 oct. 2026 : référence d'une seule étude (Vancouver simplifié), même mise en forme que l'export.
+function sansBalises(texte) {
+  return String(texte || '')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    .replace(/<[^>]*>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function referenceVancouver(etude) {
+  const auteurs = String(etude.auteurs || '').replace(/\.$/, '').split(/,\s*/).filter(Boolean);
+  const partieAuteurs = auteurs.length > 6
+    ? `${auteurs.slice(0, 6).join(', ')}, et al.`
+    : auteurs.length ? `${auteurs.join(', ')}.` : '';
+  let titre = sansBalises(etude.titre_original || etude.titre_traduit);
+  if (titre && !/[.?!]$/.test(titre)) titre += '.';
+  const morceaux = [partieAuteurs, titre];
+  const an = annee(etude.date_publication);
+  if (an) morceaux.push(`${an}.`);
+  const pmid = String(etude.url_originale || '').match(/MED\/(\d+)/);
+  if (pmid) morceaux.push(`PMID: ${pmid[1]}.`);
+  return morceaux.filter(Boolean).join(' ');
+}
+
 // Carte compacte : niveau, titre, année. Les résumés et le détail s'ouvrent au clic.
 function CarteEtude({ etude }) {
   const [ouverte, setOuverte] = useState(true);
   const [signalementOuvert, setSignalementOuvert] = useState(false);
+  const [referenceCopiee, setReferenceCopiee] = useState(false);
   const an = annee(etude.date_publication);
+
+  async function copierReference() {
+    const texte = referenceVancouver(etude);
+    try {
+      await navigator.clipboard.writeText(texte);
+      setReferenceCopiee(true);
+      setTimeout(() => setReferenceCopiee(false), 2500);
+    } catch (e) {
+      // Navigateur sans accès au presse-papiers : on affiche la référence à copier à la main.
+      window.prompt('Référence à copier :', texte);
+    }
+  }
 
   return (
     <div
@@ -392,6 +431,20 @@ function CarteEtude({ etude }) {
                 Voir l'étude originale →
               </a>
             )}
+            <button
+              type="button"
+              onClick={copierReference}
+              style={{ ...styleLienBouton, color: '#6B6E63', textDecoration: 'underline', fontSize: '13px' }}
+            >
+              {referenceCopiee ? 'Référence copiée ✓' : 'Copier la référence'}
+            </button>
+            <a
+              href={`/api/export?etude=${etude.id}&format=ris`}
+              rel="nofollow"
+              style={{ color: '#6B6E63', fontSize: '13px' }}
+            >
+              Zotero
+            </a>
             {!signalementOuvert && (
               <button
                 type="button"
