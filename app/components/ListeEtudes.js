@@ -339,30 +339,31 @@ function FormulaireSignalement({ etude, onFermer }) {
   );
 }
 
-// 28 oct. 2026 : référence d'une seule étude (Vancouver simplifié), même mise en forme que l'export.
-function sansBalises(texte) {
-  return String(texte || '')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&amp;/g, '&')
-    .replace(/<[^>]*>/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-function referenceVancouver(etude) {
-  const auteurs = String(etude.auteurs || '').replace(/\.$/, '').split(/,\s*/).filter(Boolean);
-  const partieAuteurs = auteurs.length > 6
-    ? `${auteurs.slice(0, 6).join(', ')}, et al.`
-    : auteurs.length ? `${auteurs.join(', ')}.` : '';
-  let titre = sansBalises(etude.titre_original || etude.titre_traduit);
-  if (titre && !/[.?!]$/.test(titre)) titre += '.';
-  const morceaux = [partieAuteurs, titre];
-  const an = annee(etude.date_publication);
-  if (an) morceaux.push(`${an}.`);
-  const pmid = String(etude.url_originale || '').match(/MED\/(\d+)/);
-  if (pmid) morceaux.push(`PMID: ${pmid[1]}.`);
-  return morceaux.filter(Boolean).join(' ');
+// 29 oct. 2026 : copie la référence Vancouver complète d'une étude (construite par /api/export).
+async function copierReference(etudeId) {
+  const url = `/api/export?etude=${etudeId}&format=txt`;
+  const lire = () => fetch(url).then((r) => {
+    if (!r.ok) throw new Error('export');
+    return r.text();
+  });
+  try {
+    if (window.ClipboardItem && navigator.clipboard?.write) {
+      // Forme compatible avec Safari : le presse-papiers attend la réponse du serveur.
+      const contenu = lire().then((t) => new Blob([t], { type: 'text/plain' }));
+      await navigator.clipboard.write([new window.ClipboardItem({ 'text/plain': contenu })]);
+    } else {
+      await navigator.clipboard.writeText(await lire());
+    }
+    return true;
+  } catch (e) {
+    // Presse-papiers indisponible : la référence s'affiche pour être copiée à la main.
+    try {
+      window.prompt('Référence à copier :', await lire());
+    } catch (e2) {
+      // rien
+    }
+    return false;
+  }
 }
 
 // Carte compacte : niveau, titre, année. Les résumés et le détail s'ouvrent au clic.
@@ -372,15 +373,11 @@ function CarteEtude({ etude }) {
   const [referenceCopiee, setReferenceCopiee] = useState(false);
   const an = annee(etude.date_publication);
 
-  async function copierReference() {
-    const texte = referenceVancouver(etude);
-    try {
-      await navigator.clipboard.writeText(texte);
+  async function citer() {
+    const ok = await copierReference(etude.id);
+    if (ok) {
       setReferenceCopiee(true);
       setTimeout(() => setReferenceCopiee(false), 2500);
-    } catch (e) {
-      // Navigateur sans accès au presse-papiers : on affiche la référence à copier à la main.
-      window.prompt('Référence à copier :', texte);
     }
   }
 
@@ -433,18 +430,11 @@ function CarteEtude({ etude }) {
             )}
             <button
               type="button"
-              onClick={copierReference}
-              style={{ ...styleLienBouton, color: '#6B6E63', textDecoration: 'underline', fontSize: '13px' }}
+              onClick={citer}
+              style={{ ...styleLienBouton, color: '#27500A', textDecoration: 'underline', fontSize: '14px' }}
             >
-              {referenceCopiee ? 'Référence copiée ✓' : 'Copier la référence'}
+              {referenceCopiee ? 'Référence copiée ✓' : 'Citer (Vancouver)'}
             </button>
-            <a
-              href={`/api/export?etude=${etude.id}&format=ris`}
-              rel="nofollow"
-              style={{ color: '#6B6E63', fontSize: '13px' }}
-            >
-              Zotero
-            </a>
             {!signalementOuvert && (
               <button
                 type="button"
@@ -665,11 +655,9 @@ export default function ListeEtudes({ etudes, comptes, totalSelection, parametre
         {totalSelection > 0 && (
           <span style={{ display: 'inline-block', marginLeft: '12px' }}>
             Exporter ces {totalSelection > 2000 ? '2 000 premières ' : ''}études :{' '}
-            <a href={lienExport(chemin, parametres, 'csv')} style={{ color: '#555' }} rel="nofollow">tableau (Excel)</a>
+            <a href={lienExport(chemin, parametres, 'csv')} style={{ color: '#555' }} rel="nofollow">tableau de preuves (Excel)</a>
             {' · '}
-            <a href={lienExport(chemin, parametres, 'ris')} style={{ color: '#555' }} rel="nofollow">références (Zotero, EndNote)</a>
-            {' · '}
-            <a href={lienExport(chemin, parametres, 'txt')} style={{ color: '#555' }} rel="nofollow">liste de références (Vancouver)</a>
+            <a href={lienExport(chemin, parametres, 'ris')} style={{ color: '#555' }} rel="nofollow">importer dans Zotero, EndNote ou Mendeley</a>
           </span>
         )}
       </p>
