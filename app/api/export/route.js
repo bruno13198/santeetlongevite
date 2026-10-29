@@ -1,11 +1,15 @@
-// Export de la bibliographie d'une fiche (27 oct. 2026).
-// GET /api/export?type=aliment&slug=curcuma-poudre&format=csv (ou ris, ou txt)
+// Export de la bibliographie d'une fiche (27 oct. 2026, refonte 29 oct. 2026).
+// GET /api/export?type=aliment&slug=curcuma-poudre&format=csv (ou ris)
 // + les mêmes filtres que la liste affichée : niveau, revues, tri, q, probleme.
-// 28 oct. 2026 : GET /api/export?etude=<id>&format=ris exporte une seule étude.
-// Renvoie un fichier à télécharger : un tableau CSV (pour Excel, séparateur « ; »), un fichier
-// de références RIS (pour Zotero, EndNote, Mendeley) ou une liste de références au format
-// Vancouver simplifié (txt). Au plus 2 000 études par export.
-// 28 oct. 2026 : format txt (Vancouver simplifié) ; titres débarrassés des balises HTML dans tous les formats.
+// GET /api/export?etude=<id>&format=txt : référence Vancouver d'une seule étude (lien « Citer »).
+//
+// Formats, alignés sur les pratiques professionnelles :
+//   csv : tableau de preuves (une ligne par étude : référence, titres, type, effectif, niveau,
+//         résultats principaux, identifiants), pour Excel (séparateur « ; »)
+//   ris : références complètes pour Zotero, EndNote, Mendeley
+//   txt : référence(s) Vancouver complète(s)
+// Au plus 2 000 études par export. Revue, volume, numéro, pages et DOI viennent d'Europe PMC
+// (colonnes remplies par scripts/rattraper-metadonnees.js).
 import { createClient } from '@supabase/supabase-js';
 
 export const dynamic = 'force-dynamic';
@@ -27,6 +31,7 @@ const FORMATS = {
   ris: { extension: 'ris', type: 'application/x-research-info-systems; charset=utf-8' },
   txt: { extension: 'txt', type: 'text/plain; charset=utf-8' },
 };
+const COLONNES_BIBLIO = 'id, source_id, revue, revue_abregee, volume, numero, pages, doi, resume_reformule';
 
 // Retire les balises HTML (ex. <i>Allium</i>), y compris quand elles sont encodées (&lt;i&gt;).
 function sansBalises(texte) {
@@ -49,15 +54,47 @@ function annee(date) {
   return m ? m[1] : '';
 }
 
+// Référence Vancouver complète :
+// Auteurs (6 au plus, puis « et al. »). Titre. Revue. Année;Volume(Numéro):Pages. doi:… PMID: ….
+function referenceVancouver(e) {
+  const auteurs = String(e.auteurs || '').replace(/\.$/, '').split(/,\s*/).filter(Boolean);
+  const partieAuteurs = auteurs.length > 6
+    ? `${auteurs.slice(0, 6).join(', ')}, et al.`
+    : auteurs.length ? `${auteurs.join(', ')}.` : '';
+
+  let titre = sansBalises(e.titre_original || e.titre_traduit);
+  if (titre && !/[.?!]$/.test(titre)) titre += '.';
+
+  const an = annee(e.date_publication);
+  const revue = e.revue_abregee || e.revue;
+  let source = '';
+  if (revue) {
+    let detail = an;
+    if (e.volume) detail += `;${e.volume}`;
+    if (e.numero) detail += `(${e.numero})`;
+    if (e.pages) detail += `:${e.pages}`;
+    source = detail ? `${revue}. ${detail}.` : `${revue}.`;
+  } else if (an) {
+    source = `${an}.`;
+  }
+
+  const morceaux = [partieAuteurs, titre, source];
+  if (e.doi) morceaux.push(`doi:${e.doi}.`);
+  if (e.pmid) morceaux.push(`PMID: ${e.pmid}.`);
+  return morceaux.filter(Boolean).join(' ');
+}
+
+// Tableau de preuves : une ligne par étude.
 function versCsv(etudes) {
   const entetes = [
-    'Titre (français)', 'Titre original', 'Auteurs', 'Année', 'Date de publication',
-    'Niveau de preuve', "Type d'étude", 'Participants', 'Lien', 'PMID',
+    'Référence', 'Titre (français)', 'Titre original', "Type d'étude", 'Effectif',
+    'Niveau de preuve (Oxford)', 'Résultats principaux', 'Année', 'Revue', 'DOI', 'PMID', 'Lien',
   ];
   const lignes = etudes.map((e) =>
     [
-      sansBalises(e.titre_traduit), sansBalises(e.titre_original), e.auteurs, annee(e.date_publication), e.date_publication,
-      e.niveau_preuve, e.design_etude || e.type_etude, e.nb_participants, e.url_originale, e.pmid,
+      referenceVancouver(e), sansBalises(e.titre_traduit), sansBalises(e.titre_original),
+      e.design_etude || e.type_etude, e.nb_participants, e.niveau_preuve, e.resume_reformule,
+      annee(e.date_publication), e.revue, e.doi, e.pmid, e.url_originale,
     ].map(nettoyerCsv).join(';')
   );
   // Le caractère BOM permet à Excel de lire correctement les accents.
@@ -69,12 +106,22 @@ function versRis(etudes) {
     .map((e) => {
       const lignes = ['TY  - JOUR'];
       if (e.titre_original) lignes.push(`TI  - ${sansBalises(e.titre_original)}`);
-      if (e.titre_traduit) lignes.push(`T2  - ${sansBalises(e.titre_traduit)}`);
+      if (e.titre_traduit) lignes.push(`TT  - ${sansBalises(e.titre_traduit)}`);
       for (const auteur of String(e.auteurs || '').split(/,\s*/).filter(Boolean)) {
         lignes.push(`AU  - ${auteur.replace(/\.$/, '')}`);
       }
       if (annee(e.date_publication)) lignes.push(`PY  - ${annee(e.date_publication)}`);
       if (e.date_publication) lignes.push(`DA  - ${String(e.date_publication).replace(/-/g, '/')}`);
+      if (e.revue) lignes.push(`T2  - ${e.revue}`);
+      if (e.revue_abregee) lignes.push(`J2  - ${e.revue_abregee}`);
+      if (e.volume) lignes.push(`VL  - ${e.volume}`);
+      if (e.numero) lignes.push(`IS  - ${e.numero}`);
+      if (e.pages) {
+        const [debut, fin] = String(e.pages).split('-');
+        lignes.push(`SP  - ${debut}`);
+        if (fin) lignes.push(`EP  - ${fin}`);
+      }
+      if (e.doi) lignes.push(`DO  - ${e.doi}`);
       if (e.url_originale) lignes.push(`UR  - ${e.url_originale}`);
       if (e.pmid) lignes.push(`AN  - PMID:${e.pmid}`);
       const note = [
@@ -89,27 +136,10 @@ function versRis(etudes) {
     .join('\r\n\r\n');
 }
 
-// Vancouver simplifié : auteurs (6 au plus, puis « et al. »), titre original, année, PMID.
-// La revue, le volume et les pages ne sont pas encore en base.
+// Plusieurs études : liste numérotée (avec BOM pour les accents) ; une seule : la référence seule.
 function versVancouver(etudes) {
-  const lignes = etudes.map((e, i) => {
-    const auteurs = String(e.auteurs || '')
-      .replace(/\.$/, '')
-      .split(/,\s*/)
-      .filter(Boolean);
-    const partieAuteurs = auteurs.length > 6
-      ? `${auteurs.slice(0, 6).join(', ')}, et al.`
-      : auteurs.length ? `${auteurs.join(', ')}.` : '';
-
-    let titre = sansBalises(e.titre_original || e.titre_traduit);
-    if (titre && !/[.?!]$/.test(titre)) titre += '.';
-
-    const morceaux = [partieAuteurs, titre];
-    if (annee(e.date_publication)) morceaux.push(`${annee(e.date_publication)}.`);
-    if (e.pmid) morceaux.push(`PMID: ${e.pmid}.`);
-    return `${i + 1}. ${morceaux.filter(Boolean).join(' ')}`;
-  });
-  return '\uFEFF' + lignes.join('\r\n');
+  if (etudes.length === 1) return referenceVancouver(etudes[0]);
+  return '\uFEFF' + etudes.map((e, i) => `${i + 1}. ${referenceVancouver(e)}`).join('\r\n');
 }
 
 // Une seule étude, lue directement dans la table etudes.
@@ -117,7 +147,7 @@ async function chargerUneEtude(etudeId) {
   if (!/^[0-9a-f-]{36}$/i.test(etudeId)) return { erreur: 400 };
   const { data: etude } = await supabase
     .from('etudes')
-    .select('id, titre_original, titre_traduit, auteurs, date_publication, url_originale, source_id, niveau_preuve, design_etude, type_etude, nb_participants')
+    .select(`titre_original, titre_traduit, auteurs, date_publication, url_originale, niveau_preuve, design_etude, type_etude, nb_participants, ${COLONNES_BIBLIO}`)
     .eq('id', etudeId)
     .maybeSingle();
   if (!etude) return { erreur: 404 };
@@ -154,16 +184,19 @@ async function chargerSelection(params) {
   });
   if (error) return { erreur: 500 };
 
-  // Identifiant PubMed de chaque étude (colonne source_id), récupéré par lots
+  // Métadonnées bibliographiques et résumé de chaque étude, récupérés par lots
   const liste = etudes || [];
-  const pmidParId = new Map();
+  const bibloParId = new Map();
   for (let i = 0; i < liste.length; i += 200) {
     const ids = liste.slice(i, i + 200).map((e) => e.id);
-    const { data } = await supabase.from('etudes').select('id, source_id').in('id', ids);
-    for (const ligne of data || []) pmidParId.set(ligne.id, ligne.source_id);
+    const { data } = await supabase.from('etudes').select(COLONNES_BIBLIO).in('id', ids);
+    for (const ligne of data || []) bibloParId.set(ligne.id, ligne);
   }
   return {
-    etudes: liste.map((e) => ({ ...e, pmid: pmidParId.get(e.id) || '' })),
+    etudes: liste.map((e) => {
+      const b = bibloParId.get(e.id) || {};
+      return { ...e, ...b, resume_reformule: b.resume_reformule || e.resume_reformule, pmid: b.source_id || '' };
+    }),
     nomBase: slug,
   };
 }
@@ -185,7 +218,8 @@ export async function GET(request) {
   }
 
   const dateDuJour = new Date().toISOString().slice(0, 10);
-  const nomFichier = `sciencetruths-${resultat.nomBase}-${dateDuJour}.${FORMATS[format].extension}`;
+  const prefixe = format === 'csv' ? 'tableau-de-preuves' : 'references';
+  const nomFichier = `sciencetruths-${prefixe}-${resultat.nomBase}-${dateDuJour}.${FORMATS[format].extension}`;
   const contenu =
     format === 'ris' ? versRis(resultat.etudes)
     : format === 'txt' ? versVancouver(resultat.etudes)
