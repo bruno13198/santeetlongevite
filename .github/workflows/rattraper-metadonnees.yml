@@ -1,1 +1,32 @@
+name: Rattrapage des métadonnées bibliographiques
 
+on:
+  workflow_dispatch:
+    inputs:
+      ecrire:
+        description: 'Enregistrer en base ? (false = test)'
+        required: true
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+      limite:
+        description: "Nombre maximal d'études (vide = toutes)"
+        required: false
+        default: ''
+
+jobs:
+  rattraper:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install @supabase/supabase-js
+      - run: node scripts/rattraper-metadonnees.js
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ECRIRE: ${{ github.event.inputs.ecrire }}
+          LIMITE: ${{ github.event.inputs.limite || '1000000' }}
