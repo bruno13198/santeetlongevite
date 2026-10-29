@@ -1,10 +1,16 @@
-// Rattrapage des métadonnées bibliographiques des études (28 oct. 2026).
+// Rattrapage des métadonnées bibliographiques des études (28 oct. 2026, mode « compléter » le 29 oct.).
 //
-// Pour chaque étude sans revue ni DOI, interroge Europe PMC (gratuit, sans Claude) par lots de 100
-// et remplit : revue, revue_abregee, volume, numero, pages, doi. Ces informations servent aux
-// références complètes (Vancouver, Zotero).
+// Interroge Europe PMC (gratuit, sans Claude) par lots de 100 et remplit : revue, revue_abregee,
+// volume, numero, pages, doi. Ces informations servent aux références complètes (Vancouver, Zotero).
+//
+// Deux modes (variable MODE) :
+//   nouvelles (défaut) : études sans revue ni DOI (lancé chaque lundi après l'import)
+//   completer          : études qui ont une revue mais pas encore de volume ni de pages
+//                        (publiées en ligne avant parution) ; seuls les champs trouvés sont écrits,
+//                        rien n'est effacé (lancé une fois par mois)
 //
 // Variables d'environnement :
+//   MODE     'nouvelles' ou 'completer'
 //   ECRIRE   'true' pour enregistrer en base ; sinon test : affiche des exemples et les comptes
 //   LIMITE   nombre maximal d'études traitées (toutes par défaut)
 
@@ -14,6 +20,7 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SER
 
 const URL_EUROPE_PMC = 'https://www.ebi.ac.uk/europepmc/webservices/rest/searchPOST';
 const TAILLE_LOT = 100;
+const MODE = process.env.MODE === 'completer' ? 'completer' : 'nouvelles';
 const ECRIRE = process.env.ECRIRE === 'true';
 const LIMITE = parseInt(process.env.LIMITE || '1000000', 10);
 
@@ -32,13 +39,11 @@ function identifiant(etude) {
 async function chargerEtudes() {
   const etudes = [];
   for (let debut = 0; etudes.length < LIMITE; debut += 1000) {
-    const { data, error } = await supabase
-      .from('etudes')
-      .select('id, url_originale, source_id')
-      .is('revue', null)
-      .is('doi', null)
-      .order('id')
-      .range(debut, debut + 999);
+    let requete = supabase.from('etudes').select('id, url_originale, source_id');
+    requete = MODE === 'completer'
+      ? requete.not('revue', 'is', null).is('volume', null).is('pages', null)
+      : requete.is('revue', null).is('doi', null);
+    const { data, error } = await requete.order('id').range(debut, debut + 999);
     if (error) throw new Error(`Lecture des études impossible : ${error.message}`);
     if (!data || data.length === 0) break;
     etudes.push(...data);
@@ -88,10 +93,19 @@ function metadonnees(r) {
   };
 }
 
+// Ne garde que les champs renseignés : on n'efface jamais une valeur déjà en base.
+function champsTrouves(m) {
+  return Object.fromEntries(Object.entries(m).filter(([, v]) => v !== null));
+}
+
 async function main() {
-  console.log(`Rattrapage des métadonnées : ${ECRIRE ? 'ENREGISTREMENT en base' : 'test sans enregistrement'}.`);
+  console.log(`Rattrapage des métadonnées (mode ${MODE}) : ${ECRIRE ? 'ENREGISTREMENT en base' : 'test sans enregistrement'}.`);
   const etudes = await chargerEtudes();
-  console.log(`${etudes.length} étude(s) sans revue ni DOI.`);
+  console.log(
+    MODE === 'completer'
+      ? `${etudes.length} étude(s) avec revue mais sans volume ni pages.`
+      : `${etudes.length} étude(s) sans revue ni DOI.`
+  );
 
   // Regroupement par source (MED, PMC, PPR…), car une requête ne vise qu'une source.
   const parSource = new Map();
@@ -105,6 +119,7 @@ async function main() {
 
   let trouvees = 0;
   let introuvables = 0;
+  let enAttente = 0;
   let enregistrees = 0;
   let echecs = 0;
   let exemples = 0;
@@ -127,7 +142,14 @@ async function main() {
         const r = parId.get(id);
         if (!r) { introuvables++; continue; }
         const m = metadonnees(r);
-        if (!m.revue && !m.doi) { introuvables++; continue; }
+
+        if (MODE === 'completer') {
+          // Toujours pas de volume ni de pages : l'étude n'est pas encore parue, on réessaiera.
+          if (!m.volume && !m.pages) { enAttente++; continue; }
+        } else if (!m.revue && !m.doi) {
+          introuvables++;
+          continue;
+        }
         trouvees++;
 
         if (exemples < 10) {
@@ -136,7 +158,7 @@ async function main() {
         }
 
         if (ECRIRE) {
-          const { error } = await supabase.from('etudes').update(m).eq('id', etude.id);
+          const { error } = await supabase.from('etudes').update(champsTrouves(m)).eq('id', etude.id);
           if (error) { echecs++; console.log(`  ! ${etude.id} : ${error.message}`); }
           else enregistrees++;
         }
@@ -148,6 +170,7 @@ async function main() {
 
   console.log('\n##### Bilan #####');
   console.log(`Études examinées : ${etudes.length} | métadonnées trouvées : ${trouvees} | introuvables : ${introuvables} | sans identifiant : ${sansIdentifiant}`);
+  if (MODE === 'completer') console.log(`Toujours sans volume ni pages (à revoir le mois prochain) : ${enAttente}`);
   console.log(`Enregistrées : ${enregistrees} | échecs : ${echecs}`);
 }
 
