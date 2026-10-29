@@ -152,7 +152,8 @@ export default function APropos() {
           {/* 24 oct. 2026 : appel à relecteurs centré sur les résumés d'études de la veille. */}
           <p className={styles.body}>
             Je cherche aussi de bonnes volontés pour relire ponctuellement les résumés d'études de
-            la veille, et à l'occasion les articles : médecins, pharmaciens, diététiciens,
+                        la veille, et à l'occasion les articles : médecins, médecins nutritionnistes,
+            pharmaciens, diététiciens-nutritionnistes,
             chercheurs ou doctorants en nutrition, physiologie, sport ou médecine préventive. Il
             s'agirait de signaler les contresens, les chiffres mal repris, les niveaux de preuve
             mal attribués ou les formulations excessives.
