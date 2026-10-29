@@ -130,6 +130,14 @@ jobs:
           LIMITE: '3000'
           AFFICHER_DETAIL: 'false'
         run: node scripts/classer-problemes.js
+      - name: Compléter les références des nouvelles études (revue, volume, pages, DOI)
+        # Ajouté le 28 oct. 2026 : gratuit (Europe PMC, sans Claude), ne traite que les études sans revue ni DOI.
+        continue-on-error: true
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ECRIRE: 'true'
+        run: node scripts/rattraper-metadonnees.js
       - name: Envoyer les alertes email
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
