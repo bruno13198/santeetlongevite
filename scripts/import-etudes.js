@@ -323,8 +323,13 @@ async function chercherEtudesEuropePMC(aliment) {
   let motsClefs;
 
   if (Array.isArray(termesMultiples) && termesMultiples.length > 0) {
+        // 31 oct. 2026 : un terme « A + B » exige les deux expressions dans le titre ou le résumé
+    // (ex. « PFAS + dietary »), pour cibler les contaminants sur l'alimentation.
     motsClefs = termesMultiples
-      .map((t) => `(TITLE:"${t}" OR ABSTRACT:"${t}")`)
+      .map((t) => {
+        const parties = String(t).split('+').map((p) => p.trim()).filter(Boolean);
+        return `(${parties.map((p) => `(TITLE:"${p}" OR ABSTRACT:"${p}")`).join(' AND ')})`;
+      })
       .join(' OR ');
   } else {
     // Retire un nom scientifique latin (Genre espèce) en fin de terme,
