@@ -225,7 +225,10 @@ function construireFiltreSujet(habitude) {
   if (Array.isArray(habitude.termes_texte)) {
     for (const terme of habitude.termes_texte) {
       if (terme && terme.trim() !== '') {
-        parties.push(`(TITLE:"${terme}" OR ABSTRACT:"${terme}")`);
+        // 31 oct. 2026 : un terme « A + B » exige les deux expressions dans le titre ou le résumé
+        // (ex. « Atkins diet + weight »). Un terme sans « + » fonctionne comme avant.
+        const morceaux = terme.split('+').map((m) => m.trim()).filter(Boolean);
+        parties.push(`(${morceaux.map((m) => `(TITLE:"${m}" OR ABSTRACT:"${m}")`).join(' AND ')})`);
       }
     }
   }
