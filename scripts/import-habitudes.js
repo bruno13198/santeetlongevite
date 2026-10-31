@@ -748,6 +748,12 @@ async function collecterCandidats(habitude) {
     // 19 oct. 2026 : les études sur le Ramadan vont sur la fiche « Jeûne du Ramadan »,
     // jamais sur la fiche générale « Jeûne » (dont les termes les attrapent aussi).
     if (habitude.slug === 'jeune' && /ramadan/i.test(etude.title || '')) continue;
+    // 31 oct. 2026 : la fiche « Régime Atkins (amaigrissant) » ne reçoit pas les études sur
+    // l'usage thérapeutique (épilepsie, myopathies...) : elles relèvent du Régime cétogène.
+    if (
+      habitude.slug === 'regime-atkins' &&
+      /modified Atkins|epilep|seizure|mitochondrial|multiple sclerosis|ketogenic/i.test(etude.title || '')
+    ) continue;
 
     const { data: existant } = await supabase
       .from('etudes')
