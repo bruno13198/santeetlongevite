@@ -1,1 +1,37 @@
-
+name: Comptage de littérature (gratuit)
+on:
+  workflow_dispatch:
+    inputs:
+      slugs:
+        description: 'Slugs des fiches, séparés par des virgules'
+        required: true
+      jours:
+        description: 'Fenêtre en jours (3650 = 10 ans)'
+        required: false
+        default: '3650'
+permissions:
+  contents: read
+jobs:
+  compter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Installer les dépendances
+        run: npm install @supabase/supabase-js
+      - name: Compter les études sur Europe PMC
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SLUGS: ${{ github.event.inputs.slugs }}
+          JOURS: ${{ github.event.inputs.jours }}
+        run: node scripts/compter-litterature.js
+      - name: Enregistrer le fichier CSV
+        uses: actions/upload-artifact@v4
+        with:
+          name: comptage-litterature
+          path: comptage-litterature.csv
