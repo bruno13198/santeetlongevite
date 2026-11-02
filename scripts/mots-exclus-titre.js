@@ -1,5 +1,5 @@
 // Liste partagée des mots de TITRE signalant un sujet animal, végétal, informatique ou matériau
-// (1er nov. 2026 : extraite d'import-etudes.js pour être commune aux imports et au comptage).
+// (extraite d'import-etudes.js pour être commune aux imports et au comptage).
 // Un titre contenant l'un de ces mots est exclu de la recherche Europe PMC, SAUF s'il contient
 // aussi un marqueur humain ("humans", "patients", "trial"...).
 // Historique : "poultry" seul retiré le 28 sept. 2026 (bloquait "poultry consumption").
@@ -60,6 +60,7 @@ const MOTS_EXCLUS_TITRE = [
 ];
 
 // Un titre qui contient aussi l'un de ces marqueurs humains n'est pas exclu.
+// À VÉRIFIER : doit être identique à la liste utilisée dans import-etudes.js.
 const MARQUEURS_HUMAINS = [
   'human', 'humans', 'men', 'women', 'adult', 'adults', 'older adults', 'elderly',
   'children', 'adolescents', 'infants', 'patients', 'participants', 'volunteers',
