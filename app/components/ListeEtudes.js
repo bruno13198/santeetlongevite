@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { niveauHas } from '../../lib/niveauHas';
 
 // Liste des études d'une fiche (21 oct. 2026 : pagination côté serveur).
 // Ce composant n'affiche qu'une page de 20 études, déjà filtrée et triée par la base de données
@@ -112,6 +113,15 @@ function BlocPreuve({ etude }) {
           <span style={{ marginLeft: '10px', color: '#555', fontSize: '13px' }}>
             {formaterEffectif(etude.nb_participants)} participants
           </span>
+        )}
+        {niveauHas(etude.design_etude, etude.ajustement_preuve) && (
+          <a
+            href="/niveaux-de-preuve#echelles"
+            title="Équivalent approximatif dans la grille de la Haute Autorité de santé"
+            style={{ marginLeft: '10px', color: '#6B6E63', fontSize: '12px', textDecoration: 'none' }}
+          >
+            équivalent HAS : {niveauHas(etude.design_etude, etude.ajustement_preuve)}
+          </a>
         )}
         {niveauInitial && (
           <div style={{ marginTop: '8px' }}>
