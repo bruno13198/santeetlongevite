@@ -136,6 +136,66 @@ export default function NiveauxDePreuve() {
         </div>
       ))}
 
+            {/* 2 nov. 2026 : correspondance avec les échelles de la HAS et de GRADE. */}
+      <h2 id="echelles">Notre échelle et celles que vous connaissez</h2>
+      <p>
+        En France, la Haute Autorité de santé utilise sa propre grille, avec des niveaux de preuve de 1 à 4.
+        Les grandes synthèses internationales, comme celles de Cochrane ou de l'OMS, utilisent plutôt le
+        système GRADE. Nous avons choisi Oxford parce qu'elle permet de classer chaque étude
+        individuellement, ce dont une veille a besoin : GRADE évalue la certitude d'un ensemble d'études
+        sur une question donnée, et ne s'applique pas à une étude isolée.
+      </p>
+      <p>
+        Sous chaque étude, nous indiquons aussi un <strong>équivalent dans la grille de la HAS</strong>.
+        Voici comment les échelles se correspondent :
+      </p>
+      <div style={{ overflowX: 'auto', marginBottom: '16px' }}>
+        <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: '14px' }}>
+          <thead>
+            <tr style={{ backgroundColor: '#F1F1EE' }}>
+              {['Notre niveau', "Types d'études", 'Équivalent HAS', 'Point de départ GRADE'].map((t) => (
+                <th key={t} style={{ textAlign: 'left', padding: '8px', borderBottom: '1px solid #DCDDD5' }}>{t}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              ['1', "Méta-analyses et revues systématiques d'essais randomisés", 'Niveau 1', 'Certitude élevée'],
+              ['2', 'Essais randomisés contrôlés', 'Niveau 1, ou 2 si l’essai est abaissé', 'Certitude élevée'],
+              ['3', "Cohortes, essais non randomisés, randomisation mendélienne, méta-analyses d'études observationnelles", 'Niveau 2', 'Certitude faible'],
+              ['4', 'Cas-témoins, études transversales, séries de cas, cas cliniques', 'Niveau 3 (cas-témoins) ou 4', 'Certitude faible à très faible'],
+              ['5', 'Revues narratives, raisonnements mécanistiques', 'Sans équivalent', 'Non applicable'],
+            ].map((ligne) => (
+              <tr key={ligne[0]}>
+                {ligne.map((cellule, i) => (
+                  <td key={i} style={{ padding: '8px', borderBottom: '1px solid #eee', verticalAlign: 'top', fontWeight: i === 0 ? 'bold' : 'normal' }}>
+                    {cellule}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p>
+        <strong>Attention aux faux amis</strong> : un même chiffre n'a pas le même sens d'une échelle à
+        l'autre. Une étude de cohorte bien menée est classée niveau 3 chez nous, et niveau 2 dans la grille
+        de la HAS.
+      </p>
+      <p>
+        L'équivalent HAS est <strong>déduit automatiquement du type d'étude</strong>. Pour les essais
+        randomisés, la HAS distingue les essais « de forte puissance » (niveau 1) et « de faible puissance »
+        (niveau 2), sans seuil chiffré. Le calcul de puissance figurant rarement dans le résumé, nous
+        retenons le niveau 1 pour les essais sans défaut relevé, et le niveau 2 pour les essais abaissés
+        selon les règles ci-dessous. C'est une approximation : seule la lecture de l'article complet
+        permet de trancher.
+      </p>
+      <p>
+        Le point de départ GRADE correspond au niveau de certitude initial d'un ensemble d'études de ce
+        type, avant les ajustements propres à GRADE (risque de biais, incohérence, caractère indirect,
+        imprécision, biais de publication).
+      </p>
+
       <h2>Les ajustements</h2>
       <p>
         Le type d'étude fixe un niveau de départ. Ce niveau peut être <strong>abaissé d'un cran</strong>{' '}
