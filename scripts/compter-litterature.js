@@ -81,4 +81,90 @@ async function compter(requete, tentative = 1) {
     const res = await fetch(URL_EUROPEPMC_POST, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new
+      body: new URLSearchParams({ query: requete, format: 'json', pageSize: '1', resultType: 'lite' }).toString(),
+      signal: AbortSignal.timeout(60000),
+    });
+    if (!res.ok) throw new Error(`erreur ${res.status}`);
+    return (await res.json()).hitCount || 0;
+  } catch (e) {
+    if (tentative < 5) {
+      await pause(3000 * tentative);
+      return compter(requete, tentative + 1);
+    }
+    console.log(`  Échec Europe PMC : ${e.message}`);
+    return null;
+  }
+}
+
+async function main() {
+  const slugs = TOUTES ? await listerToutesLesFiches() : SLUGS;
+  if (slugs.length === 0) throw new Error('Aucun slug indiqué (ni TOUTES=true).');
+
+  const debut = new Date();
+  debut.setDate(debut.getDate() - JOURS);
+  const filtreDate = `(FIRST_IDATE:[${formaterDate(debut)} TO ${formaterDate(new Date())}])`;
+  const exclusion = clauseExclusion();
+
+  console.log(`Comptage de ${slugs.length} fiche(s) sur ${JOURS} jours` +
+    `${HAUTS_NIVEAUX ? ', hauts niveaux de preuve seulement' : ''} (gratuit, aucun appel Claude).\n`);
+  const lignes = [];
+
+  for (const slug of slugs) {
+    const fiche = await chercherFiche(slug);
+    if (!fiche || !fiche.sujet) {
+      console.log(`  ${slug} : fiche introuvable ou sans termes`);
+      continue;
+    }
+    const base = `(${fiche.sujet}) AND (SRC:MED) ${exclusion} AND ${filtreDate}`;
+
+    if (HAUTS_NIVEAUX) {
+      const n = await compter(`${base} AND ${FILTRE_HAUTS_NIVEAUX}`);
+      await pause(300);
+      lignes.push({ slug, nom: fiche.nom, type: fiche.type, total: n, humain: null, bruit: null });
+      console.log(`  ${slug} : ${n ?? '?'} étude(s) de haut niveau`);
+    } else {
+      const total = await compter(base);
+      await pause(300);
+      const humain = await compter(`${base} AND ${FILTRE_HUMAIN} ${EXCLUSIONS_ANIMAL}`);
+      await pause(300);
+      const bruit = total && humain !== null ? Math.round(100 * (1 - humain / total)) : null;
+      lignes.push({ slug, nom: fiche.nom, type: fiche.type, total, humain, bruit });
+      console.log(`  ${slug} : ${total ?? '?'} au total, ${humain ?? '?'} chez l'homme (bruit ${bruit ?? '?'} %)`);
+    }
+  }
+
+  lignes.sort((a, b) => (b.total ?? -1) - (a.total ?? -1));
+  const somme = lignes.reduce((s, l) => s + (l.total || 0), 0);
+  const echecs = lignes.filter((l) => l.total === null).length;
+
+  console.log('\n##### Classement (50 premières fiches ; liste complète dans le fichier CSV) #####');
+  for (const l of lignes.slice(0, 50)) {
+    if (HAUTS_NIVEAUX) {
+      console.log(`${l.nom} | ${l.type} | ${l.total ?? '?'}`);
+    } else {
+      const alerte = l.bruit !== null && l.bruit >= 80 ? '  ⚠️ termes à revoir' : '';
+      console.log(`${l.nom} | ${l.type} | ${l.total ?? '?'} | ${l.humain ?? '?'} | ${l.bruit ?? '?'} %${alerte}`);
+    }
+  }
+
+  console.log('\n##### Bilan #####');
+  console.log(`Fiches comptées : ${lignes.length} | en échec Europe PMC : ${echecs}`);
+  console.log(`Total des résultats${HAUTS_NIVEAUX ? ' de haut niveau' : ''} : ${somme}`);
+  for (const type of ['aliment', 'régime', 'nutriment']) {
+    const sousTotal = lignes.filter((l) => l.type === type).reduce((s, l) => s + (l.total || 0), 0);
+    console.log(`  dont ${type}s : ${sousTotal}`);
+  }
+
+  const echapper = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const csv = [
+    'slug,nom,type,total,chez_l_homme,bruit_pourcent',
+    ...lignes.map((l) => [l.slug, l.nom, l.type, l.total, l.humain, l.bruit].map(echapper).join(',')),
+  ].join('\n');
+  fs.writeFileSync('comptage-litterature.csv', '\uFEFF' + csv, 'utf8');
+  console.log('\nFichier comptage-litterature.csv enregistré (voir « Artifacts » en bas de la page du run).');
+}
+
+main().catch((e) => {
+  console.error('Erreur fatale :', e.message);
+  process.exit(1);
+});
