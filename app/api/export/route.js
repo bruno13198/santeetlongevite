@@ -11,6 +11,7 @@
 // Au plus 2 000 études par export. Revue, volume, numéro, pages et DOI viennent d'Europe PMC
 // (colonnes remplies par scripts/rattraper-metadonnees.js).
 import { createClient } from '@supabase/supabase-js';
+import { niveauHas } from '../../../lib/niveauHas';
 
 export const dynamic = 'force-dynamic';
 
