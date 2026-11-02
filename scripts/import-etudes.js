@@ -78,7 +78,8 @@ const ALIMENTS_GROS_VOLUME = [
 ];
 
 function quotasPour(aliment) {
-  if (ALIMENTS_GROS_VOLUME.includes(aliment.slug)) return QUOTAS_RENFORCES;
+  // En mode hauts niveaux, les plafonds du formulaire s'appliquent à toutes les fiches.
+  if (!HAUTS_NIVEAUX && ALIMENTS_GROS_VOLUME.includes(aliment.slug)) return QUOTAS_RENFORCES;
   return {
     resultats: RESULTATS_A_RECUPERER,
     analyses: MAX_ANALYSES_PAR_RUN,
@@ -91,6 +92,12 @@ const MAX_VAGUES = parseInt(process.env.MAX_VAGUES || '6', 10);
 const OFFSET = parseInt(process.env.OFFSET || '0', 10);
 const LIMITE = parseInt(process.env.LIMITE || '200', 10);
 const JOURS_VEILLE = parseInt(process.env.JOURS_VEILLE || '10', 10);
+// 2 nov. 2026 : rattrapage limité aux études de haut niveau (méta-analyses, revues
+// systématiques, essais randomisés), pour les runs manuels uniquement. Le run du lundi
+// n'utilise pas cette option (les articles récents n'ont pas encore de type de publication).
+const HAUTS_NIVEAUX = process.env.HAUTS_NIVEAUX === 'true';
+const FILTRE_HAUTS_NIVEAUX =
+  'AND (PUB_TYPE:"Meta-Analysis" OR PUB_TYPE:"Systematic Review" OR PUB_TYPE:"Randomized Controlled Trial")';
 // Attente maximale par lot Claude (en minutes). Un job GitHub Actions est limité à 6 h.
 const ATTENTE_MAX_LOT_MIN = parseInt(process.env.ATTENTE_MAX_LOT_MIN || '120', 10);
 
@@ -358,7 +365,7 @@ async function chercherEtudesEuropePMC(aliment) {
     'subjects', 'trial', 'randomized', 'randomised',
   ];
   const marqueursHumains = MARQUEURS_HUMAINS.map((m) => `TITLE:"${m}"`).join(' OR ');
-  const requete = `(${motsClefs}) AND (SRC:MED) NOT ((${exclusionTitre}) AND NOT (${marqueursHumains})) ${filtreDate}`;
+    const requete = `(${motsClefs}) AND (SRC:MED) NOT ((${exclusionTitre}) AND NOT (${marqueursHumains})) ${filtreDate}${HAUTS_NIVEAUX ? ` ${FILTRE_HAUTS_NIVEAUX}` : ''}`;
 
   // Lecture de toutes les pages (curseur Europe PMC), jusqu'au maximum fixé.
   const resultats = [];
@@ -837,7 +844,7 @@ async function collecterCandidats(aliment) {
 // ---------------------------------------------------------------------------
 
 async function main() {
-  console.log(`Paramètres de ce run : OFFSET=${OFFSET}, LIMITE=${LIMITE}, JOURS_VEILLE=${JOURS_VEILLE}, RESULTATS_A_RECUPERER=${RESULTATS_A_RECUPERER}, MAX_NOUVELLES=${MAX_NOUVELLES_ETUDES_PAR_RUN}, MAX_ANALYSES=${MAX_ANALYSES_PAR_RUN}, MAX_VAGUES=${MAX_VAGUES}, aliments à quotas renforcés : ${ALIMENTS_GROS_VOLUME.length}`);
+    console.log(`Paramètres de ce run : HAUTS_NIVEAUX=${HAUTS_NIVEAUX}, OFFSET=${OFFSET}, LIMITE=${LIMITE}, JOURS_VEILLE=${JOURS_VEILLE}, RESULTATS_A_RECUPERER=${RESULTATS_A_RECUPERER}, MAX_NOUVELLES=${MAX_NOUVELLES_ETUDES_PAR_RUN}, MAX_ANALYSES=${MAX_ANALYSES_PAR_RUN}, MAX_VAGUES=${MAX_VAGUES}, aliments à quotas renforcés : ${ALIMENTS_GROS_VOLUME.length}`);
   const tousLesAliments = await recupererAlimentsATraiter();
   const lot = tousLesAliments.slice(OFFSET, OFFSET + LIMITE);
   console.log(`${tousLesAliments.length} aliments éligibles au total. Lot traité : offset ${OFFSET}, ${lot.length} aliments (jusqu'à l'offset ${OFFSET + lot.length}).`);
