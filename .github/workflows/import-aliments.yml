@@ -11,6 +11,11 @@ on:
         description: 'Fenêtre de recherche en jours (10 par défaut)'
         required: false
         default: '10'
+      hauts_niveaux:
+        description: 'Seulement méta-analyses, revues systématiques et essais randomisés'
+        type: choice
+        options: ['false', 'true']
+        default: 'false'
       offset:
         description: 'Offset de départ (0, 200, 400, ...)'
         required: false
@@ -20,15 +25,15 @@ on:
         required: false
         default: '2000'
       resultats_a_recuperer:
-        description: 'Résultats Europe PMC examinés par aliment (vide = 500)'
+        description: 'Résultats Europe PMC examinés par aliment (vide = 1000)'
         required: false
         default: ''
       max_nouvelles_etudes:
-        description: 'Nouvelles études max par aliment et par run (vide = 15)'
+        description: 'Nouvelles études max par aliment et par run (vide = 30)'
         required: false
         default: ''
       max_analyses:
-        description: 'Analyses Sonnet max par aliment et par run (vide = 25)'
+        description: 'Analyses Sonnet max par aliment et par run (vide = 50)'
         required: false
         default: ''
 
@@ -55,6 +60,7 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           SLUGS_CIBLES: ${{ github.event.inputs.slugs_cibles || '' }}
           JOURS_VEILLE: ${{ github.event.inputs.jours_veille || '10' }}
+          HAUTS_NIVEAUX: ${{ github.event.inputs.hauts_niveaux || 'false' }}
           OFFSET: ${{ github.event.inputs.offset || '0' }}
           LIMITE: ${{ github.event.inputs.limite || '2000' }}
           RESULTATS_A_RECUPERER: ${{ github.event.inputs.resultats_a_recuperer }}
