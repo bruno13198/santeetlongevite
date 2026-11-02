@@ -133,10 +133,7 @@ async function recupererEtudesPourAbonnement(abonnement) {
     const lotIds = etudeIds.slice(i, i + tailleLotEtudes);
     const { data: lotEtudes, error } = await supabase
       .from('etudes')
-              return etudes
-    .filter(
-      (e) => new Date(e.created_at) > new Date(abonnement.date_confirmation) && !idsDejaEnvoyees.has(e.id)
-    )
+                    .select('id, created_at, date_publication, titre_traduit, titre_original')
       .in('id', lotIds);
 
     if (error) {
@@ -146,9 +143,21 @@ async function recupererEtudesPourAbonnement(abonnement) {
     etudes = etudes.concat(lotEtudes || []);
   }
 
+    // 2 nov. 2026 : seules les études publiées depuis moins de 90 jours sont envoyées.
+  // Les études anciennes ajoutées par un rattrapage restent visibles sur les fiches,
+  // mais ne sont jamais présentées comme des nouveautés. Une étude sans date de
+  // publication (cas très rare) est envoyée comme avant.
+  const JOURS_NOUVEAUTE = 90;
+  const dateLimite = new Date();
+  dateLimite.setDate(dateLimite.getDate() - JOURS_NOUVEAUTE);
+  const estRecente = (e) => !e.date_publication || new Date(e.date_publication) >= dateLimite;
+
   return etudes
     .filter(
-      (e) => new Date(e.created_at) > new Date(abonnement.date_confirmation) && !idsDejaEnvoyees.has(e.id)
+      (e) =>
+        new Date(e.created_at) > new Date(abonnement.date_confirmation) &&
+        !idsDejaEnvoyees.has(e.id) &&
+        estRecente(e)
     )
     .map((e) => ({ ...e, sujet: sujetParEtude[e.id] || null, prefixeUrl: config.prefixeUrl }));
 }
