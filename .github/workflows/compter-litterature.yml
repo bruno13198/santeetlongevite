@@ -3,10 +3,21 @@ on:
   workflow_dispatch:
     inputs:
       slugs:
-        description: 'Slugs des fiches, séparés par des virgules'
-        required: true
+        description: 'Slugs des fiches, séparés par des virgules (laisser vide si « toutes »)'
+        required: false
+        default: ''
+      toutes:
+        description: 'Compter toutes les fiches actives'
+        type: choice
+        options: ['false', 'true']
+        default: 'false'
+      hauts_niveaux:
+        description: 'Seulement méta-analyses, revues systématiques et essais randomisés'
+        type: choice
+        options: ['false', 'true']
+        default: 'false'
       jours:
-        description: 'Fenêtre en jours (3650 = 10 ans)'
+        description: 'Fenêtre en jours (3650 = 10 ans, 15000 = environ 40 ans)'
         required: false
         default: '3650'
 permissions:
@@ -14,6 +25,7 @@ permissions:
 jobs:
   compter:
     runs-on: ubuntu-latest
+    timeout-minutes: 120
     steps:
       - name: Récupérer le code
         uses: actions/checkout@v4
@@ -28,6 +40,8 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           SLUGS: ${{ github.event.inputs.slugs }}
+          TOUTES: ${{ github.event.inputs.toutes }}
+          HAUTS_NIVEAUX: ${{ github.event.inputs.hauts_niveaux }}
           JOURS: ${{ github.event.inputs.jours }}
         run: node scripts/compter-litterature.js
       - name: Enregistrer le fichier CSV
