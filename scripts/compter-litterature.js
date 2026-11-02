@@ -12,6 +12,7 @@
 
 const fs = require('fs');
 const { createClient } = require('@supabase/supabase-js');
+const { clauseExclusion } = require('./mots-exclus-titre');
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 const URL_EUROPEPMC_POST = 'https://www.ebi.ac.uk/europepmc/webservices/rest/searchPOST';
@@ -92,7 +93,8 @@ async function main() {
       console.log(`  ${slug} : fiche introuvable ou sans termes`);
       continue;
     }
-    const base = `(${fiche.sujet}) AND (SRC:MED) AND ${filtreDate}`;
+        // Même requête que le rattrapage : sujet, MEDLINE, mots exclus des titres, fenêtre de dates.
+    const base = `(${fiche.sujet}) AND (SRC:MED) ${clauseExclusion()} AND ${filtreDate}`;
     const total = await compter(base);
     await pause(300);
     const humain = await compter(`${base} AND ${FILTRE_HUMAIN} ${EXCLUSIONS_ANIMAL}`);
