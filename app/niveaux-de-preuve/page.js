@@ -193,7 +193,9 @@ export default function NiveauxDePreuve() {
       <p>
         Le point de départ GRADE correspond au niveau de certitude initial d'un ensemble d'études de ce
         type, avant les ajustements propres à GRADE (risque de biais, incohérence, caractère indirect,
-        imprécision, biais de publication).
+        imprécision, biais de publication). C'est pourquoi la certitude « modérée » n'y figure pas : elle
+        n'apparaît qu'après ces ajustements. Ces termes de certitude sont propres à GRADE ; la HAS, elle,
+        exprime la force de ses recommandations par des grades (A, B, C).
       </p>
 
       <h2>Les ajustements</h2>
