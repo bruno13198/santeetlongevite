@@ -89,12 +89,14 @@ function referenceVancouver(e) {
 function versCsv(etudes) {
   const entetes = [
     'Référence', 'Titre (français)', 'Titre original', "Type d'étude", 'Effectif',
-    'Niveau de preuve (Oxford)', 'Résultats principaux', 'Année', 'Revue', 'DOI', 'PMID', 'Lien',
+    'Niveau de preuve (Oxford)', 'Équivalent HAS (approximatif)', 'Résultats principaux',
+    'Année', 'Revue', 'DOI', 'PMID', 'Lien',
   ];
   const lignes = etudes.map((e) =>
     [
       referenceVancouver(e), sansBalises(e.titre_traduit), sansBalises(e.titre_original),
-      e.design_etude || e.type_etude, e.nb_participants, e.niveau_preuve, e.resume_reformule,
+      e.design_etude || e.type_etude, e.nb_participants, e.niveau_preuve,
+      niveauHas(e.design_etude, e.ajustement_preuve), e.resume_reformule,
       annee(e.date_publication), e.revue, e.doi, e.pmid, e.url_originale,
     ].map(nettoyerCsv).join(';')
   );
