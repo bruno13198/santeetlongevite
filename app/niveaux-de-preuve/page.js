@@ -180,8 +180,10 @@ export default function NiveauxDePreuve() {
         randomisés, la HAS distingue les essais « de forte puissance » (niveau 1) et « de faible puissance »
         (niveau 2), sans seuil chiffré. Le calcul de puissance figurant rarement dans le résumé, nous
         retenons le niveau 1 pour les essais sans défaut relevé, et le niveau 2 pour les essais abaissés
-        selon les règles ci-dessous. C'est une approximation : seule la lecture de l'article complet
-        permet de trancher.
+        selon les règles ci-dessous. C'est une approximation : seule la lecture de l'étude complète
+        permet de trancher. Hormis cette règle propre aux essais, l'équivalent HAS dépend du type
+        d'étude et non de nos ajustements : une méta-analyse de cohortes abaissée chez nous, par
+        exemple, reste équivalente au niveau 2 de la HAS.
       </p>
 
       <h2>Les ajustements</h2>
