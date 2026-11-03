@@ -6,13 +6,17 @@ on:
         description: 'Slugs des fiches, séparés par des virgules (laisser vide si « toutes »)'
         required: false
         default: ''
+      candidats:
+        description: 'Sujets candidats (« Nom : terme1 | terme2 ; Nom 2 : terme3 »)'
+        required: false
+        default: ''
       toutes:
         description: 'Compter toutes les fiches actives'
         type: choice
         options: ['false', 'true']
         default: 'false'
       hauts_niveaux:
-        description: 'Seulement méta-analyses, revues systématiques et essais randomisés'
+        description: 'Seulement méta-analyses d''essais randomisés et de cohortes prospectives'
         type: choice
         options: ['false', 'true']
         default: 'false'
@@ -40,6 +44,7 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           SLUGS: ${{ github.event.inputs.slugs }}
+          CANDIDATS: ${{ github.event.inputs.candidats }}
           TOUTES: ${{ github.event.inputs.toutes }}
           HAUTS_NIVEAUX: ${{ github.event.inputs.hauts_niveaux }}
           JOURS: ${{ github.event.inputs.jours }}
