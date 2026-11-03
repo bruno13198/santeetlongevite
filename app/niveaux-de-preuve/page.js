@@ -136,35 +136,28 @@ export default function NiveauxDePreuve() {
         </div>
       ))}
 
-            {/* 2 nov. 2026 : correspondance avec les échelles de la HAS et de GRADE. */}
-      <h2 id="echelles">Notre échelle et celles que vous connaissez</h2>
+                  {/* 2 nov. 2026 : correspondance avec la grille de la HAS. */}
+      <h2 id="echelles">Notre échelle et celle de la HAS</h2>
       <p>
-        En France, la Haute Autorité de santé utilise sa propre grille, avec des niveaux de preuve de 1 à 4.
-        Les grandes synthèses internationales, comme celles de Cochrane ou de l'OMS, utilisent plutôt le
-        système GRADE. Nous avons choisi Oxford parce qu'elle permet de classer chaque étude
-        individuellement, ce dont une veille a besoin : GRADE évalue la certitude d'un ensemble d'études
-        sur une question donnée, et ne s'applique pas à une étude isolée.
-      </p>
-      <p>
-        Sous chaque étude, nous indiquons aussi un <strong>équivalent dans la grille de la HAS</strong>.
-        Voici comment les échelles se correspondent :
+        Sous chaque étude, nous indiquons aussi un <strong>équivalent approximatif dans la grille de la
+        Haute Autorité de santé</strong>, qui classe les études en quatre niveaux :
       </p>
       <div style={{ overflowX: 'auto', marginBottom: '16px' }}>
         <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: '14px' }}>
           <thead>
             <tr style={{ backgroundColor: '#F1F1EE' }}>
-              {['Notre niveau', "Types d'études", 'Équivalent HAS', 'Point de départ GRADE'].map((t) => (
+              {['Notre niveau', "Types d'études", 'Équivalent HAS'].map((t) => (
                 <th key={t} style={{ textAlign: 'left', padding: '8px', borderBottom: '1px solid #DCDDD5' }}>{t}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {[
-              ['1', "Méta-analyses et revues systématiques d'essais randomisés", 'Niveau 1', 'Certitude élevée'],
-              ['2', 'Essais randomisés contrôlés', 'Niveau 1, ou 2 si l’essai est abaissé', 'Certitude élevée'],
-              ['3', "Cohortes, essais non randomisés, randomisation mendélienne, méta-analyses d'études observationnelles", 'Niveau 2', 'Certitude faible'],
-              ['4', 'Cas-témoins, études transversales, séries de cas, cas cliniques', 'Niveau 3 (cas-témoins) ou 4', 'Certitude faible à très faible'],
-              ['5', 'Revues narratives, raisonnements mécanistiques', 'Sans équivalent', 'Non applicable'],
+              ['1', "Méta-analyses et revues systématiques d'essais randomisés", 'Niveau 1'],
+              ['2', 'Essais randomisés contrôlés', 'Niveau 1, ou 2 si l’essai est abaissé'],
+              ['3', "Cohortes, essais non randomisés, randomisation mendélienne, méta-analyses d'études observationnelles", 'Niveau 2'],
+              ['4', 'Cas-témoins, études transversales, séries de cas, cas cliniques', 'Niveau 3 (cas-témoins) ou 4'],
+              ['5', 'Revues narratives, raisonnements mécanistiques', 'Sans équivalent'],
             ].map((ligne) => (
               <tr key={ligne[0]}>
                 {ligne.map((cellule, i) => (
@@ -189,13 +182,6 @@ export default function NiveauxDePreuve() {
         retenons le niveau 1 pour les essais sans défaut relevé, et le niveau 2 pour les essais abaissés
         selon les règles ci-dessous. C'est une approximation : seule la lecture de l'article complet
         permet de trancher.
-      </p>
-      <p>
-        Le point de départ GRADE correspond au niveau de certitude initial d'un ensemble d'études de ce
-        type, avant les ajustements propres à GRADE (risque de biais, incohérence, caractère indirect,
-        imprécision, biais de publication). C'est pourquoi la certitude « modérée » n'y figure pas : elle
-        n'apparaît qu'après ces ajustements. Ces termes de certitude sont propres à GRADE ; la HAS, elle,
-        exprime la force de ses recommandations par des grades (A, B, C).
       </p>
 
       <h2>Les ajustements</h2>
