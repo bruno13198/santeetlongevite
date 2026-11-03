@@ -92,12 +92,22 @@ const MAX_VAGUES = parseInt(process.env.MAX_VAGUES || '6', 10);
 const OFFSET = parseInt(process.env.OFFSET || '0', 10);
 const LIMITE = parseInt(process.env.LIMITE || '200', 10);
 const JOURS_VEILLE = parseInt(process.env.JOURS_VEILLE || '10', 10);
-// 2 nov. 2026 : rattrapage limité aux études de haut niveau (méta-analyses, revues
-// systématiques, essais randomisés), pour les runs manuels uniquement. Le run du lundi
-// n'utilise pas cette option (les articles récents n'ont pas encore de type de publication).
+// 3 nov. 2026 : rattrapage limité aux méta-analyses d'essais randomisés et de cohortes
+// prospectives, pour les runs manuels uniquement. Le run du lundi n'utilise pas cette option
+// (les articles récents n'ont pas encore de type de publication).
+// Même filtre que scripts/compter-litterature.js (le comptage donne donc le volume exact).
 const HAUTS_NIVEAUX = process.env.HAUTS_NIVEAUX === 'true';
 const FILTRE_HAUTS_NIVEAUX =
-  'AND (PUB_TYPE:"Meta-Analysis" OR PUB_TYPE:"Systematic Review" OR PUB_TYPE:"Randomized Controlled Trial")';
+  'AND (PUB_TYPE:"Meta-Analysis" AND (ABSTRACT:"randomized controlled trials" OR ABSTRACT:"randomised controlled trials" OR ABSTRACT:"randomized controlled trial" OR ABSTRACT:"randomised controlled trial" OR ABSTRACT:"randomized trials" OR ABSTRACT:"randomised trials" OR ABSTRACT:"RCTs" OR ABSTRACT:"prospective cohort studies" OR ABSTRACT:"prospective cohort study" OR ABSTRACT:"prospective cohorts" OR ABSTRACT:"prospective studies"))';
+// À l'enregistrement, en mode hauts niveaux, seules ces synthèses sont gardées.
+const DESIGNS_SYNTHESES = [
+  "Méta-analyse d'essais randomisés",
+  "Revue systématique d'essais randomisés",
+  "Revue parapluie d'essais randomisés",
+  "Méta-analyse d'études observationnelles",
+  "Revue systématique d'études observationnelles",
+  "Revue parapluie d'études observationnelles",
+];
 // Attente maximale par lot Claude (en minutes). Un job GitHub Actions est limité à 6 h.
 const ATTENTE_MAX_LOT_MIN = parseInt(process.env.ATTENTE_MAX_LOT_MIN || '120', 10);
 
@@ -1081,6 +1091,13 @@ async function main() {
     try {
       const premier = etudesAClasser.get(sourceId);
       const preuve = classements.get(`pre-${premier.cle}`) || null;
+      // Mode hauts niveaux : seules les synthèses (méta-analyses, revues systématiques ou parapluies)
+      // sont enregistrées. Les autres ne sont pas marquées comme rejetées, pour rester disponibles
+      // lors d'un futur rattrapage des essais.
+      if (HAUTS_NIVEAUX && (!preuve || !DESIGNS_SYNTHESES.includes(preuve.design))) {
+        console.log(`  - ${aliment.slug} : écartée, pas une synthèse (${preuve?.design || 'classement inconnu'}) : ${analyse.titre_traduit}`);
+        continue;
+      }
       const niveauFiabilite = niveauFiabiliteDepuisPreuve(preuve?.niveau);
 
       let etudeId;
