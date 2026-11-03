@@ -23,6 +23,16 @@ const JOURS = parseInt(process.env.JOURS || '3650', 10);
 const TOUTES = process.env.TOUTES === 'true';
 const HAUTS_NIVEAUX = process.env.HAUTS_NIVEAUX === 'true';
 const SLUGS = (process.env.SLUGS || '').split(',').map((s) => s.trim()).filter(Boolean);
+// 3 nov. 2026 : mode « candidats », pour mesurer des sujets absents de la veille.
+// Format : « Nom : terme1 | terme2 ; Nom 2 : terme3 » (termes anglais, « A + B » accepté).
+const CANDIDATS = (process.env.CANDIDATS || '')
+  .split(';').map((b) => b.trim()).filter(Boolean)
+  .map((b) => {
+    const [nom, termes = ''] = b.split(':');
+    return { nom: nom.trim(), termes: termes.split('|').map((t) => t.trim()).filter(Boolean) };
+  })
+  .filter((c) => c.nom && c.termes.length > 0);
+const FILTRE_ESSAIS = '(PUB_TYPE:"Randomized Controlled Trial")';
 
 const FILTRE_HUMAIN =
   '(ABSTRACT:(participants OR patients OR subjects OR adults OR children OR women OR men OR volunteers OR humans))';
@@ -97,7 +107,34 @@ async function compter(requete, tentative = 1) {
   }
 }
 
+// Mode « candidats » : trois chiffres par sujet (chez l'homme, essais randomisés, méta-analyses).
+async function compterCandidats() {
+  const debut = new Date();
+  debut.setDate(debut.getDate() - JOURS);
+  const filtreDate = `(FIRST_IDATE:[${formaterDate(debut)} TO ${formaterDate(new Date())}])`;
+  const exclusion = clauseExclusion();
+  console.log(`Comptage de ${CANDIDATS.length} sujet(s) candidat(s) sur ${JOURS} jours (gratuit, aucun appel Claude).\n`);
+  const lignes = [];
+  for (const c of CANDIDATS) {
+    const sujet = c.termes.map(expression).join(' OR ');
+    const base = `(${sujet}) AND (SRC:MED) ${exclusion} AND ${filtreDate}`;
+    const humain = await compter(`${base} AND ${FILTRE_HUMAIN} ${EXCLUSIONS_ANIMAL}`);
+    await pause(300);
+    const essais = await compter(`${base} AND ${FILTRE_ESSAIS}`);
+    await pause(300);
+    const meta = await compter(`${base} AND ${FILTRE_HAUTS_NIVEAUX}`);
+    await pause(300);
+    lignes.push({ nom: c.nom, humain, essais, meta });
+    console.log(`  ${c.nom} : ${humain ?? '?'} chez l'homme, ${essais ?? '?'} essais randomisés, ${meta ?? '?'} méta-analyses`);
+  }
+  lignes.sort((a, b) => (b.humain ?? -1) - (a.humain ?? -1));
+  console.log("\n##### Classement (du plus au moins étudié chez l'homme) #####");
+  console.log("Sujet | Chez l'homme | Essais randomisés | Méta-analyses");
+  for (const l of lignes) console.log(`${l.nom} | ${l.humain ?? '?'} | ${l.essais ?? '?'} | ${l.meta ?? '?'}`);
+}
+
 async function main() {
+  if (CANDIDATS.length > 0) return compterCandidats();
   const slugs = TOUTES ? await listerToutesLesFiches() : SLUGS;
   if (slugs.length === 0) throw new Error('Aucun slug indiqué (ni TOUTES=true).');
 
