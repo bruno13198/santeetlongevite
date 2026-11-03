@@ -28,11 +28,10 @@ const FILTRE_HUMAIN =
   '(ABSTRACT:(participants OR patients OR subjects OR adults OR children OR women OR men OR volunteers OR humans))';
 const EXCLUSIONS_ANIMAL =
   'NOT TITLE:(rat OR rats OR mice OR mouse OR murine OR "in vitro" OR zebrafish OR broiler OR broilers OR piglets OR cattle OR cows OR sheep OR poultry OR dogs OR cats)';
-// 3 nov. 2026 : seulement les méta-analyses dont le résumé mentionne des essais randomisés
-// (approximation des « méta-analyses d'essais randomisés », étiquette absente d'Europe PMC).
+// 3 nov. 2026 : méta-analyses dont le résumé mentionne des essais randomisés
+// OU des cohortes prospectives (comptage comparatif).
 const FILTRE_HAUTS_NIVEAUX =
-  '(PUB_TYPE:"Meta-Analysis" AND (ABSTRACT:"randomized controlled trials" OR ABSTRACT:"randomised controlled trials" OR ABSTRACT:"randomized controlled trial" OR ABSTRACT:"randomised controlled trial" OR ABSTRACT:"randomized trials" OR ABSTRACT:"randomised trials" OR ABSTRACT:"RCTs"))';
-
+  '(PUB_TYPE:"Meta-Analysis" AND (ABSTRACT:"randomized controlled trials" OR ABSTRACT:"randomised controlled trials" OR ABSTRACT:"randomized controlled trial" OR ABSTRACT:"randomised controlled trial" OR ABSTRACT:"randomized trials" OR ABSTRACT:"randomised trials" OR ABSTRACT:"RCTs" OR ABSTRACT:"prospective cohort studies" OR ABSTRACT:"prospective cohort study" OR ABSTRACT:"prospective cohorts" OR ABSTRACT:"prospective studies"))';
 function pause(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
