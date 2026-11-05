@@ -14,10 +14,21 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
+// Met en minuscule la première lettre d'un nom (« Performance sportive » → « performance sportive »),
+// sauf pour les sigles (« SOPK » reste « SOPK »).
+function enMinuscule(nom) {
+  if (!nom || nom.length < 2 || nom[1] !== nom[1].toLowerCase()) return nom || '';
+  return nom[0].toLowerCase() + nom.slice(1);
+}
+
 // Fiche d'une habitude alimentaire (régime, pratique).
 // Titre et description pour Google (20 oct. 2026).
-export async function generateMetadata({ params }) {
+// 4 nov. 2026 : la fiche complète et la fiche filtrée par problème de santé peuvent apparaître
+// dans Google, chacune avec son propre titre. Toutes les autres versions (niveau, tri, recherche,
+// pages suivantes) sont interdites d'indexation, mais leurs liens restent suivis.
+export async function generateMetadata({ params, searchParams }) {
   const { slug } = await params;
+  const sp = (await searchParams) || {};
   const { data: habitude } = await supabase
     .from('habitudes_alimentaires')
     .select('nom, description, actif')
@@ -26,13 +37,43 @@ export async function generateMetadata({ params }) {
 
   if (!habitude || !habitude.actif) return { title: 'Régime introuvable | ScienceTruths' };
 
-  return {
+  const adresse = `https://sciencetruths.com/habitudes/${slug}`;
+  const autresFiltres = Boolean(sp.niveau || sp.revues || sp.tri || sp.q || (sp.page && sp.page !== '1'));
+
+  // Problème de santé demandé : on vérifie qu'il existe.
+  let probleme = null;
+  if (sp.probleme) {
+    const { data } = await supabase
+      .from('problemes_sante')
+      .select('slug, nom')
+      .eq('slug', String(sp.probleme))
+      .maybeSingle();
+    probleme = data || null;
+  }
+
+  // Fiche filtrée par problème seul : page à part entière, avec son propre titre.
+  if (probleme && !autresFiltres) {
+    const sujet = `${habitude.nom} : ${enMinuscule(probleme.nom)}`;
+    return {
+      title: `${sujet}. Ce que disent les études | ScienceTruths`,
+      description: `${sujet} : les études scientifiques, résumées en français et classées par niveau de preuve.`,
+      alternates: { canonical: `${adresse}?probleme=${probleme.slug}` },
+    };
+  }
+
+  const metadonnees = {
     title: `${habitude.nom} : efficacité, risques et ce que disent les études | ScienceTruths`,
     description:
       habitude.description ||
       `Les études scientifiques sur ${habitude.nom}, résumées en français et classées par niveau de preuve.`,
-    alternates: { canonical: `https://sciencetruths.com/habitudes/${slug}` },
+    alternates: { canonical: adresse },
   };
+
+  // Toute autre version filtrée : ne pas indexer, mais suivre les liens.
+  if (autresFiltres || sp.probleme) {
+    metadonnees.robots = { index: false, follow: true };
+  }
+  return metadonnees;
 }
 
 export default async function FicheHabitude({ params, searchParams }) {
