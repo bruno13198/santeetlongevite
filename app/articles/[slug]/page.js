@@ -9,7 +9,8 @@ import './badges.css';
 import Disclaimer from '../../components/Disclaimer';
 import Breadcrumbs from '../../components/Breadcrumbs';
  
-export const dynamic = 'force-dynamic';
+// 5 nov. 2026 : article recalculé au plus une fois par heure.
+export const revalidate = 3600;
  
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
