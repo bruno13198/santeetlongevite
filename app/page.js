@@ -22,7 +22,8 @@ const plexMono = IBM_Plex_Mono({
   variable: '--font-mono',
 });
 
-export const dynamic = 'force-dynamic';
+// 5 nov. 2026 : page recalculée au plus une fois par heure (les études arrivent le lundi).
+export const revalidate = 3600;
 
 // 22 oct. 2026 : adresse canonique de la page d'accueil (le titre reste celui du layout).
 const ADRESSE_SITE = 'https:' + '//sciencetruths.com';
