@@ -2,6 +2,8 @@
 // (niveau, page, tri, recherche, revues) ni les routes techniques. Ces adresses renvoient toutes
 // vers l'adresse principale de la fiche (balise canonique) : les explorer gaspillait le temps
 // que Google consacre au site, au détriment des fiches pas encore indexées.
+// 4 nov. 2026 : les fiches filtrées par problème de santé seul (?probleme=…) sont de nouveau
+// explorables : elles ont leur propre titre et peuvent apparaître dans Google.
 const ADRESSE_SITE = 'https:' + '//sciencetruths.com';
 
 export default function robots() {
@@ -16,7 +18,6 @@ export default function robots() {
         '/*?*tri=',
         '/*?*q=',
         '/*?*revues=',
-        '/*?*probleme=',
       ],
     },
     sitemap: `${ADRESSE_SITE}/sitemap.xml`,
