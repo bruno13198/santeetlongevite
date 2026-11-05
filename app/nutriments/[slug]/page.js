@@ -59,10 +59,10 @@ export async function generateMetadata({ params, searchParams }) {
 
   // Fiche filtrée par problème seul : page à part entière, avec son propre titre.
   if (probleme && !autresFiltres) {
-    const sujet = `${nutriment.nom} et ${enMinuscule(probleme.nom)}`;
+        const sujet = `${nutriment.nom} : ${enMinuscule(probleme.nom)}`;
     return {
-      title: `${sujet} : ce que disent les études | ScienceTruths`,
-      description: `Les études scientifiques sur ${nutriment.nom} et ${enMinuscule(probleme.nom)}, résumées en français et classées par niveau de preuve.`,
+      title: `${sujet}. Ce que disent les études | ScienceTruths`,
+      description: `${sujet} : les études scientifiques, résumées en français et classées par niveau de preuve.`,
       alternates: { canonical: `${adresse}?probleme=${probleme.slug}` },
     };
   }
