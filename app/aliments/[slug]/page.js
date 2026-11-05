@@ -13,9 +13,20 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
+// Met en minuscule la première lettre d'un nom (« Performance sportive » → « performance sportive »),
+// sauf pour les sigles (« SOPK » reste « SOPK »).
+function enMinuscule(nom) {
+  if (!nom || nom.length < 2 || nom[1] !== nom[1].toLowerCase()) return nom || '';
+  return nom[0].toLowerCase() + nom.slice(1);
+}
+
 // Titre et description pour Google (20 oct. 2026). Le nom est raccourci à sa première partie.
-export async function generateMetadata({ params }) {
+// 4 nov. 2026 : la fiche complète et la fiche filtrée par problème de santé peuvent apparaître
+// dans Google, chacune avec son propre titre. Toutes les autres versions (niveau, tri, recherche,
+// pages suivantes) sont interdites d'indexation, mais leurs liens restent suivis.
+export async function generateMetadata({ params, searchParams }) {
   const { slug } = await params;
+  const sp = (await searchParams) || {};
   const { data: aliment } = await supabase
     .from('aliments')
     .select('nom, description, actif')
@@ -25,13 +36,43 @@ export async function generateMetadata({ params }) {
   if (!aliment || !aliment.actif) return { title: 'Aliment introuvable | ScienceTruths' };
 
   const nomCourt = aliment.nom.split(', ')[0];
-  return {
+  const adresse = `https://sciencetruths.com/aliments/${slug}`;
+  const autresFiltres = Boolean(sp.niveau || sp.revues || sp.tri || sp.q || (sp.page && sp.page !== '1'));
+
+  // Problème de santé demandé : on vérifie qu'il existe.
+  let probleme = null;
+  if (sp.probleme) {
+    const { data } = await supabase
+      .from('problemes_sante')
+      .select('slug, nom')
+      .eq('slug', String(sp.probleme))
+      .maybeSingle();
+    probleme = data || null;
+  }
+
+  // Fiche filtrée par problème seul : page à part entière, avec son propre titre.
+  if (probleme && !autresFiltres) {
+    const sujet = `${nomCourt} : ${enMinuscule(probleme.nom)}`;
+    return {
+      title: `${sujet}. Ce que disent les études | ScienceTruths`,
+      description: `${sujet} : les études scientifiques, résumées en français et classées par niveau de preuve.`,
+      alternates: { canonical: `${adresse}?probleme=${probleme.slug}` },
+    };
+  }
+
+  const metadonnees = {
     title: `${nomCourt} : bienfaits, risques et ce que disent les études | ScienceTruths`,
     description:
       aliment.description ||
       `Les études scientifiques sur ${nomCourt}, résumées en français et classées par niveau de preuve.`,
-    alternates: { canonical: `https://sciencetruths.com/aliments/${slug}` },
+    alternates: { canonical: adresse },
   };
+
+  // Toute autre version filtrée : ne pas indexer, mais suivre les liens.
+  if (autresFiltres || sp.probleme) {
+    metadonnees.robots = { index: false, follow: true };
+  }
+  return metadonnees;
 }
 
 export default async function FicheAliment({ params, searchParams }) {
