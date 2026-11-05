@@ -22,8 +22,19 @@ const LIBELLES_CATEGORIES = {
   plante: 'Plante',
 };
 
-export async function generateMetadata({ params }) {
+// Met en minuscule la première lettre d'un nom (« Performance sportive » → « performance sportive »),
+// sauf pour les sigles (« SOPK » reste « SOPK »).
+function enMinuscule(nom) {
+  if (!nom || nom.length < 2 || nom[1] !== nom[1].toLowerCase()) return nom || '';
+  return nom[0].toLowerCase() + nom.slice(1);
+}
+
+// 4 nov. 2026 : la fiche complète et la fiche filtrée par problème de santé peuvent apparaître
+// dans Google, chacune avec son propre titre. Toutes les autres versions (niveau, tri, recherche,
+// pages suivantes) sont interdites d'indexation, mais leurs liens restent suivis.
+export async function generateMetadata({ params, searchParams }) {
   const { slug } = await params;
+  const sp = (await searchParams) || {};
   const { data: nutriment } = await supabase
     .from('nutriments')
     .select('nom, description, actif')
@@ -32,13 +43,43 @@ export async function generateMetadata({ params }) {
 
   if (!nutriment || !nutriment.actif) return { title: 'Nutriment introuvable | ScienceTruths' };
 
-  return {
+  const adresse = `https://sciencetruths.com/nutriments/${slug}`;
+  const autresFiltres = Boolean(sp.niveau || sp.revues || sp.tri || sp.q || (sp.page && sp.page !== '1'));
+
+  // Problème de santé demandé : on vérifie qu'il existe.
+  let probleme = null;
+  if (sp.probleme) {
+    const { data } = await supabase
+      .from('problemes_sante')
+      .select('slug, nom')
+      .eq('slug', String(sp.probleme))
+      .maybeSingle();
+    probleme = data || null;
+  }
+
+  // Fiche filtrée par problème seul : page à part entière, avec son propre titre.
+  if (probleme && !autresFiltres) {
+    const sujet = `${nutriment.nom} et ${enMinuscule(probleme.nom)}`;
+    return {
+      title: `${sujet} : ce que disent les études | ScienceTruths`,
+      description: `Les études scientifiques sur ${nutriment.nom} et ${enMinuscule(probleme.nom)}, résumées en français et classées par niveau de preuve.`,
+      alternates: { canonical: `${adresse}?probleme=${probleme.slug}` },
+    };
+  }
+
+  const metadonnees = {
     title: `${nutriment.nom} : efficacité, risques et ce que disent les études | ScienceTruths`,
     description:
       nutriment.description ||
       `Les études scientifiques sur ${nutriment.nom}, résumées en français et classées par niveau de preuve.`,
-    alternates: { canonical: `https://sciencetruths.com/nutriments/${slug}` },
+    alternates: { canonical: adresse },
   };
+
+  // Toute autre version filtrée : ne pas indexer, mais suivre les liens.
+  if (autresFiltres || sp.probleme) {
+    metadonnees.robots = { index: false, follow: true };
+  }
+  return metadonnees;
 }
 
 export default async function FicheNutriment({ params, searchParams }) {
