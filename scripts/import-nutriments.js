@@ -51,7 +51,8 @@ const NUTRIMENTS_GROS_VOLUME = [
 ];
 
 function quotasPour(nutriment) {
-  if (NUTRIMENTS_GROS_VOLUME.includes(nutriment.slug)) return QUOTAS_RENFORCES;
+  // En mode hauts niveaux, les quotas du formulaire s'appliquent à tous les nutriments.
+  if (!HAUTS_NIVEAUX && NUTRIMENTS_GROS_VOLUME.includes(nutriment.slug)) return QUOTAS_RENFORCES
   return {
     resultats: RESULTATS_A_RECUPERER,
     analyses: MAX_ANALYSES_PAR_RUN,
@@ -64,6 +65,21 @@ const MAX_VAGUES = parseInt(process.env.MAX_VAGUES || '6', 10);
 const OFFSET = parseInt(process.env.OFFSET || '0', 10);
 const LIMITE = parseInt(process.env.LIMITE || '200', 10);
 const JOURS_VEILLE = parseInt(process.env.JOURS_VEILLE || '10', 10);
+
+// 6 nov. 2026 : rattrapage limité aux méta-analyses d'essais randomisés et de cohortes
+// prospectives, pour les runs manuels uniquement (même filtre que import-etudes.js).
+const HAUTS_NIVEAUX = process.env.HAUTS_NIVEAUX === 'true';
+const FILTRE_HAUTS_NIVEAUX =
+  'AND (PUB_TYPE:"Meta-Analysis" AND (ABSTRACT:"randomized controlled trials" OR ABSTRACT:"randomised controlled trials" OR ABSTRACT:"randomized controlled trial" OR ABSTRACT:"randomised controlled trial" OR ABSTRACT:"randomized trials" OR ABSTRACT:"randomised trials" OR ABSTRACT:"RCTs" OR ABSTRACT:"prospective cohort studies" OR ABSTRACT:"prospective cohort study" OR ABSTRACT:"prospective cohorts" OR ABSTRACT:"prospective studies"))';
+// À l'enregistrement, en mode hauts niveaux, seules ces synthèses sont gardées.
+const DESIGNS_SYNTHESES = [
+  "Méta-analyse d'essais randomisés",
+  "Revue systématique d'essais randomisés",
+  "Revue parapluie d'essais randomisés",
+  "Méta-analyse d'études observationnelles",
+  "Revue systématique d'études observationnelles",
+  "Revue parapluie d'études observationnelles",
+];
 // Attente maximale par lot Claude (en minutes). Un job GitHub Actions est limité à 6 h.
 const ATTENTE_MAX_LOT_MIN = parseInt(process.env.ATTENTE_MAX_LOT_MIN || '120', 10);
 
@@ -227,9 +243,12 @@ function construireFiltreSujet(nutriment) {
 
   if (Array.isArray(nutriment.termes_texte)) {
     for (const terme of nutriment.termes_texte) {
-      if (terme && terme.trim() !== '') {
-        parties.push(`(TITLE:"${terme}" OR ABSTRACT:"${terme}")`);
-      }
+            if (terme && terme.trim() !== '') {
+        // 6 nov. 2026 : un terme « A + B » exige les deux expressions dans le titre ou le résumé
+        // (comme pour les aliments et les habitudes). Un terme sans « + » fonctionne comme avant.
+        const morceaux = terme.split('+').map((m) => m.trim()).filter(Boolean);
+        parties.push(`(${morceaux.map((m) => `(TITLE:"${m}" OR ABSTRACT:"${m}")`).join(' AND ')})`);
+      
     }
   }
 
@@ -319,7 +338,8 @@ async function chercherEtudesEuropePMC(nutriment) {
     'subjects', 'trial', 'randomized', 'randomised',
   ];
   const marqueursHumains = MARQUEURS_HUMAINS.map((m) => `TITLE:"${m}"`).join(' OR ');
-  const requete = `(${motsClefs}) AND (SRC:MED) NOT ((${exclusionTitre}) AND NOT (${marqueursHumains})) ${filtreDate}`;
+    const filtreNiveaux = HAUTS_NIVEAUX ? `${FILTRE_HAUTS_NIVEAUX} ` : '';
+  const requete = `(${motsClefs}) AND (SRC:MED) ${filtreNiveaux}NOT ((${exclusionTitre}) AND NOT (${marqueursHumains})) ${filtreDate}`;
 
   // Lecture de toutes les pages (curseur Europe PMC), jusqu'au maximum fixé.
   const resultats = [];
@@ -791,7 +811,7 @@ async function collecterCandidats(nutriment) {
 // ---------------------------------------------------------------------------
 
 async function main() {
-  console.log(`Paramètres de ce run : ESTIMATION_SEULE=${ESTIMATION_SEULE}, OFFSET=${OFFSET}, LIMITE=${LIMITE}, JOURS_VEILLE=${JOURS_VEILLE}, RESULTATS_A_RECUPERER=${RESULTATS_A_RECUPERER}, MAX_NOUVELLES=${MAX_NOUVELLES_ETUDES_PAR_RUN}, MAX_ANALYSES=${MAX_ANALYSES_PAR_RUN}, MAX_VAGUES=${MAX_VAGUES}, nutriments à quotas renforcés : ${NUTRIMENTS_GROS_VOLUME.length}`);
+    console.log(`Paramètres de ce run : HAUTS_NIVEAUX=${HAUTS_NIVEAUX}, ESTIMATION_SEULE=${ESTIMATION_SEULE}, OFFSET=${OFFSET}, LIMITE=${LIMITE}, JOURS_VEILLE=${JOURS_VEILLE}, RESULTATS_A_RECUPERER=${RESULTATS_A_RECUPERER}, MAX_NOUVELLES=${MAX_NOUVELLES_ETUDES_PAR_RUN}, MAX_ANALYSES=${MAX_ANALYSES_PAR_RUN}, MAX_VAGUES=${MAX_VAGUES}, nutriments à quotas renforcés : ${NUTRIMENTS_GROS_VOLUME.length}`);
   const tousLesNutriments = await recupererNutrimentsATraiter();
   const lot = tousLesNutriments.slice(OFFSET, OFFSET + LIMITE);
   console.log(`${tousLesNutriments.length} nutriments éligibles au total. Lot traité : offset ${OFFSET}, ${lot.length} nutriments (jusqu'à l'offset ${OFFSET + lot.length}).`);
@@ -1035,8 +1055,14 @@ async function main() {
   for (const { c, analyse } of nouvellesAcceptees) {
     const { etude, sourceId, nutriment } = c;
     try {
-      const premier = etudesAClasser.get(sourceId);
+            const premier = etudesAClasser.get(sourceId);
       const preuve = classements.get(`pre-${premier.cle}`) || null;
+      // Mode hauts niveaux : seules les synthèses sont enregistrées. Les autres ne sont pas
+      // marquées comme rejetées, pour rester disponibles lors d'un futur rattrapage.
+      if (HAUTS_NIVEAUX && (!preuve || !DESIGNS_SYNTHESES.includes(preuve.design))) {
+        console.log(`  - ${nutriment.slug} : écartée, pas une synthèse (${preuve?.design || 'classement inconnu'}) : ${analyse.titre_traduit}`);
+        continue;
+      
       const niveauFiabilite = niveauFiabiliteDepuisPreuve(preuve?.niveau);
 
       let etudeId;
