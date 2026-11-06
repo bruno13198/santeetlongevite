@@ -48,7 +48,8 @@ const HABITUDES_GROS_VOLUME = [
 ];
 
 function quotasPour(habitude) {
-  if (HABITUDES_GROS_VOLUME.includes(habitude.slug)) return QUOTAS_RENFORCES;
+  // En mode hauts niveaux, les quotas du formulaire s'appliquent à toutes les habitudes.
+  if (!HAUTS_NIVEAUX && HABITUDES_GROS_VOLUME.includes(habitude.slug)) return QUOTAS_RENFORCES;
   return {
     resultats: RESULTATS_A_RECUPERER,
     analyses: MAX_ANALYSES_PAR_RUN,
@@ -61,6 +62,21 @@ const MAX_VAGUES = parseInt(process.env.MAX_VAGUES || '6', 10);
 const OFFSET = parseInt(process.env.OFFSET || '0', 10);
 const LIMITE = parseInt(process.env.LIMITE || '200', 10);
 const JOURS_VEILLE = parseInt(process.env.JOURS_VEILLE || '10', 10);
+
+// 6 nov. 2026 : rattrapage limité aux méta-analyses d'essais randomisés et de cohortes
+// prospectives, pour les runs manuels uniquement (même filtre que import-etudes.js).
+const HAUTS_NIVEAUX = process.env.HAUTS_NIVEAUX === 'true';
+const FILTRE_HAUTS_NIVEAUX =
+  'AND (PUB_TYPE:"Meta-Analysis" AND (ABSTRACT:"randomized controlled trials" OR ABSTRACT:"randomised controlled trials" OR ABSTRACT:"randomized controlled trial" OR ABSTRACT:"randomised controlled trial" OR ABSTRACT:"randomized trials" OR ABSTRACT:"randomised trials" OR ABSTRACT:"RCTs" OR ABSTRACT:"prospective cohort studies" OR ABSTRACT:"prospective cohort study" OR ABSTRACT:"prospective cohorts" OR ABSTRACT:"prospective studies"))';
+// À l'enregistrement, en mode hauts niveaux, seules ces synthèses sont gardées.
+const DESIGNS_SYNTHESES = [
+  "Méta-analyse d'essais randomisés",
+  "Revue systématique d'essais randomisés",
+  "Revue parapluie d'essais randomisés",
+  "Méta-analyse d'études observationnelles",
+  "Revue systématique d'études observationnelles",
+  "Revue parapluie d'études observationnelles",
+];
 // Attente maximale par lot Claude (en minutes). Un job GitHub Actions est limité à 6 h.
 const ATTENTE_MAX_LOT_MIN = parseInt(process.env.ATTENTE_MAX_LOT_MIN || '120', 10);
 
@@ -324,7 +340,8 @@ async function chercherEtudesEuropePMC(habitude) {
     'subjects', 'trial', 'randomized', 'randomised',
   ];
   const marqueursHumains = MARQUEURS_HUMAINS.map((m) => `TITLE:"${m}"`).join(' OR ');
-  const requete = `(${motsClefs}) AND (SRC:MED) NOT ((${exclusionTitre}) AND NOT (${marqueursHumains})) ${filtreDate}`;
+    const filtreNiveaux = HAUTS_NIVEAUX ? `${FILTRE_HAUTS_NIVEAUX} ` : '';
+  const requete = `(${motsClefs}) AND (SRC:MED) ${filtreNiveaux}NOT ((${exclusionTitre}) AND NOT (${marqueursHumains})) ${filtreDate}`;
 
   // Lecture de toutes les pages (curseur Europe PMC), jusqu'au maximum fixé.
   const resultats = [];
@@ -801,7 +818,7 @@ async function collecterCandidats(habitude) {
 // ---------------------------------------------------------------------------
 
 async function main() {
-  console.log(`Paramètres de ce run : OFFSET=${OFFSET}, LIMITE=${LIMITE}, JOURS_VEILLE=${JOURS_VEILLE}, RESULTATS_A_RECUPERER=${RESULTATS_A_RECUPERER}, MAX_NOUVELLES=${MAX_NOUVELLES_ETUDES_PAR_RUN}, MAX_ANALYSES=${MAX_ANALYSES_PAR_RUN}, MAX_VAGUES=${MAX_VAGUES}, habitudes à quotas renforcés : ${HABITUDES_GROS_VOLUME.length}`);
+    console.log(`Paramètres de ce run : HAUTS_NIVEAUX=${HAUTS_NIVEAUX}, OFFSET=${OFFSET}, LIMITE=${LIMITE}, JOURS_VEILLE=${JOURS_VEILLE}, RESULTATS_A_RECUPERER=${RESULTATS_A_RECUPERER}, MAX_NOUVELLES=${MAX_NOUVELLES_ETUDES_PAR_RUN}, MAX_ANALYSES=${MAX_ANALYSES_PAR_RUN}, MAX_VAGUES=${MAX_VAGUES}, habitudes à quotas renforcés : ${HABITUDES_GROS_VOLUME.length}`);
   const toutesLesHabitudes = await recupererHabitudesATraiter();
   const lot = toutesLesHabitudes.slice(OFFSET, OFFSET + LIMITE);
   console.log(`${toutesLesHabitudes.length} habitudes éligibles au total. Lot traité : offset ${OFFSET}, ${lot.length} habitudes (jusqu'à l'offset ${OFFSET + lot.length}).`);
@@ -1036,8 +1053,14 @@ async function main() {
   for (const { c, analyse } of nouvellesAcceptees) {
     const { etude, sourceId, habitude } = c;
     try {
-      const premier = etudesAClasser.get(sourceId);
+            const premier = etudesAClasser.get(sourceId);
       const preuve = classements.get(`pre-${premier.cle}`) || null;
+      // Mode hauts niveaux : seules les synthèses sont enregistrées. Les autres ne sont pas
+      // marquées comme rejetées, pour rester disponibles lors d'un futur rattrapage.
+      if (HAUTS_NIVEAUX && (!preuve || !DESIGNS_SYNTHESES.includes(preuve.design))) {
+        console.log(`  - ${habitude.slug} : écartée, pas une synthèse (${preuve?.design || 'classement inconnu'}) : ${analyse.titre_traduit}`);
+        continue;
+      }
       const niveauFiabilite = niveauFiabiliteDepuisPreuve(preuve?.niveau);
 
       let etudeId;
