@@ -15,6 +15,11 @@ on:
         description: 'Fenêtre de recherche en jours (10 par défaut, 3650 = 10 ans)'
         required: false
         default: '10'
+      hauts_niveaux:
+        description: 'Seulement méta-analyses d''essais randomisés et de cohortes prospectives'
+        type: choice
+        options: ['false', 'true']
+        default: 'false'
       resultats_a_recuperer:
         description: 'Résultats Europe PMC lus par fiche (vide = 200)'
         required: false
@@ -53,6 +58,7 @@ jobs:
           ESTIMATION_SEULE: ${{ github.event.inputs.estimation_seule || 'true' }}
           SLUGS_CIBLES: ${{ github.event.inputs.slugs_cibles || '' }}
           JOURS_VEILLE: ${{ github.event.inputs.jours_veille || '10' }}
+          HAUTS_NIVEAUX: ${{ github.event.inputs.hauts_niveaux || 'false' }}
           RESULTATS_A_RECUPERER: ${{ github.event.inputs.resultats_a_recuperer || '' }}
           MAX_ANALYSES_PAR_RUN: ${{ github.event.inputs.max_analyses || '' }}
           MAX_NOUVELLES_ETUDES_PAR_RUN: ${{ github.event.inputs.max_nouvelles || '' }}
