@@ -28,8 +28,8 @@ export async function generateMetadata({ params, searchParams }) {
   const { slug } = await params;
   const sp = (await searchParams) || {};
   const { data: aliment } = await supabase
-    .from('aliments')
-    .select('nom, description, actif')
+        .from('aliments')
+    .select('id, nom, description, actif')
     .eq('slug', slug)
     .maybeSingle();
 
@@ -60,11 +60,19 @@ export async function generateMetadata({ params, searchParams }) {
     };
   }
 
+    // 6 nov. 2026 : « dangers » (le mot tapé dans Google) dans le titre, et nombre d'études dans la description.
+  function descriptionGoogle(nom, nb, descriptionFiche) {
+    if (!nb) return descriptionFiche || `Ce que disent les études scientifiques sur ${nom}, résumées en français et classées par niveau de preuve.`;
+    const debut = nb === 1 ? 'ce que dit vraiment 1 étude scientifique' : `ce que disent vraiment ${nb.toLocaleString('fr-FR')} études scientifiques`;
+    return `${nom} : ${debut}. Bienfaits, dangers et niveau de preuve de chaque étude, résumés en français.`;
+  }
+  const { count: nbEtudes } = await supabase
+    .from('aliments_etudes')
+    .select('etude_id', { count: 'exact', head: true })
+    .eq('aliment_id', aliment.id);
   const metadonnees = {
-    title: `${nomCourt} : bienfaits, risques et ce que disent les études | ScienceTruths`,
-    description:
-      aliment.description ||
-      `Les études scientifiques sur ${nomCourt}, résumées en français et classées par niveau de preuve.`,
+    title: `${nomCourt} : bienfaits, dangers et ce que disent les études | ScienceTruths`,
+    description: descriptionGoogle(nomCourt, nbEtudes, aliment.description),
     alternates: { canonical: adresse },
   };
 
