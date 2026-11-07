@@ -68,7 +68,7 @@ jobs:
           JOURS_VEILLE: ${{ github.event.inputs.jours_veille || '10' }}
           HAUTS_NIVEAUX: ${{ github.event.inputs.hauts_niveaux || 'false' }}
           OFFSET: ${{ github.event.inputs.offset || '0' }}
-          LIMITE: ${{ github.event.inputs.limite || '200' }}
+          LIMITE: ${{ github.event.inputs.limite || '1000' }}
           RESULTATS_A_RECUPERER: ${{ github.event.inputs.resultats_a_recuperer || '' }}
           MAX_ANALYSES_PAR_RUN: ${{ github.event.inputs.max_analyses || '' }}
           MAX_NOUVELLES_ETUDES_PAR_RUN: ${{ github.event.inputs.max_nouvelles || '' }}
