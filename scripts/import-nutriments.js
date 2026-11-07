@@ -1059,10 +1059,11 @@ async function main() {
       const preuve = classements.get(`pre-${premier.cle}`) || null;
       // Mode hauts niveaux : seules les synthèses sont enregistrées. Les autres ne sont pas
       // marquées comme rejetées, pour rester disponibles lors d'un futur rattrapage.
-      if (HAUTS_NIVEAUX && (!preuve || !DESIGNS_SYNTHESES.includes(preuve.design))) {
+            if (HAUTS_NIVEAUX && (!preuve || !DESIGNS_SYNTHESES.includes(preuve.design))) {
         console.log(`  - ${nutriment.slug} : écartée, pas une synthèse (${preuve?.design || 'classement inconnu'}) : ${analyse.titre_traduit}`);
         continue;
-      
+      }
+
       const niveauFiabilite = niveauFiabiliteDepuisPreuve(preuve?.niveau);
 
       let etudeId;
