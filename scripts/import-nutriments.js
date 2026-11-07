@@ -248,7 +248,7 @@ function construireFiltreSujet(nutriment) {
         // (comme pour les aliments et les habitudes). Un terme sans « + » fonctionne comme avant.
         const morceaux = terme.split('+').map((m) => m.trim()).filter(Boolean);
         parties.push(`(${morceaux.map((m) => `(TITLE:"${m}" OR ABSTRACT:"${m}")`).join(' AND ')})`);
-      
+      }
     }
   }
 
