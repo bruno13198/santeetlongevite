@@ -63,7 +63,7 @@ function quotasPour(nutriment) {
 // Nombre maximal de vagues de tri/analyse par run (voir main).
 const MAX_VAGUES = parseInt(process.env.MAX_VAGUES || '6', 10);
 const OFFSET = parseInt(process.env.OFFSET || '0', 10);
-const LIMITE = parseInt(process.env.LIMITE || '200', 10);
+const LIMITE = parseInt(process.env.LIMITE || '1000', 10);
 const JOURS_VEILLE = parseInt(process.env.JOURS_VEILLE || '10', 10);
 
 // 6 nov. 2026 : rattrapage limité aux méta-analyses d'essais randomisés et de cohortes
