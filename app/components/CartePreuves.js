@@ -32,7 +32,7 @@ const LIBELLES = {
 const SEUIL_TABLEAU = 10; // études classées par problème de santé, au minimum
 const LIGNES_VISIBLES = 10;
 
-function Camembert({ comptes }) {
+function Camembert({ comptes, chemin }) {
   const total = [1, 2, 3, 4, 5].reduce((s, n) => s + (comptes[n] || 0), 0);
   if (total === 0) return null;
 
@@ -70,8 +70,15 @@ function Camembert({ comptes }) {
         {[1, 2, 3, 4, 5].map((n) =>
           (comptes[n] || 0) > 0 ? (
             <li key={n}>
-              <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '2px', backgroundColor: COULEURS_GRAPHIQUE[n], marginRight: '8px' }} />
-              {LIBELLES[n]} : <strong>{comptes[n]}</strong> ({Math.round((comptes[n] / total) * 100)} %)
+              {/* 8 nov. 2026 : chaque ligne de la légende filtre la liste sur ce niveau */}
+              <Link
+                href={`${chemin}?niveau=${n}#etudes`}
+                title={`Afficher les ${comptes[n]} études de niveau ${n}`}
+                style={{ color: '#222', textDecoration: 'underline', textDecorationColor: '#ccc', textUnderlineOffset: '3px' }}
+              >
+                <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '2px', backgroundColor: COULEURS_GRAPHIQUE[n], marginRight: '8px' }} />
+                {LIBELLES[n]} : <strong>{comptes[n]}</strong> ({Math.round((comptes[n] / total) * 100)} %)
+              </Link>
             </li>
           ) : null
         )}
@@ -158,7 +165,7 @@ export default async function CartePreuves({ type, sujetId, chemin, comptes }) {
   return (
     <section style={{ margin: '8px 0 24px' }}>
       <h3 style={{ fontSize: '17px', margin: '0 0 4px' }}>Carte des preuves</h3>
-      <Camembert comptes={comptes} />
+            <Camembert comptes={comptes} chemin={chemin} />
 
       {afficherTableau && (
         <>
