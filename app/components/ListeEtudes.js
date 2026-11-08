@@ -469,7 +469,7 @@ function construireLien(chemin, parametres, modifications) {
   const recherche = new URLSearchParams();
   if (p.niveau) recherche.set('niveau', String(p.niveau));
   if (p.revues) recherche.set('revues', '1');
-  if (p.tri === 'ancien') recherche.set('tri', 'ancien');
+    if (p.tri && p.tri !== 'recent') recherche.set('tri', p.tri)
   if (p.q) recherche.set('q', p.q);
   if (p.probleme) recherche.set('probleme', p.probleme);
   if (p.page && p.page > 1) recherche.set('page', String(p.page));
@@ -484,7 +484,7 @@ function lienExport(chemin, parametres, format) {
   const recherche = new URLSearchParams({ type: TYPE_PAR_PREFIXE[prefixe] || '', slug: slug || '', format });
   if (parametres.niveau) recherche.set('niveau', String(parametres.niveau));
   if (parametres.revues) recherche.set('revues', '1');
-  if (parametres.tri === 'ancien') recherche.set('tri', 'ancien');
+    if (parametres.tri && parametres.tri !== 'recent') recherche.set('tri', parametres.tri)
   if (parametres.q) recherche.set('q', parametres.q);
   if (parametres.probleme) recherche.set('probleme', parametres.probleme);
   return `/api/export?${recherche.toString()}`;
@@ -549,7 +549,7 @@ export default function ListeEtudes({ etudes, comptes, totalSelection, parametre
       {/* Recherche dans les études de la fiche */}
       <form method="get" action={chemin} style={{ display: 'flex', gap: '8px', marginBottom: '14px', flexWrap: 'wrap' }}>
         {niveau ? <input type="hidden" name="niveau" value={niveau} /> : null}
-        {tri === 'ancien' ? <input type="hidden" name="tri" value="ancien" /> : null}
+                {tri !== 'recent' ? <input type="hidden" name="tri" value={tri} /> : null}
         {probleme ? <input type="hidden" name="probleme" value={probleme} /> : null}
         <input
           type="search"
@@ -650,18 +650,24 @@ export default function ListeEtudes({ etudes, comptes, totalSelection, parametre
 
       {/* Tri et export */}
       <p style={{ fontSize: '13px', color: '#555', margin: '0 0 14px' }}>
-        Trier :{' '}
-        {tri === 'ancien' ? (
-          <>
-            <Link href={construireLien(chemin, parametres, { tri: 'recent', page: 1 })} style={{ color: '#555' }}>plus récentes d'abord</Link>
-            {' · '}<strong>plus anciennes d'abord</strong>
-          </>
-        ) : (
-          <>
-            <strong>plus récentes d'abord</strong>
-            {' · '}<Link href={construireLien(chemin, parametres, { tri: 'ancien', page: 1 })} style={{ color: '#555' }}>plus anciennes d'abord</Link>
-          </>
-        )}
+                Trier :{' '}
+        {/* 8 nov. 2026 : troisième tri « plus solides d'abord » (niveau de preuve, puis date) */}
+        {[
+          { cle: 'recent', libelle: "plus récentes d'abord" },
+          { cle: 'ancien', libelle: "plus anciennes d'abord" },
+          { cle: 'niveau', libelle: "plus solides d'abord" },
+        ].map((option, i) => (
+          <span key={option.cle}>
+            {i > 0 ? ' · ' : ''}
+            {tri === option.cle ? (
+              <strong>{option.libelle}</strong>
+            ) : (
+              <Link href={construireLien(chemin, parametres, { tri: option.cle, page: 1 })} style={{ color: '#555' }}>
+                {option.libelle}
+              </Link>
+            )}
+          </span>
+        ))}
         {totalSelection > 0 && (
           <span style={{ display: 'inline-block', marginLeft: '12px' }}>
             Exporter ces {totalSelection > 2000 ? '2 000 premières ' : ''}études :{' '}
