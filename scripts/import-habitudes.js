@@ -243,6 +243,12 @@ function construireFiltreSujet(habitude) {
       if (terme && terme.trim() !== '') {
         // 31 oct. 2026 : un terme « A + B » exige les deux expressions dans le titre ou le résumé
         // (ex. « Atkins diet + weight »). Un terme sans « + » fonctionne comme avant.
+                // 8 nov. 2026 : « titre:X » cherche X dans le titre seulement.
+        if (/^titre:/i.test(terme.trim())) {
+          const motTitre = terme.trim().replace(/^titre:\s*/i, '');
+          if (motTitre) parties.push(`(TITLE:"${motTitre}")`);
+          continue;
+        }
         const morceaux = terme.split('+').map((m) => m.trim()).filter(Boolean);
         parties.push(`(${morceaux.map((m) => `(TITLE:"${m}" OR ABSTRACT:"${m}")`).join(' AND ')})`);
       }
@@ -255,7 +261,7 @@ function construireFiltreSujet(habitude) {
 async function recupererHabitudesATraiter() {
   const { data: habitudes, error } = await supabase
     .from('habitudes_alimentaires')
-    .select('id, slug, nom, terme_recherche, est_terme_mesh, termes_texte')
+        .select('id, slug, nom, terme_recherche, est_terme_mesh, termes_texte, termes_exclus')
     .eq('actif', true)
     .order('id', { ascending: true });
 
@@ -340,8 +346,13 @@ async function chercherEtudesEuropePMC(habitude) {
     'subjects', 'trial', 'randomized', 'randomised',
   ];
   const marqueursHumains = MARQUEURS_HUMAINS.map((m) => `TITLE:"${m}"`).join(' OR ');
-    const filtreNiveaux = HAUTS_NIVEAUX ? `${FILTRE_HAUTS_NIVEAUX} ` : '';
-  const requete = `(${motsClefs}) AND (SRC:MED) ${filtreNiveaux}NOT ((${exclusionTitre}) AND NOT (${marqueursHumains})) ${filtreDate}`;
+      const filtreNiveaux = HAUTS_NIVEAUX ? `${FILTRE_HAUTS_NIVEAUX} ` : '';
+  // 8 nov. 2026 : mots d'exclusion propres à la fiche (colonne termes_exclus), cherchés dans le titre.
+  const exclusFiche = (Array.isArray(habitude.termes_exclus) ? habitude.termes_exclus : [])
+    .map((m) => String(m).replace(/"/g, '').trim())
+    .filter(Boolean);
+  const filtreExclusFiche = exclusFiche.length ? `NOT (${exclusFiche.map((m) => `TITLE:"${m}"`).join(' OR ')}) ` : '';
+  const requete = `(${motsClefs}) AND (SRC:MED) ${filtreNiveaux}${filtreExclusFiche}NOT ((${exclusionTitre}) AND NOT (${marqueursHumains})) ${filtreDate}`;
 
   // Lecture de toutes les pages (curseur Europe PMC), jusqu'au maximum fixé.
   const resultats = [];
