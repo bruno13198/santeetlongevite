@@ -1,1 +1,35 @@
+name: Audit de couverture (ponctuel)
 
+on:
+  workflow_dispatch:
+    inputs:
+      annee_debut:
+        description: 'Année de début (2016 = dix ans)'
+        required: false
+        default: '2016'
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Installer les dépendances
+        run: npm install @supabase/supabase-js
+      - name: Lancer l'audit
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          ANNEE_DEBUT: ${{ github.event.inputs.annee_debut || '2016' }}
+        run: node scripts/audit-couverture.js
+      - name: Mettre le fichier à disposition
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-couverture
+          path: audit-couverture.csv
+          retention-days: 7
