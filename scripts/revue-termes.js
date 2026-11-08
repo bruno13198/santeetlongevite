@@ -1,6 +1,9 @@
 // Revue des termes de recherche (8 nov. 2026). Script ponctuel, sans aucune écriture en base :
-// à supprimer avec son workflow une fois la revue terminée.
-// 1. Lit toutes les fiches actives (aliments, habitudes, nutriments) et leurs termes actuels.
+// à supprimer avec son workflow (et revue-termes-a-mesurer.json) une fois la revue terminée.
+//
+// MODE=propositions (par défaut)
+// 1. Lit les fiches actives (aliments, habitudes, nutriments) et leurs termes actuels
+//    (toutes, ou seulement celles de SLUGS).
 // 2. Demande à Sonnet (API Message Batches) des termes supplémentaires pour chaque fiche :
 //    « titre seul », expressions (titre ou résumé), couples « A + B ».
 // 3. Mesure sur Europe PMC, pour chaque fiche, le nombre de méta-analyses sur dix ans et le volume
@@ -8,15 +11,27 @@
 //    proposés, et en version « large » (termes « titre seul » cherchés aussi dans le résumé).
 // 4. Signale les termes proposés qui appartiennent aussi à une autre fiche.
 // Fichiers produits : propositions.json (dès la fin du lot Sonnet) et revue-termes.csv.
+//
+// MODE=termes (8 nov. 2026, deuxième étape)
+// Lit scripts/revue-termes-a-mesurer.json (fiches à gros gains et leurs termes candidats) et mesure
+// chaque terme séparément : ce qu'il ajoute AUX TERMES ACTUELS de la fiche (méta-analyses sur dix ans,
+// volume d'une semaine), avec des exemples de titres pour les termes qui ramènent beaucoup d'études,
+// afin de repérer le bruit et les mots d'exclusion utiles. Aucun appel à Claude.
+// Fichier produit : mesures-termes.json.
 const fs = require('fs');
+const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
 
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
-
+const MODE = (process.env.MODE || 'propositions').trim();
 const LIMITE_FICHES = parseInt(process.env.LIMITE_FICHES || '0', 10); // 0 = toutes les fiches
+const SLUGS = (process.env.SLUGS || '').split(',').map((s) => s.trim()).filter(Boolean);
 const MODELE = 'claude-sonnet-5';
 const URL_BATCHES = 'https://api.anthropic.com/v1/messages/batches';
 const URL_EUROPEPMC_POST = 'https://www.ebi.ac.uk/europepmc/webservices/rest/searchPOST';
+
+// Seuils au-delà desquels le mode « termes » joint des exemples de titres.
+const SEUIL_EXEMPLES_MA = 10;
+const SEUIL_EXEMPLES_SEMAINE = 3;
 
 // Mots exclus partagés par les scripts d'import (fichier commun), avec une liste de secours.
 let MOTS_EXCLUS_TITRE = ['mice', 'mouse', 'murine', 'rat', 'rats', 'rodent', 'rodents', 'in silico', 'cell line'];
@@ -59,7 +74,7 @@ function cleTerme(t) {
 // Lecture des fiches
 // ---------------------------------------------------------------------------
 
-async function lireTable(table) {
+async function lireTable(supabase, table) {
   const lignes = [];
   for (let debut = 0; ; debut += 1000) {
     const { data, error } = await supabase.from(table).select('*').range(debut, debut + 999);
@@ -71,6 +86,7 @@ async function lireTable(table) {
 }
 
 async function lireFiches() {
+  const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
   const sources = [
     { type: 'aliment', table: 'aliments', colonne: 'termes_recherche' },
     { type: 'habitude', table: 'habitudes_alimentaires', colonne: 'termes_texte' },
@@ -78,7 +94,7 @@ async function lireFiches() {
   ];
   const fiches = [];
   for (const s of sources) {
-    for (const r of await lireTable(s.table)) {
+    for (const r of await lireTable(supabase, s.table)) {
       if (r.actif === false) continue;
       const termes = Array.isArray(r[s.colonne]) ? r[s.colonne].map(nettoyerTerme).filter(Boolean) : [];
       let mesh = null;
@@ -163,7 +179,7 @@ async function executerLot(requetes) {
     body: JSON.stringify({
       requests: requetes.map((r) => ({
         custom_id: r.id,
-                params: { model: MODELE, max_tokens: 2000, messages: [{ role: 'user', content: r.prompt }] },
+        params: { model: MODELE, max_tokens: 2000, messages: [{ role: 'user', content: r.prompt }] },
       })),
     }),
   });
@@ -224,7 +240,7 @@ function interpreter(texte, f) {
 }
 
 // ---------------------------------------------------------------------------
-// Mesure sur Europe PMC (nombre de résultats seulement)
+// Requêtes Europe PMC
 // ---------------------------------------------------------------------------
 
 function partiePhrase(m) {
@@ -260,41 +276,57 @@ function dateIso(joursAvant) {
   return d.toISOString().split('T')[0];
 }
 
-async function compter(filtre, hautsNiveaux, jours, tentative = 1) {
-  if (!filtre) return 0;
-  const requete = `(${filtre}) AND (SRC:MED) ${hautsNiveaux ? FILTRE_HAUTS_NIVEAUX : ''} ${EXCLUSION} AND (FIRST_IDATE:[${dateIso(jours)} TO ${dateIso(0)}])`;
+function requeteComplete(filtre, hautsNiveaux, jours) {
+  return `(${filtre}) AND (SRC:MED) ${hautsNiveaux ? FILTRE_HAUTS_NIVEAUX : ''} ${EXCLUSION} AND (FIRST_IDATE:[${dateIso(jours)} TO ${dateIso(0)}])`;
+}
+
+async function appelEuropePMC(parametres, tentative = 1) {
   try {
     const res = await fetch(URL_EUROPEPMC_POST, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ query: requete, format: 'json', pageSize: '1', resultType: 'idlist' }).toString(),
+      body: new URLSearchParams(parametres).toString(),
       signal: AbortSignal.timeout(90000),
     });
     if (!res.ok) throw new Error(`Europe PMC erreur ${res.status}`);
-    return (await res.json()).hitCount || 0;
+    return await res.json();
   } catch (e) {
     if (tentative < 4) {
       await pause(4000 * tentative);
-      return compter(filtre, hautsNiveaux, jours, tentative + 1);
+      return appelEuropePMC(parametres, tentative + 1);
     }
-    console.log(`  Mesure impossible : ${e.message}`);
+    console.log(`  Requête impossible : ${e.message}`);
     return null;
   }
 }
 
+async function compter(filtre, hautsNiveaux, jours) {
+  if (!filtre) return 0;
+  const data = await appelEuropePMC({ query: requeteComplete(filtre, hautsNiveaux, jours), format: 'json', pageSize: '1', resultType: 'idlist' });
+  return data ? data.hitCount || 0 : null;
+}
+
+async function exemplesTitres(filtre, hautsNiveaux, jours, nombre) {
+  const data = await appelEuropePMC({ query: requeteComplete(filtre, hautsNiveaux, jours), format: 'json', pageSize: String(nombre), resultType: 'lite' });
+  return (data?.resultList?.result || []).map((r) => r.title).filter(Boolean);
+}
+
 // ---------------------------------------------------------------------------
-// Programme principal
+// Mode « propositions »
 // ---------------------------------------------------------------------------
 
 function champCsv(v) {
   return `"${String(v ?? '').replace(/"/g, '""').replace(/\s+/g, ' ')}"`;
 }
 
-async function main() {
+async function modePropositions() {
   let fiches = await lireFiches();
   console.log(`${fiches.length} fiches actives (aliments, habitudes, nutriments).`);
-  if (LIMITE_FICHES > 0) {
-    // Échantillon réparti sur les trois types pour le test
+  if (SLUGS.length > 0) {
+    fiches = fiches.filter((f) => SLUGS.includes(f.slug));
+    console.log(`Fiches demandées : ${fiches.length} sur ${SLUGS.length} slugs.`);
+  } else if (LIMITE_FICHES > 0) {
+    // Échantillon réparti sur les trois types pour un test
     const parType = ['aliment', 'habitude', 'nutriment'].map((t) => fiches.filter((f) => f.type === t));
     const echantillon = [];
     for (let i = 0; echantillon.length < LIMITE_FICHES && i < fiches.length; i++) {
@@ -307,7 +339,7 @@ async function main() {
   // 1. Propositions
   console.log('\n##### Propositions de Sonnet #####');
   const requetes = fiches.map((f, i) => ({ id: `f${i}`, prompt: promptPropositions(f) }));
-  let { textes, jetons } = await executerLot(requetes);
+  const { textes, jetons } = await executerLot(requetes);
   const aRefaire = requetes.filter((r) => {
     const t = textes.get(r.id);
     if (!t) return true;
@@ -336,7 +368,7 @@ async function main() {
   const cout = (jetons.entree * 1.5 + jetons.sortie * 7.5) / 1e6;
   console.log(`  Jetons : ${jetons.entree} en entrée, ${jetons.sortie} en sortie (coût estimé : ${cout.toFixed(2)} $, tarif lot de Sonnet supposé).`);
 
-    // 2. Termes partagés avec une autre fiche (actuels ou proposés) : terme identique, ou l'un contient
+  // 2. Termes partagés avec une autre fiche (actuels ou proposés) : terme identique, ou l'un contient
   //    l'autre mot pour mot (« flavonoids » et « dietary flavonoids »). Pour un couple, seule sa
   //    première partie (le sujet) est comparée.
   const coeur = (t) => cleTerme(t).split('+')[0].trim();
@@ -374,7 +406,7 @@ async function main() {
       compter(construireFiltre(proposes, f.mesh, false), false, 7),
       compter(construireFiltre(proposes, f.mesh, true), false, 7),
     ]);
-        const partages = [...p.titre, ...p.expressions, ...p.couples]
+    const partages = [...p.titre, ...p.expressions, ...p.couples]
       .map((t) => {
         const autres = fichesPartagees(t, f.slug);
         return autres.length ? `${t} → ${autres.slice(0, 5).join(' | ')}${autres.length > 5 ? ' …' : ''}` : null;
@@ -395,7 +427,43 @@ async function main() {
   console.log('\nTerminé. Fichiers propositions.json et revue-termes.csv prêts (artefact « revue-termes »).');
 }
 
-main().catch((e) => {
+// ---------------------------------------------------------------------------
+// Mode « termes » : mesure de chaque terme candidat, en plus des termes actuels de sa fiche
+// ---------------------------------------------------------------------------
+
+async function modeTermes() {
+  const fichier = path.join(__dirname, 'revue-termes-a-mesurer.json');
+  const fiches = JSON.parse(fs.readFileSync(fichier, 'utf8'));
+  const total = fiches.reduce((s, f) => s + f.candidats.length, 0);
+  console.log(`${fiches.length} fiches, ${total} termes candidats à mesurer.`);
+
+  const resultats = [];
+  let faits = 0;
+  for (const f of fiches) {
+    const filtreActuel = construireFiltre(f.termes, f.mesh, false);
+    const ligne = { type: f.type, slug: f.slug, nom: f.nom, termes_actuels: f.termes, candidats: [] };
+    for (const terme of f.candidats) {
+      // Ce que le terme ajoute aux termes actuels de la fiche
+      const filtre = filtreActuel ? `(${filtreTerme(terme, false)}) AND NOT (${filtreActuel})` : filtreTerme(terme, false);
+      const [ma10, semaine] = await Promise.all([compter(filtre, true, 3650), compter(filtre, false, 7)]);
+      const mesure = { terme, ma10_ajout: ma10, semaine_ajout: semaine };
+      if ((ma10 || 0) >= SEUIL_EXEMPLES_MA) mesure.exemples_ma = await exemplesTitres(filtre, true, 3650, 25);
+      if ((semaine || 0) >= SEUIL_EXEMPLES_SEMAINE) mesure.exemples_semaine = await exemplesTitres(filtre, false, 7, 15);
+      ligne.candidats.push(mesure);
+      faits++;
+      await pause(250);
+    }
+    resultats.push(ligne);
+    if (resultats.length % 10 === 0 || resultats.length === fiches.length) {
+      console.log(`  ${resultats.length} / ${fiches.length} fiches (${faits} / ${total} termes).`);
+      fs.writeFileSync('mesures-termes.json', JSON.stringify(resultats, null, 1), 'utf8'); // au fil de l'eau
+    }
+  }
+  fs.writeFileSync('mesures-termes.json', JSON.stringify(resultats, null, 1), 'utf8');
+  console.log('\nTerminé. Fichier mesures-termes.json prêt (artefact « revue-termes »).');
+}
+
+(MODE === 'termes' ? modeTermes() : modePropositions()).catch((e) => {
   console.error('Erreur fatale :', e.message);
   process.exit(1);
 });
