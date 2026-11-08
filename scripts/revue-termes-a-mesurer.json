@@ -1,0 +1,2854 @@
+[
+ {
+  "type": "aliment",
+  "slug": "cadmium-plomb",
+  "nom": "Cadmium et plomb alimentaires",
+  "termes": [
+   "dietary cadmium",
+   "dietary lead exposure"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Cadmium",
+   "cadmium consumption",
+   "lead consumption",
+   "cadmium contamination",
+   "lead contamination",
+   "food cadmium content",
+   "food lead content",
+   "Cd + food",
+   "Pb + food",
+   "lead + diet",
+   "cadmium + diet"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "fruit-cru-aliment-moyen",
+  "nom": "Fruits frais",
+  "termes": [
+   "raw fruit",
+   "fruit intake",
+   "fruit consumption",
+   "fresh fruit"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:fruit",
+   "titre:fruits",
+   "whole fruit intake",
+   "whole fruit consumption",
+   "fruit servings",
+   "servings of fruit",
+   "total fruit intake"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "gingembre-poudre",
+  "nom": "Gingembre",
+  "termes": [
+   "dried ginger",
+   "ginger extract",
+   "Zingiber officinale",
+   "ginger powder",
+   "ginger Zingiber officinale"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:ginger",
+   "titre:ginger root",
+   "titre:ginger rhizome",
+   "titre:gingerol",
+   "titre:shogaol",
+   "titre:ginger tea",
+   "ginger supplementation",
+   "ginger consumption",
+   "dietary ginger",
+   "ginger intake",
+   "ginger capsules",
+   "ginger supplement"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "soja-graine-entiere",
+  "nom": "Soja",
+  "termes": [
+   "Glycine max",
+   "soy bean",
+   "soybean",
+   "whole soybean"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:soy",
+   "titre:soya",
+   "titre:tofu",
+   "titre:edamame",
+   "titre:soy milk",
+   "titre:soy sauce",
+   "soy consumption",
+   "soy intake",
+   "soy supplementation",
+   "dietary soy",
+   "soy protein intake",
+   "textured soy protein"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "huile-de-saumon",
+  "nom": "Huile de poisson",
+  "termes": [
+   "fish oil supplementation",
+   "fish oil supplement",
+   "fish oil supplements",
+   "fish oil capsules",
+   "fish oil intake",
+   "fish oil consumption",
+   "dietary fish oil",
+   "salmon oil"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:fish oil",
+   "titre:menhaden oil",
+   "titre:sardine oil",
+   "titre:mackerel oil",
+   "titre:herring oil",
+   "fish oil intervention",
+   "fish oil treatment",
+   "fish oil diet",
+   "marine fish oil",
+   "fish body oil",
+   "omega-3 fish oil",
+   "omega-3 + fish oil",
+   "marine oil + supplementation"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "datte-chair-et-peau-sans-noyau-seche",
+  "nom": "Datte",
+  "termes": [
+   "date fruit",
+   "date fruits",
+   "dried dates",
+   "date palm fruit",
+   "date consumption",
+   "date fruit Phoenix dactylifera"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:dates",
+   "titre:date syrup",
+   "titre:date seeds",
+   "date fruit consumption",
+   "dried date consumption",
+   "date palm fruit consumption",
+   "date fruit extract",
+   "date supplementation",
+   "date seed extract",
+   "date + palm fruit",
+   "date + intake"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "sel-blanc-alimentaire-iode-non-fluore-marin-ignigene-ou-gemme",
+  "nom": "Sel",
+  "termes": [
+   "salt intake",
+   "table salt",
+   "sodium restriction",
+   "salt consumption",
+   "sea salt",
+   "dietary sodium",
+   "iodised salt",
+   "sodium reduction",
+   "sodium intake",
+   "salt reduction",
+   "dietary salt",
+   "iodized salt"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:sodium chloride",
+   "titre:NaCl",
+   "high salt diet",
+   "low salt diet",
+   "salt sensitivity",
+   "excessive salt intake",
+   "added salt",
+   "salt substitute"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "fruits-de-mer-aliment-moyen",
+  "nom": "Fruits de mer",
+  "termes": [
+   "marine invertebrates",
+   "shellfish",
+   "seafood"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:shrimp",
+   "titre:crab",
+   "titre:lobster",
+   "titre:oyster",
+   "titre:mussel",
+   "titre:scallop",
+   "seafood consumption",
+   "shellfish intake",
+   "seafood intake",
+   "crustacean consumption",
+   "mollusk consumption",
+   "dietary seafood"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "poisson-gras",
+  "nom": "Poisson gras",
+  "termes": [
+   "oily fish",
+   "fatty fish",
+   "oily fish consumption",
+   "fatty fish consumption",
+   "oily fish intake",
+   "fatty fish intake"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:salmon",
+   "titre:mackerel",
+   "titre:sardine",
+   "titre:herring",
+   "titre:anchovy",
+   "titre:tuna",
+   "salmon consumption",
+   "mackerel consumption",
+   "sardine consumption",
+   "herring consumption",
+   "oily fish diet",
+   "fatty fish diet",
+   "tuna + consumption",
+   "tuna + intake"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "confiseries",
+  "nom": "Confiseries",
+  "termes": [
+   "confectionery",
+   "sugar confectionery",
+   "candy consumption",
+   "sweets consumption"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:candy",
+   "titre:candies",
+   "titre:toffee",
+   "titre:jelly beans",
+   "titre:gummy bears",
+   "titre:chewing gum",
+   "candy intake",
+   "sweets intake",
+   "candy eating",
+   "gummy candy consumption",
+   "chewing gum consumption",
+   "confectionery intake",
+   "licorice + candy",
+   "caramel + candy"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "agrumes",
+  "nom": "Agrumes",
+  "termes": [
+   "citrus fruit",
+   "citrus fruits",
+   "citrus intake",
+   "citrus consumption",
+   "citrus fruit intake"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Citrus",
+   "titre:Grapefruit",
+   "titre:Clementine",
+   "titre:Tangerine",
+   "titre:Pomelo",
+   "titre:Mandarin orange",
+   "orange consumption",
+   "lemon consumption",
+   "citrus peel",
+   "citrus zest",
+   "orange juice",
+   "grapefruit juice",
+   "lemon + fruit",
+   "orange + fruit",
+   "lime + fruit",
+   "mandarin + fruit"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "aliments-fermentes",
+  "nom": "Aliments fermentés",
+  "termes": [
+   "fermented foods",
+   "fermented food intake"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:fermented vegetables",
+   "titre:fermented dairy",
+   "titre:fermented soyfoods",
+   "titre:lacto-fermented foods",
+   "fermented food consumption",
+   "traditional fermented foods",
+   "fermentation of foods",
+   "probiotic fermented foods",
+   "dietary fermented foods",
+   "fermentation + food",
+   "fermented + diet"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "produits-laitiers",
+  "nom": "Produits laitiers",
+  "termes": [
+   "dairy products",
+   "dairy intake",
+   "dairy consumption",
+   "dairy foods"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Yogurt",
+   "titre:Yoghurt",
+   "titre:Cheese",
+   "titre:Fermented milk",
+   "titre:Milk products",
+   "titre:Curd",
+   "milk consumption",
+   "cheese consumption",
+   "yogurt consumption",
+   "cheese intake",
+   "fermented dairy",
+   "milk intake",
+   "milk + dairy",
+   "cream + dairy"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "poisson",
+  "nom": "Poisson",
+  "termes": [
+   "fish consumption",
+   "fish intake",
+   "fish eaters",
+   "fish meals"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:fish",
+   "titre:oily fish",
+   "titre:fatty fish",
+   "titre:lean fish",
+   "titre:freshwater fish",
+   "titre:saltwater fish",
+   "fish-eating pattern",
+   "frequency of fish consumption",
+   "fish-based diet",
+   "eating fish",
+   "fish in the diet"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "poule-viande-crue",
+  "nom": "Poule",
+  "termes": [
+   "chicken meat",
+   "raw chicken",
+   "raw chicken meat"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Chicken",
+   "titre:Broiler",
+   "titre:Gallus gallus",
+   "titre:Hen meat",
+   "chicken consumption",
+   "chicken intake",
+   "dietary chicken",
+   "chicken meat intake",
+   "hen + meat",
+   "poultry + chicken"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "xylitol-polyols",
+  "nom": "Xylitol et polyols",
+  "termes": [
+   "xylitol",
+   "sorbitol intake",
+   "polyols"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:mannitol",
+   "titre:erythritol",
+   "titre:maltitol",
+   "titre:isomalt",
+   "titre:lactitol",
+   "titre:sugar alcohols",
+   "xylitol supplementation",
+   "sorbitol consumption",
+   "polyol consumption",
+   "sugar alcohol intake",
+   "dietary polyols",
+   "sugar-free gum",
+   "mannitol + sweetener",
+   "sorbitol + sweetener"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "legume-cuit-aliment-moyen",
+  "nom": "Légumes",
+  "termes": [
+   "vegetable consumption",
+   "vegetable intake",
+   "vegetables intake",
+   "fruit and vegetable intake",
+   "fruit and vegetable consumption",
+   "green leafy vegetables",
+   "leafy vegetables",
+   "cooked vegetables"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Vegetables",
+   "titre:Vegetable",
+   "vegetable servings",
+   "vegetable portions",
+   "servings of vegetables",
+   "vegetable-rich diet",
+   "dietary vegetables",
+   "greens + vegetable",
+   "produce + vegetable"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "boeuf-cote-crue",
+  "nom": "Bœuf",
+  "termes": [
+   "beef consumption",
+   "beef intake",
+   "dietary beef",
+   "lean beef",
+   "unprocessed beef",
+   "beef meat"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:beef",
+   "titre:ground beef",
+   "titre:beef burger",
+   "titre:beef patties",
+   "titre:beef steak",
+   "titre:beef jerky",
+   "beef eaters",
+   "beef diet",
+   "processed beef",
+   "beef-based diet",
+   "beef protein intake",
+   "whole beef"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "residus-pesticides",
+  "nom": "Résidus de pesticides",
+  "termes": [
+   "pesticide residues",
+   "dietary pesticide exposure",
+   "pesticide residues fruits vegetables",
+   "organic diet pesticide"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:insecticide residues",
+   "titre:fungicide residues",
+   "titre:herbicide residues",
+   "titre:agrochemical residues",
+   "titre:pesticide residue",
+   "pesticide exposure",
+   "dietary pesticide intake",
+   "pesticide residue levels",
+   "urinary pesticide metabolites",
+   "biomonitoring of pesticide exposure",
+   "organic food pesticide levels",
+   "residue + pesticide",
+   "contamination + pesticide"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "glyphosate",
+  "nom": "Glyphosate",
+  "termes": [
+   "glyphosate residues food",
+   "dietary glyphosate",
+   "glyphosate in food",
+   "glyphosate diet"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Glyphosate",
+   "titre:Roundup",
+   "titre:Glyphosate-based herbicide",
+   "titre:Glyphosate-based herbicides",
+   "glyphosate exposure",
+   "urinary glyphosate",
+   "glyphosate biomonitoring",
+   "dietary exposure to glyphosate",
+   "glyphosate contamination",
+   "AMPA + glyphosate"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "listeriose",
+  "nom": "Listériose",
+  "termes": [
+   "foodborne listeriosis",
+   "Listeria outbreak",
+   "listeriosis pregnancy",
+   "pregnancy-associated listeriosis",
+   "Listeria food"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Listeria monocytogenes",
+   "titre:Listeriosis",
+   "titre:Listerial infection",
+   "Listeria contamination",
+   "Listeria monocytogenes contamination",
+   "Listeria surveillance",
+   "Listeria prevalence",
+   "ready-to-eat food Listeria",
+   "invasive listeriosis",
+   "Listeria + food",
+   "Listeria + contamination",
+   "Listeria + risk"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "the-feuille",
+  "nom": "Thé",
+  "termes": [
+   "Camellia sinensis",
+   "green tea",
+   "oolong tea",
+   "tea drinking",
+   "tea intake",
+   "black tea",
+   "tea leaves",
+   "tea consumption",
+   "tea leaf"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:white tea",
+   "titre:pu-erh tea",
+   "titre:matcha",
+   "titre:theaflavins",
+   "titre:L-theanine",
+   "tea polyphenol intake",
+   "tea extract supplementation",
+   "habitual tea consumption",
+   "tea drinking habits",
+   "tea + polyphenols",
+   "tea + catechins"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "produits-glycation-avancee",
+  "nom": "Produits de glycation avancée (AGE)",
+  "termes": [
+   "dietary advanced glycation end products",
+   "advanced glycation end products + diet",
+   "dietary AGEs"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:glycotoxins",
+   "titre:Maillard reaction products",
+   "titre:carboxymethyllysine",
+   "titre:N-carboxymethyllysine",
+   "titre:methylglyoxal",
+   "dietary glycotoxins",
+   "glycotoxin intake",
+   "AGE-rich diet",
+   "low-AGE diet",
+   "high-AGE diet",
+   "glycation end product intake",
+   "AGE + diet",
+   "AGE + intake",
+   "AGEs + consumption"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "residus-veterinaires",
+  "nom": "Résidus de médicaments vétérinaires",
+  "termes": [
+   "veterinary drug residues",
+   "antibiotic residues + food"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:antimicrobial residues",
+   "titre:hormone residues",
+   "titre:residues in honey",
+   "titre:residues in milk",
+   "titre:residues in eggs",
+   "titre:withdrawal time",
+   "residues in food of animal origin",
+   "maximum residue limit",
+   "residue monitoring program",
+   "dietary exposure to veterinary drug residues",
+   "antibiotic residues in milk",
+   "drug residues in meat",
+   "tetracycline + residues",
+   "sulfonamide + residues",
+   "chloramphenicol + residues",
+   "hormone + residues"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "salmonelles",
+  "nom": "Salmonelles",
+  "termes": [
+   "Salmonella + food",
+   "salmonellosis + foodborne",
+   "Salmonella + outbreak"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Salmonella",
+   "titre:Salmonellosis",
+   "titre:Salmonella enterica",
+   "titre:nontyphoidal Salmonella",
+   "titre:Salmonella Typhimurium",
+   "titre:Salmonella Enteritidis",
+   "Salmonella contamination",
+   "Salmonella infection",
+   "Salmonella serovars",
+   "poultry-associated Salmonella",
+   "egg-associated Salmonella",
+   "Salmonella transmission",
+   "Salmonella + poultry",
+   "Salmonella + eggs",
+   "Salmonella + meat",
+   "Salmonella + raw"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "preparations-nourrissons",
+  "nom": "Préparations pour nourrissons",
+  "termes": [
+   "infant formula",
+   "formula feeding",
+   "follow-on formula"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:formula-fed infants",
+   "titre:formula milk",
+   "titre:breastmilk substitute",
+   "titre:human milk substitute",
+   "titre:infant milk formula",
+   "exclusively formula fed",
+   "formula intake",
+   "formula consumption",
+   "bottle-fed infants",
+   "infant formula intake",
+   "formula-fed infant growth",
+   "bottle + feeding",
+   "formula + composition"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "viande-cuite-aliment-moyen",
+  "nom": "Viande",
+  "termes": [
+   "cooked red meat",
+   "cooked meat"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:meat",
+   "titre:red meat",
+   "titre:white meat",
+   "meat consumption",
+   "meat intake",
+   "dietary meat",
+   "red meat intake",
+   "red meat consumption",
+   "meat eaters"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "viande-rouge-cuite-aliment-moyen",
+  "nom": "Viande rouge",
+  "termes": [
+   "cooked red meat",
+   "red meat",
+   "beef and pork"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:beef",
+   "titre:pork",
+   "titre:lamb",
+   "titre:veal",
+   "titre:mutton",
+   "red meat consumption",
+   "red meat intake",
+   "beef consumption",
+   "pork consumption",
+   "lamb consumption",
+   "dietary red meat",
+   "pork + meat",
+   "lamb + meat",
+   "veal + meat",
+   "beef + meat"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "poivre-de-cayenne-ou-piment-de-cayenne-poudre",
+  "nom": "Poivre de Cayenne ou piment de Cayenne",
+  "termes": [
+   "chili pepper powder",
+   "cayenne pepper",
+   "capsicum annuum"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:capsaicin",
+   "titre:capsaicinoids",
+   "titre:chili pepper",
+   "titre:hot pepper",
+   "capsaicin supplementation",
+   "chili pepper consumption",
+   "capsicum extract supplementation",
+   "hot pepper consumption",
+   "capsaicinoid intake",
+   "dietary capsaicin",
+   "red pepper + spicy",
+   "cayenne + diet"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "viandes-transformees",
+  "nom": "Viandes transformées",
+  "termes": [
+   "processed meat",
+   "processed meats",
+   "processed red meat",
+   "hot dog",
+   "hot dogs",
+   "salami",
+   "cured meat",
+   "cured meats"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:bacon",
+   "titre:ham",
+   "titre:sausage",
+   "titre:sausages",
+   "titre:pepperoni",
+   "titre:prosciutto",
+   "cured meat consumption",
+   "processed meat intake",
+   "deli meat consumption",
+   "charcuterie consumption",
+   "luncheon meat intake",
+   "smoked meat consumption"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "sucre-blanc",
+  "nom": "Sucre blanc",
+  "termes": [
+   "sucrose",
+   "refined sugar",
+   "table sugar",
+   "white sugar"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:saccharose",
+   "titre:granulated sugar",
+   "sucrose intake",
+   "sucrose consumption",
+   "dietary sucrose",
+   "sugar consumption",
+   "sugar intake",
+   "added sugar restriction",
+   "sugar + consumption",
+   "sugar + diet"
+  ]
+ },
+ {
+  "type": "aliment",
+  "slug": "volaille-cuite-aliment-moyen",
+  "nom": "Volaille",
+  "termes": [
+   "poultry meat",
+   "poultry consumption",
+   "poultry intake",
+   "cooked poultry"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:chicken",
+   "titre:turkey",
+   "titre:duck",
+   "titre:goose",
+   "titre:guinea fowl",
+   "titre:broiler",
+   "chicken consumption",
+   "chicken intake",
+   "turkey consumption",
+   "dietary poultry meat",
+   "poultry meat product",
+   "processed poultry meat",
+   "duck + meat",
+   "goose + meat",
+   "broiler + meat"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "regime-anti-inflammatoire",
+  "nom": "Régime anti-inflammatoire",
+  "termes": [
+   "anti-inflammatory diet",
+   "dietary inflammatory index",
+   "inflammatory potential of the diet",
+   "pro-inflammatory diet"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:anti-inflammatory foods",
+   "titre:pro-inflammatory foods",
+   "titre:DII",
+   "titre:EDII",
+   "anti-inflammatory dietary pattern",
+   "pro-inflammatory dietary pattern",
+   "inflammatory dietary pattern",
+   "diet-induced inflammation",
+   "anti-inflammatory diet score",
+   "inflammatory food score",
+   "inflammation + diet"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "regime-riche-en-graisses",
+  "nom": "Régime riche en graisses",
+  "termes": [],
+  "mesh": "Diet, High-Fat",
+  "candidats": [
+   "titre:High-fat diet",
+   "titre:High-fat diets",
+   "titre:HFD",
+   "titre:High-fat feeding",
+   "titre:High-fat fed",
+   "fed a high-fat diet",
+   "high-fat diet-induced",
+   "high-fat diet consumption",
+   "high-fat diet group",
+   "maintained on a high-fat diet",
+   "switched to a high-fat diet"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "allaitement-maternel",
+  "nom": "Allaitement maternel",
+  "termes": [
+   "breastfeeding",
+   "breast-feeding",
+   "breastfed"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:lactation",
+   "titre:breast milk",
+   "titre:human milk",
+   "titre:colostrum",
+   "titre:wet nursing",
+   "breast milk feeding",
+   "exclusive breastfeeding",
+   "human milk feeding",
+   "mother's milk",
+   "milk expression",
+   "nursing infant",
+   "nursing + infant",
+   "suckling + infant",
+   "milk + maternal"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "alimentation-saine",
+  "nom": "Alimentation saine",
+  "termes": [
+   "healthy diet",
+   "healthy eating",
+   "healthy dietary pattern"
+  ],
+  "mesh": "Diet, Healthy",
+  "candidats": [
+   "titre:healthy food",
+   "titre:diet quality",
+   "titre:balanced diet",
+   "titre:prudent diet",
+   "titre:nutritious diet",
+   "healthy eating index",
+   "adherence to a healthy diet",
+   "healthy food choices",
+   "healthy dietary habits",
+   "overall diet quality",
+   "prudent dietary pattern"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "regime-base-de-plantes",
+  "nom": "Régime à base de plantes",
+  "termes": [
+   "plant-based diet",
+   "plant-based dietary pattern",
+   "plant-based eating"
+  ],
+  "mesh": "Diet, Plant-Based",
+  "candidats": [
+   "titre:vegetarian",
+   "titre:vegan",
+   "titre:veganism",
+   "titre:vegetarianism",
+   "vegetarian diet",
+   "vegan diet",
+   "plant-based nutrition",
+   "plant-based diets",
+   "whole-food plant-based diet",
+   "plant-based food pattern"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "regime-pauvre-en-glucides",
+  "nom": "Régime pauvre en glucides",
+  "termes": [
+   "low-carbohydrate diet",
+   "low-carb diet"
+  ],
+  "mesh": "Diet, Carbohydrate-Restricted",
+  "candidats": [
+   "titre:low-carbohydrate",
+   "titre:carbohydrate-restricted",
+   "titre:LCHF",
+   "low carbohydrate intake",
+   "carbohydrate restriction",
+   "reduced carbohydrate intake",
+   "carbohydrate-restricted diet",
+   "low carbohydrate eating pattern"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "regime-pauvre-en-sodium",
+  "nom": "Régime pauvre en sodium",
+  "termes": [
+   "low-sodium diet",
+   "low-salt diet",
+   "sodium restriction",
+   "salt restriction"
+  ],
+  "mesh": "Diet, Sodium-Restricted",
+  "candidats": [
+   "titre:sodium reduction",
+   "titre:salt reduction",
+   "titre:low-sodium",
+   "titre:low-salt",
+   "titre:sodium-restricted",
+   "titre:salt-restricted",
+   "dietary sodium intake",
+   "dietary salt intake",
+   "reduced sodium intake",
+   "reduced salt intake",
+   "effect of salt intake",
+   "effect of sodium intake",
+   "salt + intake",
+   "sodium + intake",
+   "salt + consumption",
+   "sodium + consumption"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "regime-pauvre-en-proteines",
+  "nom": "Régime pauvre en protéines",
+  "termes": [
+   "low-protein diet"
+  ],
+  "mesh": "Diet, Protein-Restricted",
+  "candidats": [
+   "titre:protein restriction",
+   "titre:protein-restricted diet",
+   "titre:reduced-protein diet",
+   "titre:very low-protein diet",
+   "titre:low-nitrogen diet",
+   "low protein intake",
+   "dietary protein restriction",
+   "reduced protein intake",
+   "protein intake restriction",
+   "restricted protein intake",
+   "ketoanalogue supplemented diet",
+   "protein + restriction",
+   "nitrogen + restriction"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "regime-diabetique",
+  "nom": "Régime diabétique",
+  "termes": [
+   "diabetic diet"
+  ],
+  "mesh": "Diet, Diabetic",
+  "candidats": [
+   "titre:diabetes diet",
+   "titre:diabetic meal plan",
+   "titre:diabetic meal",
+   "titre:carbohydrate counting",
+   "titre:glycemic index diet",
+   "titre:diabetic nutrition",
+   "dietary management of diabetes",
+   "diet therapy for diabetes mellitus",
+   "medical nutrition therapy for diabetes",
+   "dietary intervention for diabetes",
+   "diet in diabetes mellitus",
+   "nutritional management of diabetes",
+   "diabetes + diet",
+   "diabetes + dietary intervention",
+   "diabetes + nutrition therapy",
+   "glycemic control + diet"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "regime-hyperproteine",
+  "nom": "Régime hyperprotéiné",
+  "termes": [
+   "high-protein diet"
+  ],
+  "mesh": "Diet, High-Protein",
+  "candidats": [
+   "titre:Hyperproteic diet",
+   "titre:Protein-rich diet",
+   "titre:High-protein feeding",
+   "titre:High-protein nutrition",
+   "high protein intake",
+   "high dietary protein",
+   "increased protein intake",
+   "high-protein meal",
+   "dietary protein intake",
+   "high-protein diets",
+   "protein + supplementation",
+   "protein + consumption"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "restriction-calorique",
+  "nom": "Restriction calorique",
+  "termes": [
+   "caloric restriction",
+   "calorie restriction",
+   "energy restriction"
+  ],
+  "mesh": "Caloric Restriction",
+  "candidats": [
+   "titre:CRON",
+   "titre:calorie-restricted",
+   "titre:hypocaloric",
+   "calorie-restricted diet",
+   "reduced caloric intake",
+   "long-term calorie restriction",
+   "chronic calorie restriction",
+   "percent caloric restriction",
+   "caloric restriction regimen",
+   "dietary + restriction",
+   "food + restriction"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "regime-amaigrissant",
+  "nom": "Régime amaigrissant",
+  "termes": [
+   "weight-loss diet",
+   "weight loss diet",
+   "low-calorie diet",
+   "very-low-calorie diet",
+   "very low calorie diet",
+   "total diet replacement"
+  ],
+  "mesh": "Diet, Reducing",
+  "candidats": [
+   "titre:hypocaloric diet",
+   "titre:slimming diet",
+   "titre:weight reduction diet",
+   "titre:energy-restricted diet",
+   "titre:calorie-restricted diet",
+   "titre:weight management diet",
+   "caloric restriction for weight loss",
+   "energy restriction for weight loss",
+   "dietary weight loss program",
+   "weight loss intervention",
+   "diet-induced weight loss",
+   "reduced-calorie diet",
+   "caloric restriction + weight loss",
+   "energy restriction + weight loss",
+   "meal replacement + weight loss"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "consommation-alcool",
+  "nom": "Consommation d'alcool",
+  "termes": [
+   "alcohol consumption + mortality",
+   "alcohol + blood pressure",
+   "light drinking",
+   "alcohol intake",
+   "moderate drinking",
+   "light-to-moderate drinking",
+   "moderate alcohol consumption",
+   "alcohol consumption + risk",
+   "alcohol drinking + risk",
+   "alcohol consumption cohort"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:alcohol",
+   "titre:ethanol",
+   "titre:alcoholic beverage",
+   "titre:alcoholic beverages",
+   "alcohol ingestion",
+   "ethanol intake",
+   "ethanol consumption",
+   "drinking pattern",
+   "alcohol consumption pattern",
+   "pattern of alcohol consumption"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "regime-riche-en-fibres",
+  "nom": "Régime riche en fibres",
+  "termes": [
+   "high-fiber diet",
+   "high-fibre diet",
+   "high fiber diet"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:dietary fiber",
+   "titre:dietary fibre",
+   "titre:fiber-rich diet",
+   "titre:fibre-rich diet",
+   "titre:roughage",
+   "fiber intake",
+   "fibre intake",
+   "dietary fiber intake",
+   "fiber consumption",
+   "fiber supplementation",
+   "non-digestible carbohydrate intake",
+   "fiber + intake",
+   "fibre + intake"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "vitesse-ingestion",
+  "nom": "Vitesse d'ingestion",
+  "termes": [
+   "eating rate",
+   "speed of eating",
+   "slow eating",
+   "fast eating",
+   "eating quickly",
+   "eating speed"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:bite rate",
+   "titre:meal duration",
+   "titre:mastication rate",
+   "titre:chewing rate",
+   "titre:number of chews",
+   "bites per minute",
+   "rate of food intake",
+   "pace of eating",
+   "food intake rate",
+   "chews per bite",
+   "duration of meal",
+   "ingestion + rate",
+   "feeding + rate",
+   "bite size + rate"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "alimentation-grossesse",
+  "nom": "Alimentation pendant la grossesse",
+  "termes": [
+   "maternal diet",
+   "maternal dietary intake",
+   "dietary patterns during pregnancy",
+   "prenatal diet",
+   "maternal diet during pregnancy",
+   "diet during pregnancy",
+   "prenatal dietary",
+   "diet in pregnancy",
+   "dietary intake during pregnancy"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:gestational diet",
+   "titre:antenatal diet",
+   "titre:pregnancy diet",
+   "titre:maternal nutrition",
+   "titre:pregnancy nutrition",
+   "titre:food intake in pregnancy",
+   "nutrient intake during pregnancy",
+   "food consumption during pregnancy",
+   "diet quality during pregnancy",
+   "eating habits during pregnancy",
+   "dietary habits of pregnant women",
+   "nutritional status of pregnant women",
+   "nutrition + pregnancy",
+   "diet + pregnant women",
+   "food intake + gestation",
+   "nutrient intake + pregnant"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "diversification-alimentaire",
+  "nom": "Diversification alimentaire du nourrisson",
+  "termes": [
+   "infant feeding practices",
+   "baby-led weaning",
+   "complementary feeding",
+   "introduction of solid foods",
+   "early allergen introduction",
+   "complementary foods"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:weaning",
+   "titre:finger foods",
+   "titre:first foods",
+   "titre:solid foods",
+   "titre:pureed foods",
+   "titre:spoon-feeding",
+   "age at introduction of solid foods",
+   "timing of introduction of complementary foods",
+   "weaning practices",
+   "introduction of allergenic foods",
+   "first food introduction",
+   "transition to solid foods",
+   "weaning + infant",
+   "solids + infant",
+   "spoon-feeding + infant"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "alimentation-bio",
+  "nom": "Alimentation bio",
+  "termes": [
+   "organic food consumption",
+   "organic food intake",
+   "organic foods",
+   "organically produced",
+   "organic food",
+   "organic diet"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:organic farming",
+   "titre:organic agriculture",
+   "titre:organically grown",
+   "titre:organic produce",
+   "titre:organic certification",
+   "organic food purchase",
+   "organic food choice",
+   "willingness to pay for organic food",
+   "organic farming practices",
+   "organic food purchasing behavior",
+   "produced without synthetic pesticides",
+   "organic + farming",
+   "organic + produce",
+   "organic + certified",
+   "organic + label"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "alimentation-jeune-enfant",
+  "nom": "Alimentation de l'enfant de 1 à 5 ans",
+  "termes": [
+   "early childhood nutrition",
+   "diet of young children",
+   "early childhood diet",
+   "diet quality of preschool children",
+   "dietary intake of preschool children",
+   "toddler feeding",
+   "responsive feeding",
+   "picky eating",
+   "picky eaters",
+   "fussy eating",
+   "food fussiness",
+   "selective eating",
+   "food neophobia",
+   "preschool dietary"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:toddlers",
+   "titre:preschoolers",
+   "titre:food refusal",
+   "titre:feeding difficulties",
+   "titre:mealtime behavior",
+   "titre:child feeding",
+   "food acceptance in children",
+   "vegetable intake in preschool children",
+   "food preferences in young children",
+   "eating behavior in toddlers",
+   "parental feeding practices",
+   "child feeding practices",
+   "weaning + toddler",
+   "self-feeding + toddler"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "jeune",
+  "nom": "Jeûne",
+  "termes": [
+   "therapeutic fasting",
+   "prolonged fasting",
+   "periodic fasting",
+   "water-only fasting",
+   "fasting-mimicking diet",
+   "short-term fasting",
+   "religious fasting",
+   "fasting regimen",
+   "fasting intervention",
+   "fasting diet",
+   "Orthodox fasting"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:multiday fasting",
+   "titre:extended fasting",
+   "titre:total fasting",
+   "titre:fasting cure",
+   "titre:fasting therapy",
+   "titre:fasting-induced",
+   "days of fasting",
+   "fasting period",
+   "fasting duration",
+   "effects of fasting",
+   "abstaining from food",
+   "fasting protocol",
+   "fast + food abstinence"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "aliments-enrichis",
+  "nom": "Aliments enrichis",
+  "termes": [
+   "fortified foods",
+   "fortified food",
+   "food fortification",
+   "biofortification",
+   "biofortified"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:enriched flour",
+   "titre:fortified milk",
+   "titre:fortified cereal",
+   "titre:fortified rice",
+   "titre:fortified bread",
+   "titre:iodized salt",
+   "fortified staple food",
+   "staple food fortification",
+   "mandatory fortification",
+   "fortified product consumption",
+   "vitamin-fortified food",
+   "mineral-fortified food",
+   "enriched + food",
+   "enrichment + food"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "insecurite-alimentaire",
+  "nom": "Insécurité alimentaire",
+  "termes": [
+   "food insecurity dietary"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:food insecurity",
+   "titre:food insecure",
+   "titre:food poverty",
+   "titre:household food security",
+   "food insecurity status",
+   "experience of food insecurity",
+   "household food insecurity",
+   "risk of food insecurity",
+   "food insecurity and dietary intake",
+   "food insecurity and nutrition",
+   "food security + household",
+   "hunger + food access"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "entrainement-a-jeun",
+  "nom": "Entraînement à jeun",
+  "termes": [
+   "fasted training",
+   "overnight-fasted exercise",
+   "fasted cardio",
+   "fasted state exercise",
+   "fasted exercise",
+   "exercise in the fasted state"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:fasted running",
+   "titre:fasted cycling",
+   "titre:pre-breakfast exercise",
+   "exercising after an overnight fast",
+   "exercise following an overnight fast",
+   "training after an overnight fast",
+   "exercise before breakfast",
+   "training before breakfast",
+   "skipping breakfast before exercise",
+   "fasting + exercise",
+   "overnight fast + exercise",
+   "breakfast omission + exercise"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "hydratation",
+  "nom": "Hydratation et consommation d'eau",
+  "termes": [
+   "plain water intake",
+   "hydration status",
+   "daily water intake",
+   "increased water intake",
+   "drinking water intake"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:fluid intake",
+   "titre:water consumption",
+   "titre:hypohydration",
+   "titre:euhydration",
+   "titre:water balance",
+   "titre:fluid balance",
+   "daily fluid intake",
+   "habitual water intake",
+   "fluid consumption habits",
+   "adequate water intake",
+   "hydration habits",
+   "water consumption habits",
+   "dehydration + risk",
+   "water + requirement",
+   "thirst + fluid intake",
+   "beverage + consumption"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "modes-de-cuisson",
+  "nom": "Modes de cuisson",
+  "termes": [
+   "high-temperature cooking",
+   "cooking practices",
+   "cooking methods",
+   "cooking method",
+   "meat doneness",
+   "raw versus cooked"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:frying",
+   "titre:grilling",
+   "titre:roasting",
+   "titre:barbecuing",
+   "titre:steaming",
+   "titre:boiling",
+   "cooking temperature",
+   "well-done meat",
+   "rare versus well-done",
+   "meat cooked at high temperature",
+   "grilled meat consumption",
+   "fried food consumption",
+   "smoking + meat",
+   "roasting + meat"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "profils-alimentaires",
+  "nom": "Profils alimentaires (études sur plusieurs aliments)",
+  "termes": [
+   "dietary patterns",
+   "dietary pattern",
+   "diet-wide Mendelian randomization",
+   "diet-wide association"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:dietary index",
+   "titre:dietary indices",
+   "titre:diet quality",
+   "titre:food pattern",
+   "titre:food patterns",
+   "titre:nutrient patterns",
+   "healthy eating index",
+   "diet quality index",
+   "dietary diversity score",
+   "food combinations",
+   "empirically derived dietary pattern",
+   "a priori dietary pattern",
+   "cluster analysis + diet",
+   "factor analysis + dietary",
+   "principal component analysis + dietary"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "regime-mind",
+  "nom": "Régime MIND",
+  "termes": [
+   "MIND diet",
+   "Mediterranean-DASH Intervention for Neurodegenerative Delay"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Mediterranean-DASH",
+   "MIND diet score",
+   "MIND dietary pattern",
+   "adherence to the MIND diet",
+   "MIND diet adherence",
+   "MIND + score",
+   "MIND + neurodegenerative"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "alimentation-enfant-scolaire",
+  "nom": "Alimentation de l'enfant de 6 à 11 ans",
+  "termes": [
+   "diet of school-aged children",
+   "dietary intake of school-aged children",
+   "schoolchildren dietary",
+   "school-age children diet",
+   "diet quality of school children"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:schoolchildren",
+   "titre:primary schoolchildren",
+   "titre:elementary schoolchildren",
+   "titre:school lunch",
+   "titre:school meal",
+   "titre:school feeding",
+   "nutrition of schoolchildren",
+   "eating habits of schoolchildren",
+   "food consumption of schoolchildren",
+   "breakfast habits of schoolchildren",
+   "snacking behavior in schoolchildren",
+   "nutritional intake of primary school children",
+   "canteen + school",
+   "cafeteria + school"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "alimentation-allaitement",
+  "nom": "Alimentation de la mère pendant l'allaitement",
+  "termes": [
+   "lactating women",
+   "lactating mothers",
+   "maternal diet breast milk",
+   "maternal dietary intake lactation",
+   "breastfeeding mothers diet"
+  ],
+  "mesh": null,
+  "candidats": [
+   "diet during lactation",
+   "nutrition during breastfeeding",
+   "nutritional intake during lactation",
+   "dietary intake postpartum breastfeeding",
+   "maternal nutritional status lactation",
+   "food intake lactating women",
+   "lactation + diet",
+   "lactation + nutrition",
+   "postpartum + diet",
+   "nursing + diet"
+  ]
+ },
+ {
+  "type": "habitude",
+  "slug": "nutrition-enterale-sonde",
+  "nom": "Nutrition entérale par sonde",
+  "termes": [
+   "enteral nutrition + critically ill",
+   "enteral nutrition + intensive care",
+   "enteral feeding + preterm",
+   "tube feeding",
+   "nasogastric feeding",
+   "gastrostomy feeding"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Nasojejunal feeding",
+   "titre:Nasoduodenal feeding",
+   "titre:Orogastric feeding",
+   "titre:PEG tube feeding",
+   "titre:Jejunostomy feeding",
+   "enteral feeding protocol",
+   "trophic feeding",
+   "minimal enteral feeding",
+   "continuous enteral feeding",
+   "enteral nutrition support",
+   "tube-fed patients",
+   "PEG + feeding",
+   "formula + enteral",
+   "jejunal + nutrition"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "bore",
+  "nom": "Bore",
+  "termes": [
+   "boron supplementation",
+   "boron intake",
+   "dietary boron"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Boron",
+   "boron status",
+   "boron deficiency",
+   "boron administration",
+   "boron-deficient diet",
+   "low-boron diet",
+   "boron + diet",
+   "boron + nutrition",
+   "boron + health"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "fer",
+  "nom": "Fer",
+  "termes": [
+   "iron supplementation",
+   "iron intake",
+   "dietary iron",
+   "iron supplement"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Iron",
+   "titre:Ferrous",
+   "titre:Ferric",
+   "titre:Heme iron",
+   "titre:Non-heme iron",
+   "titre:Ferritin",
+   "iron deficiency anemia",
+   "iron status",
+   "iron absorption",
+   "iron fortification",
+   "iron bioavailability",
+   "heme iron intake",
+   "iron + diet",
+   "iron + nutrition"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "iode",
+  "nom": "Iode",
+  "termes": [
+   "iodine intake",
+   "iodine supplementation",
+   "iodine status"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Iodine",
+   "titre:Iodide",
+   "titre:Iodized salt",
+   "titre:Lugol",
+   "iodine deficiency",
+   "iodine fortification",
+   "dietary iodine",
+   "iodine nutrition",
+   "urinary iodine concentration",
+   "iodine excess",
+   "potassium iodide + supplementation",
+   "sodium iodide + supplementation"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "manganese",
+  "nom": "Manganèse",
+  "termes": [
+   "manganese intake",
+   "dietary manganese"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Manganese gluconate",
+   "titre:Manganese sulfate",
+   "titre:Manganese chloride",
+   "manganese supplementation",
+   "manganese deficiency",
+   "manganese status",
+   "manganese levels",
+   "manganese requirement",
+   "manganese + supplementation",
+   "manganese + deficiency",
+   "manganese + blood",
+   "manganese + serum"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "phosphore",
+  "nom": "Phosphore",
+  "termes": [
+   "phosphorus intake",
+   "dietary phosphorus",
+   "phosphate intake"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Phosphorus",
+   "titre:Phosphoric acid",
+   "phosphorus consumption",
+   "phosphorus supplementation",
+   "dietary phosphate",
+   "phosphate consumption",
+   "phosphorus-rich foods",
+   "phosphate additives",
+   "phosphate + dietary",
+   "phosphate + food",
+   "phosphate + supplementation",
+   "polyphosphate + food"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "sucres-ajoutes",
+  "nom": "Sucres ajoutés",
+  "termes": [
+   "added sugar",
+   "added sugars",
+   "free sugars"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:high-fructose corn syrup",
+   "titre:refined sugar",
+   "titre:table sugar",
+   "titre:glucose-fructose syrup",
+   "sugar consumption",
+   "dietary sugar",
+   "sucrose intake",
+   "added caloric sweeteners",
+   "sugar-sweetened food",
+   "added sucrose",
+   "sucrose + added",
+   "fructose + added",
+   "sugar + consumption"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "vitamine-b1",
+  "nom": "Vitamine B1 (thiamine)",
+  "termes": [
+   "thiamine supplementation",
+   "thiamine intake",
+   "dietary thiamine",
+   "benfotiamine"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:thiamine",
+   "titre:thiamin",
+   "titre:vitamin B1",
+   "titre:beriberi",
+   "thiamine deficiency",
+   "thiamine status",
+   "thiamine levels",
+   "vitamin B1 supplementation",
+   "vitamin B1 intake",
+   "benfotiamine supplementation"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "vitamine-b2",
+  "nom": "Vitamine B2 (riboflavine)",
+  "termes": [
+   "riboflavin supplementation",
+   "riboflavin intake",
+   "dietary riboflavin"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Riboflavin",
+   "titre:Vitamin B2",
+   "titre:Riboflavin deficiency",
+   "titre:Lactoflavin",
+   "riboflavin status",
+   "vitamin B2 supplementation",
+   "vitamin B2 intake",
+   "vitamin B2 status",
+   "vitamin B2 deficiency",
+   "FAD + supplementation",
+   "FMN + supplementation"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "quercetine",
+  "nom": "Quercétine",
+  "termes": [
+   "quercetin supplementation",
+   "quercetin intake",
+   "dietary quercetin"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Quercetin",
+   "quercetin consumption",
+   "quercetin treatment",
+   "quercetin administration",
+   "effect of quercetin",
+   "quercetin for",
+   "high-quercetin diet"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "arginine",
+  "nom": "Arginine",
+  "termes": [
+   "arginine supplementation",
+   "L-arginine supplementation",
+   "oral L-arginine"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:L-arginine",
+   "dietary arginine",
+   "arginine intake",
+   "arginine consumption",
+   "arginine administration",
+   "arginine supplement",
+   "arginine + oral",
+   "arginine + diet",
+   "arginine + supplementation"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "cafeine",
+  "nom": "Caféine",
+  "termes": [
+   "caffeine intake",
+   "caffeine consumption",
+   "caffeine supplementation",
+   "caffeine ingestion"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Caffeine",
+   "titre:Caffeine anhydrous",
+   "titre:Caffeine citrate",
+   "titre:1,3,7-trimethylxanthine",
+   "caffeinated beverages",
+   "caffeine content",
+   "caffeine exposure",
+   "maternal caffeine",
+   "caffeine dose",
+   "caffeine use"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "caseine",
+  "nom": "Caséine",
+  "termes": [
+   "casein supplementation",
+   "casein protein",
+   "micellar casein"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Casein",
+   "titre:Caseins",
+   "titre:Caseinate",
+   "titre:Sodium caseinate",
+   "titre:Calcium caseinate",
+   "titre:Casein hydrolysate",
+   "casein consumption",
+   "dietary casein",
+   "casein ingestion",
+   "pre-sleep protein",
+   "bedtime protein supplementation",
+   "slow-digesting protein",
+   "casein + protein",
+   "caseinate + supplementation"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "polyphenols",
+  "nom": "Polyphénols",
+  "termes": [
+   "polyphenol intake",
+   "dietary polyphenols",
+   "polyphenol supplementation"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Polyphenol",
+   "titre:Polyphenols",
+   "titre:Phenolic compounds",
+   "titre:Phenolic compound",
+   "titre:Polyphenol-rich",
+   "polyphenol-rich diet",
+   "polyphenol extract",
+   "total polyphenol content",
+   "plant polyphenols",
+   "polyphenol-rich foods",
+   "polyphenol metabolites"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "astragale",
+  "nom": "Astragale",
+  "termes": [
+   "Astragalus membranaceus"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Astragalus",
+   "titre:Huang Qi",
+   "titre:Milkvetch",
+   "titre:Astragalus propinquus",
+   "titre:Radix Astragali",
+   "Astragalus supplementation",
+   "Astragalus extract",
+   "Astragalus root",
+   "Astragalus polysaccharide",
+   "dietary Astragalus",
+   "Astragalus decoction",
+   "Astragalus + root",
+   "Astragalus + extract",
+   "Astragalus + polysaccharide",
+   "Astragalus + herb"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "myo-inositol",
+  "nom": "Myo-inositol",
+  "termes": [
+   "myo-inositol",
+   "inositol supplementation"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Inositol",
+   "titre:D-chiro-inositol",
+   "titre:Chiro-inositol",
+   "inositol intake",
+   "inositol therapy",
+   "dietary inositol",
+   "D-chiro-inositol supplementation",
+   "myo-inositol treatment",
+   "inositol treatment",
+   "inositol + supplementation",
+   "inositol + treatment"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "cholesterol-alimentaire",
+  "nom": "Cholestérol alimentaire",
+  "termes": [
+   "dietary cholesterol",
+   "cholesterol intake"
+  ],
+  "mesh": null,
+  "candidats": [
+   "cholesterol consumption",
+   "cholesterol-rich diet",
+   "cholesterol-rich foods",
+   "dietary intake of cholesterol",
+   "cholesterol + diet",
+   "cholesterol + food",
+   "cholesterol + consumption"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "glucides",
+  "nom": "Glucides (apport total)",
+  "termes": [
+   "carbohydrate intake",
+   "dietary carbohydrate"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:carbohydrate",
+   "titre:carbohydrates",
+   "carbohydrate consumption",
+   "carbohydrate-rich diet",
+   "total carbohydrate intake",
+   "percentage of energy from carbohydrate",
+   "carbohydrate density",
+   "high-carbohydrate diet"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "bicarbonate-de-sodium",
+  "nom": "Bicarbonate de sodium",
+  "termes": [
+   "sodium bicarbonate supplementation",
+   "bicarbonate ingestion"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:sodium bicarbonate",
+   "titre:NaHCO3",
+   "titre:baking soda",
+   "titre:sodium hydrogen carbonate",
+   "sodium bicarbonate loading",
+   "bicarbonate loading",
+   "oral sodium bicarbonate",
+   "dietary bicarbonate",
+   "bicarbonate buffering",
+   "NaHCO3 ingestion",
+   "bicarbonate + exercise",
+   "bicarbonate + performance",
+   "sodium bicarbonate + athletes"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "glutamine",
+  "nom": "Glutamine",
+  "termes": [
+   "glutamine supplementation"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Glutamine",
+   "titre:L-glutamine",
+   "glutamine intake",
+   "dietary glutamine",
+   "oral glutamine",
+   "glutamine administration",
+   "glutamine consumption",
+   "glutamine therapy"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "probiotiques",
+  "nom": "Probiotiques",
+  "termes": [
+   "Bifidobacterium + supplementation",
+   "probiotic supplementation",
+   "probiotics",
+   "probiotic consumption",
+   "probiotic supplement",
+   "probiotic intake",
+   "probiotic administration",
+   "Lactobacillus + supplementation"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:probiotic",
+   "titre:Saccharomyces boulardii",
+   "titre:Lactobacillus rhamnosus GG",
+   "titre:Bacillus coagulans",
+   "titre:Enterococcus faecium",
+   "titre:VSL#3",
+   "probiotic therapy",
+   "probiotic treatment",
+   "probiotic strain",
+   "probiotic bacteria",
+   "probiotic formulation",
+   "probiotic use"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "chitosane",
+  "nom": "Chitosane",
+  "termes": [
+   "chitosan supplementation",
+   "oral chitosan"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:chitosan",
+   "chitosan intake",
+   "chitosan consumption",
+   "dietary chitosan",
+   "chitosan capsules",
+   "chitosan treatment",
+   "chitosan + weight",
+   "chitosan + cholesterol",
+   "chitosan + obesity"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "flavonoides",
+  "nom": "Flavonoïdes",
+  "termes": [
+   "anthocyanin supplementation",
+   "flavonoid supplementation",
+   "dietary anthocyanins",
+   "anthocyanin intake",
+   "flavonoid intake",
+   "dietary flavonoids"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Flavonoid",
+   "titre:Flavonoids",
+   "titre:Bioflavonoid",
+   "titre:Bioflavonoids",
+   "flavonoid-rich diet",
+   "flavonoid consumption",
+   "total flavonoid intake",
+   "high-flavonoid diet",
+   "flavonoid-rich foods"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "kudzu",
+  "nom": "Kudzu",
+  "termes": [
+   "Pueraria lobata",
+   "Pueraria montana",
+   "kudzu"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Puerarin",
+   "titre:Kudzu root",
+   "titre:Pueraria thunbergiana",
+   "titre:Radix puerariae",
+   "titre:Gegen",
+   "kudzu extract",
+   "kudzu supplementation",
+   "Pueraria lobata extract",
+   "kudzu root extract",
+   "Gegen decoction",
+   "puerarin supplementation",
+   "puerarin + kudzu"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "nac",
+  "nom": "NAC (N-acétylcystéine)",
+  "termes": [
+   "N-acetylcysteine supplementation",
+   "oral N-acetylcysteine"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Acetylcysteine",
+   "titre:N-acetyl-L-cysteine",
+   "acetylcysteine supplementation",
+   "NAC supplementation",
+   "N-acetylcysteine therapy",
+   "acetylcysteine treatment",
+   "oral acetylcysteine",
+   "N-acetylcysteine administration",
+   "NAC + supplementation",
+   "NAC + treatment"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "chlorophylle",
+  "nom": "Chlorophylle",
+  "termes": [
+   "chlorophyllin",
+   "chlorophyll supplementation"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:chlorophyll",
+   "titre:copper chlorophyllin",
+   "titre:sodium copper chlorophyllin",
+   "chlorophyll intake",
+   "dietary chlorophyll",
+   "chlorophyllin intake",
+   "chlorophyll extract",
+   "chlorophyllin supplement",
+   "green pigment supplementation",
+   "chlorophyll + supplement",
+   "chlorophyll + deodorant",
+   "chlorophyllin + wound",
+   "copper chlorophyllin + additive"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "proteines-alimentaires",
+  "nom": "Protéines alimentaires",
+  "termes": [
+   "dietary protein",
+   "protein intake",
+   "protein supplementation"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:whey protein",
+   "titre:casein",
+   "titre:soy protein",
+   "titre:pea protein",
+   "titre:rice protein",
+   "titre:high-protein diet",
+   "protein requirements",
+   "protein quality",
+   "animal protein",
+   "plant protein",
+   "protein-rich diet",
+   "protein consumption",
+   "casein + dietary",
+   "protein + diet"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "selenium",
+  "nom": "Sélénium",
+  "termes": [
+   "selenium supplementation",
+   "selenium intake",
+   "dietary selenium"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:selenium",
+   "titre:selenomethionine",
+   "titre:selenocysteine",
+   "titre:sodium selenite",
+   "titre:selenate",
+   "titre:selenized yeast",
+   "selenium status",
+   "selenium levels",
+   "selenium deficiency",
+   "serum selenium",
+   "plasma selenium",
+   "selenium biofortification",
+   "selenium + diet",
+   "selenium + nutrition"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "vitamine-b12",
+  "nom": "Vitamine B12",
+  "termes": [
+   "vitamin B12 supplementation",
+   "vitamin B12 intake",
+   "dietary vitamin B12",
+   "cobalamin supplementation"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:vitamin B12",
+   "titre:cobalamin",
+   "titre:methylcobalamin",
+   "titre:cyanocobalamin",
+   "titre:hydroxocobalamin",
+   "vitamin B12 deficiency",
+   "vitamin B12 status",
+   "cobalamin deficiency",
+   "cobalamin status",
+   "vitamin B12 fortification",
+   "vitamin B12 absorption"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "vitamine-b6",
+  "nom": "Vitamine B6",
+  "termes": [
+   "vitamin B6 supplementation",
+   "vitamin B6 intake",
+   "dietary vitamin B6",
+   "pyridoxine supplementation"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:pyridoxine",
+   "titre:pyridoxal",
+   "titre:pyridoxamine",
+   "titre:pyridoxal phosphate",
+   "titre:vitamin B-6",
+   "vitamin B6 deficiency",
+   "vitamin B6 status",
+   "pyridoxine intake",
+   "pyridoxal phosphate status",
+   "dietary pyridoxine",
+   "vitamin B6 levels",
+   "PLP + vitamin",
+   "B6 + vitamin"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "glutathion",
+  "nom": "Glutathion",
+  "termes": [
+   "oral glutathione",
+   "glutathione supplementation"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Glutathione",
+   "titre:GSH",
+   "titre:Liposomal glutathione",
+   "titre:Reduced glutathione",
+   "glutathione intake",
+   "dietary glutathione",
+   "glutathione consumption",
+   "glutathione administration",
+   "liposomal glutathione supplementation",
+   "glutathione precursor supplementation",
+   "glutathione + supplement",
+   "GSH + supplementation",
+   "reduced glutathione + supplementation"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "calcium",
+  "nom": "Calcium",
+  "termes": [
+   "calcium intake",
+   "calcium supplementation",
+   "dietary calcium"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Calcium carbonate",
+   "titre:Calcium citrate",
+   "calcium consumption",
+   "calcium fortified foods",
+   "calcium status",
+   "calcium requirements",
+   "milk calcium",
+   "bone calcium",
+   "calcium + bone density",
+   "calcium + osteoporosis",
+   "calcium + absorption"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "luteine-zeaxanthine",
+  "nom": "Lutéine et zéaxanthine",
+  "termes": [
+   "lutein supplementation",
+   "lutein intake",
+   "dietary lutein",
+   "zeaxanthin supplementation"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Lutein",
+   "titre:Zeaxanthin",
+   "titre:Tagetes erecta",
+   "titre:Marigold",
+   "macular pigment optical density",
+   "lutein and zeaxanthin",
+   "xanthophyll carotenoids lutein",
+   "zeaxanthin intake",
+   "zeaxanthin consumption",
+   "dietary zeaxanthin",
+   "marigold + extract"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "multivitamines",
+  "nom": "Multivitamines",
+  "termes": [
+   "multivitamin"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:multivitamins",
+   "titre:multivitamin-mineral",
+   "titre:multimineral",
+   "titre:MVM",
+   "multivitamin supplementation",
+   "multivitamin use",
+   "multivitamin intake",
+   "multiple micronutrient supplementation",
+   "daily multivitamin",
+   "multivitamin-mineral supplement",
+   "multiple micronutrient + supplement"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "potassium",
+  "nom": "Potassium",
+  "termes": [
+   "potassium intake",
+   "dietary potassium",
+   "potassium supplementation"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:potassium citrate",
+   "titre:potassium chloride",
+   "titre:potassium bicarbonate",
+   "titre:potassium gluconate",
+   "potassium rich foods",
+   "high potassium diet",
+   "low potassium diet",
+   "potassium status",
+   "potassium balance",
+   "urinary potassium excretion",
+   "potassium + diet",
+   "potassium + nutrition"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "coenzyme-q10",
+  "nom": "Coenzyme Q10",
+  "termes": [
+   "coenzyme Q10 supplementation",
+   "CoQ10 supplementation",
+   "ubiquinol"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:CoQ10",
+   "titre:Ubiquinone",
+   "titre:Coenzyme Q10",
+   "CoQ10 intake",
+   "ubiquinone supplementation",
+   "dietary CoQ10",
+   "coenzyme Q10 treatment",
+   "ubiquinol treatment",
+   "CoQ10 therapy",
+   "Q10 + supplementation"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "ginseng",
+  "nom": "Ginseng",
+  "termes": [
+   "ginseng",
+   "Panax ginseng"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Korean ginseng",
+   "titre:Asian ginseng",
+   "titre:red ginseng",
+   "titre:ginsenoside",
+   "titre:ginsenosides",
+   "ginseng extract",
+   "ginseng supplementation",
+   "ginseng root",
+   "ginseng intake",
+   "ginseng consumption",
+   "dietary ginseng"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "melatonine",
+  "nom": "Mélatonine",
+  "termes": [
+   "melatonin supplementation",
+   "exogenous melatonin",
+   "melatonin administration"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Melatonin",
+   "melatonin therapy",
+   "melatonin treatment",
+   "oral melatonin",
+   "melatonin intake",
+   "dietary melatonin",
+   "melatonin consumption"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "vitamine-b9",
+  "nom": "Vitamine B9 (folates)",
+  "termes": [
+   "folic acid supplementation",
+   "folate supplementation",
+   "folate intake",
+   "dietary folate",
+   "folic acid fortification"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Folate",
+   "titre:Folates",
+   "titre:Folic acid",
+   "titre:Vitamin B9",
+   "titre:Pteroylglutamic acid",
+   "titre:Methylfolate",
+   "folate status",
+   "folate deficiency",
+   "serum folate",
+   "folate levels",
+   "red blood cell folate",
+   "folate metabolism"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "omega-6",
+  "nom": "Oméga-6",
+  "termes": [
+   "omega-6 fatty acids",
+   "n-6 fatty acids",
+   "linoleic acid intake"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:linoleic acid",
+   "titre:arachidonic acid",
+   "titre:gamma-linolenic acid",
+   "titre:dihomo-gamma-linolenic acid",
+   "titre:n-6 PUFA",
+   "titre:n-6 polyunsaturated fatty acids",
+   "omega-6 fatty acid intake",
+   "dietary linoleic acid",
+   "linoleic acid supplementation",
+   "arachidonic acid supplementation",
+   "gamma-linolenic acid supplementation",
+   "n-6 to n-3 ratio",
+   "LA + linoleic acid",
+   "AA + arachidonic acid"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "postbiotiques-symbiotiques",
+  "nom": "Postbiotiques et symbiotiques",
+  "termes": [
+   "postbiotics",
+   "synbiotics",
+   "synbiotic supplementation"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:postbiotic",
+   "titre:synbiotic",
+   "titre:paraprobiotics",
+   "titre:metabiotics",
+   "postbiotic supplementation",
+   "synbiotic intake",
+   "heat-killed probiotic",
+   "heat-inactivated probiotic",
+   "synbiotic combination",
+   "postbiotic intervention",
+   "prebiotic + probiotic"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "omega-3-ala",
+  "nom": "Oméga-3 ALA",
+  "termes": [
+   "alpha-linolenic acid"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:n-3 ALA",
+   "titre:18:3n-3",
+   "alpha-linolenic acid supplementation",
+   "alpha-linolenic acid intake",
+   "dietary alpha-linolenic acid",
+   "alpha-linolenic acid consumption",
+   "ALA supplementation",
+   "ALA intake",
+   "ALA + omega-3",
+   "ALA + linolenic",
+   "linolenic acid + alpha"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "fluor",
+  "nom": "Fluor",
+  "termes": [
+   "fluoride intake",
+   "water fluoridation",
+   "fluoride supplementation"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Fluoride",
+   "titre:Fluorosis",
+   "titre:Dental fluorosis",
+   "titre:Sodium fluoride",
+   "titre:Stannous fluoride",
+   "titre:Fluoridation",
+   "fluoride exposure",
+   "dietary fluoride",
+   "fluoride content",
+   "excess fluoride",
+   "fluoride toxicity",
+   "fluoride levels",
+   "fluoride + toothpaste",
+   "fluoride + mouthwash",
+   "fluoride + varnish",
+   "fluoride + tablets"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "vitamine-a",
+  "nom": "Vitamine A et bêta-carotène",
+  "termes": [
+   "vitamin A supplementation",
+   "vitamin A intake",
+   "dietary vitamin A",
+   "beta-carotene supplementation",
+   "beta-carotene intake",
+   "dietary beta-carotene"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Retinol",
+   "titre:Provitamin A",
+   "titre:Retinyl palmitate",
+   "titre:Retinyl acetate",
+   "titre:Xerophthalmia",
+   "vitamin A status",
+   "beta-carotene status",
+   "provitamin A intake",
+   "vitamin A deficiency",
+   "retinol intake",
+   "retinol supplementation"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "zinc",
+  "nom": "Zinc",
+  "termes": [
+   "zinc supplementation",
+   "zinc intake",
+   "dietary zinc"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:zinc gluconate",
+   "titre:zinc citrate",
+   "titre:zinc bisglycinate",
+   "titre:zinc picolinate",
+   "titre:zinc sulfate",
+   "titre:zinc deficiency",
+   "zinc status",
+   "serum zinc",
+   "plasma zinc",
+   "zinc absorption",
+   "zinc homeostasis",
+   "zinc levels",
+   "zinc + nutrition",
+   "zinc + diet"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "same",
+  "nom": "SAMe",
+  "termes": [
+   "S-adenosylmethionine supplementation",
+   "SAMe supplementation"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:S-adenosylmethionine",
+   "titre:SAMe",
+   "titre:SAM-e",
+   "titre:Ademetionine",
+   "titre:AdoMet",
+   "SAMe treatment",
+   "S-adenosylmethionine therapy",
+   "ademetionine treatment",
+   "SAMe administration",
+   "S-adenosylmethionine administration"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "lipides-apport-total",
+  "nom": "Lipides (apport total)",
+  "termes": [
+   "dietary fat intake",
+   "total fat intake",
+   "total dietary fat"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:Dietary fats",
+   "titre:Dietary lipids",
+   "fat intake",
+   "fat consumption",
+   "lipid intake",
+   "dietary lipid intake",
+   "percentage of energy from fat",
+   "fat as percentage of total energy intake",
+   "fat + intake",
+   "lipid + intake"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "d-ribose",
+  "nom": "D-ribose",
+  "termes": [
+   "D-ribose"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:ribose",
+   "ribose supplementation",
+   "ribose intake",
+   "dietary ribose",
+   "oral ribose",
+   "ribose therapy",
+   "D-ribose supplementation",
+   "ribose + fatigue",
+   "ribose + exercise",
+   "ribose + energy metabolism",
+   "ribose + ATP"
+  ]
+ },
+ {
+  "type": "nutriment",
+  "slug": "vitamine-d",
+  "nom": "Vitamine D",
+  "termes": [
+   "cholecalciferol",
+   "vitamin D3 supplementation",
+   "vitamin D intake",
+   "ergocalciferol",
+   "calcifediol",
+   "vitamin D + supplementation",
+   "cholecalciferol supplementation",
+   "vitamin D supplementation",
+   "dietary vitamin D"
+  ],
+  "mesh": null,
+  "candidats": [
+   "titre:vitamin D",
+   "titre:25-hydroxyvitamin D",
+   "titre:vitamin D2",
+   "titre:vitamin D3",
+   "titre:calcitriol",
+   "vitamin D levels",
+   "vitamin D status",
+   "vitamin D deficiency",
+   "serum vitamin D",
+   "oral vitamin D",
+   "vitamin D treatment",
+   "calcitriol + supplementation",
+   "vitamin D + deficiency",
+   "vitamin D + levels"
+  ]
+ }
+]
