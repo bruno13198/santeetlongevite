@@ -65,7 +65,7 @@ const MESSAGES_SENSIBLES = {
 async function chargerProbleme(slug) {
   const { data } = await supabase
     .from('problemes_sante')
-    .select('id, slug, nom, famille, actif')
+    .select('id, slug, nom, famille, actif, description')
     .eq('slug', slug)
     .maybeSingle();
   return data && data.actif ? data : null;
@@ -117,7 +117,11 @@ export default async function PageProbleme({ params, searchParams }) {
       <Link href="/sante" style={{ color: '#555' }}>← Tous les problèmes de santé</Link>
 
       <h1 style={{ marginTop: '16px' }}>{probleme.nom}</h1>
-      <p style={{ color: '#6B6E63', marginTop: '-8px' }}>{probleme.famille}</p>
+            <p style={{ color: '#6B6E63', marginTop: '-8px' }}>{probleme.famille}</p>
+      {/* 8 nov. 2026 : description du problème de santé, comme sur les fiches */}
+      {probleme.description && (
+        <p style={{ lineHeight: 1.6 }}>{probleme.description}</p>
+      )}
       {/* 22 oct. 2026 : alertes par problème de santé */}
       <SuivreSujet type="probleme" sujetId={probleme.id} nom={probleme.nom} />
 
