@@ -3,10 +3,19 @@ name: Revue des termes de recherche (ponctuel)
 on:
   workflow_dispatch:
     inputs:
-      limite_fiches:
-        description: 'Nombre de fiches pour un test (0 = toutes)'
+      mode:
+        description: 'propositions (Sonnet + mesures par fiche) ou termes (mesure terme par terme)'
+        type: choice
+        options: ['propositions', 'termes']
+        default: 'termes'
+      slugs:
+        description: 'Mode propositions : slugs à traiter, séparés par des virgules (vide = selon la limite)'
         required: false
-        default: '20'
+        default: ''
+      limite_fiches:
+        description: 'Mode propositions : nombre de fiches pour un test (0 = toutes)'
+        required: false
+        default: '0'
 
 jobs:
   revue:
@@ -26,7 +35,9 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          LIMITE_FICHES: ${{ github.event.inputs.limite_fiches || '20' }}
+          MODE: ${{ github.event.inputs.mode || 'termes' }}
+          SLUGS: ${{ github.event.inputs.slugs || '' }}
+          LIMITE_FICHES: ${{ github.event.inputs.limite_fiches || '0' }}
         run: node scripts/revue-termes.js
       - name: Mettre les fichiers à disposition
         if: always()
@@ -36,4 +47,6 @@ jobs:
           path: |
             propositions.json
             revue-termes.csv
+            mesures-termes.json
+          if-no-files-found: ignore
           retention-days: 14
