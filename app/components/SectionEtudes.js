@@ -21,7 +21,7 @@ function lireParametres(sp) {
   return {
     niveau: niveau >= 1 && niveau <= 5 ? niveau : null,
     revues: sp?.revues === '1',
-    tri: sp?.tri === 'ancien' ? 'ancien' : 'recent',
+        tri: ['ancien', 'niveau'].includes(sp?.tri) ? sp.tri : 'recent',
     q,
     page: page >= 1 ? page : 1,
     probleme: typeof sp?.probleme === 'string' ? sp.probleme.slice(0, 80) : '',
