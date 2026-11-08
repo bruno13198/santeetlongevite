@@ -90,8 +90,23 @@ function Camembert({ comptes, chemin }) {
 function LigneProbleme({ ligne, chemin }) {
   return (
     <tr>
-      <th scope="row" style={{ textAlign: 'left', fontWeight: 'normal', padding: '6px 8px', borderBottom: '1px solid #f0f0f0' }}>
-        <Link href={`/sante/${ligne.slug}`} title={`Toutes les études sur ${ligne.nom.toLowerCase()}`} style={{ color: '#27500A' }}>{ligne.nom}</Link>
+            <th scope="row" style={{ textAlign: 'left', fontWeight: 'normal', padding: '6px 8px', borderBottom: '1px solid #f0f0f0' }}>
+        {/* 8 nov. 2026 : le nom filtre la fiche sur ce problème ; la flèche mène à la page du problème de santé */}
+        <Link
+          href={`${chemin}?probleme=${ligne.slug}#etudes`}
+          title={`Afficher les ${ligne.total} études de cette fiche sur ${ligne.nom.toLowerCase()}`}
+          style={{ color: '#27500A' }}
+        >
+          {ligne.nom}
+        </Link>
+        <Link
+          href={`/sante/${ligne.slug}`}
+          title={`Toutes les études du site sur ${ligne.nom.toLowerCase()}`}
+          aria-label={`Toutes les études du site sur ${ligne.nom.toLowerCase()}`}
+          style={{ marginLeft: '6px', color: '#6B6E63', textDecoration: 'none', fontSize: '13px' }}
+        >
+          →
+        </Link>
       </th>
       <td style={{ textAlign: 'center', padding: '6px 4px', borderBottom: '1px solid #f0f0f0' }}>
         <Link
@@ -170,9 +185,9 @@ export default async function CartePreuves({ type, sujetId, chemin, comptes }) {
       {afficherTableau && (
         <>
           <p style={{ fontSize: '13px', color: '#6B6E63', margin: '0 0 8px' }}>
-            Nombre d'études par problème de santé et par niveau de preuve. Cliquez sur un nombre pour afficher
-            ces études dans la liste ci-dessous, ou sur le nom d'un problème pour voir toutes les études qui le
-            concernent sur le site. Une même étude peut concerner plusieurs problèmes de santé.
+                        Nombre d'études par problème de santé et par niveau de preuve. Cliquez sur un problème ou sur un
+            nombre pour afficher ces études dans la liste ci-dessous, ou sur la flèche → pour voir toutes les
+            études du site sur ce problème. Une même étude peut concerner plusieurs problèmes de santé.
           </p>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: '14px', minWidth: '460px' }}>
