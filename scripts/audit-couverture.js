@@ -18,17 +18,13 @@ const TAILLE_PAGE = 1000;
 const FILTRE_HAUTS_NIVEAUX =
   '(PUB_TYPE:"Meta-Analysis" AND (ABSTRACT:"randomized controlled trials" OR ABSTRACT:"randomised controlled trials" OR ABSTRACT:"randomized controlled trial" OR ABSTRACT:"randomised controlled trial" OR ABSTRACT:"randomized trials" OR ABSTRACT:"randomised trials" OR ABSTRACT:"RCTs" OR ABSTRACT:"prospective cohort studies" OR ABSTRACT:"prospective cohort study" OR ABSTRACT:"prospective cohorts" OR ABSTRACT:"prospective studies"))';
 
-// Domaine de la nutrition : mots-clés MeSH, plus des mots du titre pour les études récentes,
-// que Europe PMC n'a pas encore indexées en MeSH.
+// 8 nov. 2026 (deuxième version) : mots du titre uniquement. Les mots-clés MeSH ramenaient
+// surtout de la chirurgie et des médicaments.
 const SUJET_NUTRITION = [
-  'MESH:"Diet"', 'MESH:"Dietary Supplements"', 'MESH:"Diet Therapy"', 'MESH:"Food"',
-  'MESH:"Nutrients"', 'MESH:"Micronutrients"', 'MESH:"Vitamins"', 'MESH:"Plant Extracts"',
-  'MESH:"Probiotics"', 'MESH:"Prebiotics"', 'MESH:"Fasting"', 'MESH:"Eating"',
-  'MESH:"Beverages"', 'MESH:"Nutritional Status"',
-  'TITLE:"diet"', 'TITLE:"dietary"', 'TITLE:"supplementation"', 'TITLE:"supplement"',
-  'TITLE:"supplements"', 'TITLE:"intake"', 'TITLE:"consumption"', 'TITLE:"nutrition"',
-  'TITLE:"nutritional"', 'TITLE:"food"', 'TITLE:"foods"',
-].join(' OR ');
+  'supplementation', 'supplement', 'supplements', 'dietary', 'diet', 'diets', 'intake',
+  'consumption', 'nutrition', 'nutritional', 'food', 'foods', 'fasting', 'vitamin', 'vitamins',
+  'probiotic', 'probiotics', 'prebiotic', 'prebiotics', 'beverages', 'fortification',
+].map((mot) => `TITLE:"${mot}"`).join(' OR ');
 
 function pause(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
