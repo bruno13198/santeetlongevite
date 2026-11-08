@@ -123,9 +123,10 @@ Règles :
 - Pour un aliment au nom détaillé (par exemple « Riz basmati, cuit, sans sel ajouté »), vise l'aliment lui-même (« basmati rice ») et ignore les précisions de préparation.
 - Pour un additif ou un contaminant, donne le nom chimique, les synonymes courants et le numéro E s'il existe.
 - Ne propose pas un terme qui désigne une catégorie plus large que la fiche (pour « Pomme », pas « fruit ») ni un terme qui désigne surtout un autre sujet.
+- Ne propose pas un terme qui désigne une variante, une forme particulière ou un sujet voisin susceptible d'avoir sa propre fiche sur le site (pour « Jeûne intermittent », pas « Ramadan fasting » ; pour « Polyphénols », pas « flavonoids » ; pour « Boissons sucrées », pas « energy drinks »).
 - Ne répète aucun terme actuel. Pas de termes en français. Pas de guillemets doubles.
 - Au plus 6 termes "titre", 6 "expressions" et 4 "couples". Moins si le sujet est simple : la qualité compte plus que le nombre.
-- Dans "ambigus", signale chacun de tes termes qui risque de ramener beaucoup d'études hors sujet, avec une raison courte.
+- Dans "ambigus", signale chacun de tes termes qui risque de ramener beaucoup d'études hors sujet, avec une raison de 8 mots au plus. "remarque" : une phrase courte, seulement si nécessaire.
 
 Réponds UNIQUEMENT avec un objet JSON, rien avant, rien après :
 {"titre": ["..."], "expressions": ["..."], "couples": ["... + ..."], "ambigus": [{"terme": "...", "raison": "..."}], "remarque": "une phrase en français si la fiche pose un problème particulier, sinon vide"}`;
@@ -162,7 +163,7 @@ async function executerLot(requetes) {
     body: JSON.stringify({
       requests: requetes.map((r) => ({
         custom_id: r.id,
-        params: { model: MODELE, max_tokens: 1000, messages: [{ role: 'user', content: r.prompt }] },
+                params: { model: MODELE, max_tokens: 2000, messages: [{ role: 'user', content: r.prompt }] },
       })),
     }),
   });
@@ -335,16 +336,24 @@ async function main() {
   const cout = (jetons.entree * 1.5 + jetons.sortie * 7.5) / 1e6;
   console.log(`  Jetons : ${jetons.entree} en entrée, ${jetons.sortie} en sortie (coût estimé : ${cout.toFixed(2)} $, tarif lot de Sonnet supposé).`);
 
-  // 2. Termes partagés avec une autre fiche (actuels ou proposés)
-  const proprietaires = new Map();
-  const noter = (terme, slug) => {
-    const cle = cleTerme(terme);
-    if (!proprietaires.has(cle)) proprietaires.set(cle, new Set());
-    proprietaires.get(cle).add(slug);
-  };
+    // 2. Termes partagés avec une autre fiche (actuels ou proposés) : terme identique, ou l'un contient
+  //    l'autre mot pour mot (« flavonoids » et « dietary flavonoids »). Pour un couple, seule sa
+  //    première partie (le sujet) est comparée.
+  const coeur = (t) => cleTerme(t).split('+')[0].trim();
+  const tousTermes = [];
   for (const f of fiches) {
-    for (const t of f.termes) noter(t, f.slug);
-    for (const t of [...f.propositions.titre, ...f.propositions.expressions, ...f.propositions.couples]) noter(t, f.slug);
+    for (const t of [...f.termes, ...f.propositions.titre, ...f.propositions.expressions, ...f.propositions.couples]) {
+      if (coeur(t).length >= 4) tousTermes.push({ cle: ` ${coeur(t)} `, slug: f.slug });
+    }
+  }
+  function fichesPartagees(terme, slug) {
+    const cle = ` ${coeur(terme)} `;
+    if (cle.trim().length < 4) return [];
+    const autres = new Set();
+    for (const x of tousTermes) {
+      if (x.slug !== slug && (x.cle.includes(cle) || cle.includes(x.cle))) autres.add(x.slug);
+    }
+    return [...autres];
   }
 
   // 3. Mesures
