@@ -75,9 +75,22 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const probleme = await chargerProbleme(slug);
   if (!probleme) return { title: 'Problème de santé introuvable | ScienceTruths' };
+
+  // 8 nov. 2026 : nombre d'études dans le titre et la description (comme sur les fiches).
+  // En cas d'erreur de comptage, on garde les formulations sans nombre.
+  const { count, error } = await supabase
+    .from('etudes_problemes')
+    .select('etude_id', { count: 'exact', head: true })
+    .eq('probleme_id', probleme.id);
+  const nb = !error && count > 0 ? count : null;
+
   return {
-    title: `${probleme.nom} et alimentation : ce que disent les études | ScienceTruths`,
-    description: `Aliments, régimes et compléments : toutes les études scientifiques sur ${probleme.nom.toLowerCase()}, résumées en français et classées par niveau de preuve.`,
+    title: nb
+      ? `${probleme.nom} et alimentation : ce que disent ${nb} études | ScienceTruths`
+      : `${probleme.nom} et alimentation : ce que disent les études | ScienceTruths`,
+    description: nb
+      ? `Aliments, régimes et compléments : ${nb} études scientifiques sur ${probleme.nom.toLowerCase()}, résumées en français et classées par niveau de preuve.`
+      : `Aliments, régimes et compléments : toutes les études scientifiques sur ${probleme.nom.toLowerCase()}, résumées en français et classées par niveau de preuve.`,
     alternates: { canonical: `https://sciencetruths.com/sante/${slug}` },
   };
 }
@@ -143,7 +156,11 @@ export default async function PageProbleme({ params, searchParams }) {
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {sujets.map((s) => (
               <li key={`${s.type}-${s.slug}`} style={{ padding: '6px 0', borderBottom: '1px solid #f0f0f0' }}>
-                <Link href={`${PREFIXES[s.type]}/${s.slug}`} style={{ color: '#27500A' }}>
+                <Link
+                  href={`${PREFIXES[s.type]}/${s.slug}?probleme=${slug}#etudes`}
+                  title={`Les ${s.nb} études sur ${s.nom.toLowerCase()} et ${probleme.nom.toLowerCase()}`}
+                  style={{ color: '#27500A' }}
+                >
                   {s.nom}
                 </Link>
                 <span style={{ color: '#6B6E63', fontSize: '13px' }}>
