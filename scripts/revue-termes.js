@@ -374,10 +374,10 @@ async function main() {
       compter(construireFiltre(proposes, f.mesh, false), false, 7),
       compter(construireFiltre(proposes, f.mesh, true), false, 7),
     ]);
-    const partages = [...p.titre, ...p.expressions, ...p.couples]
+        const partages = [...p.titre, ...p.expressions, ...p.couples]
       .map((t) => {
-        const autres = [...(proprietaires.get(cleTerme(t)) || [])].filter((s) => s !== f.slug);
-        return autres.length ? `${t} → ${autres.join(' | ')}` : null;
+        const autres = fichesPartagees(t, f.slug);
+        return autres.length ? `${t} → ${autres.slice(0, 5).join(' | ')}${autres.length > 5 ? ' …' : ''}` : null;
       })
       .filter(Boolean)
       .join(' ; ');
