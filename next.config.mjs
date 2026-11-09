@@ -19,6 +19,17 @@ const nextConfig = {
         destination: '/articles/la-sardine-benefices-poisson',
         permanent: true,
       },
+      // 9 nov. 2026 : fiches désactivées, signalées en 404 par Search Console
+      {
+        source: '/habitudes/regime-nicoya',
+        destination: '/habitudes/zones-bleues',
+        permanent: true,
+      },
+      {
+        source: '/aliments/huile-de-sardine',
+        destination: '/aliments/huile-de-saumon',
+        permanent: true,
+      },
     ]
   },
 }
