@@ -49,16 +49,19 @@ async function chargerSujets() {
     { data: aliments, error: erreurAliments },
     { data: habitudes, error: erreurHabitudes },
     { data: nutriments },
+    { data: problemes },
   ] = await Promise.all([
     // 17 oct. 2026 : la catégorie est chargée pour séparer les additifs (onglet à part).
     supabase.from('aliments').select('id, slug, nom, categorie').eq('actif', true).range(0, 3999),
     supabase.from('habitudes_alimentaires').select('id, slug, nom').eq('actif', true),
     // Nutriments (10 oct. 2026) : en cas d'erreur, l'onglet reste simplement vide.
     supabase.from('nutriments').select('id, slug, nom, categorie').eq('actif', true).range(0, 1999),
+    // 10 nov. 2026 : problèmes de santé, proposés dans les résultats de la recherche.
+    supabase.from('problemes_sante').select('slug, nom').eq('actif', true).order('ordre'),
   ]);
 
   if (erreurAliments || erreurHabitudes) {
-    return { erreur: (erreurAliments || erreurHabitudes).message, aliments: [], habitudes: [], nutriments: [] };
+    return { erreur: (erreurAliments || erreurHabitudes).message, aliments: [], habitudes: [], nutriments: [], problemes: [] };
   }
 
   return {
@@ -67,6 +70,7 @@ async function chargerSujets() {
     aliments: (aliments || []).map((a) => ({ id: a.id, slug: a.slug, nom: a.nom, categorie: a.categorie })),
     habitudes: (habitudes || []).map((h) => ({ id: h.id, slug: h.slug, nom: h.nom })),
     nutriments: (nutriments || []).map((n) => ({ id: n.id, slug: n.slug, nom: n.nom, categorie: n.categorie })),
+    problemes: problemes || [],
   };
 }
 
