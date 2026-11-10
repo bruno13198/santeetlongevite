@@ -75,7 +75,7 @@ async function chargerSujets() {
 }
 
 export default async function VeilleScientifique() {
-  const { erreur, aliments, habitudes, nutriments } = await chargerSujets();
+    const { erreur, aliments, habitudes, nutriments, problemes } = await chargerSujets();
 
   return (
     <main className={`${fraunces.variable} ${plexSans.variable} ${plexMono.variable} ${styles.page}`}>
@@ -94,7 +94,7 @@ export default async function VeilleScientifique() {
         {erreur ? (
           <p className={styles.error}>La liste n'a pas pu être chargée. Rechargez la page dans quelques instants.</p>
         ) : (
-          <VeilleNavigateur aliments={aliments} habitudes={habitudes} nutriments={nutriments} />
+                    <VeilleNavigateur aliments={aliments} habitudes={habitudes} nutriments={nutriments} problemes={problemes} />
         )}
 
         {/* 12 oct. 2026 : demande du lien de gestion, déplacée depuis l'ancienne page /mes-alertes */}
