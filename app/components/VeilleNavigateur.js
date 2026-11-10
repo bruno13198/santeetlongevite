@@ -97,7 +97,7 @@ function grouperParLettre(liste) {
 
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
-export default function VeilleNavigateur({ aliments, habitudes, nutriments = [] }) {
+export default function VeilleNavigateur({ aliments, habitudes, nutriments = [], problemes = [] }) {
   const [onglet, setOnglet] = useState('aliments');
   const [recherche, setRecherche] = useState('');
 
@@ -141,9 +141,15 @@ export default function VeilleNavigateur({ aliments, habitudes, nutriments = [] 
   const setTous = { aliments: setTousLesAliments, habitudes: setToutesLesHabitudes, nutriments: setTousLesNutriments, additifs: setTousLesSubstances };
   const idsSubstances = useMemo(() => new Set(additifs.map((a) => a.id)), [additifs]);
 
-  const motsRecherche = useMemo(
+    const motsRecherche = useMemo(
     () => normaliser(recherche).split(/[^a-z0-9]+/).filter((m) => m !== ''),
     [recherche]
+  );
+
+  // 10 nov. 2026 : problèmes de santé correspondant à la recherche (liens vers /sante/…)
+  const problemesTrouves = useMemo(
+    () => (motsRecherche.length === 0 ? [] : problemes.filter((p) => correspond(p.nom, motsRecherche))),
+    [problemes, motsRecherche]
   );
 
   const filtres = useMemo(() => {
@@ -317,18 +323,33 @@ export default function VeilleNavigateur({ aliments, habitudes, nutriments = [] 
 
   return (
     <div className={`${styles.navigateur} ${bandeauVisible ? styles.avecBandeau : ''}`}>
-      <label htmlFor="recherche-veille" className={styles.labelRecherche}>
-        Rechercher un aliment, un régime, un nutriment, un additif ou un contaminant
+            <label htmlFor="recherche-veille" className={styles.labelRecherche}>
+        Rechercher un aliment, un régime, un nutriment, un additif, un contaminant ou un problème de santé
       </label>
       <input
         id="recherche-veille"
         type="search"
-        placeholder="ex : curcuma, jeûne, magnésium"
+        placeholder="ex : curcuma, jeûne, magnésium, hypertension"
         value={recherche}
         onChange={(e) => setRecherche(e.target.value)}
         className={styles.recherche}
         autoComplete="off"
       />
+
+      {/* 10 nov. 2026 : problèmes de santé correspondant à la recherche */}
+      {problemesTrouves.length > 0 && (
+        <p style={{ margin: '12px 0', fontSize: '15px' }}>
+          Problème{problemesTrouves.length > 1 ? 's' : ''} de santé :{' '}
+          {problemesTrouves.map((p, i) => (
+            <span key={p.slug}>
+              {i > 0 ? ' · ' : ''}
+              <Link href={`/sante/${p.slug}`} prefetch={false} className={styles.lien}>
+                {p.nom} →
+              </Link>
+            </span>
+          ))}
+        </p>
+      )}
 
       <div className={styles.onglets} role="tablist" aria-label="Type de sujet">
         {ONGLETS.map((o) => (
