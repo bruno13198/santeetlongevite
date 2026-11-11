@@ -26,7 +26,8 @@ export default async function sitemap() {
     { data: dates },
     { data: problemes },
     { data: datesProblemes },
-    { data: nombres, error: erreurNombres },
+        { data: nombres, error: erreurNombres },
+    { data: nombresProblemes, error: erreurNombresProblemes }
   ] = await Promise.all([
     supabase.from('aliments').select('id, slug').eq('actif', true).range(0, 3999),
     supabase.from('habitudes_alimentaires').select('id, slug').eq('actif', true).range(0, 999),
@@ -35,19 +36,24 @@ export default async function sitemap() {
     supabase.from('dates_mise_a_jour_sujets').select('type, sujet_id, derniere').range(0, 4999),
     supabase.from('problemes_sante').select('id, slug').eq('actif', true),
     supabase.from('dates_mise_a_jour_problemes').select('probleme_id, derniere'),
-    supabase.from('nb_etudes_par_sujet').select('type, sujet_id, nb').range(0, 4999),
+        supabase.from('nb_etudes_par_sujet').select('type, sujet_id, nb').range(0, 4999),
+    // 12 nov. 2026 : même seuil pour les pages de problèmes de santé.
+    supabase.from('nb_etudes_par_probleme').select('probleme_id, nb')
   ]);
 
   const dateParSujet = new Map((dates || []).map((d) => [`${d.type}:${d.sujet_id}`, d.derniere]));
   for (const d of datesProblemes || []) dateParSujet.set(`probleme:${d.probleme_id}`, d.derniere);
 
-  const nbParSujet = new Map((nombres || []).map((n) => [`${n.type}:${n.sujet_id}`, Number(n.nb)]));
-  // En cas d'erreur de lecture des nombres, on garde toutes les fiches plutôt que d'en retirer à tort.
-  const assezEtudes = (type, id) => erreurNombres || (nbParSujet.get(`${type}:${id}`) || 0) >= SEUIL_ETUDES;
+    const nbParSujet = new Map((nombres || []).map((n) => [`${n.type}:${n.sujet_id}`, Number(n.nb)]));
+  for (const n of nombresProblemes || []) nbParSujet.set(`probleme:${n.probleme_id}`, Number(n.nb));
+  // En cas d'erreur de lecture des nombres, on garde toutes les fiches plutôt que d'en retirer à tort
+    const assezEtudes = (type, id) =>
+    (type === 'probleme' ? erreurNombresProblemes : erreurNombres) ||
+    (nbParSujet.get(`${type}:${id}`) || 0) >= SEUIL_ETUDES
 
   const versUrls = (lignes, type, prefixe) =>
     (lignes || [])
-      .filter((ligne) => type === 'probleme' || assezEtudes(type, ligne.id))
+            .filter((ligne) => assezEtudes(type, ligne.id))
       .map((ligne) => {
         const derniere = dateParSujet.get(`${type}:${ligne.id}`);
         return {
