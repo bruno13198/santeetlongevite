@@ -29,6 +29,11 @@ const PRIX_SORTIE_PAR_MILLION = 2.5;
 
 const LIMITE = parseInt(process.env.LIMITE || '50', 10);
 const AFFICHER_DETAIL = process.env.AFFICHER_DETAIL === 'true';
+// 11 nov. 2026 : mode reclassement (liste élargie à 138 problèmes). Reprend aussi les études classées
+// avant le début de ce run ; les anciens problèmes de chaque étude sont remplacés au moment où les
+// nouveaux sont enregistrés, pour que le site n'ait jamais de trou.
+const RECLASSER = process.env.RECLASSER === 'true';
+const DEBUT_RUN = new Date().toISOString();
 
 function pause(ms) {
   return new Promise((r) => setTimeout(r, ms));
@@ -156,6 +161,7 @@ Résumé : ${resume}
 Règles :
 - Choisis uniquement les problèmes de santé qui sont le SUJET PRINCIPAL de l'étude : son critère de santé principal (par exemple la glycémie pour le diabète, la tension pour l'hypertension), ou la maladie de la population étudiée (par exemple des patients atteints de maladie rénale).
 - N'ajoute PAS un problème pour un critère secondaire, un marqueur de sécurité ou de tolérance mesuré en complément, un facteur de risque évoqué, une complication possible ou une perspective de recherche.
+- Choisis toujours le problème le PLUS PRÉCIS de la liste. Les catégories générales (maladies cardiovasculaires, autres cancers, infections et immunité, autres troubles digestifs, autres maladies neurologiques, peau, santé des yeux, obésité et poids, performance sportive) ne servent que si aucun problème plus précis ne convient.
 - Dans la plupart des cas, un seul problème suffit ; deux ou trois seulement si l'étude porte réellement sur chacun d'eux à égalité.
 - Le problème doit être nommé explicitement dans le titre ou le résumé comme objet de l'étude : ne le déduis jamais d'un mécanisme ou d'un sujet voisin.
 - 0 à ${MAX_PROBLEMES_PAR_ETUDE} problèmes au maximum, du plus central au moins central.
@@ -175,11 +181,16 @@ async function chargerEtudesNonClassees(limite) {
   const taillePage = 1000;
   for (let debut = 0; etudes.length < limite; debut += taillePage) {
     const fin = Math.min(debut + taillePage, debut + (limite - etudes.length)) - 1;
-    const { data, error } = await supabase
+    let requete = supabase
       .from('etudes')
-      .select('id, titre_traduit, titre_original, resume_simplifie, resume_reformule')
-      .is('problemes_classes_le', null)
+      .select('id, titre_traduit, titre_original, resume_simplifie, resume_reformule');
+    // Mode reclassement : aussi les études classées avant le début de ce run.
+    requete = RECLASSER
+      ? requete.or(`problemes_classes_le.is.null,problemes_classes_le.lt."${DEBUT_RUN}"`)
+      : requete.is('problemes_classes_le', null);
+    const { data, error } = await requete
       .order('created_at', { ascending: false })
+      .order('id', { ascending: true })
       .range(debut, fin);
     if (error) throw new Error(`Lecture des études impossible : ${error.message}`);
     if (!data || data.length === 0) break;
@@ -190,7 +201,7 @@ async function chargerEtudesNonClassees(limite) {
 }
 
 async function main() {
-  console.log(`Classement par problème de santé : jusqu'à ${LIMITE} étude(s) non classée(s).`);
+    console.log(`Classement par problème de santé : jusqu'à ${LIMITE} étude(s) ${RECLASSER ? 'à reclasser (mode reclassement)' : 'non classée(s)'}.`)
 
   const { data: problemes, error: erreurProblemes } = await supabase
     .from('problemes_sante')
@@ -246,7 +257,17 @@ async function main() {
       continue;
     }
     // Garde uniquement les slugs valides, sans doublon, dans la limite autorisée.
-    slugs = [...new Set(slugs.filter((s) => idParSlug.has(s)))].slice(0, MAX_PROBLEMES_PAR_ETUDE);
+        slugs = [...new Set(slugs.filter((s) => idParSlug.has(s)))].slice(0, MAX_PROBLEMES_PAR_ETUDE);
+
+    // Mode reclassement : on retire les anciens problèmes de l'étude juste avant d'enregistrer les nouveaux.
+    if (RECLASSER) {
+      const { error: erreurSuppression } = await supabase.from('etudes_problemes').delete().eq('etude_id', etude.id);
+      if (erreurSuppression) {
+        console.log(`  Suppression des anciens problèmes impossible pour l'étude ${etude.id} : ${erreurSuppression.message}`);
+        nbEchecs++;
+        continue;
+      }
+    }
 
     if (slugs.length > 0) {
       const lignes = slugs.map((s) => ({ etude_id: etude.id, probleme_id: idParSlug.get(s) }));
@@ -283,7 +304,7 @@ async function main() {
   console.log(`Études classées : ${nbClassees} | sans problème de santé : ${nbSansProbleme} | liaisons créées : ${nbLiaisons} | échecs : ${nbEchecs}`);
   console.log(`Jetons : ${jetonsEntree} en entrée, ${jetonsSortie} en sortie`);
   console.log(`Coût réel de ce run : ${cout.toFixed(3)} $ (${(coutParEtude * 100).toFixed(3)} centime de dollar par étude)`);
-  console.log(`Estimation pour 7 434 études : ${(coutParEtude * 7434).toFixed(2)} $`);
+    console.log(`Estimation pour 15 450 études : ${(coutParEtude * 15450).toFixed(2)} $`);
 }
 
 main().catch((e) => {
