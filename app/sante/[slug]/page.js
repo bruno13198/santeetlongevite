@@ -84,7 +84,7 @@ export async function generateMetadata({ params }) {
     .eq('probleme_id', probleme.id);
   const nb = !error && count > 0 ? count : null;
 
-  return {
+  const metadonnees = {
     title: nb
       ? `${probleme.nom} et alimentation : ce que disent ${nb} études | ScienceTruths`
       : `${probleme.nom} et alimentation : ce que disent les études | ScienceTruths`,
@@ -93,6 +93,13 @@ export async function generateMetadata({ params }) {
       : `Aliments, régimes et compléments : toutes les études scientifiques sur ${probleme.nom.toLowerCase()}, résumées en français et classées par niveau de preuve.`,
     alternates: { canonical: `https://sciencetruths.com/sante/${slug}` },
   };
+
+  // 12 nov. 2026 : page de moins de 3 études : pas d'indexation tant qu'elle reste trop pauvre
+  // (elle redevient indexable d'elle-même dès 3 études, comme les fiches).
+  if (!error && (count || 0) < 3) {
+    metadonnees.robots = { index: false, follow: true };
+  }
+  return metadonnees;
 }
 
 export default async function PageProbleme({ params, searchParams }) {
