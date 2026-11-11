@@ -10,6 +10,10 @@ on:
         description: "Afficher le classement de chaque étude dans le log (true/false)"
         required: false
         default: 'true'
+      reclasser:
+        description: "Reclasser aussi les études déjà classées (true/false)"
+        required: false
+        default: 'false'
 permissions:
   contents: read
 jobs:
@@ -32,4 +36,5 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           LIMITE: ${{ github.event.inputs.limite || '50' }}
           AFFICHER_DETAIL: ${{ github.event.inputs.afficher_detail || 'true' }}
+          RECLASSER: ${{ github.event.inputs.reclasser || 'false' }}
         run: node scripts/classer-problemes.js
