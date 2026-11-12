@@ -174,37 +174,63 @@ Réponds UNIQUEMENT avec un objet JSON, rien avant ni après, avec une entrée p
 // ---------------------------------------------------------------------------
 
 // Charge les liaisons non évaluées et les regroupe par étude, jusqu'à LIMITE études.
+// Trois lectures simples (problèmes, liaisons, études), pour éviter les délais dépassés.
 async function chargerEtudesAEvaluer(limite) {
-  const parEtude = new Map();
+  // 1. Les problèmes de santé (138 lignes)
+  const { data: problemes, error: erreurProblemes } = await supabase
+    .from('problemes_sante')
+    .select('id, slug, nom');
+  if (erreurProblemes) throw new Error(`Lecture des problèmes impossible : ${erreurProblemes.message}`);
+  const problemeParId = new Map(problemes.map((p) => [p.id, p]));
+
+  // 2. Les liaisons à évaluer, sans jointure, jusqu'à LIMITE études
+  const liaisonsParEtude = new Map();
   const taillePage = 1000;
   for (let debut = 0; ; debut += taillePage) {
     const { data, error } = await supabase
       .from('etudes_problemes')
-      .select('etude_id, probleme_id, etudes(titre_original, titre_traduit, resume_original, created_at), problemes_sante(slug, nom)')
+      .select('etude_id, probleme_id')
       .is('sens_evalue_le', null)
       .order('etude_id', { ascending: true })
       .order('probleme_id', { ascending: true })
       .range(debut, debut + taillePage - 1);
     if (error) throw new Error(`Lecture des liaisons impossible : ${error.message}`);
     if (!data || data.length === 0) break;
+    let plein = false;
     for (const l of data) {
-      if (!l.etudes || !l.problemes_sante) continue;
-      if (!parEtude.has(l.etude_id)) {
-        if (parEtude.size >= limite) continue;
-        parEtude.set(l.etude_id, {
-          id: l.etude_id,
-          titre: l.etudes.titre_original || l.etudes.titre_traduit || '',
-          titreFr: l.etudes.titre_traduit || l.etudes.titre_original || '',
-          resume: l.etudes.resume_original || '',
-          problemes: [],
-        });
+      if (!liaisonsParEtude.has(l.etude_id)) {
+        if (liaisonsParEtude.size >= limite) {
+          plein = true;
+          break;
+        }
+        liaisonsParEtude.set(l.etude_id, []);
       }
-      parEtude.get(l.etude_id).problemes.push({ id: l.probleme_id, slug: l.problemes_sante.slug, nom: l.problemes_sante.nom });
+      liaisonsParEtude.get(l.etude_id).push(l.probleme_id);
     }
-    if (data.length < taillePage) break;
-    if (parEtude.size >= limite && data[data.length - 1].etude_id !== [...parEtude.keys()].pop()) break;
+    if (plein || data.length < taillePage) break;
   }
-  return [...parEtude.values()];
+
+  // 3. Les études, par paquets de 100
+  const ids = [...liaisonsParEtude.keys()];
+  const etudes = [];
+  for (let i = 0; i < ids.length; i += 100) {
+    const paquet = ids.slice(i, i + 100);
+    const { data, error } = await supabase
+      .from('etudes')
+      .select('id, titre_original, titre_traduit, resume_original')
+      .in('id', paquet);
+    if (error) throw new Error(`Lecture des études impossible : ${error.message}`);
+    for (const e of data || []) {
+      etudes.push({
+        id: e.id,
+        titre: e.titre_original || e.titre_traduit || '',
+        titreFr: e.titre_traduit || e.titre_original || '',
+        resume: e.resume_original || '',
+        problemes: liaisonsParEtude.get(e.id).map((pid) => problemeParId.get(pid)).filter(Boolean),
+      });
+    }
+  }
+  return etudes;
 }
 
 async function main() {
