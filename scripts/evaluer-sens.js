@@ -163,6 +163,9 @@ Règles :
 - Appuie-toi sur les résultats et les conclusions des auteurs, pas sur tes connaissances générales.
 - Le sens concerne la SANTÉ : une association entre une consommation plus élevée et un risque plus faible est "favorable" ; un contaminant qui augmente un risque est "defavorable".
 - Un résultat "non significatif" ou une simple « tendance » est "nul".
+- Une association « inverse » (plus de consommation, moins de problème ou de risque) est "favorable" ; une association « positive » avec une maladie ou un risque est "defavorable".
+- Pour une revue narrative ou non systématique : "favorable" ou "defavorable" seulement si les auteurs concluent clairement en ce sens ; s'ils concluent à des preuves insuffisantes, limitées ou à la nécessité d'autres études, réponds "mitige".
+- N'évalue chaque problème que sur les résultats qui le concernent directement dans le résumé ; si le résumé ne donne aucun résultat pour ce problème, réponds "sans_objet".
 - Une faible qualité des preuves ne change pas le sens (elle est évaluée ailleurs).
 
 Réponds UNIQUEMENT avec un objet JSON, rien avant ni après, avec une entrée par slug de la liste :
