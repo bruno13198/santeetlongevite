@@ -92,7 +92,7 @@ async function executerLotClaude(requetes, libelle) {
       body: JSON.stringify({
         requests: tranche.map((r) => ({
           custom_id: r.id,
-          params: { model: MODELE, max_tokens: 600, temperature: 0, messages: [{ role: 'user', content: r.prompt }] },
+                    params: { model: MODELE, max_tokens: 600, messages: [{ role: 'user', content: r.prompt }] },
         })),
       }),
     });
