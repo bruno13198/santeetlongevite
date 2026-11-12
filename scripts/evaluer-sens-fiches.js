@@ -20,15 +20,16 @@ const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-const MODELE = 'claude-haiku-4-5-20251001';
+const MODELE = 'claude-sonnet-5'
 const URL_BATCHES = 'https://api.anthropic.com/v1/messages/batches';
 const TAILLE_MAX_LOT_CLAUDE = 5000;
 const ATTENTE_MAX_LOT_MIN = 300;
 const INTERVALLE_SONDAGE_MS = 30000;
 const DELAI_MAX_MS = 60000;
 const SENS_AUTORISES = ['favorable', 'nul', 'defavorable', 'mitige', 'sans_objet'];
-const PRIX_ENTREE_PAR_MILLION = 0.5;
-const PRIX_SORTIE_PAR_MILLION = 2.5;
+// Tarif de l'API Batch pour Claude Sonnet, en dollars par million de jetons.
+const PRIX_ENTREE_PAR_MILLION = 1.5;
+const PRIX_SORTIE_PAR_MILLION = 7.5
 const LETTRES = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 const LIMITE = parseInt(process.env.LIMITE || '50', 10);
@@ -183,6 +184,7 @@ ${listeProblemes}
 ÉTAPE 1 — Type d'étude :
 - "commune" : l'étude évalue UNE exposition (un aliment, une famille d'aliments, un nutriment, un régime) et les fiches en sont des variantes, des formes ou des membres (par exemple « Ail » et « Ail séché, poudre », ou plusieurs baies dans une revue sur les anthocyanes). C'est le cas le plus fréquent, et le seul possible s'il n'y a qu'une fiche.
 - "comparaison" : l'étude compare plusieurs fiches entre elles ou en remplace une par une autre, avec des résultats différents pour chacune (par exemple huile de poisson contre huile de maïs, ou remplacer le pain blanc par un pain à l'amidon résistant).
+- Des formes du MÊME aliment (cru ou cuit, entier ou en jus, en poudre, soufflé, nom générique ou nom détaillé, comme « Mil » et « Mil, cuit », « Citron » et « Jus de citron », « Blé de Khorasan » et « Blé khorasan soufflé ») ne sont JAMAIS une comparaison : elles reçoivent le même verdict.
 
 ÉTAPE 2 — Sens du résultat, pour chaque problème, du point de vue de la consommation de l'exposition (ou de l'adhésion au régime) :
 - "favorable" : bénéfique pour ce problème (amélioration, risque diminué).
@@ -192,7 +194,11 @@ ${listeProblemes}
 - "sans_objet" : l'étude ne permet pas de conclure sur ce problème.
 
 Règles :
-- Le sens porte sur le fait de CONSOMMER ce que désigne la fiche. Si l'étude montre qu'en réduire la consommation est bénéfique (moins de sucre, moins de produits de glycation, moins d'un contaminant), le sens est "defavorable" pour cette fiche.
+- Le sens porte sur le fait de CONSOMMER ce que désigne la fiche, ou d'y être exposé. Exemples :
+  • « réduire les produits de glycation améliore la santé » → "defavorable" pour la fiche Produits de glycation ;
+  • « les sucres totaux ne sont pas associés au diabète » → "nul" pour la fiche Sucre ;
+  • « une alimentation grasse et sucrée est néfaste, mais les légumes atténuent ce risque » → "favorable" pour la fiche Légumes ;
+  • « un probiotique réduit l'exposition aux aflatoxines » → "sans_objet" pour la fiche Mycotoxines (l'étude n'évalue pas l'effet des mycotoxines elles-mêmes) et "favorable" pour la fiche du probiotique.
 - Si l'étude mesure l'inverse de ce que désigne une fiche de régime (un indice d'alimentation PRO-inflammatoire pour un « régime anti-inflammatoire », une charge ACIDE pour un « régime alcalin », un index glycémique ÉLEVÉ pour un régime « à index glycémique bas »), inverse le sens pour cette fiche.
 - Dans une comparaison : si B fait mieux que A, "favorable" pour B et "defavorable" pour A ; sans différence, "nul" pour les deux ; une fiche qui n'est qu'un simple comparateur sans résultat propre reçoit "sans_objet".
 - Appuie-toi sur les résultats et les conclusions des auteurs, pas sur tes connaissances générales. Un résultat non significatif ou une simple tendance est "nul". Une absence d'association avec un risque est "nul", jamais "favorable". Une faible qualité des preuves ne change pas le sens.
