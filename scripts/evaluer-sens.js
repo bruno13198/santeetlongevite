@@ -137,19 +137,31 @@ function extraireJSON(texte) {
   return JSON.parse(match ? match[0] : nettoye);
 }
 
+// Ramène un verdict à l'une des cinq valeurs autorisées (accents, majuscules et espaces tolérés).
+function normaliserSens(valeur) {
+  if (typeof valeur !== 'string') return null;
+  const v = valeur
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .replace(/[\s-]+/g, '_');
+  return SENS_AUTORISES.includes(v) ? v : null;
+}
+
 // ---------------------------------------------------------------------------
 // Prompt
 // ---------------------------------------------------------------------------
 
 function promptSens(titre, resume, problemes) {
-  const liste = problemes.map((p) => `- ${p.slug} : ${p.nom}`).join('\n');
+  const liste = problemes.map((p, i) => `${i + 1}. ${p.nom}`).join('\n');
   return `Tu lis le résumé d'une étude scientifique de nutrition et tu indiques, pour chacun des problèmes de santé ci-dessous, le SENS du résultat de l'étude concernant l'aliment, le régime, le nutriment, le complément ou le contaminant étudié.
 
 Étude :
 Titre : ${titre}
 Résumé : ${resume}
 
-Problèmes de santé à évaluer :
+Problèmes de santé à évaluer (numérotés) :
 ${liste}
 
 Pour chaque problème, choisis UNE valeur :
@@ -168,8 +180,8 @@ Règles :
 - N'évalue chaque problème que sur les résultats qui le concernent directement dans le résumé ; si le résumé ne donne aucun résultat pour ce problème, réponds "sans_objet".
 - Une faible qualité des preuves ne change pas le sens (elle est évaluée ailleurs).
 
-Réponds UNIQUEMENT avec un objet JSON, rien avant ni après, avec une entrée par slug de la liste :
-{"sens": {"slug-1": "favorable", "slug-2": "nul"}}`;
+Réponds UNIQUEMENT avec un objet JSON, rien avant ni après, contenant une liste de ${problemes.length} valeur(s), dans l'ordre des numéros :
+{"sens": ["favorable"${problemes.length > 1 ? ', "nul"' : ''}]}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -263,17 +275,21 @@ async function main() {
     jetonsEntree += r.usage.input_tokens || 0;
     jetonsSortie += r.usage.output_tokens || 0;
 
-    let sensParSlug;
+        let reponse;
     try {
-      sensParSlug = extraireJSON(r.texte).sens || {};
+      reponse = extraireJSON(r.texte).sens;
     } catch (e) {
       nbEchecs++;
       continue;
     }
 
     const lignesDetail = [];
-    for (const p of etude.problemes) {
-      const sens = SENS_AUTORISES.includes(sensParSlug[p.slug]) ? sensParSlug[p.slug] : null;
+    for (const [index, p] of etude.problemes.entries()) {
+      // Réponse attendue : une liste dans l'ordre des numéros (un ancien format par identifiant reste accepté).
+      const brut = Array.isArray(reponse)
+        ? reponse[index]
+        : reponse && (reponse[p.slug] ?? reponse[String(index + 1)]);
+      const sens = normaliserSens(brut);
       if (!sens) {
         nbEchecs++;
         continue;
