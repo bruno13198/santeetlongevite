@@ -20,16 +20,16 @@ const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-const MODELE = 'claude-sonnet-5'
+const MODELE = 'claude-haiku-4-5-20251001';
 const URL_BATCHES = 'https://api.anthropic.com/v1/messages/batches';
 const TAILLE_MAX_LOT_CLAUDE = 5000;
 const ATTENTE_MAX_LOT_MIN = 300;
 const INTERVALLE_SONDAGE_MS = 30000;
 const DELAI_MAX_MS = 60000;
 const SENS_AUTORISES = ['favorable', 'nul', 'defavorable', 'mitige', 'sans_objet'];
-// Tarif de l'API Batch pour Claude Sonnet, en dollars par million de jetons.
-const PRIX_ENTREE_PAR_MILLION = 1.5;
-const PRIX_SORTIE_PAR_MILLION = 7.5
+// Tarif de l'API Batch pour Claude Haiku 4.5, en dollars par million de jetons.
+const PRIX_ENTREE_PAR_MILLION = 0.5;
+const PRIX_SORTIE_PAR_MILLION = 2.5
 const LETTRES = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 const LIMITE = parseInt(process.env.LIMITE || '50', 10);
@@ -92,7 +92,7 @@ async function executerLotClaude(requetes, libelle) {
       body: JSON.stringify({
         requests: tranche.map((r) => ({
           custom_id: r.id,
-                    params: { model: MODELE, max_tokens: 600, messages: [{ role: 'user', content: r.prompt }] },
+           params: { model: MODELE, max_tokens: 1200, temperature: 0, messages: [{ role: 'user', content: r.prompt }] },
         })),
       }),
     });
