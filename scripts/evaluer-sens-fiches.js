@@ -166,12 +166,9 @@ function normaliserSens(valeur) {
 function promptSensFiches(titre, resume, fiches, problemes) {
   const listeFiches = fiches.map((f, i) => `${LETTRES[i]}. ${f.nom} (${f.libelle})`).join('\n');
   const listeProblemes = problemes.map((p, i) => `${i + 1}. ${p.nom}`).join('\n');
-  const exemple = fiches
-    .map((_, i) => `"${LETTRES[i]}": [${problemes.map(() => '"favorable"').join(', ')}]`)
-    .join(', ');
-  return `Tu lis le résumé d'une étude scientifique de nutrition. Cette étude figure sur plusieurs fiches d'un site qui présente, pour chaque fiche, ce que les études disent de ses effets sur la santé.
-
-Pour CHAQUE fiche et CHAQUE problème de santé, indique le SENS du résultat DU POINT DE VUE DE LA FICHE : l'étude montre-t-elle que consommer cet aliment (ou suivre ce régime, ou en consommer davantage) est bénéfique, sans effet ou néfaste pour ce problème ?
+  const listeVide = `[${problemes.map(() => '"favorable"').join(', ')}]`;
+  const exempleComparaison = fiches.map((_, i) => `"${LETTRES[i]}": ${listeVide}`).join(', ');
+  return `Tu lis le résumé d'une étude scientifique de nutrition. Cette étude figure sur une ou plusieurs fiches d'un site qui présente, pour chaque fiche, ce que les études disent de ses effets sur la santé.
 
 Étude :
 Titre : ${titre}
@@ -183,22 +180,26 @@ ${listeFiches}
 Problèmes de santé (numéros) :
 ${listeProblemes}
 
-Valeurs possibles :
+ÉTAPE 1 — Type d'étude :
+- "commune" : l'étude évalue UNE exposition (un aliment, une famille d'aliments, un nutriment, un régime) et les fiches en sont des variantes, des formes ou des membres (par exemple « Ail » et « Ail séché, poudre », ou plusieurs baies dans une revue sur les anthocyanes). C'est le cas le plus fréquent, et le seul possible s'il n'y a qu'une fiche.
+- "comparaison" : l'étude compare plusieurs fiches entre elles ou en remplace une par une autre, avec des résultats différents pour chacune (par exemple huile de poisson contre huile de maïs, ou remplacer le pain blanc par un pain à l'amidon résistant).
+
+ÉTAPE 2 — Sens du résultat, pour chaque problème, du point de vue de la consommation de l'exposition (ou de l'adhésion au régime) :
 - "favorable" : bénéfique pour ce problème (amélioration, risque diminué).
 - "nul" : pas d'effet ni d'association significatifs.
 - "defavorable" : néfaste (aggravation, risque augmenté, effets indésirables).
 - "mitige" : résultats partagés (certains critères seulement, un sous-groupe, résultats contradictoires).
-- "sans_objet" : l'étude ne permet pas de conclure pour cette fiche sur ce problème.
+- "sans_objet" : l'étude ne permet pas de conclure sur ce problème.
 
 Règles :
-- COHÉRENCE : des fiches voisines (variantes d'un même aliment, ou aliments de la même famille que l'étude traite ensemble, comme plusieurs fruits riches en anthocyanes) reçoivent le MÊME verdict, sauf si l'étude donne un résultat différent pour chacune.
-- Traduis toujours la conclusion pour chaque fiche. Si l'étude mesure l'inverse d'une fiche (un indice d'alimentation PRO-inflammatoire pour une fiche « régime anti-inflammatoire », une charge ACIDE pour un « régime alcalin », un index glycémique ÉLEVÉ pour un régime « à index glycémique bas »), inverse le sens pour cette fiche.
-- Étude de substitution ou de comparaison (remplacer A par B, comparer A et B) : si B fait mieux que A, "favorable" pour B et "defavorable" pour A ; s'il n'y a pas de différence, "nul" pour les deux.
-- Si une fiche n'est qu'un ingrédient parmi d'autres, un simple comparateur ou un élément secondaire, sans conclusion propre, réponds "sans_objet" pour cette fiche.
-- Appuie-toi sur les résultats et les conclusions des auteurs, pas sur tes connaissances générales. Un résultat non significatif ou une simple tendance est "nul". Une faible qualité des preuves ne change pas le sens.
+- Le sens porte sur le fait de CONSOMMER ce que désigne la fiche. Si l'étude montre qu'en réduire la consommation est bénéfique (moins de sucre, moins de produits de glycation, moins d'un contaminant), le sens est "defavorable" pour cette fiche.
+- Si l'étude mesure l'inverse de ce que désigne une fiche de régime (un indice d'alimentation PRO-inflammatoire pour un « régime anti-inflammatoire », une charge ACIDE pour un « régime alcalin », un index glycémique ÉLEVÉ pour un régime « à index glycémique bas »), inverse le sens pour cette fiche.
+- Dans une comparaison : si B fait mieux que A, "favorable" pour B et "defavorable" pour A ; sans différence, "nul" pour les deux ; une fiche qui n'est qu'un simple comparateur sans résultat propre reçoit "sans_objet".
+- Appuie-toi sur les résultats et les conclusions des auteurs, pas sur tes connaissances générales. Un résultat non significatif ou une simple tendance est "nul". Une absence d'association avec un risque est "nul", jamais "favorable". Une faible qualité des preuves ne change pas le sens.
 
-Réponds UNIQUEMENT avec un objet JSON, rien avant ni après : pour chaque lettre de fiche, une liste de ${problemes.length} valeur(s) dans l'ordre des numéros des problèmes :
-{"sens": {${exemple}}}`;
+Réponds UNIQUEMENT avec un objet JSON, rien avant ni après, sous l'une de ces deux formes (${problemes.length} valeur(s) par liste, dans l'ordre des numéros des problèmes) :
+- étude commune : {"type": "commune", "sens": ${listeVide}}
+- comparaison : {"type": "comparaison", "sens": {${exempleComparaison}}}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -318,21 +319,24 @@ async function main() {
     jetonsEntree += r.usage.input_tokens || 0;
     jetonsSortie += r.usage.output_tokens || 0;
 
-    let reponse;
+        let objet;
     try {
-      reponse = extraireJSON(r.texte).sens;
+      objet = extraireJSON(r.texte);
     } catch (err) {
       nbEchecs++;
       continue;
     }
-    if (!reponse || typeof reponse !== 'object') {
+    // Étude « commune » : une seule liste de verdicts, appliquée à toutes les fiches.
+    // Étude « comparaison » : une liste par fiche (lettre).
+    const commune = Array.isArray(objet.sens);
+    if (!objet.sens || typeof objet.sens !== 'object') {
       nbEchecs++;
       continue;
     }
 
-    const detail = [];
+    const detail = [commune ? '      (verdict commun)' : '      (comparaison)'];
     e.fiches.forEach((f, iFiche) => {
-      const verdicts = reponse[LETTRES[iFiche]];
+      const verdicts = commune ? objet.sens : objet.sens[LETTRES[iFiche]];
       if (!Array.isArray(verdicts)) {
         nbEchecs++;
         return;
