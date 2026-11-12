@@ -7,12 +7,14 @@
 // Ce script évalue donc le sens du point de vue de chaque fiche, pour :
 //   - les études rattachées à au moins deux fiches ;
 //   - toutes les études des régimes et habitudes.
-// Résultat dans la table sens_par_fiche (fiche – étude – problème). Les trios déjà évalués ne sont
+// Une seule requête par étude, avec toutes ses fiches à évaluer, et une température nulle, pour que
+// des fiches voisines (mûre, myrtille, cassis…) reçoivent des verdicts cohérents.
+// Résultat dans la table sens_par_fiche (fiche – étude – problème). Les couples déjà évalués ne sont
 // pas refaits : le script sert aussi chaque semaine, pour les nouvelles études.
 //
 // Variables d'environnement :
-//   LIMITE           nombre maximal de couples fiche–étude à évaluer (50 par défaut : test)
-//   AFFICHER_DETAIL  'true' pour afficher le résultat de chaque couple dans le log
+//   LIMITE           nombre maximal d'études à traiter (50 par défaut : test)
+//   AFFICHER_DETAIL  'true' pour afficher le résultat de chaque étude dans le log
 
 const { createClient } = require('@supabase/supabase-js');
 
@@ -27,13 +29,14 @@ const DELAI_MAX_MS = 60000;
 const SENS_AUTORISES = ['favorable', 'nul', 'defavorable', 'mitige', 'sans_objet'];
 const PRIX_ENTREE_PAR_MILLION = 0.5;
 const PRIX_SORTIE_PAR_MILLION = 2.5;
+const LETTRES = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 const LIMITE = parseInt(process.env.LIMITE || '50', 10);
 const AFFICHER_DETAIL = process.env.AFFICHER_DETAIL === 'true';
 
 const SOURCES = [
   { type: 'aliment', table: 'aliments', liens: 'aliments_etudes', colonne: 'aliment_id', libelle: 'aliment' },
-  { type: 'habitude', table: 'habitudes_alimentaires', liens: 'habitudes_etudes', colonne: 'habitude_id', libelle: 'régime ou habitude alimentaire' },
+  { type: 'habitude', table: 'habitudes_alimentaires', liens: 'habitudes_etudes', colonne: 'habitude_id', libelle: 'régime ou habitude' },
   { type: 'nutriment', table: 'nutriments', liens: 'nutriments_etudes', colonne: 'nutriment_id', libelle: 'nutriment, complément ou plante' },
 ];
 
@@ -88,7 +91,7 @@ async function executerLotClaude(requetes, libelle) {
       body: JSON.stringify({
         requests: tranche.map((r) => ({
           custom_id: r.id,
-          params: { model: MODELE, max_tokens: 200, messages: [{ role: 'user', content: r.prompt }] },
+          params: { model: MODELE, max_tokens: 600, temperature: 0, messages: [{ role: 'user', content: r.prompt }] },
         })),
       }),
     });
@@ -157,38 +160,45 @@ function normaliserSens(valeur) {
 }
 
 // ---------------------------------------------------------------------------
-// Prompt
+// Prompt : une étude, toutes ses fiches à évaluer
 // ---------------------------------------------------------------------------
 
-function promptSensFiche(nomFiche, libelleType, titre, resume, problemes) {
-  const liste = problemes.map((p, i) => `${i + 1}. ${p.nom}`).join('\n');
-  return `Tu lis le résumé d'une étude scientifique de nutrition. Cette étude figure sur la fiche « ${nomFiche} » (${libelleType}) d'un site qui présente, pour chaque fiche, ce que les études disent de ses effets sur la santé.
+function promptSensFiches(titre, resume, fiches, problemes) {
+  const listeFiches = fiches.map((f, i) => `${LETTRES[i]}. ${f.nom} (${f.libelle})`).join('\n');
+  const listeProblemes = problemes.map((p, i) => `${i + 1}. ${p.nom}`).join('\n');
+  const exemple = fiches
+    .map((_, i) => `"${LETTRES[i]}": [${problemes.map(() => '"favorable"').join(', ')}]`)
+    .join(', ');
+  return `Tu lis le résumé d'une étude scientifique de nutrition. Cette étude figure sur plusieurs fiches d'un site qui présente, pour chaque fiche, ce que les études disent de ses effets sur la santé.
 
-Indique, pour chacun des problèmes de santé ci-dessous, le SENS du résultat DU POINT DE VUE DE CETTE FICHE : l'étude montre-t-elle que consommer « ${nomFiche} » (ou suivre ce régime, ou en consommer davantage) est bénéfique, sans effet ou néfaste pour ce problème ?
+Pour CHAQUE fiche et CHAQUE problème de santé, indique le SENS du résultat DU POINT DE VUE DE LA FICHE : l'étude montre-t-elle que consommer cet aliment (ou suivre ce régime, ou en consommer davantage) est bénéfique, sans effet ou néfaste pour ce problème ?
 
 Étude :
 Titre : ${titre}
 Résumé : ${resume}
 
-Problèmes de santé à évaluer (numérotés) :
-${liste}
+Fiches (lettres) :
+${listeFiches}
 
-Pour chaque problème, choisis UNE valeur :
+Problèmes de santé (numéros) :
+${listeProblemes}
+
+Valeurs possibles :
 - "favorable" : bénéfique pour ce problème (amélioration, risque diminué).
 - "nul" : pas d'effet ni d'association significatifs.
 - "defavorable" : néfaste (aggravation, risque augmenté, effets indésirables).
 - "mitige" : résultats partagés (certains critères seulement, un sous-groupe, résultats contradictoires).
-- "sans_objet" : l'étude ne permet pas de conclure pour « ${nomFiche} » sur ce problème.
+- "sans_objet" : l'étude ne permet pas de conclure pour cette fiche sur ce problème.
 
 Règles :
-- Traduis toujours la conclusion pour « ${nomFiche} ». Si l'étude mesure l'inverse de la fiche (par exemple un indice d'alimentation PRO-inflammatoire pour une fiche « régime anti-inflammatoire », une charge ACIDE pour un « régime alcalin », un index glycémique ÉLEVÉ pour un régime « à index glycémique bas »), inverse le sens : une alimentation pro-inflammatoire associée à plus de maladies est "favorable" pour la fiche « régime anti-inflammatoire ».
-- Pour une étude de substitution ou de comparaison (remplacer A par B, comparer A et B) : si B fait mieux que A, c'est "favorable" pour la fiche B et "defavorable" pour la fiche A ; s'il n'y a pas de différence, "nul" pour les deux.
-- Si « ${nomFiche} » n'est qu'un ingrédient parmi d'autres, un simple comparateur ou un élément secondaire de l'étude, sans conclusion propre, réponds "sans_objet".
-- Appuie-toi sur les résultats et les conclusions des auteurs, pas sur tes connaissances générales. Un résultat non significatif ou une simple tendance est "nul".
-- Une faible qualité des preuves ne change pas le sens.
+- COHÉRENCE : des fiches voisines (variantes d'un même aliment, ou aliments de la même famille que l'étude traite ensemble, comme plusieurs fruits riches en anthocyanes) reçoivent le MÊME verdict, sauf si l'étude donne un résultat différent pour chacune.
+- Traduis toujours la conclusion pour chaque fiche. Si l'étude mesure l'inverse d'une fiche (un indice d'alimentation PRO-inflammatoire pour une fiche « régime anti-inflammatoire », une charge ACIDE pour un « régime alcalin », un index glycémique ÉLEVÉ pour un régime « à index glycémique bas »), inverse le sens pour cette fiche.
+- Étude de substitution ou de comparaison (remplacer A par B, comparer A et B) : si B fait mieux que A, "favorable" pour B et "defavorable" pour A ; s'il n'y a pas de différence, "nul" pour les deux.
+- Si une fiche n'est qu'un ingrédient parmi d'autres, un simple comparateur ou un élément secondaire, sans conclusion propre, réponds "sans_objet" pour cette fiche.
+- Appuie-toi sur les résultats et les conclusions des auteurs, pas sur tes connaissances générales. Un résultat non significatif ou une simple tendance est "nul". Une faible qualité des preuves ne change pas le sens.
 
-Réponds UNIQUEMENT avec un objet JSON, rien avant ni après, contenant une liste de ${problemes.length} valeur(s), dans l'ordre des numéros :
-{"sens": ["favorable"${problemes.length > 1 ? ', "nul"' : ''}]}`;
+Réponds UNIQUEMENT avec un objet JSON, rien avant ni après : pour chaque lettre de fiche, une liste de ${problemes.length} valeur(s) dans l'ordre des numéros des problèmes :
+{"sens": {${exemple}}}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -208,12 +218,11 @@ async function lireTout(table, colonnes, ordre) {
   return lignes;
 }
 
-async function preparerCouples(limite) {
-  // Problèmes de santé
+// Renvoie une liste d'études, chacune avec ses fiches à évaluer et ses problèmes de santé.
+async function preparerEtudes(limite) {
   const problemes = await lireTout('problemes_sante', 'id, nom', ['id']);
   const nomProbleme = new Map(problemes.map((p) => [p.id, p.nom]));
 
-  // Problèmes de chaque étude
   const liensProblemes = await lireTout('etudes_problemes', 'etude_id, probleme_id', ['etude_id', 'probleme_id']);
   const problemesParEtude = new Map();
   for (const l of liensProblemes) {
@@ -221,7 +230,6 @@ async function preparerCouples(limite) {
     problemesParEtude.get(l.etude_id).push({ id: l.probleme_id, nom: nomProbleme.get(l.probleme_id) });
   }
 
-  // Fiches de chaque étude, et noms des fiches
   const couples = [];
   const nbFichesParEtude = new Map();
   const nomFiche = new Map();
@@ -235,40 +243,40 @@ async function preparerCouples(limite) {
     }
   }
 
-  // Couples déjà évalués
   const dejaFaits = await lireTout('sens_par_fiche', 'fiche_type, fiche_id, etude_id', ['fiche_type', 'fiche_id', 'etude_id']);
   const cleFaite = new Set(dejaFaits.map((d) => `${d.fiche_type}:${d.fiche_id}:${d.etude_id}`));
 
-  // Sélection : études à plusieurs fiches, ou fiches de régimes et habitudes ; avec au moins un problème
-  const aFaire = couples.filter(
-    (c) =>
-      (nbFichesParEtude.get(c.etudeId) >= 2 || c.source.type === 'habitude') &&
-      problemesParEtude.has(c.etudeId) &&
-      nomFiche.has(`${c.source.type}:${c.ficheId}`) &&
-      !cleFaite.has(`${c.source.type}:${c.ficheId}:${c.etudeId}`)
-  );
-  console.log(`${aFaire.length} couple(s) fiche–étude à évaluer au total.`);
-  const selection = aFaire.slice(0, limite);
+  // Couples à évaluer, regroupés par étude
+  const parEtude = new Map();
+  for (const c of couples) {
+    const cle = `${c.source.type}:${c.ficheId}`;
+    if (!(nbFichesParEtude.get(c.etudeId) >= 2 || c.source.type === 'habitude')) continue;
+    if (!problemesParEtude.has(c.etudeId) || !nomFiche.has(cle)) continue;
+    if (cleFaite.has(`${cle}:${c.etudeId}`)) continue;
+    if (!parEtude.has(c.etudeId)) parEtude.set(c.etudeId, []);
+    parEtude.get(c.etudeId).push({ type: c.source.type, id: c.ficheId, nom: nomFiche.get(cle), libelle: c.source.libelle });
+  }
+  const nbCouples = [...parEtude.values()].reduce((s, f) => s + f.length, 0);
+  console.log(`${parEtude.size} étude(s) et ${nbCouples} couple(s) fiche–étude à évaluer au total.`);
 
-  // Titres et résumés des études concernées, par paquets de 100
-  const idsEtudes = [...new Set(selection.map((c) => c.etudeId))];
+  // Au plus 26 fiches par étude (lettres A à Z) ; les éventuelles suivantes seront traitées au run suivant.
+  const ids = [...parEtude.keys()].slice(0, limite);
   const etudes = new Map();
-  for (let i = 0; i < idsEtudes.length; i += 100) {
+  for (let i = 0; i < ids.length; i += 100) {
     const { data, error } = await supabase
       .from('etudes')
       .select('id, titre_original, titre_traduit, resume_original')
-      .in('id', idsEtudes.slice(i, i + 100));
+      .in('id', ids.slice(i, i + 100));
     if (error) throw new Error(`Lecture des études impossible : ${error.message}`);
     for (const e of data || []) etudes.set(e.id, e);
   }
 
-  return selection
-    .filter((c) => etudes.has(c.etudeId))
-    .map((c) => ({
-      ...c,
-      nomFiche: nomFiche.get(`${c.source.type}:${c.ficheId}`),
-      etude: etudes.get(c.etudeId),
-      problemes: problemesParEtude.get(c.etudeId),
+  return ids
+    .filter((id) => etudes.has(id))
+    .map((id) => ({
+      etude: etudes.get(id),
+      fiches: parEtude.get(id).slice(0, LETTRES.length),
+      problemes: problemesParEtude.get(id),
     }));
 }
 
@@ -277,19 +285,18 @@ async function preparerCouples(limite) {
 // ---------------------------------------------------------------------------
 
 async function main() {
-  console.log(`Sens de l'effet par fiche : jusqu'à ${LIMITE} couple(s) fiche–étude.`);
-  const couples = await preparerCouples(LIMITE);
-  console.log(`${couples.length} couple(s) traité(s) dans ce run.`);
-  if (couples.length === 0) return;
+  console.log(`Sens de l'effet par fiche : jusqu'à ${LIMITE} étude(s).`);
+  const etudes = await preparerEtudes(LIMITE);
+  console.log(`${etudes.length} étude(s) traitée(s) dans ce run.`);
+  if (etudes.length === 0) return;
 
-  const requetes = couples.map((c, i) => ({
+  const requetes = etudes.map((e, i) => ({
     id: `sf-${i}`,
-    prompt: promptSensFiche(
-      c.nomFiche,
-      c.source.libelle,
-      c.etude.titre_original || c.etude.titre_traduit || '',
-      c.etude.resume_original || '',
-      c.problemes
+    prompt: promptSensFiches(
+      e.etude.titre_original || e.etude.titre_traduit || '',
+      e.etude.resume_original || '',
+      e.fiches,
+      e.problemes
     ),
   }));
   const resultats = await executerLotClaude(requetes, 'Sens par fiche');
@@ -301,8 +308,8 @@ async function main() {
   const compteParSens = new Map();
   const lignes = [];
 
-  for (let i = 0; i < couples.length; i++) {
-    const c = couples[i];
+  for (let i = 0; i < etudes.length; i++) {
+    const e = etudes[i];
     const r = resultats.get(`sf-${i}`);
     if (!r || !r.ok) {
       nbEchecs++;
@@ -314,34 +321,42 @@ async function main() {
     let reponse;
     try {
       reponse = extraireJSON(r.texte).sens;
-    } catch (e) {
+    } catch (err) {
       nbEchecs++;
       continue;
     }
-    if (!Array.isArray(reponse)) {
+    if (!reponse || typeof reponse !== 'object') {
       nbEchecs++;
       continue;
     }
 
     const detail = [];
-    c.problemes.forEach((p, index) => {
-      const sens = normaliserSens(reponse[index]);
-      if (!sens) {
+    e.fiches.forEach((f, iFiche) => {
+      const verdicts = reponse[LETTRES[iFiche]];
+      if (!Array.isArray(verdicts)) {
         nbEchecs++;
         return;
       }
-      lignes.push({ fiche_type: c.source.type, fiche_id: c.ficheId, etude_id: c.etudeId, probleme_id: p.id, sens });
-      nbEvalues++;
-      compteParSens.set(sens, (compteParSens.get(sens) || 0) + 1);
-      detail.push(`${p.nom} : ${sens}`);
+      const morceaux = [];
+      e.problemes.forEach((p, iProbleme) => {
+        const sens = normaliserSens(verdicts[iProbleme]);
+        if (!sens) {
+          nbEchecs++;
+          return;
+        }
+        lignes.push({ fiche_type: f.type, fiche_id: f.id, etude_id: e.etude.id, probleme_id: p.id, sens });
+        nbEvalues++;
+        compteParSens.set(sens, (compteParSens.get(sens) || 0) + 1);
+        morceaux.push(`${p.nom} : ${sens}`);
+      });
+      detail.push(`      [${f.nom}] ${morceaux.join(' · ')}`);
     });
 
     if (AFFICHER_DETAIL) {
-      console.log(`  - [${c.nomFiche}] ${c.etude.titre_traduit || c.etude.titre_original}\n      → ${detail.join(' · ') || '(échec)'}`);
+      console.log(`  - ${e.etude.titre_traduit || e.etude.titre_original}\n${detail.join('\n')}`);
     }
   }
 
-  // Enregistrement par paquets de 500
   for (let i = 0; i < lignes.length; i += 500) {
     const { error } = await supabase
       .from('sens_par_fiche')
@@ -355,7 +370,7 @@ async function main() {
   console.log('\n##### Bilan #####');
   console.log(`Trios fiche–étude–problème enregistrés : ${nbEvalues} | échecs : ${nbEchecs}`);
   console.log(`Jetons : ${jetonsEntree} en entrée, ${jetonsSortie} en sortie`);
-  console.log(`Coût réel de ce run : ${cout.toFixed(3)} $ (${couples.length > 0 ? ((cout / couples.length) * 100).toFixed(3) : 0} centime de dollar par couple fiche–étude)`);
+  console.log(`Coût réel de ce run : ${cout.toFixed(3)} $ (${((cout / etudes.length) * 100).toFixed(3)} centime de dollar par étude)`);
 }
 
 main().catch((e) => {
