@@ -317,8 +317,10 @@ async function main() {
 
   for (let i = 0; i < etudes.length; i++) {
     const e = etudes[i];
-    const r = resultats.get(`sf-${i}`);
+        const r = resultats.get(`sf-${i}`);
     if (!r || !r.ok) {
+      // Affiche le motif des trois premiers refus, pour comprendre la cause.
+      if (nbEchecs < 3) console.log(`  Requête refusée : ${r ? r.erreur : 'résultat absent'}`);
       nbEchecs++;
       continue;
     }
