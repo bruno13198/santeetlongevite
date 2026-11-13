@@ -378,11 +378,11 @@ async function copierReference(etudeId) {
 
 // 13 nov. 2026 : étiquettes du sens de l'effet (sans fond coloré, pour ne pas imiter les niveaux).
 const SENS_ETIQUETTES = {
-  favorable: { texte: '↑ favorable', couleur: '#27500A' },
-  nul: { texte: '= sans effet', couleur: '#4A4D45' },
-  defavorable: { texte: '↓ défavorable', couleur: '#A32D2D' },
-  mitige: { texte: '± partagé', couleur: '#854F0B' },
-};
+  favorable: { texte: '↑ effet favorable', couleur: '#27500A' },
+  nul: { texte: '= pas d\u2019effet', couleur: '#4A4D45' },
+  defavorable: { texte: '↓ effet défavorable', couleur: '#A32D2D' },
+  mitige: { texte: '± effet partagé', couleur: '#854F0B' },
+}
 
 function EtiquettesSens({ sens }) {
   if (!sens || sens.length === 0) return null;
@@ -392,7 +392,7 @@ function EtiquettesSens({ sens }) {
         SENS_ETIQUETTES[s.sens] ? (
           <span
             key={s.slug}
-            title="Sens du résultat, établi automatiquement à partir du résumé"
+                        title="Effet sur la santé de ce qui est étudié, établi automatiquement à partir du résumé. La qualité de l'étude est indiquée par son niveau de preuve."
             style={{
               fontSize: '12px',
               padding: '1px 7px',
