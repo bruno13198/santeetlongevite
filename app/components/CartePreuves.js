@@ -5,6 +5,9 @@
 //    sa page /sante/[slug] (liens internes utiles au référencement), et une colonne « Total » filtre la
 //    liste sur ce problème. Le tableau n'apparaît pas sur les pages de
 //    problème de santé, ni quand la fiche a trop peu d'études classées.
+// 13 nov. 2026 : sous chaque problème, le verdict des méta-analyses et des essais (niveaux 1 et 2),
+//    calculé à partir du sens de l'effet de chaque étude (fonction SQL verdicts_sujet). Étiquette sans
+//    fond coloré, pour ne pas se confondre avec les couleurs des niveaux de preuve.
 import Link from 'next/link';
 import { createClient } from '@supabase/supabase-js';
 
@@ -27,10 +30,52 @@ const LIBELLES = {
   2: 'Niveau 2 · essais randomisés',
   3: 'Niveau 3 · cohortes, petits essais',
   4: 'Niveau 4 · études transversales, cas',
-    5: 'Niveau 5 · revues narratives et mécanistiques',
+  5: 'Niveau 5 · revues narratives et mécanistiques',
 };
 const SEUIL_TABLEAU = 10; // études classées par problème de santé, au minimum
 const LIGNES_VISIBLES = 10;
+
+// Verdicts : symbole, libellé et couleur du texte (pas de fond, pour ne pas imiter les niveaux).
+const VERDICTS = {
+  favorable: { symbole: '↑', libelle: 'plutôt favorable', couleur: '#27500A' },
+  nul: { symbole: '=', libelle: 'pas d\u2019effet démontré', couleur: '#4A4D45' },
+  defavorable: { symbole: '↓', libelle: 'plutôt défavorable', couleur: '#A32D2D' },
+  partage: { symbole: '±', libelle: 'résultats partagés', couleur: '#854F0B' },
+  insuffisant: { symbole: '?', libelle: 'preuves insuffisantes', couleur: '#8A8D85' },
+};
+
+function pluriel(n, mot) {
+  return `${n} ${mot}${n > 1 ? 's' : ''}`;
+}
+
+// Verdict d'un problème à partir des études de niveau 1 et 2 (les « sans objet » sont ignorés).
+// Moins de 2 études : preuves insuffisantes. Au moins 60 % dans un sens : verdict dans ce sens.
+function calculerVerdict(c) {
+  const fav = c?.favorable || 0;
+  const nul = c?.nul || 0;
+  const def = c?.defavorable || 0;
+  const mit = c?.mitige || 0;
+  const n = fav + nul + def + mit;
+  if (n < 2) {
+    return {
+      cle: 'insuffisant',
+      detail:
+        n === 1
+          ? 'Une seule méta-analyse ou un seul essai : trop peu pour conclure.'
+          : 'Aucune méta-analyse ni aucun essai : trop peu pour conclure.',
+    };
+  }
+  let cle = 'partage';
+  if (fav / n >= 0.6) cle = 'favorable';
+  else if (def / n >= 0.6) cle = 'defavorable';
+  else if (nul / n >= 0.6) cle = 'nul';
+  const morceaux = [];
+  if (fav) morceaux.push(pluriel(fav, 'favorable'));
+  if (nul) morceaux.push(`${nul} sans effet`);
+  if (def) morceaux.push(pluriel(def, 'défavorable'));
+  if (mit) morceaux.push(pluriel(mit, 'partagée'));
+  return { cle, detail: `Méta-analyses et essais : ${morceaux.join(', ')}.` };
+}
 
 function Camembert({ comptes, chemin }) {
   const total = [1, 2, 3, 4, 5].reduce((s, n) => s + (comptes[n] || 0), 0);
@@ -87,10 +132,36 @@ function Camembert({ comptes, chemin }) {
   );
 }
 
+// 13 nov. 2026 : étiquette de verdict, dépliable au clic (détail des décomptes), bulle au survol.
+function EtiquetteVerdict({ verdict }) {
+  if (!verdict) return null;
+  const v = VERDICTS[verdict.cle];
+  return (
+    <details style={{ marginTop: '3px' }}>
+      <summary
+        title={verdict.detail}
+        style={{
+          display: 'inline-block',
+          listStyle: 'none',
+          cursor: 'pointer',
+          fontSize: '12px',
+          padding: '1px 7px',
+          border: '1px solid #DCDDD5',
+          borderRadius: '6px',
+          color: v.couleur,
+        }}
+      >
+        {v.symbole} {v.libelle}
+      </summary>
+      <span style={{ display: 'block', fontSize: '12px', color: '#6B6E63', marginTop: '3px' }}>{verdict.detail}</span>
+    </details>
+  );
+}
+
 function LigneProbleme({ ligne, chemin }) {
   return (
     <tr>
-            <th scope="row" style={{ textAlign: 'left', fontWeight: 'normal', padding: '6px 8px', borderBottom: '1px solid #f0f0f0' }}>
+      <th scope="row" style={{ textAlign: 'left', fontWeight: 'normal', padding: '6px 8px', borderBottom: '1px solid #f0f0f0', verticalAlign: 'top' }}>
         {/* 8 nov. 2026 : le nom filtre la fiche sur ce problème ; la flèche mène à la page du problème de santé */}
         <Link
           href={`${chemin}?probleme=${ligne.slug}#etudes`}
@@ -107,8 +178,9 @@ function LigneProbleme({ ligne, chemin }) {
         >
           →
         </Link>
+        <EtiquetteVerdict verdict={ligne.verdict} />
       </th>
-      <td style={{ textAlign: 'center', padding: '6px 4px', borderBottom: '1px solid #f0f0f0' }}>
+      <td style={{ textAlign: 'center', padding: '6px 4px', borderBottom: '1px solid #f0f0f0', verticalAlign: 'top' }}>
         <Link
           href={`${chemin}?probleme=${ligne.slug}#etudes`}
           title={`Afficher les ${ligne.total} études de cette fiche sur ${ligne.nom.toLowerCase()}`}
@@ -120,7 +192,7 @@ function LigneProbleme({ ligne, chemin }) {
       {[1, 2, 3, 4, 5].map((n) => {
         const nb = ligne.niveaux[n] || 0;
         return (
-          <td key={n} style={{ textAlign: 'center', padding: '6px 4px', borderBottom: '1px solid #f0f0f0' }}>
+          <td key={n} style={{ textAlign: 'center', padding: '6px 4px', borderBottom: '1px solid #f0f0f0', verticalAlign: 'top' }}>
             {nb > 0 ? (
               <Link
                 href={`${chemin}?probleme=${ligne.slug}&niveau=${n}#etudes`}
@@ -152,7 +224,11 @@ function LigneProbleme({ ligne, chemin }) {
 export default async function CartePreuves({ type, sujetId, chemin, comptes }) {
   let lignes = [];
   if (type !== 'probleme') {
-    const { data } = await supabase.rpc('carte_preuves', { p_type: type, p_sujet: sujetId });
+    const [{ data }, { data: verdicts }] = await Promise.all([
+      supabase.rpc('carte_preuves', { p_type: type, p_sujet: sujetId }),
+      supabase.rpc('verdicts_sujet', { p_type: type, p_sujet: sujetId }),
+    ]);
+    const verdictParSlug = new Map((verdicts || []).map((v) => [v.slug, v]));
     const parProbleme = new Map();
     for (const r of data || []) {
       if (!parProbleme.has(r.slug)) parProbleme.set(r.slug, { slug: r.slug, nom: r.nom, niveaux: {}, total: 0 });
@@ -161,6 +237,10 @@ export default async function CartePreuves({ type, sujetId, chemin, comptes }) {
       ligne.total += Number(r.nb);
     }
     lignes = [...parProbleme.values()].sort((a, b) => b.total - a.total);
+    // En cas d'erreur de lecture des verdicts, le tableau s'affiche simplement sans eux.
+    if (verdicts) {
+      for (const ligne of lignes) ligne.verdict = calculerVerdict(verdictParSlug.get(ligne.slug));
+    }
   }
   const totalClasse = lignes.reduce((s, l) => s + l.total, 0);
   const afficherTableau = lignes.length >= 2 && totalClasse >= SEUIL_TABLEAU;
@@ -180,14 +260,18 @@ export default async function CartePreuves({ type, sujetId, chemin, comptes }) {
   return (
     <section style={{ margin: '8px 0 24px' }}>
       <h3 style={{ fontSize: '17px', margin: '0 0 4px' }}>Carte des preuves</h3>
-            <Camembert comptes={comptes} chemin={chemin} />
+      <Camembert comptes={comptes} chemin={chemin} />
 
       {afficherTableau && (
         <>
           <p style={{ fontSize: '13px', color: '#6B6E63', margin: '0 0 8px' }}>
-                        Nombre d'études par problème de santé et par niveau de preuve. Cliquez sur un problème ou sur un
+            Nombre d'études par problème de santé et par niveau de preuve. Cliquez sur un problème ou sur un
             nombre pour afficher ces études dans la liste ci-dessous, ou sur la flèche → pour voir toutes les
-            études du site sur ce problème. Une même étude peut concerner plusieurs problèmes de santé.
+            études du site sur ce problème. Une même étude peut concerner plusieurs problèmes de santé.{' '}
+            <span style={{ color: '#333' }}>
+              Sous chaque problème, le verdict des méta-analyses et des essais (niveaux 1 et 2) : cliquez
+              dessus pour le détail.
+            </span>
           </p>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: '14px', minWidth: '460px' }}>
@@ -213,6 +297,11 @@ export default async function CartePreuves({ type, sujetId, chemin, comptes }) {
               </details>
             )}
           </div>
+          {/* 13 nov. 2026 : avertissement sur les verdicts */}
+          <p style={{ fontSize: '12px', color: '#8A8D85', margin: '8px 0 0' }}>
+            Verdicts établis automatiquement à partir des résumés. Les études qui trouvent un effet sont plus
+            souvent publiées que les autres : un verdict favorable reste à confirmer.
+          </p>
         </>
       )}
     </section>
