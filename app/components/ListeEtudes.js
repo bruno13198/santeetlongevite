@@ -548,7 +548,7 @@ const styleLienPage = {
   fontSize: '14px',
 };
 
-export default function ListeEtudes({ etudes, comptes, totalSelection, parametres, chemin, problemes = [], sensParEtude = {} }) 
+export default function ListeEtudes({ etudes, comptes, totalSelection, parametres, chemin, problemes = [], sensParEtude = {} }) {
   const { niveau, revues, tri, q, page, probleme } = parametres;
   const nomProbleme = problemes.find((p) => p.slug === probleme)?.nom || '';
   const nbPages = Math.max(1, Math.ceil(totalSelection / TAILLE_PAGE));
@@ -718,7 +718,7 @@ export default function ListeEtudes({ etudes, comptes, totalSelection, parametre
       )}
 
       {etudes.map((etude) => (
-                <CarteEtude key={etude.id} etude={etude} sens={sensParEtude[etude.id] || []} />
+                        <CarteEtude key={etude.id} etude={etude} sens={sensParEtude[etude.id] || []} />
       ))}
 
       {/* Pagination numérotée */}
