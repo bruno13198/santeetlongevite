@@ -409,7 +409,7 @@ function EtiquettesSens({ sens }) {
   );
 }
 // Carte compacte : niveau, titre, année. Les résumés et le détail s'ouvrent au clic.
-function CarteEtude({ etude, sens = [] }) 
+function CarteEtude({ etude, sens = [] }) { 
   const [ouverte, setOuverte] = useState(true);
   const [signalementOuvert, setSignalementOuvert] = useState(false);
   const [referenceCopiee, setReferenceCopiee] = useState(false);
