@@ -3,11 +3,14 @@
 // les compteurs par niveau et la seule page de 20 études à afficher, puis confie l'affichage à ListeEtudes.
 // Ainsi, une fiche reste légère quel que soit son nombre d'études.
 // 27 oct. 2026 : filtre par problème de santé (paramètre « probleme », slug de problemes_sante).
+// 13 nov. 2026 : sens de l'effet de chaque étude affichée (vue sens_effectif sur les fiches,
+// etudes_problemes sur les pages de problème), pour les étiquettes de la liste.
 import { createClient } from '@supabase/supabase-js';
 import ListeEtudes from './ListeEtudes';
 import CartePreuves from './CartePreuves';
 
 const TAILLE_PAGE = 20;
+const MAX_ETIQUETTES = 3;
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -21,7 +24,7 @@ function lireParametres(sp) {
   return {
     niveau: niveau >= 1 && niveau <= 5 ? niveau : null,
     revues: sp?.revues === '1',
-        tri: ['ancien', 'niveau'].includes(sp?.tri) ? sp.tri : 'recent',
+    tri: ['ancien', 'niveau'].includes(sp?.tri) ? sp.tri : 'recent',
     q,
     page: page >= 1 ? page : 1,
     probleme: typeof sp?.probleme === 'string' ? sp.probleme.slice(0, 80) : '',
@@ -38,6 +41,37 @@ async function chargerComptes(type, sujetId, recherche, probleme) {
   const comptes = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
   for (const ligne of data || []) comptes[ligne.niveau] = Number(ligne.nb);
   return comptes;
+}
+
+// Sens de l'effet des études affichées : { idEtude: [{ slug, nom, sens }] }.
+// En cas d'erreur, la liste s'affiche simplement sans étiquettes.
+async function chargerSens(type, sujetId, etudes, problemeFiltre) {
+  const resultat = {};
+  if (etudes.length === 0) return resultat;
+  const ids = etudes.map((e) => e.id);
+
+  const { data: problemes } = await supabase.from('problemes_sante').select('id, slug, nom');
+  const problemeParId = new Map((problemes || []).map((p) => [p.id, p]));
+
+  const { data } =
+    type === 'probleme'
+      ? await supabase.from('etudes_problemes').select('etude_id, probleme_id, sens').eq('probleme_id', sujetId).in('etude_id', ids)
+      : await supabase
+          .from('sens_effectif')
+          .select('etude_id, probleme_id, sens')
+          .eq('fiche_type', type)
+          .eq('fiche_id', sujetId)
+          .in('etude_id', ids);
+
+  for (const l of data || []) {
+    if (!l.sens || l.sens === 'sans_objet') continue;
+    const p = problemeParId.get(l.probleme_id);
+    if (!p) continue;
+    if (problemeFiltre && p.slug !== problemeFiltre) continue;
+    if (!resultat[l.etude_id]) resultat[l.etude_id] = [];
+    if (resultat[l.etude_id].length < MAX_ETIQUETTES) resultat[l.etude_id].push({ slug: p.slug, nom: p.nom, sens: l.sens });
+  }
+  return resultat;
 }
 
 // type : 'aliment', 'habitude', 'nutriment' ou 'probleme' ; chemin : adresse de la fiche (ex. /aliments/curcuma-poudre)
@@ -82,6 +116,8 @@ export default async function SectionEtudes({ type, sujetId, chemin, searchParam
     etudes = data || [];
   }
 
+  const sensParEtude = await chargerSens(type, sujetId, etudes, parametres.probleme);
+
   return (
     <>
       <h2>Études scientifiques ({totalFiche})</h2>
@@ -99,6 +135,7 @@ export default async function SectionEtudes({ type, sujetId, chemin, searchParam
           parametres={parametres}
           chemin={chemin}
           problemes={problemes}
+          sensParEtude={sensParEtude}
         />
       )}
     </>
