@@ -433,7 +433,7 @@ function CarteEtude({ etude, sens = [] }) {
       }}
     >
             <BlocPreuve etude={etude} />
-      <EtiquettesSens sens={sens} /
+            <EtiquettesSens sens={sens} />
 
       <button
         type="button"
