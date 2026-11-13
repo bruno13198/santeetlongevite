@@ -376,8 +376,40 @@ async function copierReference(etudeId) {
   }
 }
 
+// 13 nov. 2026 : étiquettes du sens de l'effet (sans fond coloré, pour ne pas imiter les niveaux).
+const SENS_ETIQUETTES = {
+  favorable: { texte: '↑ favorable', couleur: '#27500A' },
+  nul: { texte: '= sans effet', couleur: '#4A4D45' },
+  defavorable: { texte: '↓ défavorable', couleur: '#A32D2D' },
+  mitige: { texte: '± partagé', couleur: '#854F0B' },
+};
+
+function EtiquettesSens({ sens }) {
+  if (!sens || sens.length === 0) return null;
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '8px' }}>
+      {sens.map((s) =>
+        SENS_ETIQUETTES[s.sens] ? (
+          <span
+            key={s.slug}
+            title="Sens du résultat, établi automatiquement à partir du résumé"
+            style={{
+              fontSize: '12px',
+              padding: '1px 7px',
+              border: '1px solid #DCDDD5',
+              borderRadius: '6px',
+              color: SENS_ETIQUETTES[s.sens].couleur,
+            }}
+          >
+            {SENS_ETIQUETTES[s.sens].texte} · {s.nom.charAt(0).toLowerCase() + s.nom.slice(1)}
+          </span>
+        ) : null
+      )}
+    </div>
+  );
+}
 // Carte compacte : niveau, titre, année. Les résumés et le détail s'ouvrent au clic.
-function CarteEtude({ etude }) {
+function CarteEtude({ etude, sens = [] }) 
   const [ouverte, setOuverte] = useState(true);
   const [signalementOuvert, setSignalementOuvert] = useState(false);
   const [referenceCopiee, setReferenceCopiee] = useState(false);
@@ -400,7 +432,8 @@ function CarteEtude({ etude }) {
         borderRadius: '8px',
       }}
     >
-      <BlocPreuve etude={etude} />
+            <BlocPreuve etude={etude} />
+      <EtiquettesSens sens={sens} /
 
       <button
         type="button"
@@ -515,7 +548,7 @@ const styleLienPage = {
   fontSize: '14px',
 };
 
-export default function ListeEtudes({ etudes, comptes, totalSelection, parametres, chemin, problemes = [] }) {
+export default function ListeEtudes({ etudes, comptes, totalSelection, parametres, chemin, problemes = [], sensParEtude = {} }) 
   const { niveau, revues, tri, q, page, probleme } = parametres;
   const nomProbleme = problemes.find((p) => p.slug === probleme)?.nom || '';
   const nbPages = Math.max(1, Math.ceil(totalSelection / TAILLE_PAGE));
@@ -685,7 +718,7 @@ export default function ListeEtudes({ etudes, comptes, totalSelection, parametre
       )}
 
       {etudes.map((etude) => (
-        <CarteEtude key={etude.id} etude={etude} />
+                <CarteEtude key={etude.id} etude={etude} sens={sensParEtude[etude.id] || []} />
       ))}
 
       {/* Pagination numérotée */}
