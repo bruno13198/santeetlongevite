@@ -9,6 +9,8 @@
 //   - toutes les études des régimes et habitudes.
 // Une seule requête par étude, avec toutes ses fiches à évaluer, et une température nulle, pour que
 // des fiches voisines (mûre, myrtille, cassis…) reçoivent des verdicts cohérents.
+// Garde-fou : dans une comparaison, deux variantes d'un même aliment en désaccord ne sont pas
+// enregistrées (le site utilise alors le sens général de l'étude).
 // Résultat dans la table sens_par_fiche (fiche – étude – problème). Les couples déjà évalués ne sont
 // pas refaits : le script sert aussi chaque semaine, pour les nouvelles études.
 //
@@ -29,7 +31,7 @@ const DELAI_MAX_MS = 60000;
 const SENS_AUTORISES = ['favorable', 'nul', 'defavorable', 'mitige', 'sans_objet'];
 // Tarif de l'API Batch pour Claude Haiku 4.5, en dollars par million de jetons.
 const PRIX_ENTREE_PAR_MILLION = 0.5;
-const PRIX_SORTIE_PAR_MILLION = 2.5
+const PRIX_SORTIE_PAR_MILLION = 2.5;
 const LETTRES = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 const LIMITE = parseInt(process.env.LIMITE || '50', 10);
@@ -92,7 +94,7 @@ async function executerLotClaude(requetes, libelle) {
       body: JSON.stringify({
         requests: tranche.map((r) => ({
           custom_id: r.id,
-           params: { model: MODELE, max_tokens: 1200, temperature: 0, messages: [{ role: 'user', content: r.prompt }] },
+          params: { model: MODELE, max_tokens: 1200, temperature: 0, messages: [{ role: 'user', content: r.prompt }] },
         })),
       }),
     });
@@ -158,6 +160,29 @@ function normaliserSens(valeur) {
     .trim()
     .replace(/[\s-]+/g, '_');
   return SENS_AUTORISES.includes(v) ? v : null;
+}
+
+// Mots significatifs d'un nom de fiche, pour repérer les variantes d'un même aliment
+// (« Blé de Khorasan » et « Blé khorasan soufflé »). Les mots trop généraux sont ignorés,
+// pour ne pas confondre de vraies comparaisons (« Huile de poisson » et « Huile de maïs »).
+const MOTS_GENERIQUES = new Set([
+  'aliment', 'moyen', 'moyenne', 'crue', 'crues', 'cuite', 'cuites', 'poudre', 'sechee', 'seche', 'seches',
+  'deshydrate', 'deshydratee', 'entier', 'entiere', 'complet', 'complete', 'nature', 'prelevee', 'prelevees',
+  'ajoute', 'enrichi', 'enrichie', 'huile', 'huiles', 'farine', 'regime', 'alimentation', 'produits', 'produit',
+  'legumes', 'legume', 'fruits', 'fruit', 'boissons', 'boisson', 'graines', 'graine', 'viande', 'viandes',
+  'poisson', 'poissons', 'cereales', 'sirop', 'extrait', 'supplementation', 'complement', 'complements',
+  'etudes', 'plusieurs', 'variete', 'calibre', 'martinique',
+]);
+
+function motsSignificatifs(nom) {
+  return new Set(
+    nom
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .split(/[^a-z]+/)
+      .filter((m) => m.length >= 5 && !MOTS_GENERIQUES.has(m))
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -312,12 +337,13 @@ async function main() {
   let jetonsSortie = 0;
   let nbEvalues = 0;
   let nbEchecs = 0;
+  let nbEcartes = 0;
   const compteParSens = new Map();
   const lignes = [];
 
   for (let i = 0; i < etudes.length; i++) {
     const e = etudes[i];
-        const r = resultats.get(`sf-${i}`);
+    const r = resultats.get(`sf-${i}`);
     if (!r || !r.ok) {
       // Affiche le motif des trois premiers refus, pour comprendre la cause.
       if (nbEchecs < 3) console.log(`  Requête refusée : ${r ? r.erreur : 'résultat absent'}`);
@@ -327,7 +353,7 @@ async function main() {
     jetonsEntree += r.usage.input_tokens || 0;
     jetonsSortie += r.usage.output_tokens || 0;
 
-        let objet;
+    let objet;
     try {
       objet = extraireJSON(r.texte);
     } catch (err) {
@@ -343,17 +369,51 @@ async function main() {
     }
 
     const detail = [commune ? '      (verdict commun)' : '      (comparaison)'];
+
+    // 1. Verdicts de chaque fiche
+    const verdictsParFiche = e.fiches.map((f, iFiche) => {
+      const brut = commune ? objet.sens : objet.sens[LETTRES[iFiche]];
+      return Array.isArray(brut) ? e.problemes.map((_, iP) => normaliserSens(brut[iP])) : null;
+    });
+
+    // 2. Garde-fou : dans une comparaison, deux variantes d'un même aliment (un mot significatif
+    //    en commun) ne peuvent pas recevoir des verdicts différents. En cas de désaccord, rien n'est
+    //    enregistré pour elles sur ce problème : le site utilisera le sens général de l'étude.
+    const ecartes = new Set();
+    if (!commune) {
+      const mots = e.fiches.map((f) => motsSignificatifs(f.nom));
+      for (let a = 0; a < e.fiches.length; a++) {
+        for (let b = a + 1; b < e.fiches.length; b++) {
+          if (![...mots[a]].some((m) => mots[b].has(m))) continue;
+          e.problemes.forEach((_, iP) => {
+            const va = verdictsParFiche[a]?.[iP];
+            const vb = verdictsParFiche[b]?.[iP];
+            if (va && vb && va !== vb) {
+              ecartes.add(`${a}:${iP}`);
+              ecartes.add(`${b}:${iP}`);
+            }
+          });
+        }
+      }
+    }
+
+    // 3. Enregistrement
     e.fiches.forEach((f, iFiche) => {
-      const verdicts = commune ? objet.sens : objet.sens[LETTRES[iFiche]];
-      if (!Array.isArray(verdicts)) {
+      const verdicts = verdictsParFiche[iFiche];
+      if (!verdicts) {
         nbEchecs++;
         return;
       }
       const morceaux = [];
-      e.problemes.forEach((p, iProbleme) => {
-        const sens = normaliserSens(verdicts[iProbleme]);
+      e.problemes.forEach((p, iP) => {
+        const sens = verdicts[iP];
         if (!sens) {
           nbEchecs++;
+          return;
+        }
+        if (ecartes.has(`${iFiche}:${iP}`)) {
+          nbEcartes++;
+          morceaux.push(`${p.nom} : ${sens} (écarté : variantes en désaccord)`);
           return;
         }
         lignes.push({ fiche_type: f.type, fiche_id: f.id, etude_id: e.etude.id, probleme_id: p.id, sens });
@@ -380,7 +440,7 @@ async function main() {
   console.log('\n##### Répartition #####');
   for (const s of SENS_AUTORISES) console.log(`  ${s} : ${compteParSens.get(s) || 0}`);
   console.log('\n##### Bilan #####');
-  console.log(`Trios fiche–étude–problème enregistrés : ${nbEvalues} | échecs : ${nbEchecs}`);
+  console.log(`Trios fiche–étude–problème enregistrés : ${nbEvalues} | écartés (variantes en désaccord) : ${nbEcartes} | échecs : ${nbEchecs}`);
   console.log(`Jetons : ${jetonsEntree} en entrée, ${jetonsSortie} en sortie`);
   console.log(`Coût réel de ce run : ${cout.toFixed(3)} $ (${((cout / etudes.length) * 100).toFixed(3)} centime de dollar par étude)`);
 }
