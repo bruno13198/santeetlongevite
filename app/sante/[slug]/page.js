@@ -9,6 +9,7 @@ import Breadcrumbs from '../../components/Breadcrumbs';
 import Disclaimer from '../../components/Disclaimer';
 import SectionEtudes from '../../components/SectionEtudes';
 import SuivreSujet from '../../components/SuivreSujet';
+import { VERDICTS, calculerVerdict } from '../../../lib/verdicts'
 
 export const revalidate = 60;
 
@@ -108,7 +109,12 @@ export default async function PageProbleme({ params, searchParams }) {
   const probleme = await chargerProbleme(slug);
   if (!probleme) notFound();
 
-  const { data: sujets } = await supabase.rpc('sujets_par_probleme_niveaux', { p_probleme: probleme.id, p_limite: 15 });
+    // 13 nov. 2026 : verdict des méta-analyses et essais pour chaque sujet (vide en cas d'erreur).
+  const [{ data: sujets }, { data: verdicts }] = await Promise.all([
+    supabase.rpc('sujets_par_probleme_niveaux', { p_probleme: probleme.id, p_limite: 15 }),
+    supabase.rpc('verdicts_probleme', { p_probleme: probleme.id }),
+  ]);
+  const verdictParSujet = new Map((verdicts || []).map((v) => [`${v.fiche_type}:${v.slug}`, v]))
   const domainesActifs = DOMAINES.filter((d) => d.actif);
 
   return (
@@ -157,30 +163,55 @@ export default async function PageProbleme({ params, searchParams }) {
         ))}
       </div>
 
-      {sujets && sujets.length > 0 && (
+            {sujets && sujets.length > 0 && (
         <section style={{ marginBottom: '28px' }}>
           <h2 style={{ fontSize: '18px' }}>Les sujets les plus étudiés</h2>
           <p style={{ color: '#6B6E63', fontSize: '14px', marginTop: '-6px' }}>
             Aliments, régimes et compléments qui comptent le plus d'études sur ce problème de santé. La barre
             montre la part de chaque niveau de preuve, du plus solide (vert foncé) au plus faible (gris).
+            L'étiquette donne le verdict des méta-analyses et des essais (niveaux 1 et 2).
           </p>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-            {sujets.map((s) => (
-              <li key={`${s.type}-${s.slug}`} style={{ padding: '6px 0', borderBottom: '1px solid #f0f0f0' }}>
-                <Link
-                  href={`${PREFIXES[s.type]}/${s.slug}?probleme=${slug}#etudes`}
-                  title={`Les ${s.nb} études sur ${s.nom.toLowerCase()} et ${probleme.nom.toLowerCase()}`}
-                  style={{ color: '#27500A' }}
-                >
-                  {s.nom}
-                </Link>
-                <span style={{ color: '#6B6E63', fontSize: '13px' }}>
-                  {' '}· {LIBELLES_TYPES[s.type]} · {s.nb} étude{Number(s.nb) > 1 ? 's' : ''}
-                </span>
-                <BarreNiveaux sujet={s} />
-              </li>
-            ))}
+            {sujets.map((s) => {
+              const verdict = verdicts ? calculerVerdict(verdictParSujet.get(`${s.type}:${s.slug}`)) : null;
+              const v = verdict ? VERDICTS[verdict.cle] : null;
+              return (
+                <li key={`${s.type}-${s.slug}`} style={{ padding: '6px 0', borderBottom: '1px solid #f0f0f0' }}>
+                  <Link
+                    href={`${PREFIXES[s.type]}/${s.slug}?probleme=${slug}#etudes`}
+                    title={`Les ${s.nb} études sur ${s.nom.toLowerCase()} et ${probleme.nom.toLowerCase()}`}
+                    style={{ color: '#27500A' }}
+                  >
+                    {s.nom}
+                  </Link>
+                  <span style={{ color: '#6B6E63', fontSize: '13px' }}>
+                    {' '}· {LIBELLES_TYPES[s.type]} · {s.nb} étude{Number(s.nb) > 1 ? 's' : ''}
+                  </span>
+                  {v && (
+                    <span
+                      title={verdict.detail}
+                      style={{
+                        display: 'inline-block',
+                        marginLeft: '8px',
+                        fontSize: '12px',
+                        padding: '1px 7px',
+                        border: '1px solid #DCDDD5',
+                        borderRadius: '6px',
+                        color: v.couleur,
+                      }}
+                    >
+                      {v.symbole} {v.libelle}
+                    </span>
+                  )}
+                  <BarreNiveaux sujet={s} />
+                </li>
+              );
+            })}
           </ul>
+          <p style={{ fontSize: '12px', color: '#8A8D85', margin: '8px 0 0' }}>
+            Verdicts établis automatiquement à partir des résumés. Les études qui trouvent un effet sont plus
+            souvent publiées que les autres : un verdict favorable reste à confirmer.
+          </p>
         </section>
       )}
 
