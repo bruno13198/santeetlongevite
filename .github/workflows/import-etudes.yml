@@ -130,7 +130,7 @@ jobs:
           LIMITE: '3000'
           AFFICHER_DETAIL: 'false'
         run: node scripts/classer-problemes.js
-              - name: Évaluer le sens de l'effet des nouvelles études
+      - name: Évaluer le sens de l'effet des nouvelles études
         # Ajouté le 13 nov. 2026 : ne traite que les liaisons étude–problème pas encore évaluées.
         continue-on-error: true
         env:
