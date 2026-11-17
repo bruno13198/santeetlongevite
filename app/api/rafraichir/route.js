@@ -3,12 +3,17 @@
 // Vide d'un coup toutes les fiches en cache ; chacune sera recalculée, à jour, à sa prochaine visite.
 // Appelé chaque lundi par la veille juste avant les alertes, et utilisable à la main après une
 // correction en base. La clé est la variable d'environnement CLE_RAFRAICHISSEMENT (Vercel).
+// 17 nov. 2026 : nutriments, régimes et pages santé ajoutés.
 import { revalidatePath } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
 
-// Sections déjà mises en cache (les autres seront ajoutées au fur et à mesure).
-const SECTIONS_EN_CACHE = ['/cache/aliments/[slug]'];
+const SECTIONS_EN_CACHE = [
+  '/cache/aliments/[slug]',
+  '/cache/nutriments/[slug]',
+  '/cache/habitudes/[slug]',
+  '/cache/sante/[slug]',
+];
 
 export async function GET(request) {
   const cle = new URL(request.url).searchParams.get('cle');
