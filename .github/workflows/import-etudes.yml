@@ -158,6 +158,13 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           ECRIRE: 'true'
         run: node scripts/rattraper-metadonnees.js
+      - name: Rafraîchir les fiches en cache
+        # Ajouté le 17 nov. 2026 : vide le cache des fiches juste avant les alertes, pour que les
+        # abonnés qui cliquent trouvent les nouvelles études. Les alertes partent même en cas d'échec.
+        continue-on-error: true
+        env:
+          CLE_RAFRAICHISSEMENT: ${{ secrets.CLE_RAFRAICHISSEMENT }}
+        run: curl -fsS "https://sciencetruths.com/api/rafraichir?cle=${CLE_RAFRAICHISSEMENT}"
       - name: Envoyer les alertes email
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
