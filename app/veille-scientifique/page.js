@@ -57,7 +57,7 @@ async function chargerSujets() {
     // Nutriments (10 oct. 2026) : en cas d'erreur, l'onglet reste simplement vide.
     supabase.from('nutriments').select('id, slug, nom, categorie').eq('actif', true).range(0, 1999),
     // 10 nov. 2026 : problèmes de santé, proposés dans les résultats de la recherche.
-    supabase.from('problemes_sante').select('slug, nom').eq('actif', true).order('ordre'),
+        supabase.from('problemes_sante').select('slug, nom, mots_cles').eq('actif', true).order('ordre'),
   ]);
 
   if (erreurAliments || erreurHabitudes) {
