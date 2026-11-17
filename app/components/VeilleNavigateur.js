@@ -147,8 +147,14 @@ export default function VeilleNavigateur({ aliments, habitudes, nutriments = [],
   );
 
   // 10 nov. 2026 : problèmes de santé correspondant à la recherche (liens vers /sante/…)
+    // 17 nov. 2026 : recherche aussi dans les mots-clés du problème (Crohn, tension, TDAH…).
   const problemesTrouves = useMemo(
-    () => (motsRecherche.length === 0 ? [] : problemes.filter((p) => correspond(p.nom, motsRecherche))),
+    () =>
+      motsRecherche.length === 0
+        ? []
+        : problemes.filter(
+            (p) => correspond(p.nom, motsRecherche) || (p.mots_cles || []).some((m) => correspond(m, motsRecherche))
+          ),
     [problemes, motsRecherche]
   );
 
