@@ -4,6 +4,9 @@
 // Sans aucun d'eux, la fiche est servie depuis sa copie en cache.
 const FILTRES = ['niveau', 'revues', 'tri', 'q', 'page', 'probleme'].map((key) => ({ type: 'query', key }));
 
+// Sections dont la version sans filtre est servie depuis le cache (17 nov. 2026 : toutes les fiches).
+const SECTIONS_EN_CACHE = ['aliments', 'nutriments', 'habitudes', 'sante'];
+
 const nextConfig = {
   async redirects() {
     return [
@@ -42,13 +45,11 @@ const nextConfig = {
   // pour le visiteur), pour ne plus recalculer la page à chaque visite.
   async rewrites() {
     return {
-      beforeFiles: [
-        {
-          source: '/aliments/:slug',
-          missing: FILTRES,
-          destination: '/cache/aliments/:slug',
-        },
-      ],
+      beforeFiles: SECTIONS_EN_CACHE.map((section) => ({
+        source: `/${section}/:slug`,
+        missing: FILTRES,
+        destination: `/cache/${section}/:slug`,
+      })),
     };
   },
 };
