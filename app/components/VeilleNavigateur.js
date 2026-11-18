@@ -375,7 +375,8 @@ export default function VeilleNavigateur({ aliments, habitudes, nutriments = [],
         ))}
       </div>
 
-      {motsRecherche.length > 0 && filtres[onglet].length === 0 && (
+            {motsRecherche.length > 0 && filtres[onglet].length === 0 &&
+        !(problemesTrouves.length > 0 && ONGLETS.every((o) => filtres[o.cle].length === 0)) && (
         <p className={styles.vide}>
           Aucun résultat pour « {recherche} » dans cet onglet.
           {filtres[autreOnglet.cle].length > 0 && (
