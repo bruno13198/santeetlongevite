@@ -50,14 +50,25 @@ export async function generateMetadata({ params, searchParams }) {
     probleme = data || null;
   }
 
-  // Fiche filtrée par problème seul : page à part entière, avec son propre titre.
+    // Fiche filtrée par problème seul : page à part entière, avec son propre titre.
+  // 19 nov. 2026 : moins de 5 études sur ce problème : pas d'indexation (page trop pauvre) ;
+  // elle redevient indexable d'elle-même dès 5 études.
   if (probleme && !autresFiltres) {
     const sujet = `${nomCourt} : ${enMinuscule(probleme.nom)}`;
-    return {
+    const metadonneesProbleme = {
       title: `${sujet}. Ce que disent les études | ScienceTruths`,
       description: `${sujet} : les études scientifiques, résumées en français et classées par niveau de preuve.`,
       alternates: { canonical: `${adresse}?probleme=${probleme.slug}` },
     };
+    const { data: comptes, error: erreurComptes } = await supabase.rpc('comptes_etudes', {
+      p_type: 'aliment',
+      p_sujet: aliment.id,
+      p_recherche: null,
+      p_probleme: probleme.slug,
+    });
+    const nbProbleme = (comptes || []).reduce((s, c) => s + Number(c.nb), 0);
+    if (!erreurComptes && nbProbleme < 5) metadonneesProbleme.robots = { index: false, follow: true };
+    return metadonneesProbleme;
   }
 
     // 6 nov. 2026 : « dangers » (le mot tapé dans Google) dans le titre, et nombre d'études dans la description.
