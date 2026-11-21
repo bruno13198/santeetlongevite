@@ -1,7 +1,7 @@
 import Footer from './components/Footer';
 import CookieConsent from './components/CookieConsent';
 import Nav from './components/Nav';
-import { Analytics } from '@vercel/analytics/next';
+import AnalyticsSansRobots from './components/AnalyticsSansRobots'
 
 export const metadata = {
   title: 'ScienceTruths',
@@ -33,7 +33,7 @@ export default function RootLayout({ children }) {
         {children}
         <Footer />
                 <CookieConsent />
-        <Analytics />
+                <AnalyticsSansRobots />
       </body>
     </html>
   );
