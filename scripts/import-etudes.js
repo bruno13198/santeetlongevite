@@ -701,8 +701,11 @@ const DESIGNS_AUTORISES = [
   'Étude transversale',
   'Série de cas',
   'Cas clinique',
-  'Revue narrative',
+    'Revue narrative',
   'Revue mécanistique',
+  // 23 nov. 2026 : deux types ajoutés (ces études étaient classées « Autre »).
+  'Étude de modélisation',
+  'Étude mécanistique',
   'Autre',
 ];
 
