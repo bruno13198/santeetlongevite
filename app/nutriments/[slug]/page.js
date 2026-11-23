@@ -74,7 +74,8 @@ export async function generateMetadata({ params, searchParams }) {
       p_probleme: probleme.slug,
     });
     const nbProbleme = (comptes || []).reduce((s, c) => s + Number(c.nb), 0);
-    if (!erreurComptes && nbProbleme < 5) metadonneesProbleme.robots = { index: false, follow: true };
+        // 23 nov. 2026 : seuil ramené à 0 étude ; les pages de 1 à 4 études apportaient des clics de longue traîne.
+    if (!erreurComptes && nbProbleme === 0) metadonneesProbleme.robots = { index: false, follow: true };
     return metadonneesProbleme;
   }
 
