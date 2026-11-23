@@ -1,1 +1,27 @@
+name: Test des alertes (simulation)
 
+# 23 nov. 2026 : lancement manuel du script d'alertes en mode simulation.
+# Il prépare les emails et affiche le bilan, sans rien envoyer ni enregistrer.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  simulation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Installer la bibliothèque Supabase
+        run: npm install @supabase/supabase-js@2.45.0 --no-save
+
+      - name: Simuler l'envoi des alertes
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SIMULATION: 'true'
+        run: node scripts/envoyer-alertes.js
