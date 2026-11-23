@@ -722,7 +722,7 @@ Pour une méta-analyse mêlant essais et études observationnelles, choisis selo
 2. Donne le niveau de BASE correspondant au type d'étude :
 - Niveau 1 : revue systématique, méta-analyse ou revue parapluie d'ESSAIS RANDOMISÉS.
 - Niveau 2 : essai randomisé contrôlé (y compris croisé).
-- Niveau 3 : essai non randomisé contrôlé, étude de cohorte, randomisation mendélienne, ou revue systématique / méta-analyse / revue parapluie d'études observationnelles.
+- Niveau 3 : essai non randomisé contrôlé, étude de cohorte, randomisation mendélienne, revue systématique / méta-analyse / revue parapluie d'études observationnelles, ou étude de modélisation (fardeau de maladie, évaluation des risques, microsimulation) fondée sur de telles données.
 - Niveau 4 : étude cas-témoins, étude transversale, étude pilote sans groupe témoin, série de cas, cas clinique.
 - Niveau 5 : revue narrative (synthèse non systématique, centrée sur des résultats obtenus chez l'humain), revue mécanistique (centrée sur des mécanismes biologiques étudiés surtout sur des cellules ou chez l'animal) ou raisonnement mécanistique. Choisis « Revue mécanistique » plutôt que « Revue narrative » quand l'essentiel de la revue porte sur ces mécanismes.
 
