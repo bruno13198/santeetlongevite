@@ -681,7 +681,7 @@ Pour une méta-analyse mêlant essais et études observationnelles, choisis selo
 - Niveau 2 : essai randomisé contrôlé (y compris croisé).
 - Niveau 3 : essai non randomisé contrôlé, étude de cohorte, randomisation mendélienne, revue systématique / méta-analyse / revue parapluie d'études observationnelles, ou étude de modélisation (fardeau de maladie, évaluation des risques, microsimulation) fondée sur de telles données.
 - Niveau 4 : étude cas-témoins, étude transversale, étude pilote sans groupe témoin, série de cas, cas clinique.
-- Niveau 5 : revue narrative (synthèse non systématique, centrée sur des résultats obtenus chez l'humain), revue mécanistique (centrée sur des mécanismes biologiques étudiés surtout sur des cellules ou chez l'animal) ou raisonnement mécanistique. Choisis « Revue mécanistique » plutôt que « Revue narrative » quand l'essentiel de la revue porte sur ces mécanismes.
+- Niveau 5 : revue narrative (synthèse non systématique, centrée sur des résultats obtenus chez l'humain), revue mécanistique (centrée sur des mécanismes biologiques étudiés surtout sur des cellules ou chez l'animal) étude mécanistique (mécanismes biologiques mesurés en laboratoire, même à partir d'échantillons humains) ou raisonnement mécanistique. Choisis « Revue mécanistique » plutôt que « Revue narrative » quand l'essentiel de la revue porte sur ces mécanismes. N'utilise « Autre » que si aucun libellé de la liste ne convient.
 
 3. Donne l'effectif TOTAL de personnes incluses dans l'étude (nombre entier), tel qu'indiqué dans le résumé.
 - Pour une méta-analyse ou une revue systématique : le nombre total de participants des études incluses, s'il est indiqué ; sinon null.
