@@ -91,7 +91,8 @@ export async function generateMetadata({ params, searchParams }) {
     // Toute autre version filtrée : ne pas indexer, mais suivre les liens.
   // 10 nov. 2026 : fiche de moins de 3 études : pas d'indexation tant qu'elle reste trop pauvre
   // (elle redevient indexable d'elle-même dès qu'elle atteint 3 études).
-  if (autresFiltres || sp.probleme || (nbEtudes !== null && nbEtudes < 3)) {
+    // 23 nov. 2026 : seules les fiches sans aucune étude restent hors de Google.
+  if (autresFiltres || sp.probleme || (nbEtudes !== null && nbEtudes === 0)) {
     metadonnees.robots = { index: false, follow: true };
   }
   return metadonnees;
