@@ -13,7 +13,8 @@ const supabase = createClient(
 // 10 nov. 2026 : les fiches de moins de 3 études ne figurent plus dans le plan du site
 // (elles sont aussi en noindex) ; elles y reviennent d'elles-mêmes dès 3 études
 // (vue Supabase nb_etudes_par_sujet).
-const SEUIL_ETUDES = 3;
+// 23 nov. 2026 : seuil ramené à 1 étude : seules les pages vides sont exclues du plan du site.
+const SEUIL_ETUDES = 1;
 
 export default async function sitemap() {
   const baseUrl = 'https://sciencetruths.com';
