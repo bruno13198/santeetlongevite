@@ -97,7 +97,8 @@ export async function generateMetadata({ params }) {
 
   // 12 nov. 2026 : page de moins de 3 études : pas d'indexation tant qu'elle reste trop pauvre
   // (elle redevient indexable d'elle-même dès 3 études, comme les fiches).
-  if (!error && (count || 0) < 3) {
+    // 23 nov. 2026 : seules les pages sans aucune étude restent hors de Google.
+  if (!error && (count || 0) === 0) {
     metadonnees.robots = { index: false, follow: true };
   }
   return metadonnees;
