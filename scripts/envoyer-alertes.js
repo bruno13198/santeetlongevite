@@ -4,6 +4,14 @@
 // nutriments, problèmes de santé (22 oct. 2026 pour les deux derniers ajouts).
 // Un seul email par personne, même si elle suit plusieurs sujets de types différents.
 // À lancer après les scripts d'import et le classement par problème de santé.
+//
+// 23 nov. 2026 : lecture de la base en une seule fois pour tous les abonnés. Avant, chaque
+// abonnement « Tous les X » relisait toutes les liaisons et toutes les études de la base
+// (environ 1 min 30 par abonné). Désormais, le script charge seulement les études susceptibles
+// d'être envoyées (ajoutées après la plus ancienne confirmation et publiées depuis moins de
+// 90 jours), puis leurs liaisons, leurs sujets et les envois déjà faits, et trie en mémoire.
+// Les règles d'envoi sont inchangées. Les envois sont enregistrés par paquets.
+// Mode SIMULATION=true : prépare les emails et affiche le bilan, sans rien envoyer ni enregistrer.
 
 const { createClient } = require('@supabase/supabase-js');
 
@@ -11,6 +19,14 @@ const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
+
+const SIMULATION = process.env.SIMULATION === 'true';
+
+// 2 nov. 2026 : seules les études publiées depuis moins de 90 jours sont envoyées.
+// Les études anciennes ajoutées par un rattrapage restent visibles sur les fiches,
+// mais ne sont jamais présentées comme des nouveautés. Une étude sans date de
+// publication (cas très rare) est envoyée comme avant.
+const JOURS_NOUVEAUTE = 90;
 
 // Catégories de la table aliments qui forment l'onglet « Additifs et contaminants ».
 const CATEGORIES_SUBSTANCES = ['Additifs alimentaires', 'Contaminants alimentaires'];
@@ -58,6 +74,9 @@ const CONFIG_PAR_TYPE = {
   },
 };
 
+// Tables de sujets qui ont une colonne categorie (nécessaire au filtre additifs / contaminants).
+const TABLES_AVEC_CATEGORIE = ['aliments'];
+
 function sujetPasseLeFiltre(config, sujet) {
   if (!config.filtreCategorie) return true;
   if (!sujet) return false;
@@ -65,104 +84,167 @@ function sujetPasseLeFiltre(config, sujet) {
   return config.filtreCategorie === 'substances' ? estSubstance : !estSubstance;
 }
 
-async function recupererEtudesPourAbonnement(abonnement) {
+// ---------------------------------------------------------------------------
+// Lecture de la base
+// ---------------------------------------------------------------------------
+
+// Lit toutes les lignes d'une requête, par pages de 1000 (limite par défaut de Supabase).
+// construire() doit renvoyer une requête triée, pour que les pages ne se chevauchent pas.
+// Une erreur de lecture arrête le script : mieux vaut aucun email qu'un email faux.
+async function lireToutesLesLignes(construire, libelle) {
+  const TAILLE = 1000;
+  const lignes = [];
+  for (let debut = 0; ; debut += TAILLE) {
+    const { data, error } = await construire().range(debut, debut + TAILLE - 1);
+    if (error) throw new Error(`Lecture impossible (${libelle}) : ${error.message}`);
+    lignes.push(...(data || []));
+    if (!data || data.length < TAILLE) break;
+  }
+  return lignes;
+}
+
+// Même chose pour une liste d'identifiants découpée en paquets (filtre .in()).
+async function lireParPaquets(ids, taillePaquet, construire, libelle) {
+  const lignes = [];
+  for (let i = 0; i < ids.length; i += taillePaquet) {
+    const paquet = ids.slice(i, i + taillePaquet);
+    lignes.push(...(await lireToutesLesLignes(() => construire(paquet), libelle)));
+  }
+  return lignes;
+}
+
+// Charge en une fois tout ce qu'il faut pour préparer les emails de tous les abonnés.
+async function chargerDonnees(abonnements) {
+  // 1. Études susceptibles d'être envoyées : ajoutées après la plus ancienne confirmation
+  //    et publiées depuis moins de 90 jours (ou sans date de publication).
+  const plusAncienneConfirmation = abonnements
+    .map((a) => a.date_confirmation)
+    .filter(Boolean)
+    .sort()[0] || '1970-01-01';
+  const dateLimite = new Date();
+  dateLimite.setDate(dateLimite.getDate() - JOURS_NOUVEAUTE);
+  const dateLimiteTexte = dateLimite.toISOString().slice(0, 10);
+
+  const etudes = await lireToutesLesLignes(
+    () =>
+      supabase
+        .from('etudes')
+        .select('id, created_at, date_publication, titre_traduit, titre_original')
+        .gt('created_at', plusAncienneConfirmation)
+        .or(`date_publication.is.null,date_publication.gte.${dateLimiteTexte}`)
+        .order('id'),
+    'études récentes'
+  );
+  const idsEtudes = etudes.map((e) => e.id);
+
+  // 2. Liaisons de ces études, pour chaque table de liaison utilisée.
+  const liaisonsParTable = {};
+  for (const config of Object.values(CONFIG_PAR_TYPE)) {
+    if (liaisonsParTable[config.tableLiaison]) continue;
+    liaisonsParTable[config.tableLiaison] = idsEtudes.length
+      ? await lireParPaquets(
+          idsEtudes,
+          100,
+          (paquet) =>
+            supabase
+              .from(config.tableLiaison)
+              .select(`etude_id, ${config.colonneLiaison}`)
+              .in('etude_id', paquet)
+              .order('etude_id')
+              .order(config.colonneLiaison),
+          config.tableLiaison
+        )
+      : [];
+  }
+
+  // 3. Noms, slugs (et catégories pour les aliments) des sujets concernés :
+  //    ceux de ces liaisons et ceux suivis précisément par un abonné.
+  const sujetsParTable = {};
+  for (const config of Object.values(CONFIG_PAR_TYPE)) {
+    const table = config.tableSujets;
+    if (!sujetsParTable[table]) sujetsParTable[table] = new Map();
+    const ids = new Set(liaisonsParTable[config.tableLiaison].map((l) => l[config.colonneLiaison]));
+    abonnements
+      .filter((a) => CONFIG_PAR_TYPE[a.type_sujet]?.tableSujets === table && a.sujet_id)
+      .forEach((a) => ids.add(a.sujet_id));
+    const aLire = [...ids].filter((id) => !sujetsParTable[table].has(id));
+    if (aLire.length === 0) continue;
+    const colonnes = TABLES_AVEC_CATEGORIE.includes(table) ? 'id, nom, slug, categorie' : 'id, nom, slug';
+    const sujets = await lireParPaquets(
+      aLire,
+      200,
+      (paquet) => supabase.from(table).select(colonnes).in('id', paquet).order('id'),
+      table
+    );
+    sujets.forEach((s) => sujetsParTable[table].set(s.id, { nom: s.nom, slug: s.slug, categorie: s.categorie }));
+  }
+
+  // 4. Envois déjà faits pour ces études (abonnement + étude).
+  const idsAbonnements = abonnements.map((a) => a.id);
+  const envois = idsEtudes.length
+    ? await lireParPaquets(
+        idsEtudes,
+        50,
+        (paquet) =>
+          supabase
+            .from('alertes_envoyees')
+            .select('abonnement_id, etude_id')
+            .in('etude_id', paquet)
+            .in('abonnement_id', idsAbonnements)
+            .order('abonnement_id')
+            .order('etude_id'),
+        'alertes_envoyees'
+      )
+    : [];
+  const dejaEnvoyees = new Set(envois.map((e) => `${e.abonnement_id}|${e.etude_id}`));
+
+  console.log(
+    `Données chargées : ${etudes.length} étude(s) récente(s), ${envois.length} envoi(s) déjà fait(s) pour ces études.`
+  );
+  return { etudes, liaisonsParTable, sujetsParTable, dejaEnvoyees, dateLimite };
+}
+
+// ---------------------------------------------------------------------------
+// Préparation des emails (mêmes règles qu'avant, à partir des données chargées)
+// ---------------------------------------------------------------------------
+
+function recupererEtudesPourAbonnement(abonnement, donnees) {
   const config = CONFIG_PAR_TYPE[abonnement.type_sujet];
   if (!config) return [];
 
-  const { data: dejaEnvoyees } = await supabase
-    .from('alertes_envoyees')
-    .select('etude_id')
-    .eq('abonnement_id', abonnement.id);
-  const idsDejaEnvoyees = new Set((dejaEnvoyees || []).map((a) => a.etude_id));
-
-  let etudeIds = [];
-  let sujetParEtude = {}; // etude_id -> { nom, slug }
+  const liaisons = donnees.liaisonsParTable[config.tableLiaison];
+  const sujets = donnees.sujetsParTable[config.tableSujets];
+  const sujetParEtude = {}; // etude_id -> { nom, slug }
 
   if (abonnement.sujet_id === null) {
-    // "Tous les X" : toutes les études liées à n'importe quel sujet de ce type.
-    // Pagination explicite car Supabase limite silencieusement à 1000 lignes par défaut.
-    let toutesLesLiaisons = [];
-    let debut = 0;
-    const tailleLot = 1000;
-    while (true) {
-      const { data: lot } = await supabase
-        .from(config.tableLiaison)
-        .select(`etude_id, ${config.colonneLiaison}`)
-        .range(debut, debut + tailleLot - 1);
-      if (!lot || lot.length === 0) break;
-      toutesLesLiaisons = toutesLesLiaisons.concat(lot);
-      if (lot.length < tailleLot) break;
-      debut += tailleLot;
+    // "Tous les X" : toutes les études liées à n'importe quel sujet de ce type
+    // (aliments sans les additifs et contaminants, ou l'inverse, selon le type d'abonnement).
+    for (const l of liaisons) {
+      const sujet = sujets.get(l[config.colonneLiaison]);
+      if (!sujetPasseLeFiltre(config, sujet)) continue;
+      if (!(l.etude_id in sujetParEtude)) sujetParEtude[l.etude_id] = sujet || null;
     }
-
-    const idsSujetsConcernes = [...new Set(toutesLesLiaisons.map((l) => l[config.colonneLiaison]))];
-    const colonnes = config.filtreCategorie ? 'id, nom, slug, categorie' : 'id, nom, slug';
-    let infosParSujet = {};
-    for (let i = 0; i < idsSujetsConcernes.length; i += 200) {
-      const lotIds = idsSujetsConcernes.slice(i, i + 200);
-      const { data: lotSujets } = await supabase.from(config.tableSujets).select(colonnes).in('id', lotIds);
-      (lotSujets || []).forEach((s) => {
-        infosParSujet[s.id] = { nom: s.nom, slug: s.slug, categorie: s.categorie };
-      });
-    }
-
-    // Aliments sans les additifs et contaminants, ou l'inverse (selon le type d'abonnement)
-    const liaisonsRetenues = toutesLesLiaisons.filter((l) =>
-      sujetPasseLeFiltre(config, infosParSujet[l[config.colonneLiaison]])
-    );
-    etudeIds = [...new Set(liaisonsRetenues.map((l) => l.etude_id))];
-    liaisonsRetenues.forEach((l) => {
-      if (!sujetParEtude[l.etude_id]) sujetParEtude[l.etude_id] = infosParSujet[l[config.colonneLiaison]];
-    });
   } else {
-    const { data: liaisons } = await supabase
-      .from(config.tableLiaison)
-      .select('etude_id')
-      .eq(config.colonneLiaison, abonnement.sujet_id);
-    etudeIds = (liaisons || []).map((l) => l.etude_id);
-    etudeIds.forEach((id) => {
-      sujetParEtude[id] = { nom: abonnement.nomSujet, slug: abonnement.slugSujet };
-    });
-  }
-
-  if (etudeIds.length === 0) return [];
-
-  let etudes = [];
-  const tailleLotEtudes = 200;
-  for (let i = 0; i < etudeIds.length; i += tailleLotEtudes) {
-    const lotIds = etudeIds.slice(i, i + tailleLotEtudes);
-    const { data: lotEtudes, error } = await supabase
-      .from('etudes')
-                    .select('id, created_at, date_publication, titre_traduit, titre_original')
-      .in('id', lotIds);
-
-    if (error) {
-      console.log(`  Erreur récupération études (lot ${i}): ${error.message}`);
-      continue;
+    const sujet = sujets.get(abonnement.sujet_id) || null;
+    for (const l of liaisons) {
+      if (l[config.colonneLiaison] === abonnement.sujet_id) sujetParEtude[l.etude_id] = sujet;
     }
-    etudes = etudes.concat(lotEtudes || []);
   }
 
-    // 2 nov. 2026 : seules les études publiées depuis moins de 90 jours sont envoyées.
-  // Les études anciennes ajoutées par un rattrapage restent visibles sur les fiches,
-  // mais ne sont jamais présentées comme des nouveautés. Une étude sans date de
-  // publication (cas très rare) est envoyée comme avant.
-  const JOURS_NOUVEAUTE = 90;
-  const dateLimite = new Date();
-  dateLimite.setDate(dateLimite.getDate() - JOURS_NOUVEAUTE);
-  const estRecente = (e) => !e.date_publication || new Date(e.date_publication) >= dateLimite;
+  const estRecente = (e) => !e.date_publication || new Date(e.date_publication) >= donnees.dateLimite;
 
-  return etudes
+  return donnees.etudes
     .filter(
       (e) =>
+        e.id in sujetParEtude &&
         new Date(e.created_at) > new Date(abonnement.date_confirmation) &&
-        !idsDejaEnvoyees.has(e.id) &&
+        !donnees.dejaEnvoyees.has(`${abonnement.id}|${e.id}`) &&
         estRecente(e)
     )
-    .map((e) => ({ ...e, sujet: sujetParEtude[e.id] || null, prefixeUrl: config.prefixeUrl }));
+    .map((e) => ({ ...e, sujet: sujetParEtude[e.id], prefixeUrl: config.prefixeUrl }));
 }
 
-async function construireEmailPourPersonne(email, abonnementsDeCettePersonne) {
+function construireEmailPourPersonne(abonnementsDeCettePersonne, donnees) {
   const pairesAEnregistrer = [];
   const etudesParSujet = {}; // "prefixeUrl/slug" -> { nom, prefixeUrl, titres, doublons }
   const dejaComptees = new Set(); // "prefixeUrl/slug|etude_id" : une étude n'apparaît qu'une fois par sujet
@@ -173,7 +255,7 @@ async function construireEmailPourPersonne(email, abonnementsDeCettePersonne) {
   const abonnementsTries = [...abonnementsDeCettePersonne].sort((a, b) => ordreTypes(a.type_sujet) - ordreTypes(b.type_sujet));
 
   for (const abonnement of abonnementsTries) {
-    const etudes = await recupererEtudesPourAbonnement(abonnement);
+    const etudes = recupererEtudesPourAbonnement(abonnement, donnees);
     if (etudes.length === 0) continue;
 
     etudes.forEach((e) => pairesAEnregistrer.push({ abonnement_id: abonnement.id, etude_id: e.id }));
@@ -236,6 +318,7 @@ async function construireEmailPourPersonne(email, abonnementsDeCettePersonne) {
       </p>
     `,
     pairesAEnregistrer,
+    nbSujets: sujetsAvecNouveautes.length,
   };
 }
 
@@ -260,8 +343,23 @@ async function envoyerEmail(email, contenuHtml) {
   }
 }
 
+// Enregistre les envois par paquets de 500 (au lieu d'un appel par étude).
+async function enregistrerEnvois(paires) {
+  for (let i = 0; i < paires.length; i += 500) {
+    const { error } = await supabase
+      .from('alertes_envoyees')
+      .upsert(paires.slice(i, i + 500), { onConflict: 'abonnement_id,etude_id' });
+    if (error) throw new Error(`Enregistrement des envois impossible : ${error.message}`);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Programme principal
+// ---------------------------------------------------------------------------
+
 async function main() {
-  console.log('=== Envoi des alertes hebdomadaires ===');
+  const debut = Date.now();
+  console.log(`=== Envoi des alertes hebdomadaires${SIMULATION ? ' (SIMULATION : rien ne sera envoyé ni enregistré)' : ''} ===`);
 
   const { data: abonnements, error } = await supabase
     .from('abonnements')
@@ -271,23 +369,9 @@ async function main() {
 
   if (error) throw new Error(`Erreur récupération abonnements: ${error.message}`);
   console.log(`${abonnements.length} abonnements actifs à traiter.`);
+  if (abonnements.length === 0) return;
 
-  // Récupère noms/slugs des sujets précis, par type
-  for (const type of Object.keys(CONFIG_PAR_TYPE)) {
-    const config = CONFIG_PAR_TYPE[type];
-    const idsConcernes = [...new Set(abonnements.filter((a) => a.type_sujet === type && a.sujet_id).map((a) => a.sujet_id))];
-    let infosParId = {};
-    if (idsConcernes.length > 0) {
-      const { data: sujets } = await supabase.from(config.tableSujets).select('id, nom, slug').in('id', idsConcernes);
-      infosParId = Object.fromEntries((sujets || []).map((s) => [s.id, s]));
-    }
-    abonnements.forEach((a) => {
-      if (a.type_sujet === type && a.sujet_id) {
-        a.nomSujet = infosParId[a.sujet_id]?.nom || null;
-        a.slugSujet = infosParId[a.sujet_id]?.slug || null;
-      }
-    });
-  }
+  const donnees = await chargerDonnees(abonnements);
 
   const parEmail = {};
   for (const a of abonnements) {
@@ -299,19 +383,27 @@ async function main() {
 
   for (const [email, abonnementsDeCettePersonne] of Object.entries(parEmail)) {
     try {
-      const resultat = await construireEmailPourPersonne(email, abonnementsDeCettePersonne);
+      const resultat = construireEmailPourPersonne(abonnementsDeCettePersonne, donnees);
       if (!resultat) {
         console.log(`  - ${email} : rien de nouveau, pas d'email.`);
         continue;
       }
 
-      await envoyerEmail(email, resultat.html);
-
-      for (const paire of resultat.pairesAEnregistrer) {
-        await supabase.from('alertes_envoyees').upsert(paire, { onConflict: 'abonnement_id,etude_id' });
+      if (SIMULATION) {
+        console.log(`  - ${email} : email prêt (${resultat.nbSujets} sujet(s), ${resultat.pairesAEnregistrer.length} étude(s)), non envoyé.`);
+        continue;
       }
 
+      await envoyerEmail(email, resultat.html);
       emailsEnvoyes++;
+
+      try {
+        await enregistrerEnvois(resultat.pairesAEnregistrer);
+      } catch (e) {
+        // L'email est parti : on le signale clairement, car ces études seraient renvoyées la semaine prochaine.
+        console.log(`  ⚠️ ${email} : email envoyé, mais ${e.message}`);
+      }
+
       console.log(`  - ${email} : email envoyé.`);
       await new Promise((resolve) => setTimeout(resolve, 300));
     } catch (e) {
@@ -319,7 +411,11 @@ async function main() {
     }
   }
 
-  console.log(`\nTerminé. ${emailsEnvoyes} emails envoyés.`);
+  const duree = Math.round((Date.now() - debut) / 1000);
+  console.log(`\nTerminé. ${emailsEnvoyes} emails envoyés, en ${duree} s.`);
 }
 
-main();
+main().catch((e) => {
+  console.error('Erreur fatale :', e.message);
+  process.exit(1);
+});
