@@ -5,7 +5,8 @@ on:
     - cron: '13 6 * * 1'   # lundi 6h13 UTC, second essai (GitHub saute parfois un créneau)
     - cron: '37 10 * * 1'  # lundi 10h37 UTC, troisième essai
     - cron: '21 15 * * 1'  # lundi 15h21 UTC, filet de sécurité de l'après-midi
-    # Chaque essai ne tourne que si aucun run planifié n'a déjà réussi dans la journée.
+    # Chaque essai ne tourne que si aucun run planifié n'a réussi dans les 3 derniers jours
+    # (24 nov. 2026 : GitHub peut lancer un créneau du lundi avec près d'un jour de retard).
   workflow_dispatch:
     inputs:
       offset:
@@ -48,7 +49,7 @@ jobs:
     outputs:
       deja_fait: ${{ steps.check.outputs.deja_fait }}
     steps:
-      - name: Vérifier si un run planifié a déjà réussi aujourd'hui
+      - name: Vérifier si un run planifié a déjà réussi dans les 3 derniers jours
         id: check
         env:
           GH_TOKEN: ${{ github.token }}
@@ -58,16 +59,19 @@ jobs:
             echo "deja_fait=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          AUJOURDHUI=$(date -u +%Y-%m-%d)
+          # 24 nov. 2026 : fenêtre de 3 jours au lieu de « aujourd'hui ».
+          # Pas plus de 3 jours : un run arrêté ici compte aussi comme « réussi » pour GitHub,
+          # et ne doit pas bloquer la veille du lundi suivant.
+          LIMITE=$(date -u -d '3 days ago' +%Y-%m-%dT%H:%M:%SZ)
           NB=$(gh run list --repo "${{ github.repository }}" --workflow "${{ github.workflow }}" \
-                --event schedule --limit 10 --json databaseId,conclusion,createdAt \
-              | jq --arg d "$AUJOURDHUI" --argjson moi ${{ github.run_id }} \
-                '[.[] | select(.databaseId != $moi) | select(.createdAt | startswith($d)) | select(.conclusion == "success")] | length')
+                --event schedule --limit 20 --json databaseId,conclusion,createdAt \
+              | jq --arg limite "$LIMITE" --argjson moi ${{ github.run_id }} \
+                '[.[] | select(.databaseId != $moi) | select(.createdAt >= $limite) | select(.conclusion == "success")] | length')
           if [ "$NB" -gt 0 ]; then
-            echo "Un run planifié a déjà réussi aujourd'hui : on s'arrête."
+            echo "Un run planifié a déjà réussi depuis le $LIMITE : on s'arrête."
             echo "deja_fait=true" >> "$GITHUB_OUTPUT"
           else
-            echo "Aucun run réussi aujourd'hui : on lance l'import."
+            echo "Aucun run réussi depuis le $LIMITE : on lance l'import."
             echo "deja_fait=false" >> "$GITHUB_OUTPUT"
           fi
 
