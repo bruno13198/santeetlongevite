@@ -54,6 +54,8 @@ function singulariser(mot) {
 
 // Même logique de recherche que l'ancienne page : tous les mots tapés doivent
 // correspondre au début d'un mot du nom (pluriels tolérés).
+// 24 nov. 2026 : à partir de 5 lettres, un mot tapé peut aussi se trouver au milieu
+// d'un mot du nom (« cystéine » trouve « N-acétylcystéine »).
 function correspond(nom, motsRecherche) {
   const motsDuNom = normaliser(nom).split(/[^a-z0-9]+/).filter((m) => m !== '');
   return motsRecherche.every((motRecherche) => {
@@ -64,7 +66,11 @@ function correspond(nom, motsRecherche) {
     return motsDuNom.some((mot) => {
       if (mot.length <= 3) return false;
       const motSing = singulariser(mot);
-      return motSing.startsWith(motRechercheSing) || motRechercheSing.startsWith(motSing);
+      return (
+        motSing.startsWith(motRechercheSing) ||
+        motRechercheSing.startsWith(motSing) ||
+        (motRechercheSing.length >= 5 && motSing.includes(motRechercheSing))
+      );
     });
   });
 }
