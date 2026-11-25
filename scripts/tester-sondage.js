@@ -23,6 +23,8 @@ const LETTRES = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const MAX_PROBLEMES_PAR_ETUDE = 3;
 // 25 nov. 2026 (version 2) : le classement n'est testé que si TESTER_CLASSEMENT vaut 'true'.
 const TESTER_CLASSEMENT = process.env.TESTER_CLASSEMENT === 'true';
+// Table des cas à tester (test_sondage par défaut, test_sondage2 pour le second sondage).
+const TABLE_TEST = process.env.TABLE_TEST || 'test_sondage';
 
 const SOURCES = [
   { type: 'aliment', table: 'aliments', liens: 'aliments_etudes', colonne: 'aliment_id', libelle: 'aliment' },
@@ -233,14 +235,14 @@ async function lire(requete, description) {
 }
 
 async function main() {
-  console.log('Test des prompts améliorés sur les cas de test_sondage. Rien ne sera enregistré.\n');
+  console.log(`Test des prompts améliorés sur les cas de ${TABLE_TEST}. Rien ne sera enregistré.\n`);
 
   // 1. Les cas du sondage
   const cas = await lire(
-    supabase.from('test_sondage').select('n, fiche_type, fiche_id, etude_id, probleme_id, sens_actuel').order('n'),
-    'test_sondage'
+    supabase.from(TABLE_TEST).select('n, fiche_type, fiche_id, etude_id, probleme_id, sens_actuel').order('n'),
+    TABLE_TEST
   );
-  if (cas.length === 0) throw new Error('La table test_sondage est vide.');
+  if (cas.length === 0) throw new Error(`La table ${TABLE_TEST} est vide.`);
   const idsEtudes = [...new Set(cas.map((c) => c.etude_id))];
   console.log(`${cas.length} cas, ${idsEtudes.length} étude(s) différente(s).`);
 
@@ -361,7 +363,7 @@ async function main() {
     }
     const change = !nouveau.startsWith(c.sens_actuel);
     if (change) nbChanges++;
-    console.log(`${change ? '≠' : '='} ${nomFiche} / ${p ? p.nom : '?'} : ${c.sens_actuel} → ${nouveau}`);
+    console.log(`${change ? '≠' : '='} [${c.n}] ${nomFiche} / ${p ? p.nom : '?'} : ${c.sens_actuel} → ${nouveau}`);
     if (change) console.log(`      ${e ? e.titre_traduit : ''}`);
   }
   console.log(`\n${nbChanges} sens modifié(s) sur ${cas.length}.`);
