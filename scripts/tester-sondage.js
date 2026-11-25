@@ -1,4 +1,5 @@
-// Test des prompts améliorés sur les 50 cas du sondage (25 nov. 2026).
+// Test des prompts améliorés sur les 50 cas du sondage (25 nov. 2026, version 2 : règle « sans objet »
+// corrigée, règle des agents infectieux et contaminants ajoutée, classement désactivé par défaut).
 //
 // Lit la table test_sondage (50 trios fiche–étude–problème tirés au hasard), puis relance sur ces
 // études seulement :
@@ -20,6 +21,8 @@ const PRIX_ENTREE_PAR_MILLION = 0.5;
 const PRIX_SORTIE_PAR_MILLION = 2.5;
 const LETTRES = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 const MAX_PROBLEMES_PAR_ETUDE = 3;
+// 25 nov. 2026 (version 2) : le classement n'est testé que si TESTER_CLASSEMENT vaut 'true'.
+const TESTER_CLASSEMENT = process.env.TESTER_CLASSEMENT === 'true';
 
 const SOURCES = [
   { type: 'aliment', table: 'aliments', liens: 'aliments_etudes', colonne: 'aliment_id', libelle: 'aliment' },
@@ -168,7 +171,7 @@ ${listeProblemes}
 - "nul" : pas d'effet ni d'association significatifs.
 - "defavorable" : néfaste (aggravation, risque augmenté, effets indésirables).
 - "mitige" : résultats réellement contradictoires sur le critère principal de ce problème (études ou sous-groupes de sens opposés, effet présent à une dose et absent à une autre).
-- "sans_objet" : l'étude ne permet pas de conclure sur ce problème, par exemple une étude qui décrit des consommations, des habitudes ou une fréquence sans mesurer l'effet de ce que désigne la fiche sur ce problème.
+- "sans_objet" : l'étude ne permet pas de conclure sur ce problème, par exemple une étude qui décrit seulement des consommations ou des habitudes alimentaires sans mesurer leur effet sur la santé.
 
 Règles :
 - Le sens porte sur le fait de CONSOMMER ce que désigne la fiche, ou d'y être exposé. Exemples :
@@ -177,6 +180,7 @@ Règles :
   • « une alimentation grasse et sucrée est néfaste, mais les légumes atténuent ce risque » → "favorable" pour la fiche Légumes ;
   • « un probiotique réduit l'exposition aux aflatoxines » → "sans_objet" pour la fiche Mycotoxines (l'étude n'évalue pas l'effet des mycotoxines elles-mêmes) et "favorable" pour la fiche du probiotique.
 - Si l'étude mesure l'inverse de ce que désigne une fiche de régime (un indice d'alimentation PRO-inflammatoire pour un « régime anti-inflammatoire », une charge ACIDE pour un « régime alcalin », un index glycémique ÉLEVÉ pour un régime « à index glycémique bas »), inverse le sens pour cette fiche.
+- Si la fiche désigne un agent infectieux, un contaminant ou une substance toxique, une étude qui décrit des infections, des intoxications ou des maladies qu'il provoque (surveillance, épidémie, gravité des cas, cas cliniques) est "defavorable", même si elle se contente de les décrire.
 - Si l'étude porte sur un MANQUE, une carence ou un apport insuffisant de ce que désigne la fiche, juge le fait d'en consommer suffisamment : « un faible apport en fer est associé à davantage d'anémie » → "favorable" pour la fiche Fer.
 - Si ce que désigne la fiche n'est que le point de comparaison d'une autre exposition qui n'est pas une fiche, juge la fiche elle-même : « le lait maternel protège mieux que le lait de vache » → "defavorable" pour la fiche Lait de vache.
 - Juge chaque problème sur son CRITÈRE PRINCIPAL : celui qui définit le problème (par exemple le LDL-cholestérol pour le cholestérol, la densité osseuse ou les fractures pour l'ostéoporose), et un événement ou un symptôme clinique plutôt qu'un simple marqueur sanguin. Un effet net sur le critère principal reste "favorable" ou "defavorable" même si des critères secondaires ne bougent pas.
@@ -302,7 +306,7 @@ async function main() {
       });
       infosSens.set(id, { cle: `s-${i}`, fiches, probs });
     }
-    requetesClassement.push({
+    if (TESTER_CLASSEMENT) requetesClassement.push({
       id: `c-${i}`,
       maxTokens: 150,
       prompt: promptClassement(listeProblemes, e.titre_traduit || e.titre_original || '', e.resume_simplifie || e.resume_reformule || ''),
@@ -345,6 +349,10 @@ async function main() {
           const objet = extraireJSON(r.texte);
           const brut = Array.isArray(objet.sens) ? objet.sens : objet.sens?.[LETTRES[iFiche]];
           nouveau = (Array.isArray(brut) && iProb >= 0 && normaliserSens(brut[iProb])) || '(réponse illisible)';
+          if (nouveau === '(réponse illisible)') {
+            console.log(`      Fiches envoyées : ${info.fiches.map((f, k) => `${LETTRES[k]}. ${f.nom}`).join(' | ')}`);
+            console.log(`      Réponse brute : ${r.texte.slice(0, 500)}`);
+          }
           if (!Array.isArray(objet.sens)) nouveau += ' [comparaison]';
         } catch (err) {
           nouveau = '(réponse illisible)';
@@ -358,7 +366,8 @@ async function main() {
   }
   console.log(`\n${nbChanges} sens modifié(s) sur ${cas.length}.`);
 
-  // 8. Résultats : classement
+  // 8. Résultats : classement (seulement si demandé)
+  if (TESTER_CLASSEMENT) {
   console.log('\n##### CLASSEMENT PAR PROBLÈME : ancien → nouveau #####');
   let nbClassementsChanges = 0;
   for (const [i, id] of idsEtudes.entries()) {
@@ -387,6 +396,7 @@ async function main() {
     }
   }
   console.log(`\n${nbClassementsChanges} classement(s) modifié(s) sur ${idsEtudes.length} étude(s).`);
+  }
 
   const cout = (jetonsEntree * PRIX_ENTREE_PAR_MILLION + jetonsSortie * PRIX_SORTIE_PAR_MILLION) / 1e6;
   console.log('\n##### Bilan #####');
