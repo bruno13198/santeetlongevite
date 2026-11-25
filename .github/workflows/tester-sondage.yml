@@ -1,8 +1,13 @@
 name: Test des prompts sur le sondage
 # 25 nov. 2026 : relance les prompts améliorés (sens par fiche, classement par problème) sur les
-# 50 cas de la table test_sondage. Affiche ancien et nouveau résultat ; n'enregistre rien.
+# cas d'une table de test. Affiche ancien et nouveau résultat ; n'enregistre rien.
 on:
   workflow_dispatch:
+    inputs:
+      table:
+        description: 'Table des cas à tester (test_sondage ou test_sondage2)'
+        required: false
+        default: 'test_sondage2'
 permissions:
   contents: read
 jobs:
@@ -23,4 +28,5 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TABLE_TEST: ${{ github.event.inputs.table || 'test_sondage2' }}
         run: node scripts/tester-sondage.js
