@@ -1,5 +1,7 @@
-// Test des prompts améliorés sur les 50 cas du sondage (25 nov. 2026, version 2 : règle « sans objet »
-// corrigée, règle des agents infectieux et contaminants ajoutée, classement désactivé par défaut).
+// Test des prompts améliorés sur les cas d'un sondage (25 nov. 2026).
+// Version 2 : règle « sans objet » corrigée, règle des agents infectieux et contaminants, classement désactivé.
+// Version 3 : régimes d'éviction, fiche accessoire, résultats séparés par aliment, différence entre groupes,
+// clés par lettres et lecture de secours quand il n'y a qu'une fiche.
 //
 // Lit la table test_sondage (50 trios fiche–étude–problème tirés au hasard), puis relance sur ces
 // études seulement :
@@ -142,6 +144,28 @@ function normaliserSens(valeur) {
   return SENS_AUTORISES.includes(v) ? v : null;
 }
 
+// Lit la liste de sens d'une fiche dans la réponse de Claude. Étude « commune » : la liste unique.
+// Comparaison : la liste rangée sous la lettre de la fiche. Sécurité (version 3) : s'il n'y a qu'une
+// fiche et que Claude a utilisé des noms au lieu des lettres, on prend la clé qui porte le nom de la
+// fiche ; sinon, rien (la production reprendra alors le sens général de l'étude).
+function simplifier(t) {
+  return String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+}
+function lireSensFiche(objet, fiches, iFiche) {
+  if (Array.isArray(objet.sens)) return objet.sens;
+  if (!objet.sens || typeof objet.sens !== 'object') return null;
+  const parLettre = objet.sens[LETTRES[iFiche]];
+  if (Array.isArray(parLettre)) return parLettre;
+  if (fiches.length === 1) {
+    const nom = simplifier(fiches[0].nom);
+    for (const [cle, valeur] of Object.entries(objet.sens)) {
+      const c = simplifier(cle);
+      if (c && Array.isArray(valeur) && (c === nom || nom.includes(c) || c.includes(nom))) return valeur;
+    }
+  }
+  return null;
+}
+
 // ---------------------------------------------------------------------------
 // Prompt 1 : sens de l'effet par fiche (prompt de production + deux règles)
 // ---------------------------------------------------------------------------
@@ -185,11 +209,15 @@ Règles :
 - Si la fiche désigne un agent infectieux, un contaminant ou une substance toxique, une étude qui décrit des infections, des intoxications ou des maladies qu'il provoque (surveillance, épidémie, gravité des cas, cas cliniques) est "defavorable", même si elle se contente de les décrire.
 - Si l'étude porte sur un MANQUE, une carence ou un apport insuffisant de ce que désigne la fiche, juge le fait d'en consommer suffisamment : « un faible apport en fer est associé à davantage d'anémie » → "favorable" pour la fiche Fer.
 - Si ce que désigne la fiche n'est que le point de comparaison d'une autre exposition qui n'est pas une fiche, juge la fiche elle-même : « le lait maternel protège mieux que le lait de vache » → "defavorable" pour la fiche Lait de vache.
+- Un régime qui SUPPRIME ou réduit un aliment se juge selon la fiche : si la suppression est bénéfique, "favorable" pour la fiche du régime d'éviction et "defavorable" pour la fiche de l'aliment supprimé (« un régime pauvre en FODMAP soulage le côlon irritable » → "favorable" pour la fiche Régime pauvre en FODMAP, "defavorable" pour la fiche Oignon).
+- Si ce que désigne la fiche n'est qu'un élément ACCESSOIRE de l'étude (un repas test, un aliment servi ou goûté, un support, une simple mention), et que l'étude évalue en réalité autre chose (un médicament, un traitement, un autre composé, une autre exposition), réponds "sans_objet" (« un essai sur un médicament où chaque participant prend un petit-déjeuner standard à base de pain » → "sans_objet" pour la fiche Pain).
+- Si l'étude donne des résultats SÉPARÉS pour plusieurs aliments ou catégories, utilise uniquement celui qui correspond à la fiche, pas le résultat d'ensemble (« les agrumes sont associés à un risque plus faible, les bananes à aucun effet » → "nul" pour la fiche Banane).
+- Dans un essai contrôlé, seule la différence ENTRE les groupes compte : une amélioration à l'intérieur d'un seul groupe, sans différence significative avec le groupe témoin, est "nul".
 - Juge chaque problème sur son CRITÈRE PRINCIPAL : celui qui définit le problème (par exemple le LDL-cholestérol pour le cholestérol, la densité osseuse ou les fractures pour l'ostéoporose), et un événement ou un symptôme clinique plutôt qu'un simple marqueur sanguin. Un effet net sur le critère principal reste "favorable" ou "defavorable" même si des critères secondaires ne bougent pas.
 - Dans une comparaison : si B fait mieux que A, "favorable" pour B et "defavorable" pour A ; sans différence, "nul" pour les deux ; une fiche qui n'est qu'un simple comparateur sans résultat propre reçoit "sans_objet".
 - Appuie-toi sur les résultats et les conclusions des auteurs, pas sur tes connaissances générales. Un résultat non significatif ou une simple tendance est "nul". Une absence d'association avec un risque est "nul", jamais "favorable". Une faible qualité des preuves ne change pas le sens.
 
-Réponds UNIQUEMENT avec un objet JSON, rien avant ni après, sous l'une de ces deux formes (${problemes.length} valeur(s) par liste, dans l'ordre des numéros des problèmes) :
+Réponds UNIQUEMENT avec un objet JSON, rien avant ni après, sous l'une de ces deux formes (${problemes.length} valeur(s) par liste, dans l'ordre des numéros des problèmes). Dans une comparaison, les clés sont UNIQUEMENT les lettres des fiches ci-dessus, jamais un autre nom ; une exposition qui n'est pas dans la liste des fiches n'a pas de clé :
 - étude commune : {"type": "commune", "sens": ${listeVide}}
 - comparaison : {"type": "comparaison", "sens": {${exempleComparaison}}}`;
 }
@@ -349,7 +377,7 @@ async function main() {
       else {
         try {
           const objet = extraireJSON(r.texte);
-          const brut = Array.isArray(objet.sens) ? objet.sens : objet.sens?.[LETTRES[iFiche]];
+          const brut = iFiche >= 0 ? lireSensFiche(objet, info.fiches, iFiche) : null;
           nouveau = (Array.isArray(brut) && iProb >= 0 && normaliserSens(brut[iProb])) || '(réponse illisible)';
           if (nouveau === '(réponse illisible)') {
             console.log(`      Fiches envoyées : ${info.fiches.map((f, k) => `${LETTRES[k]}. ${f.nom}`).join(' | ')}`);
