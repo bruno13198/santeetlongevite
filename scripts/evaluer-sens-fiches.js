@@ -14,6 +14,15 @@
 // Résultat dans la table sens_par_fiche (fiche – étude – problème). Les couples déjà évalués ne sont
 // pas refaits : le script sert aussi chaque semaine, pour les nouvelles études.
 //
+// 25 nov. 2026 (version testée sur deux sondages, 150 cas) :
+//   - prompt enrichi : manque d'apport, point de comparaison, agents infectieux et contaminants, régimes
+//     d'éviction, fiche accessoire, résultats séparés par aliment, différence entre les groupes, critère
+//     principal ; Claude écrit une analyse d'une ligne par fiche avant de conclure ;
+//   - les études à UNE seule fiche (aliment ou nutriment) passent aussi par ce script, mais seulement celles
+//     ajoutées à partir de DATE_DEBUT_FICHE_UNIQUE (la base existante n'est pas retraitée) ;
+//   - lecture robuste des réponses (lettres, nom de la fiche s'il n'y en a qu'une, « fiches » pour « sens »).
+//   En cas de réponse illisible, rien n'est enregistré : le site garde le sens général de l'étude.
+//
 // Variables d'environnement :
 //   LIMITE           nombre maximal d'études à traiter (50 par défaut : test)
 //   AFFICHER_DETAIL  'true' pour afficher le résultat de chaque étude dans le log
@@ -33,6 +42,8 @@ const SENS_AUTORISES = ['favorable', 'nul', 'defavorable', 'mitige', 'sans_objet
 const PRIX_ENTREE_PAR_MILLION = 0.5;
 const PRIX_SORTIE_PAR_MILLION = 2.5;
 const LETTRES = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+// 25 nov. 2026 : les études à une seule fiche ne sont évaluées ici que si elles ont été ajoutées après cette date.
+const DATE_DEBUT_FICHE_UNIQUE = '2026-11-26T00:00:00Z';
 
 const LIMITE = parseInt(process.env.LIMITE || '50', 10);
 const AFFICHER_DETAIL = process.env.AFFICHER_DETAIL === 'true';
@@ -94,7 +105,7 @@ async function executerLotClaude(requetes, libelle) {
       body: JSON.stringify({
         requests: tranche.map((r) => ({
           custom_id: r.id,
-          params: { model: MODELE, max_tokens: 1200, temperature: 0, messages: [{ role: 'user', content: r.prompt }] },
+          params: { model: MODELE, max_tokens: 2500, temperature: 0, messages: [{ role: 'user', content: r.prompt }] },
         })),
       }),
     });
@@ -185,6 +196,28 @@ function motsSignificatifs(nom) {
   );
 }
 
+// Lit la liste de sens d'une fiche dans la réponse de Claude (25 nov. 2026). Étude « commune » : la liste
+// unique. Comparaison : la liste rangée sous la lettre de la fiche. S'il n'y a qu'une fiche et que Claude a
+// utilisé des noms au lieu des lettres, on prend la clé qui porte le nom de la fiche ; sinon, rien.
+function simplifier(t) {
+  return String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+}
+function lireSensFiche(objet, fiches, iFiche) {
+  if (objet.sens === undefined && objet.fiches !== undefined) objet.sens = objet.fiches;
+  if (Array.isArray(objet.sens)) return objet.sens;
+  if (!objet.sens || typeof objet.sens !== 'object') return null;
+  const parLettre = objet.sens[LETTRES[iFiche]];
+  if (Array.isArray(parLettre)) return parLettre;
+  if (fiches.length === 1) {
+    const nom = simplifier(fiches[0].nom);
+    for (const [cle, valeur] of Object.entries(objet.sens)) {
+      const c = simplifier(cle);
+      if (c && Array.isArray(valeur) && (c === nom || nom.includes(c) || c.includes(nom))) return valeur;
+    }
+  }
+  return null;
+}
+
 // ---------------------------------------------------------------------------
 // Prompt : une étude, toutes ses fiches à évaluer
 // ---------------------------------------------------------------------------
@@ -211,12 +244,12 @@ ${listeProblemes}
 - "comparaison" : l'étude compare plusieurs fiches entre elles ou en remplace une par une autre, avec des résultats différents pour chacune (par exemple huile de poisson contre huile de maïs, ou remplacer le pain blanc par un pain à l'amidon résistant).
 - Des formes du MÊME aliment (cru ou cuit, entier ou en jus, en poudre, soufflé, nom générique ou nom détaillé, comme « Mil » et « Mil, cuit », « Citron » et « Jus de citron », « Blé de Khorasan » et « Blé khorasan soufflé ») ne sont JAMAIS une comparaison : elles reçoivent le même verdict.
 
-ÉTAPE 2 — Sens du résultat, pour chaque problème, du point de vue de la consommation de l'exposition (ou de l'adhésion au régime) :
+ÉTAPE 2 — Sens du résultat, pour chaque problème, du point de vue de la consommation de ce que désigne la fiche (ou de l'adhésion au régime) :
 - "favorable" : bénéfique pour ce problème (amélioration, risque diminué).
 - "nul" : pas d'effet ni d'association significatifs.
 - "defavorable" : néfaste (aggravation, risque augmenté, effets indésirables).
-- "mitige" : résultats partagés (certains critères seulement, un sous-groupe, résultats contradictoires).
-- "sans_objet" : l'étude ne permet pas de conclure sur ce problème.
+- "mitige" : résultats réellement contradictoires sur le critère principal de ce problème (études ou sous-groupes de sens opposés, effet présent à une dose et absent à une autre).
+- "sans_objet" : l'étude ne permet pas de conclure sur ce problème, par exemple une étude qui décrit seulement des consommations ou des habitudes alimentaires sans mesurer leur effet sur la santé.
 
 Règles :
 - Le sens porte sur le fait de CONSOMMER ce que désigne la fiche, ou d'y être exposé. Exemples :
@@ -225,12 +258,22 @@ Règles :
   • « une alimentation grasse et sucrée est néfaste, mais les légumes atténuent ce risque » → "favorable" pour la fiche Légumes ;
   • « un probiotique réduit l'exposition aux aflatoxines » → "sans_objet" pour la fiche Mycotoxines (l'étude n'évalue pas l'effet des mycotoxines elles-mêmes) et "favorable" pour la fiche du probiotique.
 - Si l'étude mesure l'inverse de ce que désigne une fiche de régime (un indice d'alimentation PRO-inflammatoire pour un « régime anti-inflammatoire », une charge ACIDE pour un « régime alcalin », un index glycémique ÉLEVÉ pour un régime « à index glycémique bas »), inverse le sens pour cette fiche.
+- Si la fiche désigne un agent infectieux, un contaminant ou une substance toxique, une étude qui décrit des infections, des intoxications ou des maladies qu'il provoque (surveillance, épidémie, gravité des cas, cas cliniques) est "defavorable", même si elle se contente de les décrire.
+- Si l'étude porte sur un MANQUE, une carence ou un apport insuffisant de ce que désigne la fiche, juge le fait d'en consommer suffisamment : « un faible apport en fer est associé à davantage d'anémie » → "favorable" pour la fiche Fer.
+- Si ce que désigne la fiche n'est que le point de comparaison d'une autre exposition qui n'est pas une fiche, juge la fiche elle-même : « le lait maternel protège mieux que le lait de vache » → "defavorable" pour la fiche Lait de vache.
+- Un régime qui SUPPRIME ou réduit un aliment se juge selon la fiche : si la suppression est bénéfique, "favorable" pour la fiche du régime d'éviction et "defavorable" pour la fiche de l'aliment supprimé (« un régime pauvre en FODMAP soulage le côlon irritable » → "favorable" pour la fiche Régime pauvre en FODMAP, "defavorable" pour la fiche Oignon).
+- Si ce que désigne la fiche n'est qu'un élément ACCESSOIRE de l'étude (un repas test, un aliment servi ou goûté, un support, une simple mention), et que l'étude évalue en réalité autre chose (un médicament, un traitement, un autre composé, une autre exposition), réponds "sans_objet" (« un essai sur un médicament où chaque participant prend un petit-déjeuner standard à base de pain » → "sans_objet" pour la fiche Pain).
+- Si l'étude donne des résultats SÉPARÉS pour plusieurs aliments ou catégories, utilise uniquement celui qui correspond à la fiche, pas le résultat d'ensemble (« les agrumes sont associés à un risque plus faible, les bananes à aucun effet » → "nul" pour la fiche Banane).
+- Dans un essai contrôlé, seule la différence ENTRE les groupes compte : une amélioration à l'intérieur d'un seul groupe, sans différence significative avec le groupe témoin, est "nul".
+- Juge chaque problème sur son CRITÈRE PRINCIPAL : celui qui définit le problème (par exemple le LDL-cholestérol pour le cholestérol, la densité osseuse ou les fractures pour l'ostéoporose), et un événement ou un symptôme clinique plutôt qu'un simple marqueur sanguin. Un effet net sur le critère principal reste "favorable" ou "defavorable" même si des critères secondaires ne bougent pas.
 - Dans une comparaison : si B fait mieux que A, "favorable" pour B et "defavorable" pour A ; sans différence, "nul" pour les deux ; une fiche qui n'est qu'un simple comparateur sans résultat propre reçoit "sans_objet".
 - Appuie-toi sur les résultats et les conclusions des auteurs, pas sur tes connaissances générales. Un résultat non significatif ou une simple tendance est "nul". Une absence d'association avec un risque est "nul", jamais "favorable". Une faible qualité des preuves ne change pas le sens.
 
-Réponds UNIQUEMENT avec un objet JSON, rien avant ni après, sous l'une de ces deux formes (${problemes.length} valeur(s) par liste, dans l'ordre des numéros des problèmes) :
-- étude commune : {"type": "commune", "sens": ${listeVide}}
-- comparaison : {"type": "comparaison", "sens": {${exempleComparaison}}}`;
+ÉTAPE 3 — Avant de conclure, écris pour CHAQUE fiche une analyse d'une ligne : ce que l'étude évalue réellement, puis le rôle de la fiche dans l'étude (exposition étudiée, comparateur, régime d'éviction, élément accessoire, simple mention). N'utilise pas de guillemets dans ce texte.
+
+Réponds UNIQUEMENT avec un objet JSON, rien avant ni après, l'analyse en premier, sous l'une de ces deux formes (${problemes.length} valeur(s) par liste, dans l'ordre des numéros des problèmes). Les clés sont UNIQUEMENT les lettres des fiches ci-dessus, jamais un autre nom ; une exposition qui n'est pas dans la liste des fiches n'a pas de clé. Dans une comparaison, donne une liste pour CHAQUE lettre de fiche :
+- étude commune : {"analyse": {${fiches.map((_, i) => `"${LETTRES[i]}": "…"`).join(', ')}}, "type": "commune", "sens": ${listeVide}}
+- comparaison : {"analyse": {${fiches.map((_, i) => `"${LETTRES[i]}": "…"`).join(', ')}}, "type": "comparaison", "sens": {${exempleComparaison}}}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -275,6 +318,21 @@ async function preparerEtudes(limite) {
     }
   }
 
+  // 25 nov. 2026 : études ajoutées depuis DATE_DEBUT_FICHE_UNIQUE (évaluées même avec une seule fiche).
+  const etudesRecentes = new Set();
+  for (let debut = 0; ; debut += 1000) {
+    const { data, error } = await supabase
+      .from('etudes')
+      .select('id')
+      .gte('created_at', DATE_DEBUT_FICHE_UNIQUE)
+      .order('id', { ascending: true })
+      .range(debut, debut + 999);
+    if (error) throw new Error(`Lecture des études récentes impossible : ${error.message}`);
+    for (const e of data) etudesRecentes.add(e.id);
+    if (data.length < 1000) break;
+  }
+  console.log(`${etudesRecentes.size} étude(s) ajoutée(s) depuis le ${DATE_DEBUT_FICHE_UNIQUE.slice(0, 10)}.`);
+
   const dejaFaits = await lireTout('sens_par_fiche', 'fiche_type, fiche_id, etude_id', ['fiche_type', 'fiche_id', 'etude_id']);
   const cleFaite = new Set(dejaFaits.map((d) => `${d.fiche_type}:${d.fiche_id}:${d.etude_id}`));
 
@@ -282,7 +340,7 @@ async function preparerEtudes(limite) {
   const parEtude = new Map();
   for (const c of couples) {
     const cle = `${c.source.type}:${c.ficheId}`;
-    if (!(nbFichesParEtude.get(c.etudeId) >= 2 || c.source.type === 'habitude')) continue;
+    if (!(nbFichesParEtude.get(c.etudeId) >= 2 || c.source.type === 'habitude' || etudesRecentes.has(c.etudeId))) continue;
     if (!problemesParEtude.has(c.etudeId) || !nomFiche.has(cle)) continue;
     if (cleFaite.has(`${cle}:${c.etudeId}`)) continue;
     if (!parEtude.has(c.etudeId)) parEtude.set(c.etudeId, []);
@@ -362,6 +420,8 @@ async function main() {
     }
     // Étude « commune » : une seule liste de verdicts, appliquée à toutes les fiches.
     // Étude « comparaison » : une liste par fiche (lettre).
+    // 25 nov. 2026 : « fiches » accepté à la place de « sens ».
+    if (objet.sens === undefined && objet.fiches !== undefined) objet.sens = objet.fiches;
     const commune = Array.isArray(objet.sens);
     if (!objet.sens || typeof objet.sens !== 'object') {
       nbEchecs++;
@@ -372,7 +432,7 @@ async function main() {
 
     // 1. Verdicts de chaque fiche
     const verdictsParFiche = e.fiches.map((f, iFiche) => {
-      const brut = commune ? objet.sens : objet.sens[LETTRES[iFiche]];
+      const brut = lireSensFiche(objet, e.fiches, iFiche);
       return Array.isArray(brut) ? e.problemes.map((_, iP) => normaliserSens(brut[iP])) : null;
     });
 
