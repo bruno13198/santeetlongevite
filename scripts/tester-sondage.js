@@ -2,6 +2,8 @@
 // Version 2 : règle « sans objet » corrigée, règle des agents infectieux et contaminants, classement désactivé.
 // Version 3 : régimes d'éviction, fiche accessoire, résultats séparés par aliment, différence entre groupes,
 // clés par lettres et lecture de secours quand il n'y a qu'une fiche.
+// Version 4 (levier 1) : Claude écrit une analyse d'une ligne par fiche avant de conclure ; une liste exigée pour
+// chaque lettre ; « fiches » accepté comme synonyme de « sens » ; coût par étude et projection affichés.
 //
 // Lit la table test_sondage (50 trios fiche–étude–problème tirés au hasard), puis relance sur ces
 // études seulement :
@@ -152,6 +154,7 @@ function simplifier(t) {
   return String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
 }
 function lireSensFiche(objet, fiches, iFiche) {
+  if (objet.sens === undefined && objet.fiches !== undefined) objet.sens = objet.fiches;
   if (Array.isArray(objet.sens)) return objet.sens;
   if (!objet.sens || typeof objet.sens !== 'object') return null;
   const parLettre = objet.sens[LETTRES[iFiche]];
@@ -217,9 +220,11 @@ Règles :
 - Dans une comparaison : si B fait mieux que A, "favorable" pour B et "defavorable" pour A ; sans différence, "nul" pour les deux ; une fiche qui n'est qu'un simple comparateur sans résultat propre reçoit "sans_objet".
 - Appuie-toi sur les résultats et les conclusions des auteurs, pas sur tes connaissances générales. Un résultat non significatif ou une simple tendance est "nul". Une absence d'association avec un risque est "nul", jamais "favorable". Une faible qualité des preuves ne change pas le sens.
 
-Réponds UNIQUEMENT avec un objet JSON, rien avant ni après, sous l'une de ces deux formes (${problemes.length} valeur(s) par liste, dans l'ordre des numéros des problèmes). Dans une comparaison, les clés sont UNIQUEMENT les lettres des fiches ci-dessus, jamais un autre nom ; une exposition qui n'est pas dans la liste des fiches n'a pas de clé :
-- étude commune : {"type": "commune", "sens": ${listeVide}}
-- comparaison : {"type": "comparaison", "sens": {${exempleComparaison}}}`;
+ÉTAPE 3 — Avant de conclure, écris pour CHAQUE fiche une analyse d'une ligne : ce que l'étude évalue réellement, puis le rôle de la fiche dans l'étude (exposition étudiée, comparateur, régime d'éviction, élément accessoire, simple mention). N'utilise pas de guillemets dans ce texte.
+
+Réponds UNIQUEMENT avec un objet JSON, rien avant ni après, l'analyse en premier, sous l'une de ces deux formes (${problemes.length} valeur(s) par liste, dans l'ordre des numéros des problèmes). Les clés sont UNIQUEMENT les lettres des fiches ci-dessus, jamais un autre nom ; une exposition qui n'est pas dans la liste des fiches n'a pas de clé. Dans une comparaison, donne une liste pour CHAQUE lettre de fiche :
+- étude commune : {"analyse": {${fiches.map((_, i) => `"${LETTRES[i]}": "…"`).join(', ')}}, "type": "commune", "sens": ${listeVide}}
+- comparaison : {"analyse": {${fiches.map((_, i) => `"${LETTRES[i]}": "…"`).join(', ')}}, "type": "comparaison", "sens": {${exempleComparaison}}}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -331,7 +336,7 @@ async function main() {
     if (probs.length > 0 && fiches.length > 0) {
       requetesSens.push({
         id: `s-${i}`,
-        maxTokens: 1200,
+        maxTokens: 2500,
         prompt: promptSensFiches(e.titre_original || e.titre_traduit || '', e.resume_original || '', fiches, probs),
       });
       infosSens.set(id, { cle: `s-${i}`, fiches, probs });
@@ -393,6 +398,15 @@ async function main() {
     if (change) nbChanges++;
     console.log(`${change ? '≠' : '='} [${c.n}] ${nomFiche} / ${p ? p.nom : '?'} : ${c.sens_actuel} → ${nouveau}`);
     if (change) console.log(`      ${e ? e.titre_traduit : ''}`);
+    if (change && info) {
+      try {
+        const iF = info.fiches.findIndex((f) => f.type === c.fiche_type && f.id === c.fiche_id);
+        const analyse = extraireJSON(resSens.get(info.cle).texte).analyse;
+        if (analyse && iF >= 0 && analyse[LETTRES[iF]]) console.log(`      Analyse : ${String(analyse[LETTRES[iF]]).slice(0, 300)}`);
+      } catch (err) {
+        // analyse absente ou illisible : rien à afficher
+      }
+    }
   }
   console.log(`\n${nbChanges} sens modifié(s) sur ${cas.length}.`);
 
@@ -432,6 +446,9 @@ async function main() {
   console.log('\n##### Bilan #####');
   console.log(`Jetons : ${jetonsEntree} en entrée, ${jetonsSortie} en sortie`);
   console.log(`Coût réel de ce test : ${cout.toFixed(3)} $`);
+  const coutParEtude = requetesSens.length > 0 ? cout / requetesSens.length : 0;
+  console.log(`Coût par étude : ${(coutParEtude * 100).toFixed(3)} centime de dollar`);
+  console.log(`Projection pour 250 nouvelles études par semaine : ${(coutParEtude * 250).toFixed(2)} $ par semaine, ${(coutParEtude * 250 * 52 / 12).toFixed(2)} $ par mois`);
   console.log('Rien n\'a été enregistré en base.');
 }
 
