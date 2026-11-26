@@ -14,6 +14,7 @@ const supabase = createClient(
 // (elles sont aussi en noindex) ; elles y reviennent d'elles-mêmes dès 3 études
 // (vue Supabase nb_etudes_par_sujet).
 // 23 nov. 2026 : seuil ramené à 1 étude : seules les pages vides sont exclues du plan du site.
+// 26 nov. 2026 : ajout de « L'étude de la semaine » (liste et numéros, datés de leur parution).
 const SEUIL_ETUDES = 1;
 
 export default async function sitemap() {
@@ -27,8 +28,9 @@ export default async function sitemap() {
     { data: dates },
     { data: problemes },
     { data: datesProblemes },
-        { data: nombres, error: erreurNombres },
-    { data: nombresProblemes, error: erreurNombresProblemes }
+    { data: nombres, error: erreurNombres },
+    { data: nombresProblemes, error: erreurNombresProblemes },
+    { data: etudesSemaine },
   ] = await Promise.all([
     supabase.from('aliments').select('id, slug').eq('actif', true).range(0, 3999),
     supabase.from('habitudes_alimentaires').select('id, slug').eq('actif', true).range(0, 999),
@@ -37,24 +39,25 @@ export default async function sitemap() {
     supabase.from('dates_mise_a_jour_sujets').select('type, sujet_id, derniere').range(0, 4999),
     supabase.from('problemes_sante').select('id, slug').eq('actif', true),
     supabase.from('dates_mise_a_jour_problemes').select('probleme_id, derniere'),
-        supabase.from('nb_etudes_par_sujet').select('type, sujet_id, nb').range(0, 4999),
+    supabase.from('nb_etudes_par_sujet').select('type, sujet_id, nb').range(0, 4999),
     // 12 nov. 2026 : même seuil pour les pages de problèmes de santé.
-    supabase.from('nb_etudes_par_probleme').select('probleme_id, nb')
+    supabase.from('nb_etudes_par_probleme').select('probleme_id, nb'),
+    supabase.from('etudes_semaine').select('slug, date_parution').eq('publie', true).range(0, 999),
   ]);
 
   const dateParSujet = new Map((dates || []).map((d) => [`${d.type}:${d.sujet_id}`, d.derniere]));
   for (const d of datesProblemes || []) dateParSujet.set(`probleme:${d.probleme_id}`, d.derniere);
 
-    const nbParSujet = new Map((nombres || []).map((n) => [`${n.type}:${n.sujet_id}`, Number(n.nb)]));
+  const nbParSujet = new Map((nombres || []).map((n) => [`${n.type}:${n.sujet_id}`, Number(n.nb)]));
   for (const n of nombresProblemes || []) nbParSujet.set(`probleme:${n.probleme_id}`, Number(n.nb));
   // En cas d'erreur de lecture des nombres, on garde toutes les fiches plutôt que d'en retirer à tort
-    const assezEtudes = (type, id) =>
+  const assezEtudes = (type, id) =>
     (type === 'probleme' ? erreurNombresProblemes : erreurNombres) ||
-    (nbParSujet.get(`${type}:${id}`) || 0) >= SEUIL_ETUDES
+    (nbParSujet.get(`${type}:${id}`) || 0) >= SEUIL_ETUDES;
 
   const versUrls = (lignes, type, prefixe) =>
     (lignes || [])
-            .filter((ligne) => assezEtudes(type, ligne.id))
+      .filter((ligne) => assezEtudes(type, ligne.id))
       .map((ligne) => {
         const derniere = dateParSujet.get(`${type}:${ligne.id}`);
         return {
@@ -63,6 +66,10 @@ export default async function sitemap() {
         };
       });
 
+  // L'étude de la semaine : la liste prend la date du numéro le plus récent.
+  const numeros = etudesSemaine || [];
+  const dernierNumero = numeros.reduce((max, n) => (n.date_parution > max ? n.date_parution : max), '');
+
   return [
     { url: baseUrl },
     { url: `${baseUrl}/a-propos` },
@@ -70,6 +77,8 @@ export default async function sitemap() {
     { url: `${baseUrl}/sante` },
     { url: `${baseUrl}/articles` },
     { url: `${baseUrl}/niveaux-de-preuve` },
+    { url: `${baseUrl}/etude-de-la-semaine`, ...(dernierNumero ? { lastModified: new Date(dernierNumero) } : {}) },
+    ...numeros.map((n) => ({ url: `${baseUrl}/etude-de-la-semaine/${n.slug}`, lastModified: new Date(n.date_parution) })),
     ...(articles || []).map((article) => ({ url: `${baseUrl}/articles/${article.slug}` })),
     ...versUrls(problemes, 'probleme', 'sante'),
     ...versUrls(aliments, 'aliment', 'aliments'),
