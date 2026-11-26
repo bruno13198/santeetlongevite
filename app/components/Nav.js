@@ -18,15 +18,17 @@ export default function Nav() {
           </Link>
           <ul className={styles.left}>
             <li><Link href="/" className={styles.link}>Accueil</Link></li>
-            <li><Link href="/articles" className={styles.link}>Articles</Link></li>
+            {/* 26 nov. 2026 : « Articles » remplacé par « L'étude de la semaine » (les articles restent en ligne) */}
+            <li><Link href="/etude-de-la-semaine" className={styles.link}>L'étude de la semaine</Link></li>
             <li><Link href="/veille-scientifique" className={styles.link}>Veille scientifique</Link></li>
             {/* 21 oct. 2026 : entrée par problème de santé */}
-                        <li><Link href="/sante" className={styles.link}>Problèmes de santé</Link></li>
+            <li><Link href="/sante" className={styles.link}>Problèmes de santé</Link></li>
           </ul>
         </div>
         <ul className={styles.right}>
           <li><Link href="/a-propos" className={styles.link}>À propos</Link></li>
-          <li><Link href="/articles/Pourquoi-ce-site" className={styles.link}>Pourquoi ce site</Link></li>
+          {/* 26 nov. 2026 : adresse en minuscules (évite la redirection automatique) */}
+          <li><Link href="/articles/pourquoi-ce-site" className={styles.link}>Pourquoi ce site</Link></li>
         </ul>
       </div>
     </nav>
