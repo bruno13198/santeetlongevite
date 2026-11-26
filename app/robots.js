@@ -4,6 +4,9 @@
 // que Google consacre au site, au détriment des fiches pas encore indexées.
 // 4 nov. 2026 : les fiches filtrées par problème de santé seul (?probleme=…) sont de nouveau
 // explorables : elles ont leur propre titre et peuvent apparaître dans Google.
+// 26 nov. 2026 : Google n'explore plus les fichiers techniques de navigation de Next.js (?_rsc=…),
+// qui représentaient 77 % de ses visites sans rien apporter au référencement (la page HTML contient
+// déjà tout). Les visiteurs ne sont pas concernés.
 const ADRESSE_SITE = 'https:' + '//sciencetruths.com';
 
 export default function robots() {
@@ -18,6 +21,7 @@ export default function robots() {
         '/*?*tri=',
         '/*?*q=',
         '/*?*revues=',
+        '/*?*_rsc=',
       ],
     },
     sitemap: `${ADRESSE_SITE}/sitemap.xml`,
