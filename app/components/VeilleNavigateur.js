@@ -348,19 +348,46 @@ export default function VeilleNavigateur({ aliments, habitudes, nutriments = [],
         autoComplete="off"
       />
 
-      {/* 10 nov. 2026 : problèmes de santé correspondant à la recherche */}
+            {/* 10 nov. 2026 : problèmes de santé correspondant à la recherche.
+          26 nov. 2026 : encadré bien visible (la simple ligne passait inaperçue au-dessus des onglets). */}
       {problemesTrouves.length > 0 && (
-        <p style={{ margin: '12px 0', fontSize: '15px' }}>
-          Problème{problemesTrouves.length > 1 ? 's' : ''} de santé :{' '}
-          {problemesTrouves.map((p, i) => (
-            <span key={p.slug}>
-              {i > 0 ? ' · ' : ''}
-              <Link href={`/sante/${p.slug}`} prefetch={false} className={styles.lien}>
+        <div
+          style={{
+            margin: '16px 0',
+            padding: '12px 16px',
+            border: '1px solid #c9d8bf',
+            borderRadius: '8px',
+            backgroundColor: '#f4f8ef',
+          }}
+        >
+          <strong style={{ display: 'block', marginBottom: '8px', fontSize: '15px' }}>
+            Problème{problemesTrouves.length > 1 ? 's' : ''} de santé ({problemesTrouves.length})
+          </strong>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+            {problemesTrouves.map((p) => (
+              <Link
+                key={p.slug}
+                href={`/sante/${p.slug}`}
+                prefetch={false}
+                style={{
+                  display: 'inline-block',
+                  padding: '6px 12px',
+                  backgroundColor: '#fff',
+                  border: '1px solid #c9d8bf',
+                  borderRadius: '16px',
+                  color: '#27500A',
+                  textDecoration: 'none',
+                  fontSize: '14px',
+                }}
+              >
                 {p.nom} →
               </Link>
-            </span>
-          ))}
-        </p>
+            ))}
+          </div>
+          <span style={{ display: 'block', marginTop: '8px', fontSize: '13px', color: '#6B6E63' }}>
+            Toutes les études du site sur ce problème, tous aliments, régimes et compléments confondus.
+          </span>
+        </div>
       )}
 
       <div className={styles.onglets} role="tablist" aria-label="Type de sujet">
