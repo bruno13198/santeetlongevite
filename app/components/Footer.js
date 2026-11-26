@@ -35,6 +35,11 @@ export default function Footer() {
       <Link href="/a-propos#relecture-scientifique" style={{ color: '#6B6E63', textDecoration: 'none' }}>
         Relecture scientifique
       </Link>
+      {/* 26 nov. 2026 : les articles quittent le menu (remplacés par « L'étude de la semaine ») et restent accessibles ici */}
+      {' · '}
+      <Link href="/articles" style={{ color: '#6B6E63', textDecoration: 'none' }}>
+        Articles
+      </Link>
     </footer>
   );
 }
