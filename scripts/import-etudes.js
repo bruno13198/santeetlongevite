@@ -590,7 +590,7 @@ Réponds "false" UNIQUEMENT si l'étude est CLAIREMENT dans l'un de ces cas :
 - le terme de recherche est un homonyme ou une confusion (autre sens du mot, autre espèce, nom d'un appareil, d'une marque, d'une enzyme, d'une molécule sans rapport...) ;
 - l'aliment n'a aucun rapport réel avec le sujet de l'étude (absent, ou mentionné seulement en passant) ;
 - l'étude porte sur de l'agronomie, de la génétique végétale, de l'élevage, de l'alimentation animale, un procédé industriel ou un matériau, sans consommation humaine ;
-- il s'agit d'un usage uniquement cutané, topique ou cosmétique ;
+- toutes les interventions étudiées sont explicitement appliquées sur la peau, les muqueuses ou en cosmétique (crème, gel, pansement, bain de bouche…), et le résumé ne mentionne aucune prise orale. Une maladie de peau ne suffit pas : si la voie d'administration n'est pas précisée, ou si une prise orale est mentionnée, réponds "true" ;
 - il s'agit d'un protocole sans résultats ou d'une notice de rétractation ;
 - elle mesure seulement une contamination de l'aliment (bactéries, résistance aux antibiotiques, virus, parasites, métaux, pesticides, mycotoxines, microplastiques), éventuellement avec un calcul de risque théorique, sans aucun effet de santé observé chez des personnes ;
 - elle porte sur la formulation, la texture, la conservation, les propriétés physico-chimiques ou l'analyse sensorielle d'un produit, sans effet de santé mesuré chez des personnes ; ou c'est une revue consacrée surtout à la composition, la production, la transformation ou la valorisation de coproduits d'un aliment, qui ne cite des bienfaits pour la santé que de façon générale ;
