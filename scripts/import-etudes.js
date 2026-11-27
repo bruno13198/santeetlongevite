@@ -571,7 +571,9 @@ function extraireJSON(texte) {
 }
 
 // ---------------------------------------------------------------------------
-// Prompts (inchangés)
+// Prompts
+// 27 nov. 2026 : règle topique du tri Haiku resserrée (maladie de peau ≠ usage cutané) ;
+// exception « méta-analyse comparant plusieurs produits avec un résultat propre » (Sonnet).
 // ---------------------------------------------------------------------------
 
 // Tri rapide par Haiku : n'écarte que les cas CLAIREMENT hors sujet.
@@ -643,7 +645,7 @@ Réponds "false" dans les cas suivants :
 - L'aliment n'est qu'un facteur parmi de nombreux autres (habitudes de vie, score combiné, questionnaire alimentaire global, liste d'allergènes) sans qu'un effet ou une association propre à cet aliment soit rapporté.
 - L'étude porte sur un produit homonyme ou d'une autre origine que l'aliment de la fiche, même s'il partage le même mot : par exemple le lait maternel ou les préparations pour nourrissons pour une fiche de lait animal, le beurre de cacahuète pour une fiche de beurre.
 - Il s'agit d'un article de méthode (mise au point d'instruments génétiques, de modèles statistiques, de questionnaires ou d'outils de mesure) dont l'objet n'est pas l'effet de l'aliment sur la santé.
-- L'aliment n'est pas l'exposition principale de l'étude : étude portant sur l'alimentation ultra-transformée, l'alcool, la qualité ou un profil de l'alimentation, une catégorie plus large que cet aliment, ou recensant de nombreux facteurs de risque d'une maladie (y compris les analyses de fardeau de morbidité ou de fractions attribuables couvrant plusieurs risques alimentaires), même si un résultat chiffré pour cet aliment y figure parmi d'autres. Une telle étude n'est pertinente que si cet aliment est explicitement au centre de la question de recherche, par exemple nommé dans le titre ou dans l'objectif principal.
+- L'aliment n'est pas l'exposition principale de l'étude : étude portant sur l'alimentation ultra-transformée, l'alcool, la qualité ou un profil de l'alimentation, une catégorie plus large que cet aliment, ou recensant de nombreux facteurs de risque d'une maladie (y compris les analyses de fardeau de morbidité ou de fractions attribuables couvrant plusieurs risques alimentaires), même si un résultat chiffré pour cet aliment y figure parmi d'autres. Une telle étude n'est pertinente que si cet aliment est explicitement au centre de la question de recherche, par exemple nommé dans le titre ou dans l'objectif principal. Exception : une méta-analyse ou une revue systématique qui compare plusieurs aliments, compléments ou interventions et rapporte un résultat propre à « ${nomAliment} » est pertinente, même si cet aliment n'est pas nommé dans le titre.
 - Pour les allergies : une étude sur la tolérance, la désensibilisation, l'introduction ou la réintroduction de cet aliment chez des personnes allergiques EST pertinente, de même qu'une étude qui décrit des réactions allergiques à cet aliment chez des personnes (cas clinique, série de cas, épidémiologie de cette allergie) ; une étude qui recense seulement une sensibilisation parmi de nombreux allergènes, ou qui porte uniquement sur les conséquences de l'éviction de l'aliment, ne l'est pas.
 - Il s'agit d'un éditorial, d'un commentaire, d'une lettre ou d'un protocole d'étude sans résultats.
 - Tout autre sujet hors nutrition/santé humaine.
@@ -1200,5 +1202,4 @@ main().catch((e) => {
   console.error('Erreur fatale :', e.message);
   process.exit(1);
 });
-
  
