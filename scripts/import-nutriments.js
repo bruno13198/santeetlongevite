@@ -97,6 +97,15 @@ const LIBELLES_CATEGORIE = {
   plante: 'la plante (prise en complément ou en extrait)',
 };
 
+// 27 nov. 2026 : un taux sanguin ou tissulaire relié à un résultat de santé compte comme mesure
+// de l'exposition, SAUF pour ces fiches (littérature sur le statut sanguin très abondante :
+// volume à mesurer avant de les inclure). Liste modifiable : ajouter ou retirer un slug suffit.
+const NUTRIMENTS_SANS_TAUX_SANGUIN = ['vitamine-d', 'fer', 'vitamine-b9', 'vitamine-b12'];
+
+function tauxSanguinExclu(nutriment) {
+  return NUTRIMENTS_SANS_TAUX_SANGUIN.includes(nutriment.slug);
+}
+
 function libelleSujet(nutriment) {
   return `${LIBELLES_CATEGORIE[nutriment.categorie] || 'le nutriment'} : ${nutriment.nom}`;
 }
@@ -557,12 +566,15 @@ Réponds "false" UNIQUEMENT si l'étude est CLAIREMENT dans l'un de ces cas :
 - elle développe ou valide une méthode d'analyse, un questionnaire ou un outil de mesure ;
 - ce sujet n'est qu'un ingrédient parmi beaucoup d'autres (produit à nombreux ingrédients, score alimentaire, nombreux nutriments étudiés ensemble) sans effet propre isolé ; une association de 2 ou 3 ingrédients bien identifiés (par exemple vitamine D et calcium) reste pertinente ;
 - elle porte uniquement sur la fréquence d'utilisation, les ventes, les connaissances ou les perceptions, sans mesurer de résultat de santé ;
-- elle porte sur la composition, le dosage, l'étiquetage ou la contamination de produits, sans effet de santé observé chez des personnes ;
-- elle mesure uniquement un taux sanguin, un statut ou une carence, sans mesurer d'apport alimentaire ni de supplémentation.
+- elle porte sur la composition, le dosage, l'étiquetage ou la contamination de produits, sans effet de santé observé chez des personnes${tauxSanguinExclu(nutriment)
+    ? " ;\n- elle mesure uniquement un taux sanguin, un statut ou une carence, sans mesurer d'apport alimentaire ni de supplémentation."
+    : '.'}
 
 Dans TOUS les autres cas, y compris en cas de doute, réponds "true" : une analyse plus fine sera faite ensuite.
 Une étude chez l'humain qui ne trouve AUCUN effet est un résultat valable : réponds "true".
-Un effet indésirable, une intoxication ou une interaction observés chez l'humain sont pertinents : réponds "true".
+Un effet indésirable, une intoxication ou une interaction observés chez l'humain sont pertinents : réponds "true".${tauxSanguinExclu(nutriment)
+    ? ''
+    : "\nUn taux de ce nutriment mesuré dans le sang ou les tissus (plasma, sérum, globules rouges, indice oméga-3…) et relié à un résultat de santé chez l'humain compte comme une exposition : réponds \"true\"."}
 
 Réponds UNIQUEMENT avec un objet JSON, rien avant, rien après :
 {"pertinent": true}
@@ -594,15 +606,18 @@ Cette étude mesure-t-elle un EFFET, un BÉNÉFICE, un RISQUE ou une ASSOCIATION
 Sont pertinents :
 - les essais cliniques, méta-analyses et revues systématiques ;
 - les études observationnelles (cohortes, cas-témoins) reliant l'apport alimentaire ou la prise de complément à un résultat de santé ;
-- les effets indésirables, intoxications et interactions observés chez l'humain ;
+- les effets indésirables, intoxications et interactions observés chez l'humain ;${tauxSanguinExclu(nutriment)
+    ? ''
+    : "\n- les études qui relient un taux de ce nutriment mesuré dans le sang ou les tissus (plasma, sérum, globules rouges, indice oméga-3…) à un résultat de santé chez l'humain : ce taux compte comme mesure de l'exposition, au même titre qu'un apport alimentaire ou une supplémentation ;"}
 - une revue narrative ou mécanistique consacrée à ce sujet et à ses effets sur la santé (même fondée surtout sur des données animales ou cellulaires) : elle sera classée à part, au niveau de preuve le plus bas.
 Un résultat de santé désigne : une maladie ou son risque, des symptômes, un marqueur biologique, la mortalité, le poids ou la composition corporelle, la fonction cognitive ou la santé mentale, les performances physiques, cognitives ou scolaires.
 Réponds "false" dans les cas suivants :
 - L'étude porte uniquement sur des animaux ou des cellules en laboratoire, sans effet mesuré chez l'humain (hors revue consacrée au sujet, voir ci-dessus).
 - Le produit est uniquement appliqué sur la peau, les yeux ou les muqueuses, inhalé, injecté ou perfusé, sans prise par la bouche.
-- L'étude mesure uniquement un taux sanguin, un statut ou une carence, sans mesurer l'apport alimentaire ni une supplémentation.
-- Ce sujet n'est qu'un ingrédient parmi beaucoup d'autres (produit à nombreux ingrédients, score alimentaire, nombreux nutriments étudiés ensemble) et son effet propre n'est pas isolé. Une association de 2 ou 3 ingrédients bien identifiés, dont celui-ci (par exemple vitamine D et calcium), reste pertinente.
-- Ce sujet n'est pas l'exposition principale de l'étude : revue ou étude portant sur de nombreux compléments, plantes ou nutriments à la fois, sur les facteurs de risque d'une maladie, ou sur les apports en nutriments en général, même si un résultat chiffré pour ce sujet y figure parmi d'autres. Une telle étude n'est pertinente que si ce sujet est explicitement au centre de la question de recherche, par exemple nommé dans le titre ou dans l'objectif principal.
+${tauxSanguinExclu(nutriment)
+    ? "- L'étude mesure uniquement un taux sanguin, un statut ou une carence, sans mesurer l'apport alimentaire ni une supplémentation.\n"
+    : ''}- Ce sujet n'est qu'un ingrédient parmi beaucoup d'autres (produit à nombreux ingrédients, score alimentaire, nombreux nutriments étudiés ensemble) et son effet propre n'est pas isolé. Une association de 2 ou 3 ingrédients bien identifiés, dont celui-ci (par exemple vitamine D et calcium), reste pertinente.
+- Ce sujet n'est pas l'exposition principale de l'étude : revue ou étude portant sur de nombreux compléments, plantes ou nutriments à la fois, sur les facteurs de risque d'une maladie, ou sur les apports en nutriments en général, même si un résultat chiffré pour ce sujet y figure parmi d'autres. Une telle étude n'est pertinente que si ce sujet est explicitement au centre de la question de recherche, par exemple nommé dans le titre ou dans l'objectif principal. Exception : une méta-analyse ou une revue systématique qui compare plusieurs compléments, nutriments ou interventions et rapporte un résultat propre à « ${nutriment.nom} » est pertinente, même si ce sujet n'est pas nommé dans le titre.
 - Le produit sert seulement d'outil d'étude (sonde pour tester une enzyme ou un transporteur, stimulus expérimental pour provoquer une réponse) ou il s'agit d'un article de méthode (instruments génétiques, modèles statistiques, stratégie d'échantillonnage), sans que l'objet soit son effet sur la santé. Une étude d'interaction entre ce produit et un médicament reste pertinente.
 - L'étude porte uniquement sur la fréquence d'utilisation, les ventes, les connaissances, les perceptions ou les déterminants de la consommation, sans résultat de santé.
 - L'étude décrit seulement la composition, le dosage, l'étiquetage, la qualité ou la contamination de produits, sans effet de santé observé chez des personnes.
