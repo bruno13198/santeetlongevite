@@ -1,41 +1,24 @@
-// Script d'automatisation : récupère des études sur Europe PMC pour les aliments,
-// les trie, génère 2 résumés en français via l'API Claude, classe leur niveau de preuve,
-// et enregistre tout dans Supabase.
+// Script d'automatisation : récupère des études sur Europe PMC pour les habitudes
+// alimentaires (régimes, patterns), les trie, génère 2 résumés en français via l'API Claude,
+// classe leur niveau de preuve, et enregistre tout dans Supabase.
 //
-// Recherche : termes_recherche cherchés en texte libre dans le titre et le résumé,
-// fenêtre sur FIRST_IDATE (date d'entrée dans Europe PMC). Pas de filtre PUB_TYPE :
-// les articles récents n'ont pas encore de type de publication (méta-analyse, essai...).
-// Les titres signalant clairement un sujet animal/végétal sont exclus dès la requête.
-// Toutes les pages de résultats sont lues (jusqu'au quota de résultats de l'aliment).
-// La requête est envoyée en POST (searchPOST) : la liste d'exclusions est trop longue
-// pour tenir dans une adresse web (erreurs 400/414 en GET, 29 sept. 2026).
+// Recherche : MeSH (si est_terme_mesh) OU termes en texte libre (termes_texte),
+// cherchés dans le titre et le résumé. Le texte libre est indispensable : les
+// articles récents n'ont pas encore de tag MeSH ni de type de publication
+// (méta-analyse, essai...) au moment où ils entrent dans Europe PMC.
+// Fenêtre sur FIRST_IDATE (date d'entrée dans Europe PMC). Les titres signalant
+// clairement un sujet animal/végétal/matériau sont exclus dès la requête (même liste
+// que pour les aliments). Requête envoyée en POST (searchPOST), toutes les pages lues.
 //
-// Tri en deux temps pour maîtriser les coûts :
-//   1. Haiku (rapide, économique) écarte uniquement les cas CLAIREMENT hors sujet ;
-//      dans le doute, il laisse passer. Ses rejets sont marqués [Haiku].
-//   2. Sonnet juge finement la pertinence et rédige les résumés.
-// Une étude déjà en base (acceptée pour un autre aliment) passe par le même tri
-// avant d'être reliée à cet aliment.
-//
-// Niveau de preuve (30 sept. 2026) : échelle d'Oxford (CEBM 2011), étude par étude
-// (niveau_preuve, design_etude, ajustement_preuve). Le modèle donne le niveau de base,
-// le sens de l'ajustement et l'effectif ; le script calcule le niveau final.
-// L'effectif (nb_participants) vient de ce même appel ; la recherche de motifs
-// (extraireNbParticipants) ne sert plus qu'en secours si le classement échoue.
-// L'ancien champ niveau_fiabilite reste rempli par correspondance pendant la transition.
-//
-// API Batch (4 oct. 2026) : tous les appels Claude passent par l'API Message Batches,
-// facturée 50 % moins cher, avec les MÊMES modèles et les MÊMES prompts qu'avant.
-// Le run se déroule en 3 temps :
-//   1. Recherche Europe PMC et vérifications en base pour tous les aliments du lot.
-//   2. Vagues de tri Haiku puis d'analyse Sonnet (un lot par vague et par modèle) ;
-//      chaque aliment s'arrête à son quota d'analyses ou de nouvelles études, comme avant.
-//   3. Un lot Sonnet pour les niveaux de preuve des nouvelles études acceptées,
-//      puis enregistrement dans Supabase.
-// Quotas doublés (prix divisé par 2) et quotas renforcés pour les aliments à forte
-// littérature (ALIMENTS_GROS_VOLUME).
-// Le script attend la fin de chaque lot (en général quelques minutes à une heure).
-// Les réponses illisibles sont renvoyées dans un nouveau lot (3 tentatives au total, comme avant).
+// Refonte du 4 oct. 2026, alignée sur import-etudes.js :
+//   - tri rapide Haiku avant l'analyse Sonnet (n'écarte que les cas CLAIREMENT hors sujet) ;
+//   - analyse Sonnet avec le prompt « habitudes » inchangé ;
+//   - niveau de preuve selon l'échelle d'Oxford (CEBM 2011), comme pour les aliments
+//     (remplace l'ancien classement haute/moderee/preliminaire, conservé par correspondance) ;
+//   - API Message Batches (50 % moins cher), traitement par vagues, quotas doublés et
+//     quotas renforcés pour les habitudes à forte littérature (HABITUDES_GROS_VOLUME).
+// Une étude déjà en base (acceptée pour un autre sujet) passe par le même tri
+// avant d'être reliée à cette habitude.
 
 const { createClient } = require('@supabase/supabase-js');
 
@@ -44,42 +27,29 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-// Quotas par aliment et par run. Avec l'API Batch (prix divisé par 2), les quotas sont
-// doublés par rapport à l'ancienne version (500 / 25 / 15) : le coût maximal par aliment
-// reste au plus égal à l'ancien, et la veille est plus complète.
-const RESULTATS_A_RECUPERER = parseInt(process.env.RESULTATS_A_RECUPERER || '1000', 10); // résultats Europe PMC lus (gratuit)
-const MAX_ANALYSES_PAR_RUN = parseInt(process.env.MAX_ANALYSES_PAR_RUN || '50', 10); // analyses Sonnet
-const MAX_NOUVELLES_ETUDES_PAR_RUN = parseInt(process.env.MAX_NOUVELLES_ETUDES_PAR_RUN || '30', 10); // nouvelles études acceptées
+// Quotas par habitude et par run. Avec l'API Batch (prix divisé par 2), les quotas sont
+// doublés par rapport à l'ancienne version (100 / 40 / 25).
+const RESULTATS_A_RECUPERER = parseInt(process.env.RESULTATS_A_RECUPERER || '200', 10); // résultats Europe PMC lus (gratuit)
+const MAX_ANALYSES_PAR_RUN = parseInt(process.env.MAX_ANALYSES_PAR_RUN || '80', 10); // analyses Sonnet
+const MAX_NOUVELLES_ETUDES_PAR_RUN = parseInt(process.env.MAX_NOUVELLES_ETUDES_PAR_RUN || '50', 10); // nouvelles études acceptées
 const TAILLE_PAGE_EUROPEPMC = 100;
 
-// Quotas renforcés pour les aliments à très forte littérature (4 oct. 2026).
+// Quotas renforcés pour les habitudes à très forte littérature (4 oct. 2026).
 // Liste modifiable : ajouter ou retirer un slug suffit.
-const QUOTAS_RENFORCES = { resultats: 2000, analyses: 100, nouvelles: 60 };
-const ALIMENTS_GROS_VOLUME = [
-  // Demandés par Bruno
-  'curcuma-poudre',
-  'sucre-blanc',
-  'poisson',
-  'sel-blanc-alimentaire-iode-non-fluore-marin-ignigene-ou-gemme',
-  'soja-graine-entiere',
-  'isolat-de-soja',
-  // Ajoutés (littérature très abondante)
-  'poisson-gras',
-  'huile-de-saumon', // « Huile de poisson » (oméga-3)
-  'cafe-moulu',
-  'the-feuille',
-  'oeuf-a-la-coque', // « Oeuf »
-  'lait-ecreme-uht', // « Lait écrémé ou demi-écrémé »
-  'lait-sans-precision-sur-la-teneur-en-matiere-grasse-uht-aliment-moyen', // « Lait »
-  'legume-cuit-aliment-moyen', // « Légumes »
-  'vin-aliment-moyen',
-  'cereales-completes',
-  'produits-laitiers',
+const QUOTAS_RENFORCES = { resultats: 400, analyses: 160, nouvelles: 100 };
+const HABITUDES_GROS_VOLUME = [
+  'regime-mediterraneen',
+  'alimentation-saine',
+  'jeune-intermittent',
+  'restriction-calorique',
+  'regime-cetogene',
+  'aliments-ultra-transformes',
+  'consommation-alcool',
 ];
 
-function quotasPour(aliment) {
-  // En mode hauts niveaux, les plafonds du formulaire s'appliquent à toutes les fiches.
-  if (!HAUTS_NIVEAUX && ALIMENTS_GROS_VOLUME.includes(aliment.slug)) return QUOTAS_RENFORCES;
+function quotasPour(habitude) {
+  // En mode hauts niveaux, les quotas du formulaire s'appliquent à toutes les habitudes.
+  if (!HAUTS_NIVEAUX && HABITUDES_GROS_VOLUME.includes(habitude.slug)) return QUOTAS_RENFORCES;
   return {
     resultats: RESULTATS_A_RECUPERER,
     analyses: MAX_ANALYSES_PAR_RUN,
@@ -92,10 +62,9 @@ const MAX_VAGUES = parseInt(process.env.MAX_VAGUES || '6', 10);
 const OFFSET = parseInt(process.env.OFFSET || '0', 10);
 const LIMITE = parseInt(process.env.LIMITE || '200', 10);
 const JOURS_VEILLE = parseInt(process.env.JOURS_VEILLE || '10', 10);
-// 3 nov. 2026 : rattrapage limité aux méta-analyses d'essais randomisés et de cohortes
-// prospectives, pour les runs manuels uniquement. Le run du lundi n'utilise pas cette option
-// (les articles récents n'ont pas encore de type de publication).
-// Même filtre que scripts/compter-litterature.js (le comptage donne donc le volume exact).
+
+// 6 nov. 2026 : rattrapage limité aux méta-analyses d'essais randomisés et de cohortes
+// prospectives, pour les runs manuels uniquement (même filtre que import-etudes.js).
 const HAUTS_NIVEAUX = process.env.HAUTS_NIVEAUX === 'true';
 const FILTRE_HAUTS_NIVEAUX =
   'AND (PUB_TYPE:"Meta-Analysis" AND (ABSTRACT:"randomized controlled trials" OR ABSTRACT:"randomised controlled trials" OR ABSTRACT:"randomized controlled trial" OR ABSTRACT:"randomised controlled trial" OR ABSTRACT:"randomized trials" OR ABSTRACT:"randomised trials" OR ABSTRACT:"RCTs" OR ABSTRACT:"prospective cohort studies" OR ABSTRACT:"prospective cohort study" OR ABSTRACT:"prospective cohorts" OR ABSTRACT:"prospective studies"))';
@@ -252,31 +221,60 @@ function extraireNbParticipants(abstractText) {
   return null;
 }
 
-async function recupererAlimentsATraiter() {
-  const { data: aliments, error } = await supabase
-    .from('aliments')
-        .select('id, nom, slug, niveau_nova, terme_recherche, termes_recherche, termes_exclus')
-    .eq('actif', true)
-    .order('id', { ascending: true })
-    .range(0, 4999); // sans range, Supabase s'arrête à 1000 lignes
+// Construit la partie « sujet » de la requête Europe PMC :
+// MeSH (ou mots-clés hérités si pas de MeSH) OU chacun des termes en texte libre.
+function construireFiltreSujet(habitude) {
+  const parties = [];
 
-  if (error) {
-    throw new Error(`Erreur récupération aliments: ${error.message}`);
+  if (habitude.terme_recherche && habitude.terme_recherche.trim() !== '') {
+    if (habitude.est_terme_mesh) {
+      parties.push(`(MESH:"${habitude.terme_recherche}")`);
+    } else {
+      const motsClefs = habitude.terme_recherche
+        .split(' ')
+        .map((mot) => `(TITLE:"${mot}" OR ABSTRACT:"${mot}")`)
+        .join(' AND ');
+      parties.push(`(${motsClefs})`);
+    }
   }
 
-  // 4 oct. 2026 : plus de filtre NOVA 4 (ni liste d'exceptions) : la colonne actif est le
-  // seul interrupteur. Les fiches NOVA 4 non voulues sont désactivées en base.
-  const eligibles = aliments
-    .filter(
-      (a) =>
-        (Array.isArray(a.termes_recherche) && a.termes_recherche.length > 0) ||
-        (a.terme_recherche && a.terme_recherche.trim() !== '')
-    );
+  if (Array.isArray(habitude.termes_texte)) {
+    for (const terme of habitude.termes_texte) {
+      if (terme && terme.trim() !== '') {
+        // 31 oct. 2026 : un terme « A + B » exige les deux expressions dans le titre ou le résumé
+        // (ex. « Atkins diet + weight »). Un terme sans « + » fonctionne comme avant.
+                // 8 nov. 2026 : « titre:X » cherche X dans le titre seulement.
+        if (/^titre:/i.test(terme.trim())) {
+          const motTitre = terme.trim().replace(/^titre:\s*/i, '');
+          if (motTitre) parties.push(`(TITLE:"${motTitre}")`);
+          continue;
+        }
+        const morceaux = terme.split('+').map((m) => m.trim()).filter(Boolean);
+        parties.push(`(${morceaux.map((m) => `(TITLE:"${m}" OR ABSTRACT:"${m}")`).join(' AND ')})`);
+      }
+    }
+  }
+
+  return parties.join(' OR ');
+}
+
+async function recupererHabitudesATraiter() {
+  const { data: habitudes, error } = await supabase
+    .from('habitudes_alimentaires')
+        .select('id, slug, nom, terme_recherche, est_terme_mesh, termes_texte, termes_exclus')
+    .eq('actif', true)
+    .order('id', { ascending: true });
+
+  if (error) {
+    throw new Error(`Erreur récupération habitudes: ${error.message}`);
+  }
+
+  const eligibles = habitudes.filter((h) => construireFiltreSujet(h) !== '');
 
   const slugsCibles = process.env.SLUGS_CIBLES;
   if (slugsCibles) {
     const listeSlugs = slugsCibles.split(',').map((s) => s.trim());
-    return eligibles.filter((a) => listeSlugs.includes(a.slug));
+    return eligibles.filter((h) => listeSlugs.includes(h.slug));
   }
 
   return eligibles;
@@ -331,38 +329,8 @@ async function appelerEuropePMC(parametres, tentative = 1) {
   return res.json();
 }
 
-async function chercherEtudesEuropePMC(aliment) {
-  // - termes_recherche (text[]) : chaque terme cherché comme expression exacte,
-  //   variantes reliées par OR. Mode cible.
-  // - terme_recherche (chaîne, hérité) : mots découpés et reliés par AND.
-  const termesMultiples = aliment.termes_recherche;
-
-  let motsClefs;
-
-  if (Array.isArray(termesMultiples) && termesMultiples.length > 0) {
-        // 31 oct. 2026 : un terme « A + B » exige les deux expressions dans le titre ou le résumé
-    // (ex. « PFAS + dietary »), pour cibler les contaminants sur l'alimentation.
-    motsClefs = termesMultiples
-            .map((t) => {
-        // 8 nov. 2026 : « titre:X » cherche X dans le titre seulement.
-        const texte = String(t).trim();
-        if (/^titre:/i.test(texte)) return `(TITLE:"${texte.replace(/^titre:\s*/i, '')}")`;
-        const parties = texte.split('+').map((p) => p.trim()).filter(Boolean);
-        return `(${parties.map((p) => `(TITLE:"${p}" OR ABSTRACT:"${p}")`).join(' AND ')})`;
-      })
-      .join(' OR ');
-  } else {
-    // Retire un nom scientifique latin (Genre espèce) en fin de terme,
-    // ex. "garlic Allium sativum" -> "garlic"
-    const termeSansNomScientifique = aliment.terme_recherche.replace(
-      /\s+[A-Z][a-zà-ÿ]+\s+[a-zà-ÿ]+$/,
-      ''
-    );
-    motsClefs = termeSansNomScientifique
-      .split(' ')
-      .map((mot) => `(TITLE:"${mot}" OR ABSTRACT:"${mot}")`)
-      .join(' AND ');
-  }
+async function chercherEtudesEuropePMC(habitude) {
+  const motsClefs = construireFiltreSujet(habitude);
 
   const dateDebut = new Date();
   dateDebut.setDate(dateDebut.getDate() - JOURS_VEILLE);
@@ -378,19 +346,20 @@ async function chercherEtudesEuropePMC(aliment) {
     'subjects', 'trial', 'randomized', 'randomised',
   ];
   const marqueursHumains = MARQUEURS_HUMAINS.map((m) => `TITLE:"${m}"`).join(' OR ');
-      // 8 nov. 2026 : mots d'exclusion propres à la fiche (colonne termes_exclus), cherchés dans le titre.
-  const exclusFiche = (Array.isArray(aliment.termes_exclus) ? aliment.termes_exclus : [])
+      const filtreNiveaux = HAUTS_NIVEAUX ? `${FILTRE_HAUTS_NIVEAUX} ` : '';
+  // 8 nov. 2026 : mots d'exclusion propres à la fiche (colonne termes_exclus), cherchés dans le titre.
+  const exclusFiche = (Array.isArray(habitude.termes_exclus) ? habitude.termes_exclus : [])
     .map((m) => String(m).replace(/"/g, '').trim())
     .filter(Boolean);
-  const filtreExclusFiche = exclusFiche.length ? ` NOT (${exclusFiche.map((m) => `TITLE:"${m}"`).join(' OR ')})` : '';
-  const requete = `(${motsClefs}) AND (SRC:MED)${filtreExclusFiche} NOT ((${exclusionTitre}) AND NOT (${marqueursHumains})) ${filtreDate}${HAUTS_NIVEAUX ? ` ${FILTRE_HAUTS_NIVEAUX}` : ''}`;
+  const filtreExclusFiche = exclusFiche.length ? `NOT (${exclusFiche.map((m) => `TITLE:"${m}"`).join(' OR ')}) ` : '';
+  const requete = `(${motsClefs}) AND (SRC:MED) ${filtreNiveaux}${filtreExclusFiche}NOT ((${exclusionTitre}) AND NOT (${marqueursHumains})) ${filtreDate}`;
 
   // Lecture de toutes les pages (curseur Europe PMC), jusqu'au maximum fixé.
   const resultats = [];
   let total = 0;
   let cursorMark = '*';
 
-  const maxResultats = quotasPour(aliment).resultats;
+  const maxResultats = quotasPour(habitude).resultats;
   while (resultats.length < maxResultats) {
     const data = await appelerEuropePMC({
       query: requete,
@@ -572,35 +541,33 @@ function extraireJSON(texte) {
 
 // ---------------------------------------------------------------------------
 // Prompts
-// 27 nov. 2026 : règle topique du tri Haiku resserrée (maladie de peau ≠ usage cutané) ;
-// exception « méta-analyse comparant plusieurs produits avec un résultat propre » (Sonnet).
+// 27 nov. 2026 : exception « méta-analyse comparant plusieurs régimes avec un résultat propre »
+// (tri Haiku et analyse Sonnet).
 // ---------------------------------------------------------------------------
 
 // Tri rapide par Haiku : n'écarte que les cas CLAIREMENT hors sujet.
 // En cas de doute ou d'erreur, laisse passer (Sonnet tranchera).
-// 28 sept. 2026 : ajout des catégories que Sonnet rejette systématiquement
-// (contamination, technologie, enquêtes sans issue de santé, méthodes d'analyse),
-// pour ne plus consommer le garde-fou d'analyses Sonnet sur ces études.
-function promptTri(titreOriginal, abstractOriginal, nomAliment) {
-  return `Tu fais un PREMIER TRI RAPIDE d'études scientifiques pour une fiche sur l'aliment : ${nomAliment}
+// Version « habitudes » (4 oct. 2026), calquée sur les rejets systématiques de Sonnet.
+function promptTri(titreOriginal, abstractOriginal, nomHabitude) {
+  return `Tu fais un PREMIER TRI RAPIDE d'études scientifiques pour une fiche sur l'habitude alimentaire (régime, pratique ou pattern alimentaire) : ${nomHabitude}
 
 Titre : ${titreOriginal}
 Résumé : ${abstractOriginal}
 
 Réponds "false" UNIQUEMENT si l'étude est CLAIREMENT dans l'un de ces cas :
-- elle porte uniquement sur des animaux, des cellules ou des modèles in vitro/in silico, sans aucun sujet humain ;
-- le terme de recherche est un homonyme ou une confusion (autre sens du mot, autre espèce, nom d'un appareil, d'une marque, d'une enzyme, d'une molécule sans rapport...) ;
-- l'aliment n'a aucun rapport réel avec le sujet de l'étude (absent, ou mentionné seulement en passant) ;
-- l'étude porte sur de l'agronomie, de la génétique végétale, de l'élevage, de l'alimentation animale, un procédé industriel ou un matériau, sans consommation humaine ;
-- toutes les interventions étudiées sont explicitement appliquées sur la peau, les muqueuses ou en cosmétique (crème, gel, pansement, bain de bouche…), et le résumé ne mentionne aucune prise orale. Une maladie de peau ne suffit pas : si la voie d'administration n'est pas précisée, ou si une prise orale est mentionnée, réponds "true" ;
-- il s'agit d'un protocole sans résultats ou d'une notice de rétractation ;
-- elle mesure seulement une contamination de l'aliment (bactéries, résistance aux antibiotiques, virus, parasites, métaux, pesticides, mycotoxines, microplastiques), éventuellement avec un calcul de risque théorique, sans aucun effet de santé observé chez des personnes ;
-- elle porte sur la formulation, la texture, la conservation, les propriétés physico-chimiques ou l'analyse sensorielle d'un produit, sans effet de santé mesuré chez des personnes ; ou c'est une revue consacrée surtout à la composition, la production, la transformation ou la valorisation de coproduits d'un aliment, qui ne cite des bienfaits pour la santé que de façon générale ;
-- c'est une enquête sur les achats, les connaissances, les attitudes ou la fréquence de consommation, sans lien mesuré avec un effet de santé ;
-- elle développe ou valide une méthode d'analyse, de dosage, de détection ou d'authentification.
+- elle porte uniquement sur des animaux, des cellules, des tissus isolés ou des modèles in vitro/in silico, sans aucun sujet humain ;
+- le terme de recherche est un homonyme ou une confusion (autre sens du mot : technique chirurgicale ou nom de lieu sans rapport avec l'alimentation, alimentation d'animaux ou d'espèces anciennes étudiée en archéologie ou en biologie, jeûne imposé avant une intervention médicale ou utilisé comme test diagnostique...) ;
+- l'habitude alimentaire n'a aucun rapport réel avec le sujet de l'étude (absente, ou mentionnée seulement en passant) ;
+- l'étude porte sur l'élevage, l'alimentation animale, l'agronomie ou un procédé industriel ;
+- il s'agit d'un protocole sans résultats, d'une notice de rétractation, d'un éditorial, d'un commentaire ou d'une lettre ;
+- elle développe ou valide une méthode d'analyse, un questionnaire ou un outil de mesure ;
+- cette habitude n'est qu'un facteur parmi d'autres (score de mode de vie, plusieurs régimes ou comportements étudiés ensemble), ou seulement le cadre commun à tous les groupes d'un essai qui teste en réalité autre chose (un complément, un aliment, un médicament) ; exception : une méta-analyse ou une revue systématique qui compare plusieurs régimes et rapporte un résultat propre à cette habitude n'est pas concernée ;
+- Il s'agit d'un article de méthode (mise au point d'instruments génétiques, de modèles statistiques, de questionnaires ou d'outils de mesure) dont l'objet n'est pas l'effet de cette habitude sur la santé.
+- elle porte uniquement sur les déterminants, les connaissances, les perceptions, les obstacles ou l'adhésion à cette habitude, sans mesurer de résultat de santé ;
+- elle porte sur la composition, l'étiquetage ou la contamination des aliments, sans effet de santé mesuré chez des personnes.
 
 Dans TOUS les autres cas, y compris en cas de doute, réponds "true" : une analyse plus fine sera faite ensuite.
-Une étude chez l'humain qui ne trouve AUCUN effet ou AUCUNE association avec l'aliment est un résultat valable : réponds "true".
+Une étude chez l'humain qui ne trouve AUCUN effet ou AUCUNE association avec cette habitude est un résultat valable : réponds "true".
 
 Réponds UNIQUEMENT avec un objet JSON, rien avant, rien après :
 {"pertinent": true}
@@ -616,44 +583,34 @@ function interpreterTri(texte) {
   return { pertinent: true };
 }
 
-function promptAnalyse(titreOriginal, abstractOriginal, nomAliment) {
+function promptAnalyse(titreOriginal, abstractOriginal, nomHabitude) {
   return `Tu es un rédacteur scientifique qui vulgarise des études de nutrition/santé pour un site grand public francophone.
  
-Cette étude a été trouvée en recherchant des publications sur : ${nomAliment}
+Cette étude a été trouvée en recherchant des publications sur l'habitude alimentaire suivante : ${nomHabitude}
  
 Titre original : ${titreOriginal}
 Résumé original (anglais) : ${abstractOriginal}
+ 
 Étape 1 — Vérifie le SUJET :
-L'étude apporte-t-elle une information utile sur « ${nomAliment} » ? Réponds "true" dans tous ces cas :
-- l'étude porte sur l'aliment lui-même, consommé tel quel
-- l'étude porte sur un extrait, un composé isolé, une huile ou une préparation ISSUE de cet aliment et INGÉRÉE (ex : curcumine pour le curcuma, huile de foie de morue pour le foie de morue, peptides de chia pour la graine de chia)
-- l'étude porte sur une variante voisine de l'aliment, ou sur la catégorie étroite à laquelle il appartient, lorsque c'est la littérature la plus proche disponible (ex : une étude sur « lait écrémé » pour une fiche « lait écrémé UHT » ; une étude sur les fromages à pâte molle pour un fromage à pâte molle précis)
-- des détails de procédé secondaires (UHT, séché, moulu, cru vs cuit) ne suffisent PAS à rendre une étude non pertinente, sauf si l'étude porte précisément sur ce paramètre et conclut à une différence
-Réponds "false" uniquement si : une simple co-occurrence de mots-clés ou une confusion terminologique (ex : un homonyme, une espèce réellement différente, un aliment qui n'apparaît que dans la bibliographie ou en comparaison lointaine), ou si l'étude porte en réalité sur un autre sujet mal indexé sous ce terme de recherche.
-En cas d'hésitation entre pertinent et non pertinent à cette étape, réponds "true" : mieux vaut une étude un peu large sur une fiche qu'une fiche vide.
+L'étude teste-t-elle vraiment et spécifiquement ce régime/pattern alimentaire (« ${nomHabitude} »), pas juste une mention en passant ou une comparaison lointaine ? Si l'étude porte sur un sujet différent qui a seulement été indexé sous ce terme par erreur ou de façon marginale, réponds "false".
  
 Étape 2 — Évalue la pertinence humaine :
-Cette étude mesure-t-elle un EFFET ou un BÉNÉFICE (sur la santé, une maladie, un marqueur biologique...) directement chez des sujets HUMAINS, ou via une méta-analyse/revue qui synthétise de tels résultats humains ?
+Cette étude mesure-t-elle un EFFET, un BÉNÉFICE ou une ASSOCIATION (sur la santé, une maladie, un marqueur biologique...) directement chez des sujets HUMAINS suivant ce régime ou y adhérant plus ou moins, ou via une méta-analyse/revue qui synthétise de tels résultats humains ?
+Les études observationnelles (cohortes prospectives, études cas-témoins) mesurant l'adhésion à ce régime et son association avec la santé SONT pertinentes, au même titre que les essais cliniques et les méta-analyses.
+Un résultat de santé désigne : une maladie ou son risque, des symptômes, un marqueur biologique, la mortalité, le poids ou la composition corporelle, la fonction cognitive ou la santé mentale, les performances cognitives ou scolaires.
 Réponds "false" dans les cas suivants :
-- L'étude porte uniquement sur des animaux, des cellules en laboratoire (in vitro), ou des plantes (agronomie, botanique), SANS effet mesuré chez l'humain.
-- L'étude décrit seulement l'absorption, le métabolisme ou la biodisponibilité d'un composé chez l'humain, mais SANS mesurer un effet ou bénéfice de santé concret chez l'humain. La simple présence de données pharmacocinétiques humaines ne suffit pas si l'effet biologique testé n'a été observé qu'en laboratoire ou chez l'animal.
-- L'étude évalue un usage TOPIQUE, CUTANÉ ou COSMÉTIQUE de « ${nomAliment} » (crème, gel, lotion, gant enduit, application sur la peau...), plutôt qu'une CONSOMMATION ALIMENTAIRE (ingestion orale). Un bénéfice observé sur la peau ou via une application externe ne compte pas, même s'il est mesuré chez l'humain.
-- L'étude porte sur un micro-organisme, une toxine, un contaminant ou un procédé industriel lié à l'aliment, sans aucun cas de maladie ni effet de santé observé chez des personnes (ex : la biosynthèse d'un champignon d'affinage, la prévalence d'une bactérie dans l'aliment, un procédé de fabrication).
-- Il s'agit d'une épidémie ou d'une intoxication due à une défaillance ponctuelle de production ou d'hygiène (un lot, une usine, une cantine), qui n'apprend rien sur l'aliment lui-même.
-- Il s'agit d'une revue portant surtout sur la composition, la production, la transformation, la conservation ou la valorisation de coproduits de l'aliment, ou sur un usage cosmétique, même si elle mentionne des « bienfaits pour la santé » sans synthétiser de résultats précis obtenus chez l'humain.
-- L'aliment sert uniquement de repas témoin, de comparateur ou de véhicule pour tester autre chose (un médicament, un nutriment ajouté, un autre aliment), sans qu'un effet propre lui soit attribué.
-- L'aliment n'est qu'un facteur parmi de nombreux autres (habitudes de vie, score combiné, questionnaire alimentaire global, liste d'allergènes) sans qu'un effet ou une association propre à cet aliment soit rapporté.
-- L'étude porte sur un produit homonyme ou d'une autre origine que l'aliment de la fiche, même s'il partage le même mot : par exemple le lait maternel ou les préparations pour nourrissons pour une fiche de lait animal, le beurre de cacahuète pour une fiche de beurre.
-- Il s'agit d'un article de méthode (mise au point d'instruments génétiques, de modèles statistiques, de questionnaires ou d'outils de mesure) dont l'objet n'est pas l'effet de l'aliment sur la santé.
-- L'aliment n'est pas l'exposition principale de l'étude : étude portant sur l'alimentation ultra-transformée, l'alcool, la qualité ou un profil de l'alimentation, une catégorie plus large que cet aliment, ou recensant de nombreux facteurs de risque d'une maladie (y compris les analyses de fardeau de morbidité ou de fractions attribuables couvrant plusieurs risques alimentaires), même si un résultat chiffré pour cet aliment y figure parmi d'autres. Une telle étude n'est pertinente que si cet aliment est explicitement au centre de la question de recherche, par exemple nommé dans le titre ou dans l'objectif principal. Exception : une méta-analyse ou une revue systématique qui compare plusieurs aliments, compléments ou interventions et rapporte un résultat propre à « ${nomAliment} » est pertinente, même si cet aliment n'est pas nommé dans le titre.
-- Pour les allergies : une étude sur la tolérance, la désensibilisation, l'introduction ou la réintroduction de cet aliment chez des personnes allergiques EST pertinente, de même qu'une étude qui décrit des réactions allergiques à cet aliment chez des personnes (cas clinique, série de cas, épidémiologie de cette allergie) ; une étude qui recense seulement une sensibilisation parmi de nombreux allergènes, ou qui porte uniquement sur les conséquences de l'éviction de l'aliment, ne l'est pas.
-- Il s'agit d'un éditorial, d'un commentaire, d'une lettre ou d'un protocole d'étude sans résultats.
+- L'étude porte uniquement sur des animaux ou des cellules en laboratoire, sans effet mesuré chez l'humain.
+- L'étude décrit seulement la composition du régime, sans mesurer d'effet ou d'association de santé concret chez l'humain. Exception : une revue narrative ou mécanistique consacrée à cette habitude et à ses effets sur la santé (y compris si elle s'appuie surtout sur des données animales ou cellulaires) EST pertinente ; elle sera classée à part, au niveau de preuve le plus bas.
+- Le critère étudié est l'adhésion au régime elle-même (niveau d'adhésion, ses déterminants, préférences, connaissances, ou efficacité d'une intervention pour faire adopter le régime), sans résultat de santé mesuré en lien avec ce régime.
+- L'étude valide un outil de mesure, un questionnaire ou une méthode d'évaluation alimentaire.
+- Le régime n'est qu'une variable d'ajustement, un indice parmi plusieurs autres, ou une composante d'une intervention multiple dont l'effet propre n'est pas isolé.
+- Cette habitude n'est pas l'exposition principale de l'étude : étude sur de nombreux comportements ou facteurs de mode de vie (sommeil, tabac, activité physique, écrans...) ou sur plusieurs habitudes alimentaires à la fois, où celle-ci n'est qu'un élément parmi d'autres, même si une association chiffrée la concernant est rapportée. Elle n'est pertinente que si cette habitude est explicitement au centre de la question de recherche, par exemple nommée dans le titre ou dans l'objectif principal. Exception : une méta-analyse ou une revue systématique qui compare plusieurs régimes ou interventions et rapporte un résultat propre à « ${nomHabitude} » est pertinente, même si cette habitude n'est pas nommée dans le titre.
+- Il s'agit d'un consensus d'experts (Delphi), d'une étude de perceptions ou d'opinions, d'un éditorial, d'un commentaire, d'une lettre ou d'un protocole d'étude sans résultats.
 - Tout autre sujet hors nutrition/santé humaine.
-Ne réponds "true" que si un effet ou bénéfice a été concrètement évalué chez des sujets humains suite à une consommation alimentaire (essai clinique, cohorte, méta-analyse de données humaines), OU si l'étude documente chez l'humain un effet néfaste lié à l'aliment : infection ou intoxication liée à la nature de l'aliment ou à son mode de consommation courant (cru, non pasteurisé, préparation traditionnelle, espèce ou population à risque), effet indésirable de l'aliment ou d'un produit qui en est issu (y compris un complément alimentaire), ou réaction allergique à cet aliment.
  
 Étape 3 — Si et seulement si pertinente sur les deux points ci-dessus, rédige les résumés en français.
  
-Réponds UNIQUEMENT avec un objet JSON valide (rien avant, rien après), au format EXACT suivant. N'utilise JAMAIS de guillemets doubles (") à l'intérieur des textes — utilise des guillemets français « » ou des apostrophes si besoin. N'utilise JAMAIS de retour à la ligne à l'intérieur des valeurs texte — rédige chaque champ comme un seul paragraphe continu, sans saut de ligne.
+Réponds UNIQUEMENT avec un objet JSON valide (rien avant, rien après), au format EXACT suivant. N'utilise JAMAIS de guillemets doubles (") à l'intérieur des textes — utilise des guillemets français « » ou des apostrophes si besoin. N'utilise JAMAIS de retour à la ligne à l'intérieur des valeurs texte.
  
 Si l'étude N'EST PAS pertinente :
 {
@@ -665,14 +622,14 @@ Si l'étude EST pertinente :
 {
   "pertinent": true,
   "titre_traduit": "traduction française naturelle du titre",
-  "resume_simplifie": "un résumé très simple et accessible en français (80-120 mots), sans jargon, compréhensible par un lecteur non-scientifique",
-  "resume_reformule": "une reformulation plus détaillée en français (100-150 mots), qui garde davantage de nuance scientifique et de précision, mais reste lisible"
+  "resume_simplifie": "un résumé très simple et accessible en français (80-120 mots), sans jargon",
+  "resume_reformule": "une reformulation plus détaillée en français (100-150 mots), qui garde davantage de nuance scientifique"
 }
  
 Règles importantes :
-- Ne jamais transformer une corrélation en causalité si l'étude ne le permet pas
+- Ne jamais transformer une corrélation en causalité si l'étude ne le permet pas (en particulier pour les études observationnelles)
 - Rester factuel, ne pas exagérer les conclusions
-- Varier le style et la structure des phrases (éviter les formulations répétitives d'un résumé à l'autre)
+- Varier le style et la structure des phrases
 - Rédiger uniquement en français`;
 }
 
@@ -768,7 +725,7 @@ function interpreterClassement(texte) {
   } else if (objet.defaut === 'imprecision') {
     sens = 1;
     motif = motifModele || 'résultats imprécis ou incohérents';
-  }
+    }
   // 14 oct. 2026 : le relèvement de niveau est désactivé. Les 6 cas observés étaient
   // tous des erreurs du modèle (il cochait « relevé » pour des motifs d'abaissement).
 
@@ -786,9 +743,9 @@ function niveauFiabiliteDepuisPreuve(niveau) {
   return null;
 }
 
-async function enregistrerRejet(alimentId, sourceId, titre, raison) {
-  await supabase.from('candidats_rejetes').insert({
-    aliment_id: alimentId,
+async function enregistrerRejet(habitudeId, sourceId, titre, raison) {
+  await supabase.from('candidats_rejetes_habitudes').insert({
+    habitude_id: habitudeId,
     source_id: sourceId,
     titre_original: titre,
     raison: raison,
@@ -796,13 +753,13 @@ async function enregistrerRejet(alimentId, sourceId, titre, raison) {
 }
 
 // ---------------------------------------------------------------------------
-// Phase 1 : collecte des candidats d'un aliment (Europe PMC + vérifications en base)
+// Phase 1 : collecte des candidats d'une habitude (Europe PMC + vérifications en base)
 // ---------------------------------------------------------------------------
 
-async function collecterCandidats(aliment) {
-  console.log(`\n=== ${aliment.slug} ===`);
+async function collecterCandidats(habitude) {
+  console.log(`\n=== ${habitude.slug} ===`);
 
-  const { resultats, total } = await chercherEtudesEuropePMC(aliment);
+  const { resultats, total } = await chercherEtudesEuropePMC(habitude);
   console.log(`  ${total} résultats au total sur Europe PMC, ${resultats.length} examinés${total > resultats.length ? ' ⚠️ DÉBORDEMENT' : ''}.`);
   await pause(300); // pause pour éviter de saturer Europe PMC
 
@@ -821,6 +778,16 @@ async function collecterCandidats(aliment) {
     const sourceId = etude.id || etude.pmid;
     if (!sourceId) continue;
 
+    // 19 oct. 2026 : les études sur le Ramadan vont sur la fiche « Jeûne du Ramadan »,
+    // jamais sur la fiche générale « Jeûne » (dont les termes les attrapent aussi).
+    if (habitude.slug === 'jeune' && /ramadan/i.test(etude.title || '')) continue;
+    // 31 oct. 2026 : la fiche « Régime Atkins (amaigrissant) » ne reçoit pas les études sur
+    // l'usage thérapeutique (épilepsie, myopathies...) : elles relèvent du Régime cétogène.
+    if (
+      habitude.slug === 'regime-atkins' &&
+      /modified Atkins|epilep|seizure|mitochondrial|multiple sclerosis|ketogenic/i.test(etude.title || '')
+    ) continue;
+
     const { data: existant } = await supabase
       .from('etudes')
       .select('id')
@@ -830,9 +797,9 @@ async function collecterCandidats(aliment) {
 
     if (existant) {
       const { data: lienExistant } = await supabase
-        .from('aliments_etudes')
-        .select('aliment_id')
-        .eq('aliment_id', aliment.id)
+        .from('habitudes_etudes')
+        .select('habitude_id')
+        .eq('habitude_id', habitude.id)
         .eq('etude_id', existant.id)
         .maybeSingle();
 
@@ -840,18 +807,18 @@ async function collecterCandidats(aliment) {
     }
 
     const { data: dejaRejete } = await supabase
-      .from('candidats_rejetes')
+      .from('candidats_rejetes_habitudes')
       .select('source_id')
-      .eq('aliment_id', aliment.id)
+      .eq('habitude_id', habitude.id)
       .eq('source_id', sourceId)
       .maybeSingle();
 
-    if (dejaRejete) continue; // déjà rejeté précédemment pour cet aliment
+    if (dejaRejete) continue; // déjà rejeté précédemment pour cette habitude
 
     if (!etude.abstractText) continue; // pas de résumé disponible
 
     candidats.push({
-      aliment,
+      habitude,
       sourceId,
       etude,
       existantId: existant ? existant.id : null,
@@ -867,10 +834,10 @@ async function collecterCandidats(aliment) {
 // ---------------------------------------------------------------------------
 
 async function main() {
-    console.log(`Paramètres de ce run : HAUTS_NIVEAUX=${HAUTS_NIVEAUX}, OFFSET=${OFFSET}, LIMITE=${LIMITE}, JOURS_VEILLE=${JOURS_VEILLE}, RESULTATS_A_RECUPERER=${RESULTATS_A_RECUPERER}, MAX_NOUVELLES=${MAX_NOUVELLES_ETUDES_PAR_RUN}, MAX_ANALYSES=${MAX_ANALYSES_PAR_RUN}, MAX_VAGUES=${MAX_VAGUES}, aliments à quotas renforcés : ${ALIMENTS_GROS_VOLUME.length}`);
-  const tousLesAliments = await recupererAlimentsATraiter();
-  const lot = tousLesAliments.slice(OFFSET, OFFSET + LIMITE);
-  console.log(`${tousLesAliments.length} aliments éligibles au total. Lot traité : offset ${OFFSET}, ${lot.length} aliments (jusqu'à l'offset ${OFFSET + lot.length}).`);
+    console.log(`Paramètres de ce run : HAUTS_NIVEAUX=${HAUTS_NIVEAUX}, OFFSET=${OFFSET}, LIMITE=${LIMITE}, JOURS_VEILLE=${JOURS_VEILLE}, RESULTATS_A_RECUPERER=${RESULTATS_A_RECUPERER}, MAX_NOUVELLES=${MAX_NOUVELLES_ETUDES_PAR_RUN}, MAX_ANALYSES=${MAX_ANALYSES_PAR_RUN}, MAX_VAGUES=${MAX_VAGUES}, habitudes à quotas renforcés : ${HABITUDES_GROS_VOLUME.length}`);
+  const toutesLesHabitudes = await recupererHabitudesATraiter();
+  const lot = toutesLesHabitudes.slice(OFFSET, OFFSET + LIMITE);
+  console.log(`${toutesLesHabitudes.length} habitudes éligibles au total. Lot traité : offset ${OFFSET}, ${lot.length} habitudes (jusqu'à l'offset ${OFFSET + lot.length}).`);
 
   // ===== Phase 1 : recherche Europe PMC =====
   console.log('\n##### Recherche Europe PMC #####');
@@ -878,15 +845,15 @@ async function main() {
   let enEchec = [];
   const echecsDefinitifs = [];
 
-  for (const aliment of lot) {
+  for (const habitude of lot) {
     try {
-      candidats.push(...(await collecterCandidats(aliment)));
+      candidats.push(...(await collecterCandidats(habitude)));
     } catch (e) {
-      console.log(`Erreur générale sur ${aliment.slug}:`, e.message);
+      console.log(`Erreur générale sur ${habitude.slug}:`, e.message);
       if (e.temporaire === false) {
-        echecsDefinitifs.push({ aliment, message: e.message });
+        echecsDefinitifs.push({ habitude, message: e.message });
       } else {
-        enEchec.push({ aliment, message: e.message });
+        enEchec.push({ habitude, message: e.message });
       }
     }
   }
@@ -895,19 +862,19 @@ async function main() {
   const PAUSES_REPRISE_MIN = [5, 15];
   for (let passe = 0; passe < PAUSES_REPRISE_MIN.length && enEchec.length > 0; passe++) {
     const duree = PAUSES_REPRISE_MIN[passe];
-    console.log(`\n${enEchec.length} aliment(s) en échec. Reprise ${passe + 1}/${PAUSES_REPRISE_MIN.length} dans ${duree} min : ${enEchec.map((x) => x.aliment.slug).join(', ')}`);
+    console.log(`\n${enEchec.length} habitude(s) en échec. Reprise ${passe + 1}/${PAUSES_REPRISE_MIN.length} dans ${duree} min : ${enEchec.map((x) => x.habitude.slug).join(', ')}`);
     await pause(duree * 60 * 1000);
 
     const encoreEnEchec = [];
-    for (const { aliment } of enEchec) {
+    for (const { habitude } of enEchec) {
       try {
-        candidats.push(...(await collecterCandidats(aliment)));
+        candidats.push(...(await collecterCandidats(habitude)));
       } catch (e) {
-        console.log(`Erreur générale (reprise ${passe + 1}) sur ${aliment.slug}:`, e.message);
+        console.log(`Erreur générale (reprise ${passe + 1}) sur ${habitude.slug}:`, e.message);
         if (e.temporaire === false) {
-          echecsDefinitifs.push({ aliment, message: e.message });
+          echecsDefinitifs.push({ habitude, message: e.message });
         } else {
-          encoreEnEchec.push({ aliment, message: e.message });
+          encoreEnEchec.push({ habitude, message: e.message });
         }
       }
     }
@@ -916,9 +883,9 @@ async function main() {
 
   // Seuls les échecs définitifs (ou persistants après reprises) sont enregistrés.
   const tousLesEchecs = [...echecsDefinitifs, ...enEchec];
-  for (const { aliment, message } of tousLesEchecs) {
+  for (const { habitude, message } of tousLesEchecs) {
     await supabase.from('erreurs_import').insert({
-      aliment_slug: aliment.slug,
+      aliment_slug: habitude.slug,
       type_erreur: 'echec_recherche',
       message,
     });
@@ -931,17 +898,17 @@ async function main() {
   console.log(`\n${candidats.length} candidat(s) au total, avant tri.`);
 
   // ===== Phases 2 et 3 : tri Haiku puis analyse Sonnet, par vagues =====
-  // Comme l'ancien script, chaque aliment est traité dans l'ordre de pertinence Europe PMC
+  // Comme l'ancien script, chaque habitude est traité dans l'ordre de pertinence Europe PMC
   // et s'arrête dès qu'il atteint son quota d'analyses Sonnet ou de nouvelles études.
   // Pour ne pas trier avec Haiku plus d'études que nécessaire, le tri se fait par vagues :
   // à chaque vague, on ne trie que le nombre d'études estimé pour remplir le quota restant
   // (d'après la proportion d'études retenues par Haiku lors des vagues précédentes).
-  const etats = new Map(); // aliment.id -> état de l'aliment
+  const etats = new Map(); // habitude.id -> état de l'habitude
   for (const c of candidats) {
-    if (!etats.has(c.aliment.id)) {
-      etats.set(c.aliment.id, {
-        aliment: c.aliment,
-        quotas: quotasPour(c.aliment),
+    if (!etats.has(c.habitude.id)) {
+      etats.set(c.habitude.id, {
+        habitude: c.habitude,
+        quotas: quotasPour(c.habitude),
         file: [],
         position: 0,
         tries: 0,
@@ -951,7 +918,7 @@ async function main() {
         termine: false,
       });
     }
-    etats.get(c.aliment.id).file.push(c);
+    etats.get(c.habitude.id).file.push(c);
   }
 
   const nouvellesAcceptees = []; // { c, analyse }
@@ -985,7 +952,7 @@ async function main() {
         cle: `tri-${c.cle}`,
         modele: MODELE_TRI,
         maxTokens: 200,
-        prompt: promptTri(c.etude.title, c.etude.abstractText, c.aliment.nom),
+        prompt: promptTri(c.etude.title, c.etude.abstractText, c.habitude.nom),
       })),
       interpreterTri,
       `Tri Haiku v${vague}`
@@ -1003,7 +970,7 @@ async function main() {
         // En cas d'échec du tri, on laisse passer (Sonnet tranchera), comme avant.
         if (tri && tri.pertinent === false) {
           rejetsHaiku++;
-          await enregistrerRejet(c.aliment.id, c.sourceId, c.etude.title, `[Haiku] ${tri.raison}`);
+          await enregistrerRejet(c.habitude.id, c.sourceId, c.etude.title, `[Haiku] ${tri.raison}`);
           continue;
         }
         e.retenusHaiku++;
@@ -1019,37 +986,37 @@ async function main() {
         aAnalyser.map((c) => ({
           cle: `ana-${c.cle}`,
           modele: MODELE_ANALYSE,
-          maxTokens: 3000,
-          prompt: promptAnalyse(c.etude.title, c.etude.abstractText, c.aliment.nom),
+          maxTokens: 1500,
+          prompt: promptAnalyse(c.etude.title, c.etude.abstractText, c.habitude.nom),
         })),
         interpreterAnalyse,
         `Analyse Sonnet v${vague}`
       );
       totalAnalyses += aAnalyser.length;
 
-      // Décisions, aliment par aliment, dans l'ordre Europe PMC.
+      // Décisions, habitude par habitude, dans l'ordre Europe PMC.
       for (const e of etats.values()) {
         for (const c of e.analysesVague || []) {
           e.analyses++;
           const analyse = analyses.get(`ana-${c.cle}`);
           if (!analyse) {
-            console.log(`  - Analyse impossible (${c.aliment.slug}, ${c.sourceId}), on passe.`);
+            console.log(`  - Analyse impossible (${c.habitude.slug}, ${c.sourceId}), on passe.`);
             continue;
           }
           if (!analyse.pertinent) {
             rejetsSonnet++;
-            await enregistrerRejet(c.aliment.id, c.sourceId, c.etude.title, analyse.raison);
+            await enregistrerRejet(c.habitude.id, c.sourceId, c.etude.title, analyse.raison);
             continue;
           }
-          // Étude déjà en base pour un autre aliment : on la relie seulement
+          // Étude déjà en base pour un autre habitude : on la relie seulement
           // (les résumés existants ne sont pas modifiés).
           if (c.existantId) {
-            await supabase.from('aliments_etudes').insert({
-              aliment_id: c.aliment.id,
+            await supabase.from('habitudes_etudes').insert({
+              habitude_id: c.habitude.id,
               etude_id: c.existantId,
             });
             liaisons++;
-            console.log(`  - ${c.aliment.slug} : déjà en base (${c.sourceId}), jugée pertinente et reliée.`);
+            console.log(`  - ${c.habitude.slug} : déjà en base (${c.sourceId}), jugée pertinente et reliée.`);
             continue;
           }
           // Quota de nouvelles études déjà atteint dans cette vague : l'étude reste non enregistrée.
@@ -1058,7 +1025,7 @@ async function main() {
           e.nouvelles++;
           if (e.nouvelles >= e.quotas.nouvelles) {
             e.termine = true;
-            console.log(`  - ${e.aliment.slug} : quota de ${e.quotas.nouvelles} nouvelles études atteint.`);
+            console.log(`  - ${e.habitude.slug} : quota de ${e.quotas.nouvelles} nouvelles études atteint.`);
           }
         }
       }
@@ -1070,14 +1037,14 @@ async function main() {
       e.analysesVague = [];
       if (!e.termine && e.analyses >= e.quotas.analyses) {
         e.termine = true;
-        console.log(`  - ${e.aliment.slug} : quota de ${e.quotas.analyses} analyses Sonnet atteint.`);
+        console.log(`  - ${e.habitude.slug} : quota de ${e.quotas.analyses} analyses Sonnet atteint.`);
       }
     }
   }
 
   const inacheves = [...etats.values()].filter((e) => !e.termine && e.position < e.file.length);
   if (inacheves.length > 0) {
-    console.log(`\n⚠️ Nombre maximal de vagues (${MAX_VAGUES}) atteint, études non examinées pour : ${inacheves.map((e) => e.aliment.slug).join(', ')}`);
+    console.log(`\n⚠️ Nombre maximal de vagues (${MAX_VAGUES}) atteint, études non examinées pour : ${inacheves.map((e) => e.habitude.slug).join(', ')}`);
   }
   console.log(`\n${totalTries} étude(s) triée(s) par Haiku (${rejetsHaiku} écartée(s)), ${totalAnalyses} analysée(s) par Sonnet (${rejetsSonnet} écartée(s)), ${liaisons} liaison(s), ${nouvellesAcceptees.length} nouvelle(s) étude(s) acceptée(s).`);
 
@@ -1100,15 +1067,14 @@ async function main() {
 
   let ajoutees = 0;
   for (const { c, analyse } of nouvellesAcceptees) {
-    const { etude, sourceId, aliment } = c;
+    const { etude, sourceId, habitude } = c;
     try {
-      const premier = etudesAClasser.get(sourceId);
+            const premier = etudesAClasser.get(sourceId);
       const preuve = classements.get(`pre-${premier.cle}`) || null;
-      // Mode hauts niveaux : seules les synthèses (méta-analyses, revues systématiques ou parapluies)
-      // sont enregistrées. Les autres ne sont pas marquées comme rejetées, pour rester disponibles
-      // lors d'un futur rattrapage des essais.
+      // Mode hauts niveaux : seules les synthèses sont enregistrées. Les autres ne sont pas
+      // marquées comme rejetées, pour rester disponibles lors d'un futur rattrapage.
       if (HAUTS_NIVEAUX && (!preuve || !DESIGNS_SYNTHESES.includes(preuve.design))) {
-        console.log(`  - ${aliment.slug} : écartée, pas une synthèse (${preuve?.design || 'classement inconnu'}) : ${analyse.titre_traduit}`);
+        console.log(`  - ${habitude.slug} : écartée, pas une synthèse (${preuve?.design || 'classement inconnu'}) : ${analyse.titre_traduit}`);
         continue;
       }
       const niveauFiabilite = niveauFiabiliteDepuisPreuve(preuve?.niveau);
@@ -1140,7 +1106,7 @@ async function main() {
 
       if (erreurInsert) {
         if (erreurInsert.code === '23505') {
-          // Déjà insérée (par exemple pour un autre aliment de ce même run) : on la relie.
+          // Déjà insérée (par exemple pour un autre habitude de ce même run) : on la relie.
           const { data: etudeExistante } = await supabase
             .from('etudes')
             .select('id')
@@ -1162,16 +1128,16 @@ async function main() {
       }
 
       const { data: lienExistant } = await supabase
-        .from('aliments_etudes')
-        .select('aliment_id')
-        .eq('aliment_id', aliment.id)
+        .from('habitudes_etudes')
+        .select('habitude_id')
+        .eq('habitude_id', habitude.id)
         .eq('etude_id', etudeId)
         .maybeSingle();
 
       if (lienExistant) continue;
 
-      await supabase.from('aliments_etudes').insert({
-        aliment_id: aliment.id,
+      await supabase.from('habitudes_etudes').insert({
+        habitude_id: habitude.id,
         etude_id: etudeId,
       });
 
@@ -1179,7 +1145,7 @@ async function main() {
       const etiquettePreuve = preuve
         ? `Niveau ${preuve.niveau} — ${preuve.design}${preuve.ajustement ? ` (${preuve.ajustement})` : ''}${preuve.participants ? `, n=${preuve.participants}` : ''}`
         : 'niveau inconnu';
-      console.log(`  - ${aliment.slug} : ajoutée (${etiquettePreuve}) : ${analyse.titre_traduit}`);
+      console.log(`  - ${habitude.slug} : ajoutée (${etiquettePreuve}) : ${analyse.titre_traduit}`);
     } catch (e) {
       console.log(`  - Erreur traitement ${sourceId}:`, e.message);
     }
@@ -1190,10 +1156,10 @@ async function main() {
   console.log(`Triés Haiku : ${totalTries} | écartés Haiku : ${rejetsHaiku} | analysés Sonnet : ${totalAnalyses} | écartés Sonnet : ${rejetsSonnet} | liaisons : ${liaisons} | nouvelles études ajoutées : ${ajoutees}`);
 
   if (tousLesEchecs.length > 0) {
-    console.log(`\n⚠️ ${tousLesEchecs.length} aliment(s) toujours en échec de recherche. À relancer via slugs_cibles :`);
-    console.log(tousLesEchecs.map((x) => x.aliment.slug).join(','));
+    console.log(`\n⚠️ ${tousLesEchecs.length} habitude(s) toujours en échec de recherche. À relancer via slugs_cibles :`);
+    console.log(tousLesEchecs.map((x) => x.habitude.slug).join(','));
   } else {
-    console.log('\nAucun aliment en échec de recherche.');
+    console.log('\nAucune habitude en échec de recherche.');
   }
   console.log('\nTerminé.');
 }
